@@ -1,9 +1,5 @@
-import {
-  DataTable,
-  DataTableColumn,
-  EmptyState,
-  StatusChip,
-} from "@aivenio/aquarium";
+import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
 import { Environment } from "src/domain/environment";
 
 type SchemaRegistryEnvironmentsTableProps = {
@@ -57,16 +53,9 @@ const SchemaRegistryEnvironmentsTable = (
     {
       type: "custom",
       headerName: "Status",
-      UNSAFE_render: ({ status }: SchemaRegistryEnvironmentsTableRow) => {
-        if (status === "OFFLINE") {
-          return <StatusChip dense status="danger" text="Not working" />;
-        }
-        if (status === "ONLINE") {
-          return <StatusChip dense status="success" text="Working" />;
-        }
-        if (status === "NOT_KNOWN") {
-          return <StatusChip dense status="neutral" text="Unknown" />;
-        }
+      width: 150,
+      UNSAFE_render: ({ status, id }: SchemaRegistryEnvironmentsTableRow) => {
+        return <EnvironmentStatus envId={id} initialEnvStatus={status} />;
       },
     },
   ];

@@ -5,6 +5,7 @@ import {
   EmptyState,
   StatusChip,
 } from "@aivenio/aquarium";
+import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
 import { Environment } from "src/domain/environment";
 
 type KafkaEnvironmentsTableProps = {
@@ -92,16 +93,9 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
     {
       type: "custom",
       headerName: "Status",
-      UNSAFE_render: ({ status }: KafkaEnvironmentsTableRow) => {
-        if (status === "OFFLINE") {
-          return <StatusChip dense status="danger" text="Not working" />;
-        }
-        if (status === "ONLINE") {
-          return <StatusChip dense status="success" text="Working" />;
-        }
-        if (status === "NOT_KNOWN") {
-          return <StatusChip dense status="neutral" text="Unknown" />;
-        }
+      width: 150,
+      UNSAFE_render: ({ status, id }: KafkaEnvironmentsTableRow) => {
+        return <EnvironmentStatus envId={id} initialEnvStatus={status} />;
       },
     },
   ];

@@ -9,6 +9,12 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 const defaultApiParams = {
   pageNo: "1",
   searchEnvParam: undefined,

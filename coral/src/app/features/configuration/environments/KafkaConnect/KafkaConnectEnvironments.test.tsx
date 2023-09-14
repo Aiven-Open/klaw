@@ -14,6 +14,12 @@ const defaultApiParams = {
   searchEnvParam: undefined,
 };
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetPaginatedEnvironmentsForConnector =

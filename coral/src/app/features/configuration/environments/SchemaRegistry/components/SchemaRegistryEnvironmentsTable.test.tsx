@@ -1,8 +1,15 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import SchemaRegistryEnvironmentsTable from "src/app/features/configuration/environments/SchemaRegistry/components/SchemaRegistryEnvironmentsTable";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
 
 const mockEnvironments: Environment[] = [
   createEnvironment({
@@ -43,11 +50,12 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
   describe("shows empty state correctly", () => {
     afterAll(cleanup);
     it("show empty state when there is no data", () => {
-      render(
+      customRender(
         <SchemaRegistryEnvironmentsTable
           environments={[]}
           ariaLabel={"Schema Registry Environments overview, page 0 of 0"}
-        />
+        />,
+        { queryClient: true }
       );
       expect(
         screen.getByRole("heading", {
@@ -61,11 +69,12 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
     beforeAll(() => {
       mockIntersectionObserver();
 
-      render(
+      customRender(
         <SchemaRegistryEnvironmentsTable
           environments={mockEnvironments}
           ariaLabel={"Schema Registry Environments overview, page 1 of 10"}
-        />
+        />,
+        { queryClient: true }
       );
     });
 
