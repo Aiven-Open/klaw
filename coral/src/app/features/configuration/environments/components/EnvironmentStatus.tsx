@@ -14,7 +14,7 @@ const EnvironmentStatus = ({
   initialEnvStatus: Environment["envStatus"];
 }) => {
   const toast = useToast();
-  const [shoudlRefreshStatus, setShouldRefetchStatus] = useState(false);
+  const [shoudlUpdateStatus, setShouldUpdateStatus] = useState(false);
   const [envStatus, setEnvStatus] =
     useState<Environment["envStatus"]>(initialEnvStatus);
 
@@ -27,16 +27,16 @@ const EnvironmentStatus = ({
     error,
   } = useQuery(["getUpdateEnvStatus", envId], {
     queryFn: () => getUpdateEnvStatus({ envId }),
-    enabled: shoudlRefreshStatus,
+    enabled: shoudlUpdateStatus,
   });
 
   useEffect(() => {
     if (isSuccess) {
-      setShouldRefetchStatus(false);
+      setShouldUpdateStatus(false);
       setEnvStatus(updatedEnvStatus.envStatus);
     }
     if (isError) {
-      setShouldRefetchStatus(false);
+      setShouldUpdateStatus(false);
       toast({
         message: `Could not refresh Environment status: ${parseErrorMsg(
           error
@@ -53,7 +53,7 @@ const EnvironmentStatus = ({
         <StatusChip dense status="neutral" text="Refreshing..." />
         <Button.Icon
           icon={loading}
-          onClick={() => setShouldRefetchStatus(true)}
+          onClick={() => setShouldUpdateStatus(true)}
           aria-label={"Refreshing Environment status"}
           tooltip={"Refreshing Environment status"}
           disabled
@@ -68,7 +68,7 @@ const EnvironmentStatus = ({
         <StatusChip dense status="danger" text="Not working" />
         <Button.Icon
           icon={refresh}
-          onClick={() => setShouldRefetchStatus(true)}
+          onClick={() => setShouldUpdateStatus(true)}
           aria-label={"Refresh Environment status"}
           tooltip={"Refresh Environment status"}
         />
@@ -81,7 +81,7 @@ const EnvironmentStatus = ({
         <StatusChip dense status="success" text="Working" />
         <Button.Icon
           icon={refresh}
-          onClick={() => setShouldRefetchStatus(true)}
+          onClick={() => setShouldUpdateStatus(true)}
           aria-label={"Refresh Environment status"}
           tooltip={"Refresh Environment status"}
         />
@@ -94,7 +94,7 @@ const EnvironmentStatus = ({
       <StatusChip dense status="neutral" text="Unknown" />
       <Button.Icon
         icon={refresh}
-        onClick={() => setShouldRefetchStatus(true)}
+        onClick={() => setShouldUpdateStatus(true)}
         aria-label={"Refresh Environment status"}
         tooltip={"Refresh Environment status"}
       />
