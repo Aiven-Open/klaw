@@ -28,12 +28,7 @@ public interface KwKafkaConnectorRepo extends CrudRepository<KwKafkaConnector, K
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnector where teamid = :teamId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantId(Integer teamId, Integer tenantId);
 
   @Query(
       value = "select max(connectorid) from kwkafkaconnector where tenantid = :tenantId",
