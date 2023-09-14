@@ -105,6 +105,17 @@ const getPaginatedEnvironmentsForConnector = async (
   return transformPaginatedEnvironmentApiResponse(apiResponse);
 };
 
+const getUpdateEnvStatus = async (
+  params: KlawApiRequestQueryParameters<"getUpdateEnvStatus">
+): Promise<KlawApiResponse<"getUpdateEnvStatus">> => {
+  const apiResponse = await api.get<KlawApiResponse<"getUpdateEnvStatus">>(
+    API_PATHS.getUpdateEnvStatus,
+    new URLSearchParams(params)
+  );
+
+  return apiResponse;
+};
+
 export {
   getAllEnvironmentsForTopicAndAcl,
   getPaginatedEnvironmentsForTopicAndAcl,
@@ -114,4 +125,5 @@ export {
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
   getPaginatedEnvironmentsForConnector,
+  getUpdateEnvStatus,
 };
