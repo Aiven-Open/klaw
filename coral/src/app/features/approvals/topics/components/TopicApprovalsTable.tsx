@@ -1,8 +1,14 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  InlineIcon,
+} from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
 import loadingIcon from "@aivenio/aquarium/dist/src/icons/loading";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
+import link from "@aivenio/aquarium/dist/src/icons/link";
 import { TopicRequest } from "src/domain/topic/topic-types";
 import {
   requestStatusChipStatusMap,
@@ -12,6 +18,7 @@ import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { Link } from "react-router-dom";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -45,7 +52,24 @@ function TopicApprovalsTable({
   isBeingDeclined,
 }: TopicApprovalsTableProp) {
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
-    { type: "text", field: "topicname", headerName: "Topic" },
+    {
+      type: "custom",
+      headerName: "Topic",
+      UNSAFE_render: ({
+        topicname,
+        requestOperationType,
+      }: TopicRequestTableRow) => {
+        if (requestOperationType !== "CREATE") {
+          return (
+            <Link to={`/topic/${topicname}/overview`}>
+              {topicname} <InlineIcon icon={link} />
+            </Link>
+          );
+        } else {
+          return <>{topicname}</>;
+        }
+      },
+    },
     {
       type: "status",
       headerName: "Environment",

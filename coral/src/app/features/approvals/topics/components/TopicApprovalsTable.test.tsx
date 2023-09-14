@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequest } from "src/domain/topic";
@@ -9,6 +9,7 @@ import {
   RequestStatus,
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedApproveRequest = jest.fn();
 
@@ -100,7 +101,7 @@ describe("TopicApprovalsTable", () => {
     afterEach(cleanup);
 
     it("shows a message to user in case there are no requests that match the search criteria", () => {
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={[]}
           onDetails={jest.fn()}
@@ -109,7 +110,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
       screen.getByText("No Topic requests");
       screen.getByText("No Topic request matched your criteria.");
@@ -119,7 +121,7 @@ describe("TopicApprovalsTable", () => {
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -128,7 +130,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
@@ -196,7 +199,7 @@ describe("TopicApprovalsTable", () => {
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -205,7 +208,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -239,14 +243,14 @@ describe("TopicApprovalsTable", () => {
 
       if (column.relatedField) {
         mockedRequests.forEach((request) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          const field = request[column.relatedField];
+
           it(`shows field ${column.relatedField} for topic id ${request.topicid}`, () => {
             const table = screen.getByRole("table", {
               name: "Topic approval requests, page 1 of 10",
             });
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            const field = request[column.relatedField];
 
             let text = field;
             if (column.columnHeader === "Requested on") {
@@ -264,6 +268,35 @@ describe("TopicApprovalsTable", () => {
 
             expect(cell).toBeVisible();
           });
+
+          if (
+            column.columnHeader === "Topic" &&
+            request.requestOperationType === "CREATE"
+          ) {
+            it("shows topic name as text only when requestOperation type is CREATE", () => {
+              const cell = screen.getByRole("cell", { name: field });
+              const link = within(cell).queryByRole("link");
+
+              expect(cell).toHaveTextContent(field);
+              expect(link).not.toBeInTheDocument();
+            });
+          }
+
+          if (
+            column.columnHeader === "Topic" &&
+            request.requestOperationType !== "CREATE"
+          ) {
+            it("shows a link instead of only text when requestOperation type is not CREATE", () => {
+              const cell = screen.getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", {
+                name: field,
+              });
+
+              expect(cell).toHaveTextContent(field);
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", `/topic/${field}/overview`);
+            });
+          }
         });
       }
     });
@@ -272,7 +305,7 @@ describe("TopicApprovalsTable", () => {
   describe("handles interaction with action columns", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -281,7 +314,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
@@ -305,7 +339,7 @@ describe("TopicApprovalsTable", () => {
 
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={requestsWithStatusCreated}
           actionsDisabled
@@ -315,7 +349,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
@@ -358,7 +393,7 @@ describe("TopicApprovalsTable", () => {
 
   describe("user is unable to approve and decline non pending requests", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -367,7 +402,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -399,7 +435,7 @@ describe("TopicApprovalsTable", () => {
     const isBeingApproved = jest.fn(() => true);
     const isBeingDeclined = jest.fn(() => true);
     beforeEach(() => {
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -408,7 +444,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -439,7 +476,7 @@ describe("TopicApprovalsTable", () => {
   describe("user is able to view request details", () => {
     const onDetails = jest.fn();
     beforeEach(() => {
-      render(
+      customRender(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={onDetails}
@@ -448,7 +485,8 @@ describe("TopicApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
