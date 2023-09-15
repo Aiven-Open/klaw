@@ -185,6 +185,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         )}
 
       <ConnectorOverviewResourcesTabs
+        connectorName={connectorName}
         isError={connectorIsError}
         error={connectorError}
         isLoading={connectorIsLoading}
