@@ -6,10 +6,7 @@ import com.google.common.collect.Lists;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.RequestMode;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
@@ -806,6 +803,7 @@ public class AclRequestsIntegrationTest {
       acl.setRequestOperationType(aclType.value);
       acl.setRequestOperationType(requestOperationType.value); // Create/Delete ..
       acl.setAclType(aclType.value);
+      acl.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
       if (status != null) {
         acl.setRequestStatus(status);
       }

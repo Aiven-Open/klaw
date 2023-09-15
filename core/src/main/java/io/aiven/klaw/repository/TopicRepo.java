@@ -50,12 +50,7 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwtopics where teamid = :teamId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantId(Integer teamId, Integer tenantId);
 
   @Query(
       value =

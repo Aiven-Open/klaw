@@ -10,15 +10,12 @@ type MainNavigationSubmenuItemProps = {
   icon: typeof data;
   text: string;
   children: ReactElement<typeof MainNavigationLink>[];
-  // this is a temp solution for "force" open the
-  // sub-nave in our use-case. this will be
-  // connected to routing later
-  expanded?: boolean;
+  defaultExpanded: boolean;
 };
 
 function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
-  const { icon, text, children, expanded = false } = props;
-  const [open, setOpen] = useState<boolean>(expanded);
+  const { icon, text, children, defaultExpanded } = props;
+  const [open, setOpen] = useState<boolean>(defaultExpanded);
 
   const buttonText = open
     ? `${text} submenu, open. Click to close.`

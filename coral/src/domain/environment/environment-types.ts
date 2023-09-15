@@ -1,4 +1,9 @@
-import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
+import {
+  KlawApiModel,
+  KlawApiRequestQueryParameters,
+  Paginated,
+  ResolveIntersectionTypes,
+} from "types/utils";
 
 type EnvironmentParams = KlawApiModel<"EnvParams">;
 // KlawApiModel<"EnvModel">
@@ -16,6 +21,11 @@ type Environment = {
   name: KlawApiModel<"EnvModelResponse">["name"];
   id: KlawApiModel<"EnvModelResponse">["id"];
   type: KlawApiModel<"EnvModelResponse">["type"];
+  clusterName: KlawApiModel<"EnvModelResponse">["clusterName"];
+  tenantName: KlawApiModel<"EnvModelResponse">["tenantName"];
+  envStatus: KlawApiModel<"EnvModelResponse">["envStatus"];
+  // This property is optional because only Schema Registry environments get it
+  associatedEnv?: KlawApiModel<"EnvModelResponse">["associatedEnv"];
   // even though the openapi definition defines `params` as required
   // some endpoints don't have a `params` property,
   // so we need to make sure that we know where to
@@ -42,7 +52,24 @@ interface PaginatedEnvironmentsWithTotalEnvs extends Paginated<Environment[]> {
 type EnvironmentPaginatedApiResponse =
   ResolveIntersectionTypes<PaginatedEnvironmentsWithTotalEnvs>;
 
+type GetKafkaEnvsPaginated = (
+  params: KlawApiRequestQueryParameters<"getKafkaEnvsPaginated">
+) => Promise<EnvironmentPaginatedApiResponse>;
+type GetSchemaRegEnvsPaginated = (
+  params: KlawApiRequestQueryParameters<"getSchemaRegEnvsPaginated">
+) => Promise<EnvironmentPaginatedApiResponse>;
+type GetKafkaConnectEnvsPaginated = (
+  params: KlawApiRequestQueryParameters<"getKafkaConnectEnvsPaginated">
+) => Promise<EnvironmentPaginatedApiResponse>;
+
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 
-export type { Environment, EnvironmentInfo, EnvironmentPaginatedApiResponse };
+export type {
+  Environment,
+  EnvironmentInfo,
+  EnvironmentPaginatedApiResponse,
+  GetKafkaEnvsPaginated,
+  GetSchemaRegEnvsPaginated,
+  GetKafkaConnectEnvsPaginated,
+};
 export { ALL_ENVIRONMENTS_VALUE };

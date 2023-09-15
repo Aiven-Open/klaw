@@ -14,7 +14,7 @@ public class PagerTest {
   @MethodSource("pagerInfoProvider")
   void testGetItemsList(PageInfoTestSpec pageInfoTestSpec) {
     int currentPage =
-        pageInfoTestSpec.currentPage.isEmpty() ? 1 : Integer.parseInt(pageInfoTestSpec.currentPage);
+        pageInfoTestSpec.currentPage.isEmpty() ? 1 : Integer.parseInt(pageInfoTestSpec.pageNo);
     int fromIndex = (currentPage - 1) * pageInfoTestSpec.itemsPerPage;
     List expected =
         pageInfoTestSpec.list.subList(

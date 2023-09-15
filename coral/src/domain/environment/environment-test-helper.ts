@@ -41,6 +41,9 @@ const defaultEnvironment: Environment = {
   id: "1",
   params: {},
   type: "kafka",
+  clusterName: "DEV",
+  tenantName: "default",
+  envStatus: "ONLINE",
 };
 
 function createEnvironment(environment: Partial<Environment>): Environment {
