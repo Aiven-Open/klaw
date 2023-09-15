@@ -31,6 +31,9 @@ const mockedKafkaTotalEnvs: EnvironmentPaginatedApiResponse = {
       name: "DEV",
       id: "1001",
       params: {},
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
     },
   ],
 };
@@ -45,12 +48,18 @@ const mockedSchemaTotalEnvs: EnvironmentPaginatedApiResponse = {
       name: "DEV",
       id: "1001",
       params: {},
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
     },
     {
       type: "schemaregistry",
       name: "TST",
       id: "1002",
       params: {},
+      clusterName: "TST",
+      tenantName: "default",
+      envStatus: "ONLINE",
     },
   ],
 };

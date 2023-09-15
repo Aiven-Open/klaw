@@ -1078,7 +1078,7 @@ public class SelectDataJdbc {
 
   public boolean validateIfConsumerGroupUsedByAnotherTeam(
       Integer teamId, int tenantId, String consumerGroup) {
-    return aclRepo.validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
+    return aclRepo.existsByTeamIdNotAndTenantIdAndConsumergroup(teamId, tenantId, consumerGroup);
   }
 
   public Team selectTeamDetails(Integer teamId, int tenantId) {
@@ -1499,43 +1499,50 @@ public class SelectDataJdbc {
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
     return Stream.<Supplier<Boolean>>of(
             () -> {
-              boolean res = schemaRequestRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  schemaRequestRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} Active Schema Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = messageSchemaRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = messageSchemaRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} number of Schemas in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = kafkaConnectorRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = kafkaConnectorRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active Connector Requests {}", teamId, res);
               return res;
             },
             () -> {
               boolean res =
-                  kafkaConnectorRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+                  kafkaConnectorRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of Connector in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = topicRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = topicRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active Topic Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = topicRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  topicRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of Topic in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = aclRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = aclRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active ACL Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = aclRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  aclRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of ACL in DB {}", teamId, res);
               return res;
             })
@@ -1544,10 +1551,18 @@ public class SelectDataJdbc {
 
   public boolean existsComponentsCountForUser(String userId, int tenantId) {
     return Stream.<Supplier<Boolean>>of(
-            () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId))
+            () ->
+                schemaRequestRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                kafkaConnectorRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                topicRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                aclRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value))
         .anyMatch(Supplier::get);
   }
 

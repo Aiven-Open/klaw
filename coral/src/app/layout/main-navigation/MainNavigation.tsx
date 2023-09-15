@@ -92,16 +92,17 @@ function MainNavigation() {
           <Divider direction="horizontal" size={2} />
         </Box>
         <li>
-          <MainNavigationSubmenuList icon={settings} text={"Configuration"}>
+          <MainNavigationSubmenuList
+            icon={settings}
+            text={"Configuration"}
+            defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
+          >
             <MainNavigationLink to={`/users`} linkText={"Users"} />
             <MainNavigationLink to={`/teams`} linkText={"Teams"} />
             <MainNavigationLink
-              to={
-                configurationLinksEnabled
-                  ? `/configuration/environments`
-                  : `/envs`
-              }
+              to={configurationLinksEnabled ? Routes.ENVIRONMENTS : `/envs`}
               linkText={"Environments"}
+              active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
           </MainNavigationSubmenuList>
         </li>

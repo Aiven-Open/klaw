@@ -40,6 +40,9 @@ describe("topic-api", () => {
         id: "1",
         type: "kafka",
         params: {},
+        clusterName: "DEV",
+        tenantName: "default",
+        envStatus: "ONLINE",
       };
 
       const parameters: Schema = {
