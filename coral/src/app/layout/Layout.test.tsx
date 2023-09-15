@@ -9,6 +9,10 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => jest.fn(),
+}));
 describe("Layout.tsx", () => {
   isFeatureFlagActiveMock.mockReturnValue(true);
 
