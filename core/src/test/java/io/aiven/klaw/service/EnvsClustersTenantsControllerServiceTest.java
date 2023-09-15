@@ -269,7 +269,7 @@ class EnvsClustersTenantsControllerServiceTest {
         Arguments.arguments(KafkaClustersType.KAFKA_CONNECT, "DEV", "1", 1),
         Arguments.arguments(KafkaClustersType.KAFKA, "3", "1", 1),
         Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "PREPROD", "1", 0),
-        Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "", "2", 0));
+        Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "", "2", 3));
   }
 
   private static Env generateKafkaEnv(String id, String Kafka) {
