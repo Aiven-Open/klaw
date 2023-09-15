@@ -27,7 +27,7 @@ import {
   TopicOverview,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
-import api, { API_PATHS } from "src/services/api";
+import api, { API_PATHS, KlawApiError } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {
   KlawApiModel,
@@ -312,7 +312,19 @@ const getTopicOverview = ({
       API_PATHS.getTopicOverview,
       new URLSearchParams(queryParams)
     )
-    .then(transformTopicOverviewResponse);
+    .then((topicOverview) => {
+      if (!topicOverview.topicExists) {
+        // Currently the API returns a reduced TopicOverview when
+        // a topic does not exist. In the future, it should return
+        // a 404. Until then, we're doing that ourself.
+        const topicDoesNotExistError: KlawApiError = {
+          message: "Topic does not exist",
+          success: false,
+        };
+        throw topicDoesNotExistError;
+      }
+      return transformTopicOverviewResponse(topicOverview);
+    });
 };
 
 const getSchemaOfTopic = (

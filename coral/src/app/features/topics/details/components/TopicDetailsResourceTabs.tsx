@@ -22,6 +22,7 @@ type Props = {
   topicOverviewIsRefetching: boolean;
   topicSchemas?: TopicSchemaOverview;
   topicSchemasIsRefetching?: boolean;
+  topicName: string;
 };
 
 function TopicOverviewResourcesTabs({
@@ -35,9 +36,9 @@ function TopicOverviewResourcesTabs({
   topicOverviewIsRefetching,
   topicSchemas,
   topicSchemasIsRefetching,
+  topicName,
 }: Props) {
   const navigate = useNavigate();
-  const topicName = topicOverview?.topicInfo.topicName;
 
   function navigateToTab(
     navigate: NavigateFunction,
@@ -117,6 +118,7 @@ function TopicOverviewResourcesTabs({
         </Box>
       );
     }
+
     return (
       <div data-testid={"tabpanel-content"}>
         <Outlet
@@ -126,7 +128,7 @@ function TopicOverviewResourcesTabs({
             setSchemaVersion,
             topicOverview,
             topicOverviewIsRefetching,
-            topicName: topicOverview.topicInfo.topicName,
+            topicName: topicName,
             topicSchemas,
             topicSchemasIsRefetching,
             userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
