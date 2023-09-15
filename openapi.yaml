@@ -5749,6 +5749,33 @@
           }
         }
       }
+    },
+    "/acl/request/{aclRequestId}" : {
+      "get" : {
+        "tags" : [ "acl-controller" ],
+        "operationId" : "getAclRequest",
+        "parameters" : [ {
+          "name" : "aclRequestId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AclRequestsResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
