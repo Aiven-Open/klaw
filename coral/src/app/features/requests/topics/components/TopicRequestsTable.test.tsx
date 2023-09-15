@@ -103,7 +103,7 @@ describe("TopicRequestsTable", () => {
     screen.getByText("No Topic request matched your criteria.");
   });
 
-  it("has column with topic name as text when request type is CREATE", () => {
+  it("has column with topic name as text when topic does not exists", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[0]
@@ -113,7 +113,7 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("has column with topic name as link when request type is not CREATE", () => {
+  it("has column with topic name as link when topic does exists", () => {
     renderFromProps();
 
     const nameSecondTopicInResponse = mockedRequests[1].topicname;

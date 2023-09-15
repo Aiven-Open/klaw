@@ -17,6 +17,7 @@ import {
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { Link } from "react-router-dom";
 import link from "@aivenio/aquarium/icons/link";
+import { doesEntityRelatedToRequestExists } from "src/services/entity-exists/entity-related-to-request-exists";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -50,8 +51,14 @@ function TopicRequestsTable({
       UNSAFE_render: ({
         topicname,
         requestOperationType,
+        requestStatus,
       }: TopicRequestTableRow) => {
-        if (requestOperationType !== "CREATE") {
+        if (
+          doesEntityRelatedToRequestExists({
+            requestStatus,
+            requestOperationType,
+          })
+        ) {
           return (
             <Link to={`/topic/${topicname}/overview`}>
               {topicname} <InlineIcon icon={link} />

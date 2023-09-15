@@ -87,7 +87,7 @@ describe("ConnectorRequestsTable", () => {
     screen.getByText("No Connector request matched your criteria.");
   });
 
-  it("has column with connector name as string when request type is CREATE", () => {
+  it("has column with connector name as string when connector does not exist", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[0]
@@ -97,7 +97,7 @@ describe("ConnectorRequestsTable", () => {
     );
   });
 
-  it("has column with connector name as link when request type is not CREATE", () => {
+  it("has column with connector name as link when connector does exist", () => {
     renderFromProps();
 
     const nameSecondTopicInResponse = mockedRequests[1].connectorName;

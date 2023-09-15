@@ -17,6 +17,7 @@ import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import { Link } from "react-router-dom";
 import link from "@aivenio/aquarium/icons/link";
+import { doesEntityRelatedToRequestExists } from "src/services/entity-exists/entity-related-to-request-exists";
 
 type ConnectorRequestTableRow = {
   id: ConnectorRequest["connectorId"];
@@ -49,9 +50,15 @@ function ConnectorRequestsTable({
       headerName: "Name",
       UNSAFE_render: ({
         connectorName,
+        requestStatus,
         requestOperationType,
       }: ConnectorRequestTableRow) => {
-        if (requestOperationType !== "CREATE") {
+        if (
+          doesEntityRelatedToRequestExists({
+            requestStatus,
+            requestOperationType,
+          })
+        ) {
           return (
             <Link to={`/connector/${connectorName}/overview`}>
               {connectorName} <InlineIcon icon={link} />
