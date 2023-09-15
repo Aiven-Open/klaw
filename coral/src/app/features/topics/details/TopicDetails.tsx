@@ -183,6 +183,7 @@ function TopicDetails(props: TopicOverviewProps) {
         topicOverviewIsRefetching={topicIsRefetching}
         topicSchemas={schemaData}
         topicSchemasIsRefetching={schemaIsRefetching}
+        topicName={topicName}
       />
     </>
   );
