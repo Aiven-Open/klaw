@@ -1,4 +1,4 @@
-version = 2.5.0
+version = 2.5.1
 
 # Sets a custom hook path in the local git config.
 # Currently there's only a pre-commit hook related
