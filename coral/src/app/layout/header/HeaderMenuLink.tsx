@@ -1,6 +1,7 @@
 import { Icon, Tooltip } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type HeaderMenuLinkProps = {
   icon: typeof data;
@@ -15,8 +16,8 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
   const toggleOpen = () => setIsOpen(!isOpen);
 
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       rel={rel}
       // These mouse events are necessary because the Tooltip component does not show the popover on hover with React version >= 18
       // @TODO: remove when aquarium is compatible with React version >= 18
@@ -43,7 +44,7 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
         {/* aria-hidden="true" is added natively to the Icon component */}
         <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
       </Tooltip>
-    </a>
+    </Link>
   );
 }
 
