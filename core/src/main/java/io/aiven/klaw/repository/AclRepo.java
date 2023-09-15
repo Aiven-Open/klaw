@@ -20,19 +20,16 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
   List<Acl> findAllByEnvironmentAndTopicnameAndTenantId(
       String environment, String topicName, int tenantId);
 
+  List<Acl> findAllByEnvironmentAndTopicnameAndTeamIdAndConsumergroupAndTenantId(
+      String environment, String topicName, int teamId, String consumerGroup, int tenantId);
+
   List<Acl> findAllByEnvironmentAndAclPatternTypeAndTenantId(
       String environment, String aclPatternType, int tenantId);
 
   List<Acl> findAllByTenantId(int tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwacls where teamid != :teamId and tenantid = :tenantId and consumergroup = :consumerGroup)",
-      nativeQuery = true)
-  boolean validateIfConsumerGroupUsedByAnotherTeam(
-      @Param("teamId") Integer teamId,
-      @Param("tenantId") Integer tenantId,
-      @Param("consumerGroup") String consumerGroup);
+  boolean existsByTeamIdNotAndTenantIdAndConsumergroup(
+      Integer teamId, Integer tenantId, String consumerGroup);
 
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
@@ -43,10 +40,7 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
   List<Object[]> findAllAclsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value = "select exists(select 1 from kwacls where teamid = :teamId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
+  boolean existsByTeamIdAndTenantId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(

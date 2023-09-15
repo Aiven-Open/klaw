@@ -101,7 +101,7 @@ describe("TopicMessages", () => {
       })
     );
     await waitFor(() => {
-      screen.getByText("This Topic contains no messages.");
+      screen.getByText("This topic contains no messages.");
     });
   });
 

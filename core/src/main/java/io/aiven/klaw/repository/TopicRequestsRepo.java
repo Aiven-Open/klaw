@@ -2,7 +2,9 @@ package io.aiven.klaw.repository;
 
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -37,19 +39,11 @@ public interface TopicRequestsRepo
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwtopicrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantIdAndRequestStatus(
+      Integer teamId, Integer tenantId, String requestStatus);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForUserId(
-      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+  boolean existsByRequestorAndTenantIdAndRequestStatus(
+      String requestor, Integer tenantId, String requestStatus);
 
   @Query(
       value = "select max(topicid) from kwtopicrequests where tenantid = :tenantId",
@@ -64,13 +58,21 @@ public interface TopicRequestsRepo
   List<Object[]> findAllTopicRequestsGroupByOperationType(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
+  default Map<String, Long> getCountPerTopicType(Integer teamId, Integer tenantId) {
+    return deriveCountsFromRequests(findAllTopicRequestsGroupByOperationType(teamId, tenantId));
+  }
+
   @Query(
       value =
           "select topicstatus, count(*) from kwtopicrequests where tenantid = :tenantId"
               + " and teamid = :teamId group by topicstatus",
       nativeQuery = true)
-  List<Object[]> findAllTopicRequestsGroupByStatus(
+  List<Object[]> findCountPerTopicStatus(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  default Map<String, Long> getCountPerTopicStatus(Integer teamId, Integer tenantId) {
+    return deriveCountsFromRequests(findCountPerTopicStatus(teamId, tenantId));
+  }
 
   @Query(
       value =
@@ -96,4 +98,12 @@ public interface TopicRequestsRepo
       @Param("topicStatus") String topicStatus);
 
   void deleteByTenantId(int tenantId);
+
+  private Map<String, Long> deriveCountsFromRequests(List<Object[]> list) {
+    var result = new HashMap<String, Long>(list.size());
+    for (var elem : list) {
+      result.put((String) elem[0], (Long) elem[1]);
+    }
+    return result;
+  }
 }

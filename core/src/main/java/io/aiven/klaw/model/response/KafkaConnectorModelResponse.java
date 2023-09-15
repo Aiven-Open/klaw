@@ -37,6 +37,8 @@ public class KafkaConnectorModelResponse {
 
   @NotNull private boolean hasOpenRequest;
 
+  @NotNull private boolean hasOpenClaimRequest;
+
   private List<String> allPageNos;
 
   private String totalNoPages;

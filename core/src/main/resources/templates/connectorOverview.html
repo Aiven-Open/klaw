@@ -352,7 +352,8 @@
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
 							<li><a href="mySchemaRequests">My Schema Requests</a></li>
-					<li><a href="myConnectorRequests">My Connector Requests</a></li>
+								<li><a href="myConnectorRequests">My Connector Requests</a></li>
+							<li><a href="myOperationalRequests">My Operational Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -406,7 +407,8 @@
 							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
 							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
 					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
-							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+							  							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+							  <li ng-show="dashboardDetails.approveDeclineOperationalReqs=='Authorized'"><a href="execOperationalChanges">Operational changes</a></li>
 						</ul>
 					</li>
 
@@ -538,7 +540,7 @@
 								</table>
 							</div>
 
-							<div ng-show="promotionDetails.status ==='success'">
+							<div ng-show="promotionDetails.status ==='SUCCESS'">
 								<table width="100%" class="table color-table success-table">
 									<tr>
 										<td width="15%">
@@ -552,13 +554,13 @@
 
 										<td width="5%"></td>
 										<td width="20%" align="right">
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false' && selectedEnvId == promotionDetails.sourceEnv"
+												<button ng-show="promotionDetails.status =='SUCCESS' && firstPromote == 'false' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFirstPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
 													Promote to {{promotionDetails.targetEnv}}
 												</button>
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true' && selectedEnvId == promotionDetails.sourceEnv"
+												<button ng-show="promotionDetails.status =='SUCCESS' && firstPromote == 'true' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFinalPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">

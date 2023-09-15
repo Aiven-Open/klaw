@@ -13,7 +13,8 @@
 **⚠️ Requirements**
 
 - [node](https://nodejs.org/en/) needs to be installed. See [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version.
-- Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
+- Coral uses [pnpm](https://pnpm.io/) (version 8) as a package manager. Read their official documentation [how to 
+  install](https://pnpm.io/installation) pnpm.
 
 **Step by step**
 
@@ -57,7 +58,7 @@ If all requirements are met, and you've done your first setup:
 - [mocking the APIs you need](#mocking-api-responses-general)
 
 ### Mocking API responses general
-If you want to work on UI that needs data from an enpdoint, you can mock the responses during the development process. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. 
+If you want to work on UI that needs data from an endpoint, you can mock the responses during the development process. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. 
 
 **Example: mocking the response for `getClusterInfoFromEnvironment`:**
 

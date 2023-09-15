@@ -284,14 +284,14 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+    assertThat(results).hasSize(2);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 4L);
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.CREATE.value, 0L)).isZero();
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.CLAIM.value, 7L);
+    assertThat(statsCount.getOrDefault(RequestStatus.APPROVED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DECLINED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DELETED.value, 0L)).isZero();
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.UPDATE.value, 0L)).isZero();
   }
 
   @Test
@@ -303,14 +303,14 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(4L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+    assertThat(results).hasSize(2);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 4L);
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.CREATE.value, 0L)).isZero();
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.CLAIM.value, 4L);
+    assertThat(statsCount.getOrDefault(RequestStatus.APPROVED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DECLINED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DELETED.value, 0L)).isZero();
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.UPDATE.value, 0L)).isZero();
   }
 
   @Test
@@ -780,13 +780,13 @@ public class TopicRequestsIntegrationTest {
 
     assertThat(results).hasSize(2);
     // Jackie created all the requests so we expect 0 for created status which is approval status
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+    assertThat(statsCount.getOrDefault(RequestStatus.CREATED.value, 0L)).isZero();
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.CREATE.value, 0L)).isZero();
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.CLAIM.value, 7L);
+    assertThat(statsCount.getOrDefault(RequestStatus.APPROVED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DECLINED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DELETED.value, 0L)).isZero();
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.UPDATE.value, 0L)).isZero();
   }
 
   @Test
@@ -799,13 +799,13 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results).hasSize(2);
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 4L);
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.CREATE.value, 0L)).isZero();
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.CLAIM.value, 7L);
+    assertThat(statsCount.getOrDefault(RequestStatus.APPROVED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DECLINED.value, 0L)).isZero();
+    assertThat(statsCount.getOrDefault(RequestStatus.DELETED.value, 0L)).isZero();
+    assertThat(operationTypeCount.getOrDefault(RequestOperationType.UPDATE.value, 0L)).isZero();
   }
 
   @Order(31)

@@ -174,7 +174,7 @@ describe("TopicRequests", () => {
       });
     });
 
-    it("unapplies the MyRequest filter by untoggling the switch", async () => {
+    it("un-applies the MyRequest filter by un-toggling the switch", async () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,

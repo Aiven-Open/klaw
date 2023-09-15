@@ -16,6 +16,11 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   },
 }));
 
+const isFeatureFlagActiveMock = jest.fn();
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const navLinks = [
   {
     name: "Dashboard",
@@ -34,16 +39,30 @@ const navLinks = [
   { name: "Audit log", linkTo: "/activityLog" },
 ];
 
-const submenuItems = [{ name: "Users and teams", links: ["Users", "Teams"] }];
+const submenuItems = [
+  {
+    name: "Configuration",
+    links: [
+      { name: "Users", linkTo: "/users" },
+      { name: "Teams", linkTo: "/teams" },
+      {
+        name: "Environments",
+        linkTo: isFeatureFlagActiveMock()
+          ? `/configuration/environments`
+          : `/envs`,
+      },
+    ],
+  },
+];
 
 const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
   { name: "Topics", isSubmenu: false },
   { name: "Connectors", isSubmenu: false },
-  { name: "Users and teams", isSubmenu: true },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },
   { name: "Audit log", isSubmenu: false },
+  { name: "Configuration", isSubmenu: true },
 ];
 
 describe("MainNavigation.tsx", () => {
@@ -108,7 +127,7 @@ describe("MainNavigation.tsx", () => {
     });
 
     it(`renders icons for all nav links that are hidden from assistive technology`, () => {
-      // every navlink and submenu link has one icon
+      // every nav link and submenu link has one icon
       // every submenu link has an icon to indicate opened/closed
       const iconAmount = navLinks.length + submenuItems.length * 2;
       const nav = screen.getByRole("navigation", {
@@ -128,7 +147,10 @@ describe("MainNavigation.tsx", () => {
       });
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     submenuItems.forEach((submenu) => {
       describe(`shows all submenu items for ${submenu.name} when user opens menu`, () => {
@@ -161,9 +183,21 @@ describe("MainNavigation.tsx", () => {
           const list = screen.getByRole("list", {
             name: `${submenu.name} submenu`,
           });
-          submenu.links.forEach((linkText) => {
-            const link = within(list).getByRole("link", { name: linkText });
+
+          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === true
+          isFeatureFlagActiveMock.mockReturnValue(true);
+          submenu.links.forEach(({ name, linkTo }) => {
+            const link = within(list).getByRole("link", { name });
             expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", linkTo);
+          });
+
+          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === false
+          isFeatureFlagActiveMock.mockReturnValue(false);
+          submenu.links.forEach(({ name, linkTo }) => {
+            const link = within(list).getByRole("link", { name });
+            expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", linkTo);
           });
         });
       });
@@ -202,15 +236,17 @@ describe("MainNavigation.tsx", () => {
 
     describe("user can navigate backward through first level navigation", () => {
       beforeEach(() => {
-        const lastElement =
-          navOrderFirstLevel[navOrderFirstLevel.length - 1].name;
+        const lastElement = navOrderFirstLevel[navOrderFirstLevel.length - 1];
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
         });
-        const lastNavItem = screen.getByRole("link", {
-          name: lastElement,
-        });
+        const lastNavItem = screen.getByRole(
+          lastElement.isSubmenu ? "button" : "link",
+          {
+            name: new RegExp(lastElement.name, "i"),
+          }
+        );
         lastNavItem.focus();
       });
 
@@ -221,8 +257,7 @@ describe("MainNavigation.tsx", () => {
         const name = link.name;
         const element = link.isSubmenu ? "button" : "link";
         const numbersOfTabs = index;
-
-        it(`sets focus to link ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
+        it(`sets focus to ${element} ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
           const link = screen.getByRole(element, {
             name: new RegExp(name, "i"),
           });

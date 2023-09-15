@@ -19,7 +19,7 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
   List<MessageSchema> findAllByTenantIdAndTopicnameAndEnvironment(
       int tenantId, String topicName, String environmentId);
 
-  List<MessageSchema> findAllByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
+  Optional<MessageSchema> findFirstByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
       int tenantId, String environmentId, String topicName, String schemaVersion);
 
   List<MessageSchema> findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
@@ -28,12 +28,7 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
   boolean existsMessageSchemaByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwavroschemas where teamid = :teamId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantId(Integer teamId, Integer tenantId);
 
   @Query(
       value = "select max(avroschemaid) from kwavroschemas where tenantid = :tenantId",

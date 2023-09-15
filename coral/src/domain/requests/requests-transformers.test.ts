@@ -8,6 +8,7 @@ const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
   SCHEMA: 6,
   CONNECTOR: 2,
   USER: 0,
+  OPERATIONAL: 0,
 };
 
 const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApproval = {
@@ -16,6 +17,7 @@ const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApproval = {
   SCHEMA: 6,
   CONNECTOR: 2,
   USER: 0,
+  OPERATIONAL: 0,
 };
 
 const defaultRecord = {
@@ -24,6 +26,7 @@ const defaultRecord = {
   SCHEMA: 0,
   CONNECTOR: 0,
   USER: 0,
+  OPERATIONAL: 0,
 };
 
 const mockApiResponse: KlawApiResponse<"getRequestStatistics"> = {

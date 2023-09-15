@@ -258,6 +258,15 @@ public class TemplateMapController {
     return checkAuth("execTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/execOperationalChanges", method = RequestMethod.GET)
+  public String execOperationalChanges(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execOperationalChanges.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/execConnectors", method = RequestMethod.GET)
   public String execConnectors(
       ModelMap model,
@@ -274,6 +283,15 @@ public class TemplateMapController {
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
     return checkAuth("myTopicRequests.html", request, response, abstractAuthenticationToken);
+  }
+
+  @RequestMapping(value = "/myOperationalRequests", method = RequestMethod.GET)
+  public String myOperationalRequests(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myOperationalRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myConnectorRequests", method = RequestMethod.GET)
@@ -330,6 +348,16 @@ public class TemplateMapController {
     return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/requestConsumerOffsetReset", method = RequestMethod.GET)
+  public String requestConsumerOffsetReset(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth(
+        "requestConsumerOffsetReset.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/editTopicRequest", method = RequestMethod.GET)
   public String editTopicRequest(
       ModelMap model,
@@ -337,6 +365,15 @@ public class TemplateMapController {
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
     return checkAuth("editTopicRequest.html", request, response, abstractAuthenticationToken);
+  }
+
+  @RequestMapping(value = "/editAclRequest", method = RequestMethod.GET)
+  public String editAclRequest(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("editAclRequest.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestConnector", method = RequestMethod.GET)

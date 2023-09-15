@@ -1,19 +1,24 @@
 import { Box, Divider } from "@aivenio/aquarium";
-import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import add from "@aivenio/aquarium/dist/src/icons/add";
+import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
-import people from "@aivenio/aquarium/dist/src/icons/people";
+import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
+import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import { TeamInfo } from "src/app/features/team-info/TeamInfo";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
+  const configurationLinksEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_CONFIGURATIONS
+  );
 
   return (
     <Box
@@ -61,12 +66,6 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <MainNavigationSubmenuList icon={people} text={"Users and teams"}>
-            <MainNavigationLink to={`/users`} linkText={"Users"} />
-            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
-          </MainNavigationSubmenuList>
-        </li>
-        <li>
           <MainNavigationLink
             icon={tickCircle}
             to={Routes.APPROVALS}
@@ -88,6 +87,24 @@ function MainNavigation() {
             to={`/activityLog`}
             linkText={"Audit log"}
           />
+        </li>
+        <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+          <Divider direction="horizontal" size={2} />
+        </Box>
+        <li>
+          <MainNavigationSubmenuList
+            icon={settings}
+            text={"Configuration"}
+            defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
+          >
+            <MainNavigationLink to={`/users`} linkText={"Users"} />
+            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
+            <MainNavigationLink
+              to={configurationLinksEnabled ? Routes.ENVIRONMENTS : `/envs`}
+              linkText={"Environments"}
+              active={pathname.startsWith(Routes.ENVIRONMENTS)}
+            />
+          </MainNavigationSubmenuList>
         </li>
       </ul>
     </Box>

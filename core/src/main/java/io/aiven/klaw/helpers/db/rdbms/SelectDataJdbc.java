@@ -1,5 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
 import com.google.common.collect.Lists;
@@ -7,19 +8,19 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,8 +37,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SelectDataJdbc {
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
@@ -59,6 +58,9 @@ public class SelectDataJdbc {
 
   @Autowired(required = false)
   private AclRequestsRepo aclRequestsRepo;
+
+  @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
 
   @Autowired(required = false)
   private TopicRepo topicRepo;
@@ -177,8 +179,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
     }
@@ -303,8 +304,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardFilter
@@ -626,8 +626,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
@@ -644,6 +643,19 @@ public class SelectDataJdbc {
     if (!applyWildcardFilter
         || row.getTopicname().toLowerCase().contains(wildcardSearch.toLowerCase())) {
       topicRequestList.add(row);
+    }
+  }
+
+  private void filterAndAddOperationalRequest(
+      List<OperationalRequest> operationalRequestList,
+      OperationalRequest row,
+      String wildcardSearch,
+      boolean applyWildcardFilter) {
+    if (!applyWildcardFilter
+        || row.getTopicname()
+            .toLowerCase(Locale.ROOT)
+            .contains(wildcardSearch.toLowerCase(Locale.ROOT))) {
+      operationalRequestList.add(row);
     }
   }
 
@@ -781,8 +793,7 @@ public class SelectDataJdbc {
     for (KafkaConnectorRequest row : topicRequestListSub) {
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
@@ -862,6 +873,16 @@ public class SelectDataJdbc {
     return topicReq.orElse(null);
   }
 
+  public OperationalRequest selectOperationalRequestsForId(int reqId, int tenantId) {
+    log.debug("selectOperationalRequestsForId {}", reqId);
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setTenantId(tenantId);
+    operationalRequestID.setReqId(reqId);
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    return operationalRequest.orElse(null);
+  }
+
   public KafkaConnectorRequest selectConnectorRequestsForConnector(int connectorId, int tenantId) {
     log.debug("selectConnectorRequestsForConnector {}", connectorId);
     KafkaConnectorRequestID kafkaConnectorRequestID = new KafkaConnectorRequestID();
@@ -898,6 +919,10 @@ public class SelectDataJdbc {
       return team;
     }
     return userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
+  }
+
+  public boolean existsUsersInfoForTeam(Integer teamId, int tenantId) {
+    return userInfoRepo.existsByTeamIdAndTenantId(teamId, tenantId);
   }
 
   public List<Env> selectAllEnvs(KafkaClustersType type, int tenantId) {
@@ -944,7 +969,7 @@ public class SelectDataJdbc {
 
     for (ActivityLog row : activityList) {
       row.setActivityTimeString(
-          DATE_TIME_FORMATTER.format(row.getActivityTime().toLocalDateTime()));
+          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getActivityTime().toLocalDateTime()));
     }
 
     return activityList;
@@ -1024,6 +1049,12 @@ public class SelectDataJdbc {
     return aclRepo.findAllByEnvironmentAndTopicnameAndTenantId(env, topic, tenantId);
   }
 
+  public List<Acl> selectSyncAcls(
+      String env, String topic, int teamId, String consumerGroup, int tenantId) {
+    return aclRepo.findAllByEnvironmentAndTopicnameAndTeamIdAndConsumergroupAndTenantId(
+        env, topic, teamId, consumerGroup, tenantId);
+  }
+
   public List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId) {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
   }
@@ -1047,7 +1078,7 @@ public class SelectDataJdbc {
 
   public boolean validateIfConsumerGroupUsedByAnotherTeam(
       Integer teamId, int tenantId, String consumerGroup) {
-    return aclRepo.validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
+    return aclRepo.existsByTeamIdNotAndTenantIdAndConsumergroup(teamId, tenantId, consumerGroup);
   }
 
   public Team selectTeamDetails(Integer teamId, int tenantId) {
@@ -1468,43 +1499,50 @@ public class SelectDataJdbc {
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
     return Stream.<Supplier<Boolean>>of(
             () -> {
-              boolean res = schemaRequestRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  schemaRequestRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} Active Schema Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = messageSchemaRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = messageSchemaRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} number of Schemas in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = kafkaConnectorRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = kafkaConnectorRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active Connector Requests {}", teamId, res);
               return res;
             },
             () -> {
               boolean res =
-                  kafkaConnectorRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+                  kafkaConnectorRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of Connector in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = topicRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = topicRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active Topic Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = topicRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  topicRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of Topic in DB {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = aclRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res = aclRepo.existsByTeamIdAndTenantId(teamId, tenantId);
               log.debug("For team {} Active ACL Requests {}", teamId, res);
               return res;
             },
             () -> {
-              boolean res = aclRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              boolean res =
+                  aclRequestsRepo.existsByTeamIdAndTenantIdAndRequestStatus(
+                      teamId, tenantId, RequestStatus.CREATED.value);
               log.debug("For team {} number of ACL in DB {}", teamId, res);
               return res;
             })
@@ -1513,10 +1551,18 @@ public class SelectDataJdbc {
 
   public boolean existsComponentsCountForUser(String userId, int tenantId) {
     return Stream.<Supplier<Boolean>>of(
-            () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId))
+            () ->
+                schemaRequestRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                kafkaConnectorRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                topicRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value),
+            () ->
+                aclRequestsRepo.existsByRequestorAndTenantIdAndRequestStatus(
+                    userId, tenantId, RequestStatus.CREATED.value))
         .anyMatch(Supplier::get);
   }
 
@@ -1528,30 +1574,14 @@ public class SelectDataJdbc {
   // claim requests
   public Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor) {
-    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+    Map<String, Long> operationTypeCountsMap =
+        topicRequestsRepo.getCountPerTopicType(teamId, tenantId);
+    Map<String, Long> statusCountsMap = topicRequestsRepo.getCountPerTopicStatus(teamId, tenantId);
 
-    Map<String, Long> operationTypeCountsMap = new HashMap<>();
-    Map<String, Long> statusCountsMap = new HashMap<>();
-
-    if (RequestMode.MY_REQUESTS == requestMode) {
-      List<Object[]> topicRequestsOperationTypObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
-
-      List<Object[]> topicRequestsStatusObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      updateMap(statusCountsMap, topicRequestsStatusObj);
-    } else if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
-      List<Object[]> topicRequestsStatusObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      updateMap(statusCountsMap, topicRequestsStatusObj);
-
+    if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
       long assignedToClaimReqs =
           topicRequestsRepo.countAllTopicRequestsByApprovingTeamAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
-      List<Object[]> topicRequestsOperationTypObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
 
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
       if (RequestMode.MY_APPROVALS == requestMode) {
@@ -1566,13 +1596,8 @@ public class SelectDataJdbc {
       }
     }
 
-    // update with 0L if requests don't exist
-    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
-
-    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
-    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
-
-    return allCountsMap;
+    return Map.of(
+        "STATUS_COUNTS", statusCountsMap, "OPERATION_TYPE_COUNTS", operationTypeCountsMap);
   }
 
   // Acl requests can be submitted by any team. your team or other teams on topics.
@@ -1751,9 +1776,9 @@ public class SelectDataJdbc {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
   }
 
-  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
-    return messageSchemaRepo.findAllByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
+    return messageSchemaRepo.findFirstByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
         tenantId, schemaEnvId, topicName, schemaVersion);
   }
 
@@ -1890,7 +1915,176 @@ public class SelectDataJdbc {
             tenantId, env, requestStatus, requestOperationType, connectorName);
   }
 
+  public boolean existsClaimConnectorRequest(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo
+        .existsByTenantIdAndRequestStatusAndRequestOperationTypeAndConnectorName(
+            tenantId, requestStatus, RequestOperationType.CLAIM.value, connectorName);
+  }
+
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
+  }
+
+  public OperationalRequest selectOperationalRequest(int reqId, int tenantId) {
+    log.debug("selectOperationalRequest {}", reqId);
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setReqId(reqId);
+    operationalRequestID.setTenantId(tenantId);
+
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    return operationalRequest.orElse(null);
+  }
+
+  public List<OperationalRequest> selectFilteredOperationalRequests(
+      boolean isApproval,
+      String requestor,
+      String requestStatus,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      OperationalRequestType operationalRequestType,
+      String env,
+      String topicName,
+      String consumerGroup,
+      String wildcardSearch,
+      boolean isMyRequest) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "selectFilteredOperationalRequests {} {} {} {} {} {} {} {}",
+          showRequestsOfAllTeams,
+          requestor,
+          requestStatus,
+          teamId,
+          env,
+          topicName,
+          consumerGroup,
+          wildcardSearch);
+    }
+    Integer teamSelected = selectUserInfo(requestor).getTeamId();
+    List<OperationalRequest> operationalRequests = new ArrayList<>();
+    List<OperationalRequest> operationRequestListSub;
+    if (isApproval) { // approvers
+      // On Approvals this should always be filtered by the users current team
+      operationRequestListSub =
+          Lists.newArrayList(
+              findOperationalRequestsByExample(
+                  operationalRequestType,
+                  showRequestsOfAllTeams ? null : teamSelected,
+                  env,
+                  topicName,
+                  consumerGroup,
+                  requestStatus,
+                  tenantId,
+                  null,
+                  isMyRequest ? requestor : null));
+
+      // remove users own requests to approve/show in the list
+      // Placed here as it should only apply for approvers.
+      operationRequestListSub =
+          operationRequestListSub.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .toList();
+    } else {
+      if (showRequestsOfAllTeams) {
+        operationRequestListSub =
+            Lists.newArrayList(
+                findOperationalRequestsByExample(
+                    operationalRequestType,
+                    null,
+                    env,
+                    topicName,
+                    consumerGroup,
+                    requestStatus,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
+      } else {
+        operationRequestListSub =
+            Lists.newArrayList(
+                findOperationalRequestsByExample(
+                    operationalRequestType,
+                    teamSelected,
+                    env,
+                    topicName,
+                    consumerGroup,
+                    requestStatus,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
+      }
+    }
+
+    if (teamId != null) {
+      operationRequestListSub =
+          operationRequestListSub.stream()
+              .filter(topicRequest -> topicRequest.getRequestingTeamId().equals(teamId))
+              .toList();
+    }
+
+    boolean wildcardFilter = (wildcardSearch != null && !wildcardSearch.isEmpty());
+
+    for (OperationalRequest row : operationRequestListSub) {
+      try {
+        row.setRequesttimestring(
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+      } catch (Exception ignored) {
+      }
+      filterAndAddOperationalRequest(operationalRequests, row, wildcardSearch, wildcardFilter);
+    }
+
+    return operationalRequests;
+  }
+
+  private Iterable<OperationalRequest> findOperationalRequestsByExample(
+      OperationalRequestType operationalRequestType,
+      Integer teamId,
+      String environment,
+      String topicName,
+      String consumerGroup,
+      String requestStatus,
+      int tenantId,
+      String approvingTeam,
+      String userName) {
+
+    OperationalRequest request = new OperationalRequest();
+    request.setTenantId(tenantId);
+    if (topicName != null) {
+      request.setTopicname(topicName);
+    }
+    if (consumerGroup != null) {
+      request.setConsumerGroup(consumerGroup);
+    }
+    if (operationalRequestType != null) {
+      request.setOperationalRequestType(operationalRequestType);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (teamId != null) {
+      request.setRequestingTeamId(teamId);
+    }
+
+    if (approvingTeam != null && !approvingTeam.isEmpty()) {
+      request.setApprovingTeamId(approvingTeam);
+    }
+
+    if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
+      request.setRequestStatus(requestStatus);
+    }
+    // userName is transient and so not available in the database to be queried.
+    if (userName != null && !userName.isEmpty()) {
+      request.setRequestor(userName);
+    }
+
+    // check if debug is enabled so the logger doesn't waste resources converting object request to
+    // a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("findOperationalRequestsByExample {}", request);
+    }
+
+    return operationalRequestsRepo.findAll(Example.of(request));
   }
 }

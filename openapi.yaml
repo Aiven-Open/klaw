@@ -1116,6 +1116,119 @@
         }
       }
     },
+    "/operationalRequest/reqId/{reqId}/delete" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "deleteOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/reqId/{reqId}/decline" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "declineOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/reqId/{reqId}/approve" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "approveOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/consumerOffsetsReset/create" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "createConsumerOffsetsResetRequest",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConsumerOffsetResetRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/logout" : {
       "post" : {
         "tags" : [ "util-controller" ],
@@ -1857,21 +1970,16 @@
       "post" : {
         "tags" : [ "kafka-connect-controller" ],
         "operationId" : "createClaimConnectorRequest",
-        "parameters" : [ {
-          "name" : "connectorName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConnectorClaimRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -2363,6 +2471,151 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/RequestsCountOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequests/requestsFor/{requestsFor}" : {
+      "get" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "getOperationalRequests",
+        "parameters" : [ {
+          "name" : "requestsFor",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }, {
+          "name" : "requestStatus",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          }
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "consumerGroup",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          }
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OperationalRequestsResponseModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/consumerOffsetsReset/validate" : {
+      "get" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "validateOffsetRequestDetails",
+        "parameters" : [ {
+          "name" : "envId",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "consumerGroup",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnvIdInfo"
                 }
               }
             }
@@ -5253,6 +5506,276 @@
           }
         }
       }
+    },
+    "/environments/schemaRegistry" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getSchemaRegEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/schemaRegistry/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getSchemaRegEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafkaconnect" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaConnectEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafkaconnect/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaConnectEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafka" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafka/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/acl/request/{aclRequestId}" : {
+      "get" : {
+        "tags" : [ "acl-controller" ],
+        "operationId" : "getAclRequest",
+        "parameters" : [ {
+          "name" : "aclRequestId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AclRequestsResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -5845,7 +6368,7 @@
           },
           "requestEntityType" : {
             "type" : "string",
-            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "OPERATIONAL", "USER" ]
           },
           "reqIds" : {
             "type" : "array",
@@ -5972,6 +6495,56 @@
           }
         },
         "required" : [ "appName", "remarks", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
+      },
+      "ConsumerOffsetResetRequestModel" : {
+        "properties" : {
+          "operationalRequestType" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "requestingTeamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "topicname" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          },
+          "consumerGroup" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          },
+          "offsetResetType" : {
+            "type" : "string",
+            "enum" : [ "LATEST", "EARLIEST", "TO_DATE_TIME" ]
+          },
+          "resetTimeStampStr" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "consumerGroup", "environment", "offsetResetType", "operationalRequestType", "topicname" ]
       },
       "TopicCreateRequestModel" : {
         "properties" : {
@@ -6118,6 +6691,17 @@
           }
         },
         "required" : [ "env", "topicName" ]
+      },
+      "ConnectorClaimRequestModel" : {
+        "properties" : {
+          "connectorName" : {
+            "type" : "string"
+          },
+          "env" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "connectorName", "env" ]
       },
       "AclRequestsModel" : {
         "properties" : {
@@ -6709,7 +7293,7 @@
         "properties" : {
           "requestEntityType" : {
             "type" : "string",
-            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "OPERATIONAL", "USER" ]
           },
           "requestStatusCountSet" : {
             "type" : "array",
@@ -6761,6 +7345,111 @@
             "format" : "int64"
           }
         }
+      },
+      "OperationalRequestsResponseModel" : {
+        "properties" : {
+          "topicname" : {
+            "type" : "string"
+          },
+          "consumerGroup" : {
+            "type" : "string"
+          },
+          "offsetResetType" : {
+            "type" : "string",
+            "enum" : [ "LATEST", "EARLIEST", "TO_DATE_TIME" ]
+          },
+          "resetTimeStampStr" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "reqId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "operationalRequestType" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "allPageNos", "approvingTeamDetails", "consumerGroup", "currentPage", "description", "environment", "environmentName", "offsetResetType", "operationalRequestType", "reqId", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
       },
       "RegisterUserInfoModelResponse" : {
         "properties" : {
@@ -6927,10 +7616,10 @@
           "targetEnvId" : {
             "type" : "string"
           },
-          "topicName" : {
+          "error" : {
             "type" : "string"
           },
-          "error" : {
+          "topicName" : {
             "type" : "string"
           }
         },
@@ -7096,10 +7785,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -7489,6 +8178,9 @@
           "hasOpenRequest" : {
             "type" : "boolean"
           },
+          "hasOpenClaimRequest" : {
+            "type" : "boolean"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -7529,7 +8221,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
@@ -7569,11 +8261,18 @@
           "totalNoPages" : {
             "type" : "string"
           },
+          "currentPage" : {
+            "type" : "string"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
+          },
+          "totalRecs" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
@@ -7587,7 +8286,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {
@@ -8019,10 +8718,7 @@
             }
           },
           "promotionDetails" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
+            "$ref" : "#/components/schemas/ConnectorPromotionStatus"
           },
           "connectorExists" : {
             "type" : "boolean"
@@ -8041,7 +8737,34 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList" ]
+        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList", "promotionDetails" ]
+      },
+      "ConnectorPromotionStatus" : {
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "SUCCESS", "NOT_AUTHORIZED", "REQUEST_OPEN", "NO_PROMOTION", "FAILURE" ]
+          },
+          "sourceEnv" : {
+            "type" : "string"
+          },
+          "targetEnv" : {
+            "type" : "string"
+          },
+          "targetEnvId" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "connectorName" : {
+            "type" : "string"
+          },
+          "sourceConnectorConfig" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "status" ]
       },
       "ConnectorOverviewPerEnv" : {
         "properties" : {
@@ -8253,6 +8976,9 @@
           "approveDeclineTopics" : {
             "type" : "string"
           },
+          "approveDeclineOperationalReqs" : {
+            "type" : "string"
+          },
           "approveDeclineSubscriptions" : {
             "type" : "string"
           },
@@ -8287,7 +9013,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {

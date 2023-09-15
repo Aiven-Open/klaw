@@ -6,7 +6,7 @@ import { Environment } from "src/domain/environment/environment-types";
 describe("environment-transformer.ts", () => {
   describe("transformEnvironmentApiResponse", () => {
     // even though the openapi definition defines `params` as required
-    // some endpoints don't have a `params` property
+    // some endpoints don't have a `params` property,
     // so we need to add a handling for that, too
     it("transforms API response objects into application domain model without params", () => {
       const emptyParamsEnv: KlawApiModel<"EnvModelResponse"> =
@@ -28,6 +28,9 @@ describe("environment-transformer.ts", () => {
           name: "DEV",
           id: "1337",
           type: "kafka",
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
 
@@ -59,6 +62,9 @@ describe("environment-transformer.ts", () => {
             defaultPartitions: 1,
             topicPrefix: ["dev-"],
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(
@@ -101,6 +107,9 @@ describe("environment-transformer.ts", () => {
             topicRegex: ["\\bjon snow\\b"],
             applyRegex: false,
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
 
@@ -134,6 +143,9 @@ describe("environment-transformer.ts", () => {
             topicSuffix: ["-one", "-two"],
             topicRegex: [],
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(

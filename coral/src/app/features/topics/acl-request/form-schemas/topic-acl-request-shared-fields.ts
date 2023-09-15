@@ -2,8 +2,8 @@ import { isIpRegex } from "src/app/features/topics/acl-request/form-schemas/vali
 import { z } from "zod";
 
 // The errorMap usage in this schema is to allow react-hook-form to return the correct error
-// When a user clicks Submit without fillinf all fields properly
-// If errormap is not provided, and the empty fields have not been touched,
+// When a user clicks Submit without filling all fields properly
+// If error map is not provided, and the empty fields have not been touched,
 // the zod resolver will return the default error messages for z.literal and z.union fields
 // Which are not very helpful for a user
 const remarks = z.string().optional();

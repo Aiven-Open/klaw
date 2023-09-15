@@ -22,7 +22,11 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.AclsCountPerEnv;
 import io.aiven.klaw.model.response.TopicsCountPerEnv;
 import java.io.*;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -64,6 +68,13 @@ public class AnalyticsControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private CommonUtilsService commonUtilsService;
+
+  public static final DateTimeFormatter DATE_TIME_FORMATTER =
+      new DateTimeFormatterBuilder()
+          .appendPattern("yyyy-MM-ddHH-mm-ss")
+          .appendFraction(ChronoField.MILLI_OF_SECOND, 0, 3, false)
+          .toFormatter()
+          .withZone(ZoneId.systemDefault());
 
   private String getCurrentUserName() {
     return commonUtilsService.getCurrentUserName();
@@ -433,11 +444,10 @@ public class AnalyticsControllerService {
         manageDatabase.getKwPropertyValue(KwConstants.KW_REPORTS_TMP_LOCATION_KEY, tenantId);
 
     List<TeamOverview> totalOverviewList = getTeamsOverview(null);
-    String dataPattern = "yyyy-MM-ddHH-mm-ssSSS";
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataPattern);
 
     File zipFile =
-        new File(kwReportsLocation + "KwReport" + simpleDateFormat.format(new Date()) + ".zip");
+        new File(
+            kwReportsLocation + "KwReport" + DATE_TIME_FORMATTER.format(Instant.now()) + ".zip");
     ZipOutputStream zipOutputStream = null;
     try {
       zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));

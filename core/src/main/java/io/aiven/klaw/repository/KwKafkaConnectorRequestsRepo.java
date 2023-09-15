@@ -28,6 +28,9 @@ public interface KwKafkaConnectorRequestsRepo
       String requestOperationType,
       String connectorName);
 
+  boolean existsByTenantIdAndRequestStatusAndRequestOperationTypeAndConnectorName(
+      int tenantId, String requestStatus, String requestOperationType, String connectorName);
+
   List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
   default boolean existsConnectorRequestsForEnvTenantIdAndCreatedStatus(
@@ -46,19 +49,11 @@ public interface KwKafkaConnectorRequestsRepo
       nativeQuery = true)
   Integer getNextConnectorRequestId(@Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantIdAndRequestStatus(
+      Integer teamId, Integer tenantId, String requestStatus);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnectorrequests where (requestor = :userId) and tenantid = :tenantId and connectorstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForUserId(
-      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+  boolean existsByRequestorAndTenantIdAndRequestStatus(
+      String requestor, Integer tenantId, String requestStatus);
 
   @Query(
       value =

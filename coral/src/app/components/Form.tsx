@@ -293,9 +293,7 @@ function _MultiInput<T extends FieldValues>({
                 return true;
               }
 
-              const isCurrentItemValid = itemsErrors[index] === undefined;
-
-              return isCurrentItemValid;
+              return itemsErrors[index] === undefined;
             }}
             helperText={
               itemsErrors !== undefined ? itemErrorsAccumulatedMessages : error
@@ -455,7 +453,8 @@ function _SubmitButton<T extends FieldValues>({
   },
   ...props
 }: ButtonProps & FormRegisterProps<T>) {
-  return <Button.Primary {...props} loading={isSubmitting} type="submit" />;
+  const loadingProp = props.loading || isSubmitting;
+  return <Button.Primary {...props} loading={loadingProp} type="submit" />;
 }
 
 const SubmitButtonMemo = memo(
@@ -466,6 +465,13 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
+/*** Loading state can rely on `isSubmitting` from
+ * form state, but only when `onSubmit` returns a Promise
+ * and that promise has a catch which calls Promise.reject().
+ * see https://github.com/Aiven-Open/klaw/issues/1439#issuecomment-1699202614
+ * If this is not the case (e.g. when using `mutate` from react-query)
+ * we can pass a `loading` prop to get the loading state
+ */
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
   props: ButtonProps

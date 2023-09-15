@@ -236,6 +236,31 @@ public class MailUtils {
         subject = "New Connector Claim Request";
         formattedStr = "New Claim on Connector " + topicName;
       }
+      case RESET_CONSUMER_OFFSET_REQUESTED -> {
+        requiresApproval = true;
+        subject = "Reset Consumer Offsets Request";
+        formattedStr = "Reset Consumer Offsets topic :" + topicName + "consumerGroup : " + acl;
+      }
+      case RESET_CONSUMER_OFFSET_APPROVED -> {
+        subject = "Reset Consumer Offsets Request Approved";
+        formattedStr =
+            "Reset Consumer Offsets Request on "
+                + topicName
+                + " \n OffsetDetails : "
+                + acl
+                + "\napproved by "
+                + approverUsername;
+      }
+      case RESET_CONSUMER_OFFSET_DENIED -> {
+        subject = "Reset Consumer Offsets Request Denied";
+        formattedStr =
+            "Reset Consumer Offsets Request on "
+                + topicName
+                + " \n Consumer group : "
+                + acl
+                + "\ndenied by "
+                + approverUsername;
+      }
     }
 
     sendRequestMail(
@@ -540,12 +565,7 @@ public class MailUtils {
               CollectionUtils.addIgnoreNull(to, requesterEmail);
               CollectionUtils.addIgnoreNull(to, requesterTeamEmail);
             }
-            if (to != null || cc != null || bcc != null) {
-              emailService.sendSimpleMessage(
-                  to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
-            } else {
-              log.error("No valid email id found. Notification not sent !!");
-            }
+            emailService.sendSimpleMessage(to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
           } catch (Exception e) {
             log.error("Email id not found. Notification not sent !! ", e);
           }
@@ -606,11 +626,7 @@ public class MailUtils {
         manageDatabase.selectAllCachedUserInfo().stream()
             .filter(u -> u.getUsername().equals(username))
             .findFirst();
-    if (user.isPresent()) {
-      return user.get().getMailid();
-    } else {
-      return null;
-    }
+    return user.map(UserInfo::getMailid).orElse(null);
   }
 
   private List<String> getAllUsersWithPermissionToApproveRequest(

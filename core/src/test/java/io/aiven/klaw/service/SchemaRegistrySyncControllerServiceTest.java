@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -125,7 +126,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -160,7 +160,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -221,7 +220,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
 
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
@@ -253,7 +251,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("1");
 
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
@@ -412,12 +409,12 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    List<MessageSchema> schemaList = utilMethods.getMSchemas();
-    schemaList.get(0).setTopicname(topicName);
-    schemaList.get(0).setSchemafull("\"namespace : klaw.avro\"");
-    when(handleDbRequests.getSchemaForTenantAndEnvAndTopicAndVersion(
+    MessageSchema schema = utilMethods.getMSchemas().get(0);
+    schema.setTopicname(topicName);
+    schema.setSchemafull("\"namespace : klaw.avro\"");
+    when(handleDbRequests.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
             anyInt(), anyString(), anyString(), anyString()))
-        .thenReturn(schemaList);
+        .thenReturn(Optional.of(schema));
 
     SchemaDetailsResponse schemaDetailsResponse =
         schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
@@ -488,7 +485,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -529,12 +525,10 @@ public class SchemaRegistrySyncControllerServiceTest {
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(new ArrayList<>());
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
@@ -586,7 +580,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();

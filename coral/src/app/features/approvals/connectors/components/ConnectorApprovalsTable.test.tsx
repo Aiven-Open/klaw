@@ -298,7 +298,8 @@ describe("ConnectorApprovalsTable", () => {
       );
     });
     afterEach(() => {
-      cleanup(), jest.clearAllMocks();
+      cleanup();
+      jest.clearAllMocks();
     });
     it("triggers details action for the corresponding request when clicked", async () => {
       const table = screen.getByRole("table", {

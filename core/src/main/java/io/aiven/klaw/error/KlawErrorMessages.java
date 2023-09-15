@@ -138,6 +138,9 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_123 =
       "Could not approve schema delete request. Please contact Administrator.";
 
+  public static final String CLUSTER_API_ERR_124 =
+      "Could not approve reset consumer offsets request. Please contact Administrator.";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";
@@ -471,4 +474,14 @@ public class KlawErrorMessages {
       "There is no associated Schema environment configured.";
 
   public static final String SCH_SYNC_ERR_102 = "404 Not Found";
+
+  public static final String OP_REQS_ERR_101 =
+      "Sorry, your team does not own this acl - consumer group !!";
+
+  public static final String OP_REQS_ERR_102 = "Required Timestamp is missing to reset the offset.";
+
+  public static final String OP_REQS_ERR_103 = "Failure. A reset request already exists.";
+
+  public static final String DELETE_REQ_ERR =
+      " Unable to verify ownership of this request. you may only delete your own requests.";
 }

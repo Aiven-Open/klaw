@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -22,6 +23,8 @@ public interface HandleDbRequests {
   Map<String, String> requestForConnector(KafkaConnectorRequest connectorRequest);
 
   Map<String, String> requestForAcl(AclRequests aclReq);
+
+  Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest);
 
   String addNewUser(UserInfo userInfo);
 
@@ -69,6 +72,17 @@ public interface HandleDbRequests {
       boolean isMyRequest,
       int tenantId);
 
+  List<OperationalRequest> getOperationalRequests(
+      String userName,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
+      String env,
+      String topicName,
+      String consumerGroup,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId);
+
   Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor);
 
@@ -83,6 +97,18 @@ public interface HandleDbRequests {
 
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
+
+  List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      String topicName,
+      String consumerGroup,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch);
 
   List<KafkaConnectorRequest> getAllConnectorRequests(
       String requestor,
@@ -103,6 +129,8 @@ public interface HandleDbRequests {
       String search);
 
   TopicRequest getTopicRequestsForTopic(int topicId, int tenantId);
+
+  OperationalRequest getOperationalRequestsForId(int reqId, int tenantId);
 
   KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId);
 
@@ -128,6 +156,8 @@ public interface HandleDbRequests {
   List<Acl> getSyncAcls(String env, int tenantId);
 
   List<Acl> getSyncAcls(String env, String topic, int tenantId);
+
+  List<Acl> getSyncAcls(String env, String topic, int teamId, String consumerGroup, int tenantId);
 
   List<Acl> getPrefixedAclsSOT(String env, int tenantId);
 
@@ -169,6 +199,8 @@ public interface HandleDbRequests {
       String requestOperationType,
       String env,
       int tenantId);
+
+  boolean existsClaimConnectorRequest(String connectorName, String requestStatus, int tenantId);
 
   boolean existsSchemaForTopic(String topicName, String env, int tenantId);
 
@@ -227,6 +259,8 @@ public interface HandleDbRequests {
 
   List<UserInfo> getAllUsersInfoForTeam(Integer teamId, int tenantId);
 
+  boolean existsUsersInfoForTeam(Integer teamId, int tenantId);
+
   List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId);
 
   List<RegisterUserInfo> getAllRegisterUsersInformation();
@@ -238,6 +272,8 @@ public interface HandleDbRequests {
   RegisterUserInfo getRegisterUsersInfo(String username);
 
   AclRequests getAcl(int req_no, int tenantId);
+
+  OperationalRequest getOperationalRequest(int reqId, int tenantId);
 
   List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId);
 
@@ -312,7 +348,7 @@ public interface HandleDbRequests {
 
   List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
-  List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion);
 
   List<MessageSchema> getSchemaForTenantAndEnvAndTopic(
@@ -324,6 +360,9 @@ public interface HandleDbRequests {
   String updateConnectorDocumentation(KwKafkaConnector topic);
 
   CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
+
+  String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus);
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
@@ -378,6 +417,8 @@ public interface HandleDbRequests {
   String deleteConnectorRequest(int topicId, int tenantId);
 
   String deleteTopicRequest(int topicId, String userName, int tenantId);
+
+  String deleteOperationalRequest(int operationalReqId, String userName, int tenantId);
 
   String deleteTopic(int topicId, int tenantId);
 

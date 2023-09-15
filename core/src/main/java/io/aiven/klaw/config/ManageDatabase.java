@@ -231,6 +231,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
                 superAdminDefaultUserName,
                 encryptorSecretKey));
       }
+      defaultDataService.handleQuickStartData(handleDbRequests, encryptorSecretKey, infraTeam);
     }
 
     // add props

@@ -5,6 +5,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -46,6 +47,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public Map<String, String> requestForAcl(AclRequests aclReq) {
     return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
+  }
+
+  @Override
+  public Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest) {
+    return jdbcInsertHelper.insertIntoOperationalRequests(operationalRequest);
   }
 
   public String addNewUser(UserInfo userInfo) {
@@ -140,6 +146,31 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         isMyRequest);
   }
 
+  public List<OperationalRequest> getOperationalRequests(
+      String requestor,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
+      String env,
+      String topicName,
+      String consumerGroup,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        false,
+        requestor,
+        requestStatus,
+        false,
+        tenantId,
+        null,
+        operationalRequestType,
+        env,
+        topicName,
+        consumerGroup,
+        wildcardSearch,
+        isMyRequest);
+  }
+
   @Override
   public Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor) {
@@ -168,6 +199,33 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
     return getCreatedTopicRequests(
         requestor, status, showRequestsOfAllTeams, tenantId, null, null, null, null);
+  }
+
+  @Override
+  public List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      String topicName,
+      String consumerGroup,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        true,
+        requestor,
+        status,
+        showRequestsOfAllTeams,
+        tenantId,
+        teamId,
+        operationalRequestType,
+        env,
+        topicName,
+        consumerGroup,
+        wildcardSearch,
+        false);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(
@@ -237,6 +295,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectTopicRequestsForTopic(topicId, tenantId);
   }
 
+  public OperationalRequest getOperationalRequestsForId(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequestsForId(reqId, tenantId);
+  }
+
   public KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequestsForConnector(connectorId, tenantId);
   }
@@ -296,6 +358,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<Acl> getSyncAcls(String env, String topic, int tenantId) {
     return jdbcSelectHelper.selectSyncAcls(env, topic, tenantId);
+  }
+
+  @Override
+  public List<Acl> getSyncAcls(
+      String env, String topic, int teamId, String consumerGroup, int tenantId) {
+    return jdbcSelectHelper.selectSyncAcls(env, topic, teamId, consumerGroup, tenantId);
   }
 
   @Override
@@ -381,6 +449,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       int tenantId) {
     return jdbcSelectHelper.existsConnectorRequest(
         connectorName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
+  public boolean existsClaimConnectorRequest(
+      String connectorName, String requestStatus, int tenantId) {
+    return jdbcSelectHelper.existsClaimConnectorRequest(connectorName, requestStatus, tenantId);
   }
 
   @Override
@@ -514,6 +588,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsUsersInfoForTeam(Integer teamId, int tenantId) {
+    return jdbcSelectHelper.existsUsersInfoForTeam(teamId, tenantId);
+  }
+
+  @Override
   public List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId) {
     return jdbcSelectHelper.selectAllRegisterUsersInfoForTenant(tenantId);
   }
@@ -540,6 +619,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public AclRequests getAcl(int req_no, int tenantId) {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
+  }
+
+  @Override
+  public OperationalRequest getOperationalRequest(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequest(reqId, tenantId);
   }
 
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {
@@ -731,9 +815,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
-    return jdbcSelectHelper.getSchemaForTenantAndEnvAndTopicAndVersion(
+    return jdbcSelectHelper.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
         tenantId, schemaEnvId, topicName, schemaVersion);
   }
 
@@ -758,6 +842,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
+  }
+
+  @Override
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus) {
+    return jdbcUpdateHelper.updateOperationalChangeRequest(
+        operationalRequest, approver, requestStatus);
   }
 
   @Override
@@ -851,6 +942,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public String deleteTopicRequest(int topicId, String userName, int tenantId) {
     return jdbcDeleteHelper.deleteTopicRequest(topicId, userName, tenantId);
+  }
+
+  @Override
+  public String deleteOperationalRequest(int operationalRequestId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteOperationalRequest(operationalRequestId, userName, tenantId);
   }
 
   @Override

@@ -48,6 +48,15 @@ type DeleteConnectorPayload = ResolveIntersectionTypes<
 
 type ConnectorDetailsForEnv = KlawApiModel<"ConnectorOverviewPerEnv">;
 
+// "remark" is currently not implemented in the API
+// and will be added later. We're already preparing
+// our UI and code for that.
+type ConnectorClaimPayload = ResolveIntersectionTypes<
+  KlawApiModel<"ConnectorClaimRequestModel"> & {
+    remark?: string;
+  }
+>;
+
 export type {
   Connector,
   ConnectorApiResponse,
@@ -58,4 +67,5 @@ export type {
   ConnectorRequestsForApprover,
   CreateConnectorRequestPayload,
   DeleteConnectorPayload,
+  ConnectorClaimPayload,
 };

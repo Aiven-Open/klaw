@@ -5,7 +5,7 @@ type DeleteRequestModalProps = {
   cancel: () => void;
   // 'isLoading' will be required later. It is added as optional
   // for now, since we're still aligning on the approach
-  // and we don't want to break other component using this.
+  // and, we don't want to break other component using this.
   isLoading?: boolean;
 };
 

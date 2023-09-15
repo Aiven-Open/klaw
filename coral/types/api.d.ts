@@ -111,6 +111,18 @@ export type paths = {
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
+  "/operationalRequest/reqId/{reqId}/delete": {
+    post: operations["deleteOperationalRequest"];
+  };
+  "/operationalRequest/reqId/{reqId}/decline": {
+    post: operations["declineOperationalRequest"];
+  };
+  "/operationalRequest/reqId/{reqId}/approve": {
+    post: operations["approveOperationalRequest"];
+  };
+  "/operationalRequest/consumerOffsetsReset/create": {
+    post: operations["createConsumerOffsetsResetRequest"];
+  };
   "/logout": {
     post: operations["logout"];
   };
@@ -246,6 +258,12 @@ export type paths = {
   "/requests/statistics": {
     /** Get counts of all request entity types for different status,operation types */
     get: operations["getRequestStatistics"];
+  };
+  "/operationalRequests/requestsFor/{requestsFor}": {
+    get: operations["getOperationalRequests"];
+  };
+  "/operationalRequest/consumerOffsetsReset/validate": {
+    get: operations["validateOffsetRequestDetails"];
   };
   "/getUserInfoFromRegistrationId": {
     get: operations["getRegistrationInfoFromId"];
@@ -487,6 +505,27 @@ export type paths = {
   "/getAclCommands": {
     get: operations["getAclCommand"];
   };
+  "/environments/schemaRegistry": {
+    get: operations["getSchemaRegEnvsPaginated"];
+  };
+  "/environments/schemaRegistry/{envId}": {
+    get: operations["getSchemaRegEnv"];
+  };
+  "/environments/kafkaconnect": {
+    get: operations["getKafkaConnectEnvsPaginated"];
+  };
+  "/environments/kafkaconnect/{envId}": {
+    get: operations["getKafkaConnectEnv"];
+  };
+  "/environments/kafka": {
+    get: operations["getKafkaEnvsPaginated"];
+  };
+  "/environments/kafka/{envId}": {
+    get: operations["getKafkaEnv"];
+  };
+  "/acl/request/{aclRequestId}": {
+    get: operations["getAclRequest"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -697,7 +736,7 @@ export type components = {
     RequestVerdict: {
       reason?: string;
       /** @enum {string} */
-      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       reqIds: (string)[];
     };
     RegisterUserInfoModel: {
@@ -737,6 +776,25 @@ export type components = {
       forceRegister?: boolean;
       appName: string;
       remarks: string;
+    };
+    ConsumerOffsetResetRequestModel: {
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      environment: string;
+      /** Format: int32 */
+      requestingTeamId?: number;
+      approvingTeamId?: string;
+      otherParams?: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
@@ -789,6 +847,10 @@ export type components = {
     };
     TopicClaimRequestModel: {
       topicName: string;
+      env: string;
+    };
+    ConnectorClaimRequestModel: {
+      connectorName: string;
       env: string;
     };
     AclRequestsModel: {
@@ -985,7 +1047,7 @@ export type components = {
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       requestStatusCountSet?: (components["schemas"]["RequestStatusCount"])[];
       requestsOperationTypeCountSet?: (components["schemas"]["RequestsOperationTypeCount"])[];
     };
@@ -1003,6 +1065,44 @@ export type components = {
       requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
+    };
+    OperationalRequestsResponseModel: {
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
+      description: string;
+      /** Format: int32 */
+      reqId: number;
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      deletable?: boolean;
+      editable?: boolean;
     };
     RegisterUserInfoModelResponse: {
       username: string;
@@ -1064,8 +1164,8 @@ export type components = {
       sourceEnv?: string;
       targetEnv?: string;
       targetEnvId?: string;
-      topicName?: string;
       error?: string;
+      topicName?: string;
     };
     ResourceHistory: {
       environmentName: string;
@@ -1119,8 +1219,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1260,6 +1360,7 @@ export type components = {
       connectorOwner: boolean;
       highestEnv: boolean;
       hasOpenRequest: boolean;
+      hasOpenClaimRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -1286,7 +1387,10 @@ export type components = {
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
+      currentPage: string;
       allPageNos: (string)[];
+      /** Format: int32 */
+      totalRecs: number;
       associatedEnv?: components["schemas"]["EnvTag"];
       params: components["schemas"]["EnvParams"];
       /** @enum {string} */
@@ -1444,14 +1548,22 @@ export type components = {
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
       connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      promotionDetails?: {
-        [key: string]: string | undefined;
-      };
+      promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
       connectorExists: boolean;
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       connectorDocumentation?: string;
       /** Format: int32 */
       connectorIdForDocumentation: number;
+    };
+    ConnectorPromotionStatus: {
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      error?: string;
+      connectorName?: string;
+      sourceConnectorConfig?: string;
     };
     ConnectorOverviewPerEnv: {
       connectorExists?: boolean;
@@ -1527,6 +1639,7 @@ export type components = {
       syncSchemas: string;
       approveAtleastOneRequest: string;
       approveDeclineTopics: string;
+      approveDeclineOperationalReqs: string;
       approveDeclineSubscriptions: string;
       approveDeclineSchemas: string;
       approveDeclineConnectors: string;
@@ -2195,6 +2308,69 @@ export type operations = {
       };
     };
   };
+  deleteOperationalRequest: {
+    parameters: {
+      path: {
+        reqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineOperationalRequest: {
+    parameters: {
+      query: {
+        reasonForDecline: string;
+      };
+      path: {
+        reqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveOperationalRequest: {
+    parameters: {
+      path: {
+        reqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createConsumerOffsetsResetRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   logout: {
     responses: {
       /** @description OK */
@@ -2598,10 +2774,9 @@ export type operations = {
     };
   };
   createClaimConnectorRequest: {
-    parameters: {
-      query: {
-        connectorName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConnectorClaimRequestModel"];
       };
     };
     responses: {
@@ -2858,6 +3033,50 @@ export type operations = {
       default: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
+  getOperationalRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        topicName?: string;
+        consumerGroup?: string;
+        operationType?: "RESET_CONSUMER_OFFSETS";
+        search?: string;
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        isMyRequest?: boolean;
+      };
+      path: {
+        requestsFor: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  validateOffsetRequestDetails: {
+    parameters: {
+      query: {
+        envId: string;
+        topicName: string;
+        consumerGroup: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvIdInfo"];
         };
       };
     };
@@ -4011,6 +4230,126 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclCommands"];
+        };
+      };
+    };
+  };
+  getSchemaRegEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getSchemaRegEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getAclRequest: {
+    parameters: {
+      path: {
+        aclRequestId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclRequestsResponseModel"];
         };
       };
     };

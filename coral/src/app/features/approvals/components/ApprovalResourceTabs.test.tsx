@@ -30,6 +30,7 @@ const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
   SCHEMA: 3,
   CONNECTOR: 2,
   USER: 2,
+  OPERATIONAL: 0,
 };
 
 describe("ApprovalResourceTabs", () => {

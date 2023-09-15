@@ -85,7 +85,7 @@ function TopicHistory() {
         <>
           {rows.length === 0 && (
             <EmptyState title="No Topic history">
-              This Topic contains no history.
+              This topic contains no history.
             </EmptyState>
           )}
           {rows.length > 0 && (

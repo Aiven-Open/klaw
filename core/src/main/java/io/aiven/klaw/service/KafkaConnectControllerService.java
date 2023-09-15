@@ -25,8 +25,10 @@ import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.error.RestErrorResponse;
+import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorConfig;
 import io.aiven.klaw.model.ResourceHistory;
@@ -41,18 +43,18 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
+import io.aiven.klaw.model.response.*;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -80,8 +82,12 @@ public class KafkaConnectControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
+
+  public static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
 
   @Value("${klaw.connect.sensitive.fields:password}")
   private String kafkaConnectorSensitiveFields;
@@ -252,7 +258,10 @@ public class KafkaConnectControllerService {
         getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamId);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated);
+      DisplayHelper.updateTeamNamesForDisplay(
+          topicListUpdated,
+          KafkaConnectorModelResponse::getTeamName,
+          KafkaConnectorModelResponse::setTeamName);
       return getPagedList(topicListUpdated);
     }
 
@@ -282,15 +291,6 @@ public class KafkaConnectControllerService {
     }
 
     return newList;
-  }
-
-  private void updateTeamNamesForDisplay(List<KafkaConnectorModelResponse> topicListUpdated) {
-    topicListUpdated.forEach(
-        topicInfo -> {
-          if (topicInfo.getTeamName().length() > 9) {
-            topicInfo.setTeamName(topicInfo.getTeamName().substring(0, 8) + "...");
-          }
-        });
   }
 
   private List<KafkaConnectorModelResponse> getConnectorsPaginated(
@@ -354,71 +354,42 @@ public class KafkaConnectControllerService {
             .sorted(new TopicNameComparator())
             .collect(Collectors.toList());
 
-    return getConnectorModelsList(
-        connectorsFromSOT, pageNo, currentPage, listAllEnvs, orderOfEnvs, tenantId);
-  }
+    final UserInfo user = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
+    return connectorsFromSOT.isEmpty()
+        ? null
+        : Pager.getItemsList(
+            pageNo,
+            currentPage,
+            21,
+            connectorsFromSOT,
+            (pageContext, connectorSOT) -> {
+              int counterInc = counterIncrement();
+              KafkaConnectorModelResponse kafkaConnectorModelResponse =
+                  new KafkaConnectorModelResponse();
+              kafkaConnectorModelResponse.setSequence(counterInc);
 
-  private List<KafkaConnectorModelResponse> getConnectorModelsList(
-      List<KwKafkaConnector> connectorsFromSOT,
-      String pageNo,
-      String currentPage,
-      List<Env> listAllEnvs,
-      String orderOfEnvs,
-      int tenantId) {
-    UserInfo user = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
+              List<String> envList = connectorSOT.getEnvironmentsList();
+              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
-    int totalRecs = connectorsFromSOT.size();
-    int recsPerPage = 21;
+              kafkaConnectorModelResponse.setConnectorId(connectorSOT.getConnectorId());
+              kafkaConnectorModelResponse.setEnvironmentId(connectorSOT.getEnvironment());
+              kafkaConnectorModelResponse.setEnvironmentsList(
+                  KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              kafkaConnectorModelResponse.setConnectorName(connectorSOT.getConnectorName());
+              kafkaConnectorModelResponse.setTeamName(
+                  manageDatabase.getTeamNameFromTeamId(tenantId, connectorSOT.getTeamId()));
+              kafkaConnectorModelResponse.setTeamId(connectorSOT.getTeamId());
 
-    int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
+              kafkaConnectorModelResponse.setDescription(connectorSOT.getDescription());
 
-    List<KafkaConnectorModelResponse> topicsListMap = null;
-    if (totalRecs > 0) {
-      topicsListMap = new ArrayList<>();
-    }
+              kafkaConnectorModelResponse.setTotalNoPages(pageContext.getTotalPages());
+              kafkaConnectorModelResponse.setCurrentPage(pageContext.getPageNo());
 
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
+              kafkaConnectorModelResponse.setAllPageNos(pageContext.getAllPageNos());
 
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < connectorsFromSOT.size(); i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        KafkaConnectorModelResponse kafkaConnectorModelResponse = new KafkaConnectorModelResponse();
-        kafkaConnectorModelResponse.setSequence(counterInc);
-        KwKafkaConnector connectorSOT = connectorsFromSOT.get(i);
-
-        List<String> envList = connectorSOT.getEnvironmentsList();
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        kafkaConnectorModelResponse.setConnectorId(connectorSOT.getConnectorId());
-        kafkaConnectorModelResponse.setEnvironmentId(connectorSOT.getEnvironment());
-        kafkaConnectorModelResponse.setEnvironmentsList(
-            KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
-        kafkaConnectorModelResponse.setConnectorName(connectorSOT.getConnectorName());
-        kafkaConnectorModelResponse.setTeamName(
-            manageDatabase.getTeamNameFromTeamId(tenantId, connectorSOT.getTeamId()));
-        kafkaConnectorModelResponse.setTeamId(connectorSOT.getTeamId());
-
-        kafkaConnectorModelResponse.setDescription(connectorSOT.getDescription());
-
-        kafkaConnectorModelResponse.setTotalNoPages(totalPages + "");
-        kafkaConnectorModelResponse.setCurrentPage(pageNo);
-
-        kafkaConnectorModelResponse.setAllPageNos(numList);
-
-        setKafkaConnectorBooleans(tenantId, user, kafkaConnectorModelResponse, connectorSOT);
-        if (topicsListMap != null) {
-          topicsListMap.add(kafkaConnectorModelResponse);
-        }
-      }
-    }
-
-    return topicsListMap;
+              setKafkaConnectorBooleans(tenantId, user, kafkaConnectorModelResponse, connectorSOT);
+              return kafkaConnectorModelResponse;
+            });
   }
 
   private void setKafkaConnectorBooleans(
@@ -430,10 +401,12 @@ public class KafkaConnectControllerService {
 
     connectorInfo.setHighestEnv(
         checkIsHighestEnv(connectorInfo.getEnvironmentId(), connectorInfo.getEnvironmentsList()));
-
+    connectorInfo.setHasOpenClaimRequest(
+        isClaimRequestOpen(tenantId, connectorSOT.getConnectorName()));
     connectorInfo.setHasOpenRequest(
-        isConnectorRequestOpen(
-            tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
+        connectorInfo.isHasOpenClaimRequest()
+            || isConnectorRequestOpen(
+                tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
   }
 
   private boolean isConnectorRequestOpen(int tenantId, String connectorName, String environment) {
@@ -441,6 +414,25 @@ public class KafkaConnectControllerService {
     return manageDatabase
         .getHandleDbRequests()
         .existsConnectorRequest(connectorName, RequestStatus.CREATED.value, environment, tenantId);
+  }
+
+  private boolean isClaimRequestOpen(int tenantId, String connectorName) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsClaimConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
+  }
+
+  private boolean isPromoteRequestOpen(int tenantId, String connectorName, String environment) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsConnectorRequest(
+            connectorName,
+            RequestStatus.CREATED.value,
+            RequestOperationType.PROMOTE.value,
+            environment,
+            tenantId);
   }
 
   private int topicCounter = 0;
@@ -537,7 +529,20 @@ public class KafkaConnectControllerService {
                   userDetails, requestsType, true, tenantId, env, requestOperationType, search);
 
     createdTopicReqList = filterByTenantAndOrder(userDetails, createdTopicReqList, order);
-    createdTopicReqList = getConnectorRequestsPaged(createdTopicReqList, pageNo, currentPage);
+    createdTopicReqList =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            createdTopicReqList,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(
+                  getKafkaConnectEnvDetails(activityLog.getEnvironment()).getName());
+              return activityLog;
+            });
 
     return updateCreateConnectorReqsList(createdTopicReqList, tenantId);
   }
@@ -728,17 +733,16 @@ public class KafkaConnectControllerService {
         connectorHistoryList.addAll(existingConnectorHistory);
       }
 
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-
       ResourceHistory connectorHistory = new ResourceHistory();
       connectorHistory.setTeamName(
           manageDatabase.getTeamNameFromTeamId(tenantId, connectorRequest.getTeamId()));
       connectorHistory.setEnvironmentName(
           getKafkaConnectEnvDetails(connectorRequest.getEnvironment()).getName());
       connectorHistory.setRequestedBy(connectorRequest.getRequestor());
-      connectorHistory.setRequestedTime(simpleDateFormat.format(connectorRequest.getRequesttime()));
+      connectorHistory.setRequestedTime(
+          DATE_TIME_FORMATTER.format(connectorRequest.getRequesttime().toInstant()));
       connectorHistory.setApprovedBy(userName);
-      connectorHistory.setApprovedTime(simpleDateFormat.format(new Date()));
+      connectorHistory.setApprovedTime(DATE_TIME_FORMATTER.format(Instant.now()));
       connectorHistory.setRemarks("Connector " + connectorRequest.getRequestOperationType());
       connectorHistoryList.add(connectorHistory);
 
@@ -920,7 +924,20 @@ public class KafkaConnectControllerService {
 
     kafkaConnectorRequests = filterByTenantAndOrder(userDetails, kafkaConnectorRequests, order);
 
-    kafkaConnectorRequests = getConnectorRequestsPaged(kafkaConnectorRequests, pageNo, currentPage);
+    kafkaConnectorRequests =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            kafkaConnectorRequests,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(
+                  getKafkaConnectEnvDetails(activityLog.getEnvironment()).getName());
+              return activityLog;
+            });
 
     return getConnectorRequestModels(kafkaConnectorRequests);
   }
@@ -1078,6 +1095,23 @@ public class KafkaConnectControllerService {
         connectorInfo.setConnectorConfig(conn.getConnectorConfig());
         connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
         connectorInfo.setTeamId(conn.getTeamId());
+        // set booleans
+        connectorInfo.setHasOpenClaimRequest(
+            isClaimRequestOpen(tenantId, connectorInfo.getConnectorName()));
+        connectorInfo.setHasOpenRequest(
+            connectorInfo.isHasOpenClaimRequest()
+                || isConnectorRequestOpen(
+                    tenantId, connectorInfo.getConnectorName(), connectorInfo.getEnvironmentId()));
+        connectorInfo.setHighestEnv(
+            checkIsHighestEnv(
+                connectorInfo.getEnvironmentId(), connectorOverview.getAvailableEnvironments()));
+        connectorInfo.setConnectorOwner(
+            Objects.equals(connectorInfo.getTeamId(), loggedInUserTeam));
+        connectorInfo.setShowDeleteConnector(
+            connectorInfo.isConnectorOwner()
+                && connectorInfo.isHighestEnv()
+                && !connectorInfo.isHasOpenRequest());
+
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());
           connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
@@ -1125,13 +1159,18 @@ public class KafkaConnectControllerService {
         connectorOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
-        if (connectorOverview.getPromotionDetails().get("status").equals("success")
+        if (connectorOverview.getPromotionDetails().getStatus().equals(PromotionStatusType.SUCCESS)
             && !StringUtils.isEmpty(envId)) {
-          if (!connectorOverview.getPromotionDetails().get("sourceEnv").equals(envId)) {
-            Map<String, String> hashMap = new HashMap<>();
-            hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
-            connectorOverview.setPromotionDetails(hashMap);
+          if (!connectorOverview.getPromotionDetails().getSourceEnv().equals(envId)) {
+            connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NO_PROMOTION);
           }
+        }
+
+        if (isPromoteRequestOpen(
+            tenantId,
+            connectorNamesearch,
+            connectorOverview.getPromotionDetails().getTargetEnvId())) {
+          connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.REQUEST_OPEN);
         }
 
         if (connectorInfoList.size() > 0) {
@@ -1141,34 +1180,14 @@ public class KafkaConnectControllerService {
         }
 
       } else {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-        connectorOverview.setPromotionDetails(hashMap);
+        connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NOT_AUTHORIZED);
       }
-
-      // Check if request open && set the highestEnv
-      connectorInfoList.forEach(
-          connectorInfo -> {
-            connectorInfo.setHasOpenRequest(
-                isConnectorRequestOpen(
-                    tenantId, connectorInfo.getConnectorName(), connectorInfo.getEnvironmentId()));
-            connectorInfo.setHighestEnv(
-                checkIsHighestEnv(
-                    connectorInfo.getEnvironmentId(),
-                    connectorOverview.getAvailableEnvironments()));
-            connectorInfo.setConnectorOwner(
-                Objects.equals(connectorInfo.getTeamId(), loggedInUserTeam));
-            connectorInfo.setShowDeleteConnector(
-                connectorInfo.isConnectorOwner()
-                    && connectorInfo.isHighestEnv()
-                    && !connectorInfo.isHasOpenRequest());
-          });
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-      connectorOverview.setPromotionDetails(hashMap);
+      ConnectorPromotionStatus status = new ConnectorPromotionStatus();
+      status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+      connectorOverview.setPromotionDetails(status);
     }
 
     return connectorOverview;
@@ -1292,14 +1311,14 @@ public class KafkaConnectControllerService {
     return connectorOverviewPerEnv;
   }
 
-  private Map<String, String> getConnectorPromotionEnv(
+  private ConnectorPromotionStatus getConnectorPromotionEnv(
       String topicSearch, List<KwKafkaConnector> kafkaConnectors, int tenantId) {
-    Map<String, String> hashMap = new HashMap<>();
+    ConnectorPromotionStatus promotionStatus = new ConnectorPromotionStatus();
     try {
       if (kafkaConnectors == null)
         kafkaConnectors = manageDatabase.getHandleDbRequests().getConnectors(topicSearch, tenantId);
 
-      hashMap.put("connectorName", topicSearch);
+      promotionStatus.setConnectorName(topicSearch);
 
       if (kafkaConnectors != null && kafkaConnectors.size() > 0) {
         List<String> envList = new ArrayList<>();
@@ -1310,8 +1329,8 @@ public class KafkaConnectControllerService {
             commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
         if (orderOfEnvs.length() == 0) {
           // No promotion order set return no promotion
-          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
-          return hashMap;
+          promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
+          return promotionStatus;
         }
 
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
@@ -1326,27 +1345,27 @@ public class KafkaConnectControllerService {
         List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
 
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value); // PRD
+          promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION); // PRD
         } else {
-          hashMap.put("status", ApiResultStatus.SUCCESS.value);
-          hashMap.put("sourceEnv", lastEnv);
-          hashMap.put("sourceConnectorConfig", sourceConnectorConfig.get());
+          promotionStatus.setStatus(PromotionStatusType.SUCCESS);
+          promotionStatus.setSourceEnv(lastEnv);
+          promotionStatus.setSourceConnectorConfig(sourceConnectorConfig.get());
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
           if (getKafkaConnectEnvDetails(targetEnv) != null) {
-            hashMap.put("targetEnv", getKafkaConnectEnvDetails(targetEnv).getName());
+            promotionStatus.setTargetEnv(getKafkaConnectEnvDetails(targetEnv).getName());
           }
-          hashMap.put("targetEnvId", targetEnv);
+          promotionStatus.setTargetEnvId(targetEnv);
         }
 
-        return hashMap;
+        return promotionStatus;
       }
     } catch (Exception e) {
       log.error("getConnectorPromotionEnv ", e);
-      hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", KAFKA_CONNECT_ERR_120);
+      promotionStatus.setStatus(PromotionStatusType.FAILURE);
+      promotionStatus.setError(KAFKA_CONNECT_ERR_120);
     }
 
-    return hashMap;
+    return promotionStatus;
   }
 
   public ApiResponse saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
@@ -1460,41 +1479,6 @@ public class KafkaConnectControllerService {
     return String.valueOf(approvingInfo);
   }
 
-  private List<KafkaConnectorRequest> getConnectorRequestsPaged(
-      List<KafkaConnectorRequest> origActivityList, String pageNo, String currentPage) {
-
-    List<KafkaConnectorRequest> newList = new ArrayList<>();
-    Env envSelected;
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        KafkaConnectorRequest activityLog = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          activityLog.setAllPageNos(numList);
-          activityLog.setTotalNoPages("" + totalPages);
-          activityLog.setCurrentPage(pageNo);
-          envSelected = getKafkaConnectEnvDetails(activityLog.getEnvironment());
-          activityLog.setEnvironmentName(envSelected.getName());
-          newList.add(activityLog);
-        }
-      }
-    }
-
-    return newList;
-  }
-
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {
     List<KwKafkaConnector> connectors =
         manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorName, tenantId);
@@ -1546,6 +1530,6 @@ public class KafkaConnectControllerService {
             .stream()
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
-    return envFound.orElse(null);
+    return envFound.orElse(new Env());
   }
 }

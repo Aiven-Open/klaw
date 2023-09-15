@@ -5,6 +5,7 @@ public enum RequestEntityType {
   ACL("acl"),
   SCHEMA("schema"),
   CONNECTOR("connector"),
+  OPERATIONAL("operational"),
   USER("user");
 
   public final String value;

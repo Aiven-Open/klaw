@@ -11,6 +11,8 @@ import {
   getConnectorRequestsForApprover,
   getConnectors,
   updateConnectorDocumentation,
+  requestConnectorClaim,
+  requestConnectorPromotion,
 } from "src/domain/connector/connector-api";
 import {
   Connector,
@@ -35,6 +37,8 @@ export {
   getConnectorRequestsForApprover,
   getConnectors,
   updateConnectorDocumentation,
+  requestConnectorClaim,
+  requestConnectorPromotion,
 };
 
 export type {

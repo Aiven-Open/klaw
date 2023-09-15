@@ -14,7 +14,10 @@ import {
   Textarea,
   TextInput,
 } from "src/app/components/Form";
-import { renderForm } from "src/services/test-utils/render-form";
+import {
+  renderForm,
+  renderFormWithState,
+} from "src/services/test-utils/render-form";
 import { z } from "zod";
 
 describe("Form", () => {
@@ -94,6 +97,76 @@ describe("Form", () => {
       const submitButton = screen.getByRole("button", { name: "Submit" });
 
       expect(submitButton).toBeEnabled();
+    });
+  });
+
+  describe("<Form>, loading state", () => {
+    const schema = z.object({
+      formFieldsCustomName: z.string().min(3, "error"),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    afterEach(cleanup);
+
+    it("shows disabled Submit button with loading animation while form is submitting", async () => {
+      renderFormWithState(
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
+        { schema, onSubmit, onError, isLoading: false }
+      );
+
+      const button = screen.getByRole("button", { name: "Submit" });
+
+      //not awaited on purpose so we're able to catch the in-between state
+      user.click(button);
+
+      await waitFor(() => expect(button).toBeDisabled());
+    });
+
+    it("shows enabled Submit button if isLoading is false", () => {
+      renderFormWithState(
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
+        { schema, onSubmit, onError, isLoading: false }
+      );
+
+      const button = screen.getByRole("button", { name: "Submit" });
+      expect(button).toBeEnabled();
+    });
+
+    it("calls onSubmit() after submit if isLoading is false", async () => {
+      renderFormWithState(
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
+        { schema, onSubmit, onError, isLoading: false }
+      );
+
+      await user.type(screen.getByLabelText("TextInput"), "abc");
+      await submit();
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith(
+          { formFieldsCustomName: "abc" },
+          expect.anything()
+        )
+      );
+    });
+
+    it("shows disabled Submit button with loading animation if form is submitting", async () => {
+      renderFormWithState(
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
+        { schema, onSubmit, onError, isLoading: true }
+      );
+
+      const button = screen.getByRole("button", { name: "Submit" });
+      expect(button).toBeDisabled();
+    });
+
+    it("does not call onSubmit() after submit if isLoading is true", async () => {
+      renderFormWithState(
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
+        { schema, onSubmit, onError, isLoading: true }
+      );
+
+      await user.type(screen.getByLabelText("TextInput"), "abc");
+      await submit();
+      await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
     });
   });
 
@@ -437,7 +510,7 @@ describe("Form", () => {
       assertSubmitted({ city: "Berlin" });
     });
 
-    // @TODO accesibility testing once tab navigation is fixed for RadioButton
+    // @TODO accessibility testing once tab navigation is fixed for RadioButton
   });
 
   describe("<RadioButtonGroup>", () => {
@@ -489,7 +562,7 @@ describe("Form", () => {
       assertSubmitted({ city: "Helsinki" });
     });
 
-    // @TODO accesibility testing once tab navigation is fixed for RadioButtonGroup
+    // @TODO accessibility testing once tab navigation is fixed for RadioButtonGroup
   });
 
   describe("<ComplexNativeSelect>", () => {
@@ -795,7 +868,7 @@ describe("Form", () => {
     it("renders the file input as required dependent on prop", () => {
       // component is not set to required for all the other
       // test cases because we can't "upload" a valid file with
-      // content in test, so this block has it's own cleanup/render
+      // content in test, so this block has its own cleanup/render
       cleanup();
       renderForm(
         <FileInput<Schema>

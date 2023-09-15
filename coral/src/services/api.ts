@@ -34,6 +34,15 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS = {
+  getAclRequest: "/acl/request/{aclRequestId}",
+  approveOperationalRequest: "/operationalRequest/reqId/{reqId}/approve",
+  declineOperationalRequest: "/operationalRequest/reqId/{reqId}/decline",
+  deleteOperationalRequest: "/operationalRequest/reqId/{reqId}/delete",
+  getOperationalRequests: "/operationalRequests/requestsFor/{requestsFor}",
+  validateOffsetRequestDetails:
+    "/operationalRequest/consumerOffsetsReset/validate",
+  createConsumerOffsetsResetRequest:
+    "/operationalRequest/consumerOffsetsReset/create",
   restartConnector: "/connector/restart",
   getConnectorsToManage: "/getConnectorsToManage",
   resetCacheClusterApi: "/schemas/resetCache",
@@ -154,6 +163,9 @@ const API_PATHS = {
   getEnvsForSchemaRequests: "/getEnvsForSchemaRequests",
   getEnvsBaseCluster: "/getEnvsBaseCluster",
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
+  getSchemaRegEnvsPaginated: "/environments/schemaRegistry",
+  getKafkaEnvsPaginated: "/environments/kafka",
+  getKafkaConnectEnvsPaginated: "/environments/kafkaconnect",
   getEnvParams: "/getEnvParams",
   getEnvDetails: "/getEnvDetails",
   getDbAuth: "/getDbAuth",
@@ -191,7 +203,12 @@ const API_PATHS = {
 } satisfies {
   [key in keyof Omit<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
+    | "getSchemaOfTopicFromSource"
+    | "getSwitchTeams"
+    | "getTopicRequest"
+    | "getKafkaEnv"
+    | "getKafkaConnectEnv"
+    | "getSchemaRegEnv"
   >]: keyof ApiPaths;
 };
 
@@ -203,6 +220,9 @@ type GetSchemaOfTopicFromSource = (params: {
 }) => keyof ApiPaths;
 type GetSwitchTeams = (params: { userId: string }) => keyof ApiPaths;
 type GetTopicRequest = (params: { topicReqId: string }) => keyof ApiPaths;
+type GetKafkaEnv = (params: { envId: string }) => keyof ApiPaths;
+type GetConnectEnv = (params: { envId: string }) => keyof ApiPaths;
+type GetSchemaRegEnv = (params: { envId: string }) => keyof ApiPaths;
 
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
@@ -216,11 +236,28 @@ const DYNAMIC_API_PATHS = {
     `/user/${userId}/switchTeamsList` as keyof ApiPaths,
   getTopicRequest: ({ topicReqId }: Parameters<GetTopicRequest>[0]) =>
     `/topic/request/${topicReqId}` as keyof ApiPaths,
+  getKafkaEnv: ({ envId }: Parameters<GetKafkaEnv>[0]) =>
+    `/environments/kafka/${envId}` as keyof ApiPaths,
+  getKafkaConnectEnv: ({ envId }: Parameters<GetConnectEnv>[0]) =>
+    `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
+  getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
+    `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
-  >]: GetSchemaOfTopicFromSource | GetSwitchTeams | GetTopicRequest;
+    | "getSchemaOfTopicFromSource"
+    | "getSwitchTeams"
+    | "getTopicRequest"
+    | "getKafkaEnv"
+    | "getKafkaConnectEnv"
+    | "getSchemaRegEnv"
+  >]:
+    | GetSchemaOfTopicFromSource
+    | GetSwitchTeams
+    | GetTopicRequest
+    | GetKafkaEnv
+    | GetConnectEnv
+    | GetSchemaRegEnv;
 };
 
 type Params = URLSearchParams;
@@ -441,7 +478,7 @@ function checkForKlawErrors<TResponse extends SomeObject>(
 function handleError(
   errorOrResponse: Error | Response | KlawApiError
 ): Promise<never> {
-  // errorOrResponse is an Response when the api response
+  // errorOrResponse is a Response when the api response
   // was identified as an error `checkStatus` and we've
   // not yet read the body stream
   if (errorOrResponse instanceof Response) {
@@ -450,7 +487,7 @@ function handleError(
       // these endpoints are all meant for enabling "batch" processing,
       // for example to delete multiple requests
       // this is currently not implemented as a feature.
-      // If this endpoints contain an error, it will be contained
+      // If these endpoints contain an error, it will be contained
       // in the first (and only) entry of the ApiResponse[]
       // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
       const bodyToCheck = isArray(body) ? body[0] : body;
@@ -460,7 +497,7 @@ function handleError(
       }
 
       const httpError: HTTPError = {
-        // bodycheck is unknown here, so we need to coerce its type to avoid TS errors
+        // bodyToCheck is unknown here, so we need to coerce its type to avoid TS errors
         data: bodyToCheck as string | SomeObject,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,

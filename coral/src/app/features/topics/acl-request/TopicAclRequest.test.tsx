@@ -913,19 +913,21 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "PRODUCER",
-          requestOperationType: "CREATE",
-          transactionalId: undefined,
-          teamId: 1,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "PRODUCER",
+            requestOperationType: "CREATE",
+            transactionalId: undefined,
+            teamId: 1,
+          })
+        );
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
@@ -989,18 +991,20 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "PRODUCER",
-          requestOperationType: "CREATE",
-          teamId: 1,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "PRODUCER",
+            requestOperationType: "CREATE",
+            teamId: 1,
+          })
+        );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
@@ -1064,7 +1068,7 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
 
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
@@ -1263,24 +1267,26 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.type(consumerGroupField, "group");
-        userEvent.tab();
+        await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "CONSUMER",
-          teamId: 1,
-          consumergroup: "group",
-          requestOperationType: "CREATE",
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "CONSUMER",
+            teamId: 1,
+            consumergroup: "group",
+            requestOperationType: "CREATE",
+          })
+        );
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
@@ -1359,20 +1365,22 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "CONSUMER",
-          teamId: 1,
-          consumergroup: "group",
-          requestOperationType: "CREATE",
-          transactionalId: undefined,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "CONSUMER",
+            teamId: 1,
+            consumergroup: "group",
+            requestOperationType: "CREATE",
+            transactionalId: undefined,
+          })
+        );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
@@ -1449,7 +1457,7 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
             "/requests/acls?status=CREATED"
@@ -2333,19 +2341,21 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "PRODUCER",
-          requestOperationType: "CREATE",
-          transactionalId: undefined,
-          teamId: 1,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "PRODUCER",
+            requestOperationType: "CREATE",
+            transactionalId: undefined,
+            teamId: 1,
+          })
+        );
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
@@ -2408,18 +2418,20 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: "aivtopic1",
-          environment: "1",
-          aclType: "PRODUCER",
-          requestOperationType: "CREATE",
-          teamId: 1,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: "aivtopic1",
+            environment: "1",
+            aclType: "PRODUCER",
+            requestOperationType: "CREATE",
+            teamId: 1,
+          })
+        );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
@@ -2482,7 +2494,7 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
             "/requests/acls?status=CREATED"
@@ -2681,24 +2693,26 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.type(consumerGroupField, "group");
-        userEvent.tab();
+        await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: mockedResponseTopicNames[0],
-          environment: "1",
-          aclType: "CONSUMER",
-          teamId: 1,
-          consumergroup: "group",
-          requestOperationType: "CREATE",
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: mockedResponseTopicNames[0],
+            environment: "1",
+            aclType: "CONSUMER",
+            teamId: 1,
+            consumergroup: "group",
+            requestOperationType: "CREATE",
+          })
+        );
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
@@ -2788,20 +2802,22 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
-          remarks: "",
-          aclIpPrincipleType: "PRINCIPAL",
-          acl_ssl: ["Alice"],
-          aclPatternType: "LITERAL",
-          topicname: mockedResponseTopicNames[0],
-          environment: "1",
-          aclType: "CONSUMER",
-          teamId: 1,
-          consumergroup: "group",
-          requestOperationType: "CREATE",
-          transactionalId: undefined,
-        });
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+            remarks: "",
+            aclIpPrincipleType: "PRINCIPAL",
+            acl_ssl: ["Alice"],
+            aclPatternType: "LITERAL",
+            topicname: mockedResponseTopicNames[0],
+            environment: "1",
+            aclType: "CONSUMER",
+            teamId: 1,
+            consumergroup: "group",
+            requestOperationType: "CREATE",
+            transactionalId: undefined,
+          })
+        );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
@@ -2889,7 +2905,7 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
             "/requests/acls?status=CREATED"

@@ -11,10 +11,12 @@ public enum PermissionType {
   REQUEST_CREATE_CONNECTORS("To request for Kafka Connectors"),
   REQUEST_DELETE_CONNECTORS("To request for deletion of Kafka connectors"),
 
+  REQUEST_CREATE_OPERATIONAL_CHANGES("To request for Operational changes"),
   APPROVE_TOPICS("To approve topics requests"),
   APPROVE_SUBSCRIPTIONS("To approve producer or consumer subscriptions"),
   APPROVE_SCHEMAS("To approve schemas"),
   APPROVE_CONNECTORS("To approve kafka connectors"),
+  APPROVE_OPERATIONAL_CHANGES("To approve operational change requests"),
   APPROVE_ALL_REQUESTS_TEAMS("To approve any requests of all teams within same tenant"),
 
   SYNC_TOPICS("To Synchronize topics From Cluster"),

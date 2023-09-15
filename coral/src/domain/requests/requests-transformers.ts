@@ -12,6 +12,7 @@ const getRequestsWaitingForApprovalTransformer = (
     SCHEMA: 0,
     CONNECTOR: 0,
     USER: 0,
+    OPERATIONAL: 0,
   };
 
   if (requestEntityStatistics === undefined) {

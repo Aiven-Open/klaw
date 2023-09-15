@@ -35,6 +35,16 @@ const environmentField: z.ZodType<Environment> = z.object({
   id: z.string(),
   type: z.string(),
   params: environmentParams.optional(),
+  clusterName: z.string(),
+  tenantName: z.string(),
+  envStatus: z.union([
+    z.literal("ONLINE"),
+    z.literal("OFFLINE"),
+    z.literal("NOT_KNOWN"),
+  ]),
+  associatedEnv: z
+    .object({ id: z.string().optional(), name: z.string().optional() })
+    .optional(),
 });
 
 const advancedConfigurationField = z.string().optional();
@@ -121,7 +131,7 @@ function validateTopicName(
   }
 
   // zod already verifies that it's 3 chars at least
-  // also has to follow this pattern (eg. "prefix_a" not being valid)
+  // also has to follow this pattern (e.g. "prefix_a" not being valid)
   const defaultTopicNamePattern = /^[a-zA-Z0-9._-]*$/;
   if (!defaultTopicNamePattern.test(topicname)) {
     ctx.addIssue({

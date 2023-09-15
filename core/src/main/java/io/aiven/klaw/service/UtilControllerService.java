@@ -429,6 +429,7 @@ public class UtilControllerService implements InitializingBean {
       String approveDeclineSubscriptions;
       String approveDeclineSchemas;
       String approveDeclineConnectors;
+      String approveDeclineOperationalReqs;
 
       String approveAtleastOneRequest = "NotAuthorized";
 
@@ -454,6 +455,13 @@ public class UtilControllerService implements InitializingBean {
         approveDeclineConnectors = "NotAuthorized";
       } else {
         approveDeclineConnectors = ApiResultStatus.AUTHORIZED.value;
+      }
+
+      if (commonUtilsService.isNotAuthorizedUser(
+          userName, PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
+        approveDeclineOperationalReqs = "NotAuthorized";
+      } else {
+        approveDeclineOperationalReqs = ApiResultStatus.AUTHORIZED.value;
       }
 
       if (ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics)
@@ -630,6 +638,7 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setSyncSchemas(syncSchemas);
       authenticationInfo.setApproveAtleastOneRequest(approveAtleastOneRequest);
       authenticationInfo.setApproveDeclineTopics(approveDeclineTopics);
+      authenticationInfo.setApproveDeclineOperationalReqs(approveDeclineOperationalReqs);
       authenticationInfo.setApproveDeclineSubscriptions(approveDeclineSubscriptions);
       authenticationInfo.setApproveDeclineSchemas(approveDeclineSchemas);
       authenticationInfo.setApproveDeclineConnectors(approveDeclineConnectors);

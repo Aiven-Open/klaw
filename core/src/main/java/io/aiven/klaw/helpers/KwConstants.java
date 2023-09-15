@@ -1,5 +1,7 @@
 package io.aiven.klaw.helpers;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,6 +81,17 @@ public class KwConstants {
   public static final String GETSCHEMAS_ENABLE = "false";
   public static final String CLUSTERAPI_URL = "http://localhost:9343"; //
   public static final String TENANT_CONFIG = "{}";
+
+  public static final String TENANT_CONFIG_QUICK_START =
+      "{\n"
+          + "  \"tenantModel\" : {\n"
+          + "    \"tenantName\" : \"default\",\n"
+          + "    \"baseSyncEnvironment\" : \"1\",\n"
+          + "    \"orderOfTopicPromotionEnvsList\" : [ \"1\" ],\n"
+          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ],\n"
+          + "    \"requestSchemaEnvironmentsList\" : [ \"2\" ]\n"
+          + "  }\n"
+          + "}";
   public static final String ADDUSER_ROLES = "USER";
   public static final String ENVS_STANDARDNAMES =
       "DEV,TST,SIT,STG,QAE,ACC,E2E,IOE,DRE,PEE,PRD,PRE,UAT,TEST,PROD";
@@ -103,6 +116,8 @@ public class KwConstants {
   public static final String URI_CLUSTER_API = "/topics/getApiStatus";
   public static final String URI_KAFKA_SR_CONN_STATUS = "/topics/getStatus/";
   public static final String URI_GET_CONSUMER_OFFSETS = "/topics/consumerGroupOffsets/";
+
+  public static final String URI_CONSUMER_OFFSETS_RESET = "/topics/consumerGroupOffsets/reset/";
   public static final String URI_GET_TOPIC_CONTENTS = "/topics/getTopicContents/";
   public static final String URI_GET_ACLS = "/topics/getAcls/";
   public static final String URI_CREATE_ACLS = "/topics/createAcls";
@@ -133,4 +148,7 @@ public class KwConstants {
       "/topics/serviceAccountDetails/project/projectName/service/serviceName/user/userName";
   public static final String URI_AIVEN_SERVICE_ACCOUNTS =
       "/topics/serviceAccounts/project/projectName/service/serviceName";
+
+  public static final DateTimeFormatter DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER =
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 }

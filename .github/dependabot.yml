@@ -8,3 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: npm # for whatever reason, the YAML value for pnpm is npm
+    directory: "/coral"
+    schedule:
+      interval: "weekly"

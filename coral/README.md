@@ -49,7 +49,8 @@ This is the setup you every time. You can find the different ways how to run the
 
 - [node](https://nodejs.org/en/) needs to be installed <br/> 
     -> see [nvmrc](.nvmrc) or the `engines` definition in [package.json](package.json) for version).
-- Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm. 
+- Coral uses [pnpm](https://pnpm.io/) (version 8) as a package manager. Read their official documentation [how to 
+  install](https://pnpm.io/installation) pnpm. 
 
 1. navigate to this directory
 2. run `pnpm install`
@@ -69,7 +70,7 @@ add a mocked response for authentication to be able to see the UI. In case you n
 
 ##### When you want to use this
 - You want to do small changes on areas that are not dealing with data from the API.
-- You're want to do a small task first without having to setup a remote-api or docker.
+- You're want to do a small task first without having to set up a remote-api or docker.
 
 ##### How to do it
 
@@ -79,7 +80,7 @@ add a mocked response for authentication to be able to see the UI. In case you n
 #### Local development with remote API
 
 #####  What it does
-This will run the Vite development. It will use a external address as API source. For this, you need to have Klaw 
+This will run the Vite development. It will use an external address as API source. For this, you need to have Klaw 
 deployed to be able to connect to its API. The remote API can be a shared staging server, or even a production system.
 
 ##### When you want to use this

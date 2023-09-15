@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.AclCommands;
@@ -24,12 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -135,7 +131,8 @@ public class EnvsClustersTenantsController {
       @RequestParam(value = "envId", defaultValue = "") String envId,
       @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
     return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getEnvsPaginated(envId, pageNo, searchEnvParam),
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.KAFKA, envId, pageNo, searchEnvParam),
         HttpStatus.OK);
   }
 
@@ -169,12 +166,66 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
+      value = "/environments/kafka",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getKafkaEnvsPaginated(
+      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.KAFKA, "", pageNo, searchEnvParam),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/environments/kafka/{envId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getKafkaEnv(
+      @RequestParam("pageNo") String pageNo,
+      @PathVariable(value = "envId") String envId,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.KAFKA, envId, pageNo, searchEnvParam),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
       value = "/getSchemaRegEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<EnvModelResponse>> getSchemaRegEnvs() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getSchemaRegEnvs(), HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/environments/schemaRegistry",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getSchemaRegEnvsPaginated(
+      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.SCHEMA_REGISTRY, "", pageNo, searchEnvParam),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/environments/schemaRegistry/{envId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getSchemaRegEnv(
+      @RequestParam("pageNo") String pageNo,
+      @PathVariable(value = "envId") String envId,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.SCHEMA_REGISTRY, envId, pageNo, searchEnvParam),
+        HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -193,6 +244,33 @@ public class EnvsClustersTenantsController {
   public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnvs() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getKafkaConnectEnvs(), HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/environments/kafkaconnect",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnvsPaginated(
+      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.KAFKA_CONNECT, "", pageNo, searchEnvParam),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/environments/kafkaconnect/{envId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnv(
+      @RequestParam("pageNo") String pageNo,
+      @PathVariable(value = "envId") String envId,
+      @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsPaginated(
+            KafkaClustersType.KAFKA_CONNECT, envId, pageNo, searchEnvParam),
+        HttpStatus.OK);
   }
 
   @PostMapping(

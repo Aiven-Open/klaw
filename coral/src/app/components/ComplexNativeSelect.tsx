@@ -38,7 +38,7 @@ function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
     } else {
       // trigger onBlur with undefined so a required field
       // is marked invalid in case no value (or placeholder)
-      // is choosen.
+      // is chosen.
       onBlur(undefined);
     }
   }

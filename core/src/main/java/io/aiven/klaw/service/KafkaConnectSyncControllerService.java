@@ -16,6 +16,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.model.cluster.ConnectorState;
@@ -433,10 +434,16 @@ public class KafkaConnectSyncControllerService {
       }
 
       // pagination
-      kafkaConnectorModelClusterList =
-          getConnectorsPaged(kafkaConnectorModelClusterList, pageNo, currentPage);
-      return kafkaConnectorModelClusterList;
-
+      return Pager.getItemsList(
+          pageNo,
+          currentPage,
+          kafkaConnectorModelClusterList,
+          (pageContext, kafkaConnectorModelResponse) -> {
+            kafkaConnectorModelResponse.setAllPageNos(pageContext.getAllPageNos());
+            kafkaConnectorModelResponse.setTotalNoPages(pageContext.getTotalPages());
+            kafkaConnectorModelResponse.setCurrentPage(currentPage);
+            return kafkaConnectorModelResponse;
+          });
     } catch (KlawException e) {
       log.error("Exception:", e);
     }
@@ -467,38 +474,6 @@ public class KafkaConnectSyncControllerService {
     }
 
     return kafkaConnectorModelSourceList;
-  }
-
-  private ArrayList<KafkaConnectorModelResponse> getConnectorsPaged(
-      List<KafkaConnectorModelResponse> origActivityList, String pageNo, String currentPage) {
-
-    ArrayList<KafkaConnectorModelResponse> newList = new ArrayList<>();
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 20;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        KafkaConnectorModelResponse activityLog = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          activityLog.setAllPageNos(numList);
-          activityLog.setTotalNoPages("" + totalPages);
-          activityLog.setCurrentPage(pageNo);
-          newList.add(activityLog);
-        }
-      }
-    }
-
-    return newList;
   }
 
   private List<String> tenantFilterTeams(List<String> teamList) {

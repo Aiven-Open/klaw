@@ -10,6 +10,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
@@ -19,6 +20,7 @@ import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -30,6 +32,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -57,22 +60,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,7 +197,7 @@ public class EnvsClustersTenantsControllerService {
       kwClustersModelList =
           kwClustersModelList.stream()
               .filter(env -> Objects.equals((env.getClusterId() + "").toLowerCase(), clusterId))
-              .collect(Collectors.toList());
+              .collect(toList());
     }
 
     if (searchClusterParam != null && !searchClusterParam.equals("")) {
@@ -214,7 +206,7 @@ public class EnvsClustersTenantsControllerService {
               .filter(
                   env ->
                       env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase()))
-              .collect(Collectors.toList());
+              .collect(toList());
       List<KwClustersModelResponse> envListMap2 =
           kwClustersModelList.stream()
               .filter(
@@ -246,39 +238,22 @@ public class EnvsClustersTenantsControllerService {
                                   Comparator.comparing(KwClustersModelResponse::getClusterId))),
                       ArrayList::new));
     }
-    return getClustersModelsPaginated(pageNo, kwClustersModelList);
-  }
-
-  private List<KwClustersModelResponse> getClustersModelsPaginated(
-      String pageNo, List<KwClustersModelResponse> envListMap) {
-    List<KwClustersModelResponse> envListMapUpdated = new ArrayList<>();
-
-    int totalRecs = envListMap.size();
-    int recsPerPage = 10;
-
-    int totalPages =
-        envListMap.size() / recsPerPage + (envListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        KwClustersModelResponse mp = envListMap.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-          numList.add("" + k);
-        }
-        mp.setAllPageNos(numList);
-        mp.setPublicKey(""); // remove public key from here
-        envListMapUpdated.add(mp);
-      }
-    }
-    return envListMapUpdated;
+    return Pager.getItemsList(
+        pageNo,
+        "",
+        10,
+        kwClustersModelList,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          List<String> numList = new ArrayList<>();
+          int totalPages = Integer.parseInt(pageContext.getTotalPages());
+          for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+          }
+          mp.setAllPageNos(numList);
+          mp.setPublicKey(""); // remove public key from here
+          return mp;
+        });
   }
 
   public List<EnvIdInfo> getSyncEnvs() {
@@ -400,85 +375,67 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public List<EnvModelResponse> getEnvsPaginated(
-      String envId, String pageNo, String searchEnvParam) {
-    List<EnvModelResponse> envListMap = getKafkaEnvs();
+      KafkaClustersType type, String envId, String pageNo, String searchEnvParam) {
+    List<EnvModelResponse> envListMap;
+    envListMap =
+        switch (type) {
+          case KAFKA:
+            yield getKafkaEnvs();
+          case SCHEMA_REGISTRY:
+            yield getSchemaRegEnvs();
+          case KAFKA_CONNECT:
+            yield getKafkaConnectEnvs();
+          case ALL:
+            yield Stream.of(getKafkaEnvs(), getSchemaRegEnvs(), getKafkaConnectEnvs())
+                .flatMap(Collection::stream)
+                .toList();
+        };
+
     if (envId != null && !envId.equals("")) {
       envListMap =
-          envListMap.stream()
-              .filter(env -> Objects.equals(env.getId(), envId))
-              .collect(Collectors.toList());
+          envListMap.stream().filter(env -> Objects.equals(env.getId(), envId)).collect(toList());
     }
 
     if (searchEnvParam != null && !searchEnvParam.equals("")) {
-      List<EnvModelResponse> envListMap1 =
-          envListMap.stream()
-              .filter(env -> env.getName().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .collect(Collectors.toList());
-      List<EnvModelResponse> envListMap2 =
-          envListMap.stream()
-              .filter(
-                  env -> env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap3 =
-          envListMap.stream()
-              .filter(
-                  env -> env.getOtherParams().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap4 =
-          envListMap.stream()
-              .filter(
-                  env ->
-                      manageDatabase
-                          .getTenantMap()
-                          .get(env.getTenantId())
-                          .toLowerCase()
-                          .contains(searchEnvParam.toLowerCase()))
-              .toList();
-      envListMap1.addAll(envListMap2);
-      envListMap1.addAll(envListMap3);
-      envListMap1.addAll(envListMap4);
-
-      // remove duplicates
       envListMap =
-          envListMap1.stream()
-              .collect(
-                  Collectors.collectingAndThen(
-                      Collectors.toCollection(
-                          () -> new TreeSet<>(Comparator.comparing(EnvModelResponse::getId))),
-                      ArrayList::new));
+          envListMap.stream()
+              .filter(
+                  env -> {
+                    if (env.getName().toLowerCase().contains(searchEnvParam.toLowerCase())
+                        || env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase())
+                        || (env.getOtherParams() != null
+                            && env.getOtherParams()
+                                .toLowerCase()
+                                .contains(searchEnvParam.toLowerCase()))
+                        || manageDatabase
+                            .getTenantMap()
+                            .get(env.getTenantId())
+                            .toLowerCase()
+                            .contains(searchEnvParam.toLowerCase())) {
+                      return true;
+                    }
+                    return false;
+                  })
+              .toList();
     }
 
-    return getEnvModelsPaginated(pageNo, envListMap);
-  }
-
-  private List<EnvModelResponse> getEnvModelsPaginated(
-      String pageNo, List<EnvModelResponse> envListMap) {
-    List<EnvModelResponse> envListMapUpdated = new ArrayList<>();
-    int totalRecs = envListMap.size();
-    int recsPerPage = 10;
-
-    int totalPages =
-        envListMap.size() / recsPerPage + (envListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        EnvModelResponse mp = envListMap.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-          numList.add("" + k);
-        }
-        mp.setAllPageNos(numList);
-        envListMapUpdated.add(mp);
-      }
-    }
-    return envListMapUpdated;
+    return Pager.getItemsList(
+        "",
+        pageNo,
+        10,
+        envListMap,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          List<String> numList = new ArrayList<>();
+          int totalPages = Integer.parseInt(pageContext.getTotalPages());
+          for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+          }
+          mp.setAllPageNos(numList);
+          mp.setCurrentPage(pageContext.getPageNo());
+          mp.setTotalRecs(pageContext.getTotalRecs());
+          return mp;
+        });
   }
 
   private List<EnvModelResponse> getEnvModels(
@@ -574,7 +531,7 @@ public class EnvsClustersTenantsControllerService {
                   }
                   return found;
                 })
-            .collect(Collectors.toList());
+            .collect(toList());
     return envModelList;
   }
 
@@ -587,9 +544,7 @@ public class EnvsClustersTenantsControllerService {
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
       listEnvs =
-          listEnvs.stream()
-              .filter(env -> allowedEnvIdSet.contains(env.getId()))
-              .collect(Collectors.toList());
+          listEnvs.stream().filter(env -> allowedEnvIdSet.contains(env.getId())).collect(toList());
     }
 
     List<EnvModelResponse> envModelList =
@@ -659,7 +614,7 @@ public class EnvsClustersTenantsControllerService {
       envActualList =
           envActualList.stream()
               .filter(env -> !env.getId().equals(newEnv.getId()))
-              .collect(Collectors.toList());
+              .collect(toList());
     }
 
     // Same name per type (kafka, kafkaconnect) in tenant not posssible.
@@ -1143,8 +1098,7 @@ public class EnvsClustersTenantsControllerService {
     if (tenant.isPresent()) {
       kwTenantModel.setTenantName(tenant.get().getTenantName());
       kwTenantModel.setLicenseExpiryDate(
-          ((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-              .format(tenant.get().getLicenseExpiry().getTime())));
+          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(tenant.get().getLicenseExpiry().toInstant()));
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
       kwTenantModel.setInTrialPhase("true".equals(tenant.get().getInTrial()));
       long timeInMilliSeconds =

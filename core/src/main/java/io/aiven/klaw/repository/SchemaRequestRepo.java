@@ -34,19 +34,11 @@ public interface SchemaRequestRepo
   boolean existsSchemaRequestByEnvironmentAndTenantIdAndRequestStatus(
       String envId, Integer tenantId, String requestStatus);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwschemarequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantIdAndRequestStatus(
+      Integer teamId, Integer tenantId, String topicStatus);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwschemarequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForUserId(
-      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+  boolean existsByRequestorAndTenantIdAndRequestStatus(
+      String requestor, Integer tenantId, String requestStatus);
 
   List<SchemaRequest> findAllByTenantId(int tenantId);
 

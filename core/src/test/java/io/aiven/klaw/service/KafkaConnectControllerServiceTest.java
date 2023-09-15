@@ -253,8 +253,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -298,8 +296,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -343,8 +339,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -389,8 +383,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -436,8 +428,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -485,8 +475,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(handleDbRequests.getConnectorsFromName(eq("Conn0"), eq(TENANT_ID)))
         .thenReturn(List.of(getKwKafkaConnector()));
     List<KafkaConnectorRequestsResponseModel> ordered_response =
@@ -560,8 +548,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
 
     assertThat(response.getConnectorInfoList()).hasSize(3);
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -605,8 +593,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
 
     assertThat(response.getConnectorInfoList()).hasSize(3);
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -638,8 +626,8 @@ public class KafkaConnectControllerServiceTest {
 
     assertThat(response.getConnectorInfoList()).hasSize(1);
     assertThat(response.getConnectorInfoList().get(0).getConnectorId()).isEqualTo(1);
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -670,8 +658,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList()).hasSize(1);
-    assertThat(response.getPromotionDetails().get("status")).isEqualTo("success");
-    assertThat(response.getPromotionDetails().get("targetEnv")).isEqualTo("PRD");
+    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
+    assertThat(response.getPromotionDetails().getTargetEnv()).isEqualTo("PRD");
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
@@ -704,8 +692,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "0");
 
     assertThat(response.getConnectorInfoList()).hasSize(1);
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
@@ -789,8 +777,7 @@ public class KafkaConnectControllerServiceTest {
 
     assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
     assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
@@ -830,8 +817,7 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
@@ -871,8 +857,7 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
     assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isFalse();
-    assertThat(response.getPromotionDetails().get("status"))
-        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
@@ -927,6 +912,104 @@ public class KafkaConnectControllerServiceTest {
                 kafkaConnectControllerService.getConnectorDetailsPerEnvToEdit("1", CONNECTOR_NAME))
         .isInstanceOf(KlawBadRequestException.class)
         .hasMessage("Sorry, your team does not own the connector !!");
+  }
+
+  // NEW
+  @Test
+  @Order(23)
+  public void getConnectorOverview_WithClaimRequestsOpenAndNoOtherRequestOpen()
+      throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(false);
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsClaimConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
+        .thenReturn(true);
+
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(24)
+  public void getConnectorOverview_WithPromotionRequestsOpen() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(true);
+
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME),
+                eq(RequestStatus.CREATED.value),
+                eq(RequestOperationType.PROMOTE.value),
+                eq("2"),
+                eq(101)))
+        .thenReturn(true);
+
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.REQUEST_OPEN);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
   private static Team createTeam(String teamName, int teamId) {

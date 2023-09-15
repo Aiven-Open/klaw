@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -13,8 +13,13 @@ import {
   ConnectorOverviewTabEnum,
   isConnectorsOverviewTabEnum,
 } from "src/app/router_utils";
-import { ConnectorOverview } from "src/domain/connector";
+import { ConnectorOverview, requestConnectorClaim } from "src/domain/connector";
 import { getConnectorOverview } from "src/domain/connector/connector-api";
+import { Box, useToast } from "@aivenio/aquarium";
+import { ClaimBanner } from "src/app/features/components/ClaimBanner";
+import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
+import { HTTPError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type ConnectorOverviewProps = {
   connectorName: string;
@@ -41,12 +46,20 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
   const { connectorName } = props;
   const { state: initialEnvironment }: { state: string | null } = useLocation();
 
-  const matches = useMatches();
-  const currentTab = findMatchingTab(matches);
-
+  const [showClaimModal, setShowClaimModal] = useState(false);
   const [environmentId, setEnvironmentId] = useState<string | undefined>(
     initialEnvironment ?? undefined
   );
+
+  const [claimErrorMessage, setClaimErrorMessage] = useState<
+    string | undefined
+  >();
+
+  const toast = useToast();
+
+  const matches = useMatches();
+
+  const currentTab = findMatchingTab(matches);
 
   const {
     data: connectorData,
@@ -54,13 +67,53 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-  } = useQuery(["connector-overview", connectorName, environmentId], {
+    refetch: refetchConnectors,
+  } = useQuery({
+    queryKey: ["connector-overview", connectorName, environmentId],
     queryFn: () =>
       getConnectorOverview({
         connectornamesearch: connectorName,
         environmentId,
       }),
   });
+
+  const {
+    mutate: createClaimConnectorRequest,
+    isLoading: isLoadingCreateClaimConnectorRequest,
+    isError: isErrorCreateClaimConnectorRequest,
+  } = useMutation(
+    ({
+      remark,
+      connectorName,
+      env,
+    }: {
+      remark?: string;
+      connectorName: string;
+      env: string;
+    }) =>
+      requestConnectorClaim({
+        connectorName,
+        env,
+        remark,
+      }),
+    {
+      onSuccess: () => {
+        refetchConnectors().then(() => {
+          toast({
+            message: "Connector claim request successfully created",
+            position: "bottom-left",
+            variant: "default",
+          });
+        });
+      },
+      onError: (error: HTTPError) => {
+        setClaimErrorMessage(parseErrorMsg(error));
+      },
+      onSettled: () => {
+        setShowClaimModal(false);
+      },
+    }
+  );
 
   useEffect(() => {
     if (
@@ -77,8 +130,30 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     );
   }
 
+  function submitRequest(remark: string | undefined) {
+    if (connectorData?.connectorInfo === undefined) {
+      console.error(
+        "Users should never be able to access the request when connectorData is not set."
+      );
+      return;
+    }
+    createClaimConnectorRequest({
+      remark,
+      connectorName: connectorData.connectorInfo.connectorName,
+      env: connectorData.connectorInfo.environmentId,
+    });
+  }
+
   return (
-    <div>
+    <>
+      {showClaimModal && (
+        <ClaimConfirmationModal
+          onSubmit={(remark) => submitRequest(remark)}
+          onClose={() => setShowClaimModal(false)}
+          isLoading={isLoadingCreateClaimConnectorRequest}
+          entity={"connector"}
+        />
+      )}
       <EntityDetailsHeader
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
@@ -91,6 +166,24 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         hasPendingRequest={Boolean(connectorData?.connectorInfo.hasOpenRequest)}
       />
 
+      {connectorData?.connectorInfo !== undefined &&
+        !connectorData.connectorInfo.connectorOwner && (
+          <Box marginBottom={"l1"}>
+            <ClaimBanner
+              entityType={"connector"}
+              entityName={connectorName}
+              hasOpenClaimRequest={
+                connectorData?.connectorInfo.hasOpenClaimRequest
+              }
+              entityOwner={connectorData.connectorInfo.teamName}
+              hasOpenRequest={connectorData?.connectorInfo.hasOpenRequest}
+              claimEntity={() => setShowClaimModal(true)}
+              isError={isErrorCreateClaimConnectorRequest}
+              errorMessage={claimErrorMessage}
+            />
+          </Box>
+        )}
+
       <ConnectorOverviewResourcesTabs
         isError={connectorIsError}
         error={connectorError}
@@ -100,7 +193,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         connectorOverview={connectorData}
         connectorIsRefetching={connectorIsRefetching}
       />
-    </div>
+    </>
   );
 }
 

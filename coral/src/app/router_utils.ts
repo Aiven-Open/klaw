@@ -7,6 +7,7 @@ enum Routes {
   CONNECTOR_OVERVIEW = "/connector/:connectorName",
   CONNECTOR_REQUEST = "/connectors/request",
   CONNECTOR_EDIT_REQUEST = "/connector/:connectorName/request-update",
+  CONNECTOR_PROMOTION_REQUEST = "/connector/:connectorName/request-promotion",
   TOPIC_REQUEST = "/topics/request",
   TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
   TOPIC_SCHEMA_REQUEST = "/topic/:topicName/request-schema",
@@ -16,6 +17,14 @@ enum Routes {
   SCHEMA_REQUEST = "/request/schema",
   REQUESTS = "/requests",
   APPROVALS = "/approvals",
+  CONFIGURATION = "/configuration",
+  ENVIRONMENTS = "/configuration/environments",
+}
+
+enum EnvironmentsTabEnum {
+  KAFKA = "ENVIRONMENTS_TAB_ENUM_kafka",
+  SCHEMA_REGISTRY = "ENVIRONMENTS_TAB_ENUM_schema_registry",
+  KAFKA_CONNECT = "ENVIRONMENTS_TAB_ENUM_kafka_connect",
 }
 
 enum TopicOverviewTabEnum {
@@ -32,7 +41,7 @@ enum ConnectorOverviewTabEnum {
   OVERVIEW = "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
   DOCUMENTATION = "CONNECTOR_OVERVIEW_TAB_ENUM_documentation",
   HISTORY = "CONNECTOR_OVERVIEW_TAB_ENUM_history",
-  SETTINGS = "CONNECTOR_OVERVIEW_TAB_ENUM_setttings",
+  SETTINGS = "CONNECTOR_OVERVIEW_TAB_ENUM_settings",
 }
 
 enum RequestsTabEnum {
@@ -48,6 +57,12 @@ enum ApprovalsTabEnum {
   SCHEMAS = "APPROVALS_TAB_ENUM_schemas",
   CONNECTORS = "APPROVALS_TAB_ENUM_connectors",
 }
+
+const ENVIRONMENT_TAB_ID_INTO_PATH = {
+  [EnvironmentsTabEnum.KAFKA]: "kafka",
+  [EnvironmentsTabEnum.SCHEMA_REGISTRY]: "schema-registry",
+  [EnvironmentsTabEnum.KAFKA_CONNECT]: "kafka-connect",
+} as const;
 
 const TOPIC_OVERVIEW_TAB_ID_INTO_PATH = {
   [TopicOverviewTabEnum.OVERVIEW]: "overview",
@@ -80,6 +95,15 @@ const APPROVALS_TAB_ID_INTO_PATH = {
   [ApprovalsTabEnum.CONNECTORS]: "connectors",
 } as const;
 
+function isEnvironmentsTabEnum(value: unknown): value is EnvironmentsTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      ENVIRONMENT_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
 function isTopicsOverviewTabEnum(
   value: unknown
 ): value is TopicOverviewTabEnum {
@@ -125,15 +149,18 @@ function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
 }
 
 export {
+  EnvironmentsTabEnum,
   RequestsTabEnum,
   ApprovalsTabEnum,
   TopicOverviewTabEnum,
   ConnectorOverviewTabEnum,
   Routes,
+  ENVIRONMENT_TAB_ID_INTO_PATH,
   REQUESTS_TAB_ID_INTO_PATH,
   APPROVALS_TAB_ID_INTO_PATH,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  isEnvironmentsTabEnum,
   isRequestsTabEnum,
   isApprovalsTabEnum,
   isTopicsOverviewTabEnum,

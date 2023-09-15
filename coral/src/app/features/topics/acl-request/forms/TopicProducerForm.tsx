@@ -1,17 +1,18 @@
 import {
   Alert,
+  RadioButton as BaseRadioButton,
   Box,
+  Button,
   Divider,
   Grid,
   GridItem,
-  RadioButton as BaseRadioButton,
-  SecondaryButton,
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Dialog } from "src/app/components/Dialog";
 import {
   Form,
   RadioButtonGroup,
@@ -25,10 +26,10 @@ import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrP
 import RemarksField from "src/app/features/topics/acl-request/fields/RemarksField";
 import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
 import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
-import { createAclRequest } from "src/domain/acl/acl-api";
-import { parseErrorMsg } from "src/services/mutation-utils";
-import { Dialog } from "src/app/components/Dialog";
 import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
+import { createAclRequest } from "src/domain/acl/acl-api";
+import { getTopicTeam } from "src/domain/topic";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 // eslint-disable-next-line import/exports-last
 export interface TopicProducerFormProps {
@@ -81,11 +82,35 @@ const TopicProducerForm = ({
     ) {
       return;
     }
-    return topicProducerForm.setValue("topicname", topicNames[0]);
+    // Reset default value of topicname field
+    // And trigger validation to ensure no error remains displayed
+    topicProducerForm.setValue("topicname", topicNames[0]);
+    topicProducerForm.trigger("topicname");
   }, [aclPatternType]);
 
   const { mutate, isLoading, isError, error } = useMutation({
-    mutationFn: createAclRequest,
+    mutationFn: async (payload: TopicProducerFormSchema) => {
+      const { teamId, error } = await getTopicTeam({
+        topicName: payload.topicname,
+        patternType: payload.aclPatternType,
+      });
+
+      // When error !== undefined, teamId will not be undefined, but will be 0
+      // However, the openapi.yaml definition doesn't reflect that, so we need to check for undefined
+      // So that teamId in the happy path can be typed properly
+      // Related issue: https://github.com/Aiven-Open/klaw/issues/1710
+      if (error !== undefined || teamId === undefined) {
+        const errorMessage =
+          error || "There was an error fetching the topic team.";
+        // We need to throw an error here instead of setting an error on the field for two reasons:
+        // - we need to prevent the useMutation to reach onSuccess (which would navigate away)
+        // - the error is a response from the getTopicTeam call, so is treated like a form submission error...
+        // ... even if it's not strictly a form submission error
+        throw new Error(errorMessage);
+      }
+
+      return createAclRequest({ ...payload, teamId });
+    },
     onSuccess: () => {
       navigate("/requests/acls?status=CREATED");
       toast({
@@ -193,7 +218,7 @@ const TopicProducerForm = ({
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
           </GridItem>
           <GridItem>
-            <SecondaryButton
+            <Button.Secondary
               disabled={isLoading}
               type="button"
               onClick={
@@ -203,7 +228,7 @@ const TopicProducerForm = ({
               }
             >
               Cancel
-            </SecondaryButton>
+            </Button.Secondary>
           </GridItem>
         </Grid>
       </Form>
