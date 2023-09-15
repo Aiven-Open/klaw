@@ -18,6 +18,7 @@ type Props = {
   isLoading: boolean;
   connectorIsRefetching: boolean;
   connectorOverview?: ConnectorOverview;
+  connectorName: string;
 };
 
 function ConnectorOverviewResourcesTabs({
@@ -28,10 +29,9 @@ function ConnectorOverviewResourcesTabs({
   isLoading,
   connectorOverview,
   connectorIsRefetching,
+  connectorName,
 }: Props) {
   const navigate = useNavigate();
-  const connectorName = connectorOverview?.connectorInfo.connectorName;
-
   function navigateToTab(
     navigate: NavigateFunction,
     resourceTypeId: unknown
