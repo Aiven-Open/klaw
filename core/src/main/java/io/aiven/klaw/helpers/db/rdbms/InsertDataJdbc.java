@@ -221,11 +221,13 @@ public class InsertDataJdbc {
   synchronized Map<String, String> insertIntoRequestAcl(AclRequests aclReq) {
     log.debug("insertIntoRequestAcl {}", aclReq.getTopicname());
     Map<String, String> hashMap = new HashMap<>();
-    Integer aclId = getNextAclRequestId(aclReq.getTenantId());
-    hashMap.put("aclId", "" + aclId);
+    if (aclReq.getReq_no() == null) {
+      Integer aclId = getNextAclRequestId(aclReq.getTenantId());
+      hashMap.put("aclId", "" + aclId);
 
-    if (aclReq.getRequestOperationType() != null) {
-      aclReq.setReq_no(aclId);
+      if (aclReq.getRequestOperationType() != null) {
+        aclReq.setReq_no(aclId);
+      }
     }
 
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
