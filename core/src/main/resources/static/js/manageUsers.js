@@ -309,7 +309,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.username.length < 6)
             {
-                $scope.alertnote = "Username should be atleast 6 characters.";
+                $scope.alertnote = "Username should be at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -323,7 +323,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.fullname.length < 6)
             {
-                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.alertnote = "Please enter Full Name at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -337,7 +337,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.pwd.length < 8)
             {
-                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -386,7 +386,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if($scope.addNewUser.canswitchteams){
                 $scope.getUpdatedListOfSwitchTeams();
                 if($scope.updatedTeamsSwitchList.length < 2){
-                    $scope.alertnote = "Please select atleast 2 teams, to switch between.";
+                    $scope.alertnote = "Please select at least 2 teams, to switch between.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -442,7 +442,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.fullname.length < 6)
             {
-                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.alertnote = "Please enter Full Name at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -456,7 +456,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.pwd.length < 8)
             {
-                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }

@@ -14,9 +14,9 @@ import lombok.ToString;
 public class KwTenantModel implements Serializable {
 
   @NotNull
-  @Size(min = 12, max = 25, message = "Tenant name must be atleast 12 characters and no spaces")
+  @Size(min = 12, max = 25, message = "Tenant name must be at least 12 characters and no spaces")
   @Pattern(
-      message = "Tenant name must be atleast 12 characters and no spaces",
+      message = "Tenant name must be at least 12 characters and no spaces",
       regexp = "^[a-zA-Z0-9]{3,}$")
   private String tenantName;
 

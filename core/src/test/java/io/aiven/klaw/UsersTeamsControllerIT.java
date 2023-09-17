@@ -462,7 +462,7 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains("Please make sure atleast 2 teams are selected.");
+    assertThat(response).contains("Please make sure at least 2 teams are selected.");
   }
 
   @Test
@@ -484,7 +484,7 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains("Please make sure atleast 2 teams are selected.");
+    assertThat(response).contains("Please make sure at least 2 teams are selected.");
   }
 
   @Test
