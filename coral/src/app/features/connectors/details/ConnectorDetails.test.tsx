@@ -97,10 +97,6 @@ describe("ConnectorDetails", () => {
           id: "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
         },
       ]);
-      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
     });
 
     afterEach(() => {
@@ -109,6 +105,10 @@ describe("ConnectorDetails", () => {
     });
 
     it("fetches connector overview and schema data on first load of page", async () => {
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
       expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(1, {
         connectornamesearch: testConnectorName,
         environmentId: undefined,
@@ -116,6 +116,10 @@ describe("ConnectorDetails", () => {
     });
 
     it("updates the environment based on lowest environment of the connector", async () => {
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
       await waitFor(() => {
         expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(2, {
           connectornamesearch: testConnectorName,
@@ -125,6 +129,10 @@ describe("ConnectorDetails", () => {
     });
 
     it("fetches the data anew when user changes environment", async () => {
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
       await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 
       const select = await screen.findByRole("combobox", {
@@ -138,6 +146,21 @@ describe("ConnectorDetails", () => {
 
       await waitFor(() =>
         expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(3, {
+          connectornamesearch: testConnectorName,
+          environmentId: testConnectorOverview.availableEnvironments[1].id,
+        })
+      );
+    });
+
+    it("fetches the correct data when URL has env search param", async () => {
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: "/?env=10",
+      });
+
+      await waitFor(() =>
+        expect(mockGetConnectorOverview).toHaveBeenCalledWith({
           connectornamesearch: testConnectorName,
           environmentId: testConnectorOverview.availableEnvironments[1].id,
         })
