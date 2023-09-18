@@ -7,6 +7,8 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
 import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
+import io.aiven.klaw.config.ad.ADCustomProvider;
+import io.aiven.klaw.config.ad.UserDetailsMapper;
 import io.aiven.klaw.dao.UserInfo;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,7 +30,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
+import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -115,15 +117,34 @@ public class SecurityConfigNoSSO {
     return authenticationManager;
   }
 
+  @Bean
+  public UserDetailsContextMapper userDetailsContextMapper() {
+    return new UserDetailsMapper();
+  }
+
   public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-    ActiveDirectoryLdapAuthenticationProvider provider =
-        new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
+    //    ActiveDirectoryLdapAuthenticationProvider provider =
+    //        new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
+    //    provider.setConvertSubErrorCodesToExceptions(true);
+    //    provider.setUseAuthenticationRequestCredentials(true);
+    //
+    //    if (adFilter != null && !adFilter.equals("")) {
+    //      provider.setSearchFilter(adFilter);
+    //    }
+    ADCustomProvider provider = new ADCustomProvider(adDomain, adUrl, adFilter);
+    //   ActiveDirectoryLdapAuthenticationProvider provider =
+    //      new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
     provider.setConvertSubErrorCodesToExceptions(true);
     provider.setUseAuthenticationRequestCredentials(true);
-
-    if (adFilter != null && !adFilter.equals("")) {
-      provider.setSearchFilter(adFilter);
-    }
+    provider.setSearchFilter(adFilter);
+    provider.setUserDetailsContextMapper(userDetailsContextMapper());
+    provider.setConvertSubErrorCodesToExceptions(true);
+    provider.setUseAuthenticationRequestCredentials(true);
+    /*
+        if (adFilter != null && !adFilter.equals("")) {
+          provider.setSearchFilter(adFilter);
+        }
+    */
     return provider;
   }
 

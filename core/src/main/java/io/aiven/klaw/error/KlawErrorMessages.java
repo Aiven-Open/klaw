@@ -23,6 +23,21 @@ public class KlawErrorMessages {
       "Multiple matching teams are configured. Please make sure only one matching team"
           + " from Klaw is configured in AD. Denying login !!";
 
+  public static final String AD_105 = "User account is locked";
+  public static final String AD_106 = "User was not found in directory";
+  public static final String AD_107 = "Supplied password was invalid";
+  public static final String AD_108 = "User not permitted to logon at this time";
+  public static final String AD_109 = "Password has expired";
+  public static final String AD_110 = "Account is disabled";
+  public static final String AD_111 = "Account is expired";
+  public static final String AD_112 = "User must reset password";
+  public static final String AD_113 = "Account locked";
+  public static final String AD_114 = "Bad credentials";
+  public static final String AD_115 = "Failed to locate directory entry for authenticated user: ";
+  public static final String AD_116 = "User credentials have expired";
+  public static final String AD_117 = "User is disabled";
+  public static final String AD_118 = "User account has expired";
+
   public static final String REQ_FAILURE =
       "Unable to process the request. Please contact our Administrator !!";
 
