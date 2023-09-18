@@ -526,7 +526,7 @@ public class TopicControllerServiceTest {
     TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
     assertThat(topicTeamMap.getError())
-        .contains("There are atleast two topics with same prefix owned by different teams.");
+        .contains("There are at least two topics with same prefix owned by different teams.");
   }
 
   @Test
