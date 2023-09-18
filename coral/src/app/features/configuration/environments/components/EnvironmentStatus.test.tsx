@@ -65,14 +65,22 @@ describe("EnvironmentStatus", () => {
       expect(button).toBeEnabled();
     });
   });
+
   describe("Refresh status", () => {
+    const originalConsoleError = console.error;
+
     beforeEach(() => {
+      console.error = jest.fn();
+
       customRender(<EnvironmentStatus envId="1" initialEnvStatus="ONLINE" />, {
         queryClient: true,
       });
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
+      jest.clearAllMocks();
+
       cleanup();
     });
 
