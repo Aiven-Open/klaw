@@ -300,7 +300,7 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = null;
             swal({
                      title: "Are you sure?",
-                     text: "You would like to update permissions. Make sure atleast one permission exists per role.",
+                     text: "You would like to update permissions. Make sure at least one permission exists per role.",
                      type: "warning",
                      showCancelButton: true,
                      confirmButtonColor: "#DD6B55",

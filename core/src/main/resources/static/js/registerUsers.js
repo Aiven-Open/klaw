@@ -367,7 +367,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
           if($scope.registerUser.username.length < 6)
           {
-              $scope.alertnote = "Username should be atleast 6 characters.";
+              $scope.alertnote = "Username should be at least 6 characters.";
               $scope.showAlertToast();
               return;
           }
@@ -381,7 +381,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
           if($scope.registerUser.usernamefull.length < 6)
           {
-              $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+              $scope.alertnote = "Please enter Full Name at least 6 characters.";
               $scope.showAlertToast();
               return;
           }
@@ -395,7 +395,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
           if($scope.registerUser.pwd.length < 8)
           {
-              $scope.alertnote = "Password should be atleast 8 characters.";
+              $scope.alertnote = "Password should be at least 8 characters.";
               $scope.showAlertToast();
               return;
           }
@@ -573,7 +573,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
               if($scope.registerUser.username.length < 6)
               {
-                  $scope.alertnote = "Username should be atleast 6 characters.";
+                  $scope.alertnote = "Username should be at least 6 characters.";
                   $scope.showAlertToast();
                   return;
               }
@@ -587,7 +587,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
               if($scope.registerUser.fullname.length < 6)
               {
-                  $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                  $scope.alertnote = "Please enter Full Name at least 6 characters.";
                   $scope.showAlertToast();
                   return;
               }
