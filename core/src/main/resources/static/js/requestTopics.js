@@ -274,7 +274,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 }
 
                 if($scope.addTopic.topicname.length < 5){
-                    $scope.alertnote = "Topic name should be atleast 5 characters.";
+                    $scope.alertnote = "Topic name should be at least 5 characters.";
                     $scope.showAlertToast();
                     return;
                 }

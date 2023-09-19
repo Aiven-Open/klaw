@@ -395,7 +395,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }
                 else if(!$scope.topicteamname){
                         alert("There is no team found for this topic : " +  topicName);
-                        $scope.alertnote = "Topic prefix should be atleast 3 characters.";
+                        $scope.alertnote = "Topic prefix should be at least 3 characters.";
                         $scope.showAlertToast();
 
                         $scope.addAcl.team="";
@@ -469,7 +469,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     }
                  else
                  {
-                    $scope.alertnote = "Please fill in Topic prefix. (atleast 3 characters)";
+                    $scope.alertnote = "Please fill in Topic prefix. (at least 3 characters)";
                     $scope.showAlertToast();
                     return;
                  }

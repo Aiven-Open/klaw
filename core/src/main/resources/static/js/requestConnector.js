@@ -141,7 +141,7 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                 }
 
                 if($scope.addConnector.connectorName.length < 5){
-                    $scope.alertnote = "Connector name should be atleast 5 characters.";
+                    $scope.alertnote = "Connector name should be at least 5 characters.";
                     $scope.showAlertToast();
                     return;
                 }

@@ -18,9 +18,12 @@ public class OnStartupService implements InitializingBean {
 
   @Autowired MigrationUtility migrationUtility;
 
+  @Autowired EmailService emailService;
+
   @Override
   public void afterPropertiesSet() throws Exception {
     exportImportDataService.importData();
     migrationUtility.startMigration();
+    emailService.updateHeaderText();
   }
 }
