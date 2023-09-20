@@ -22,7 +22,9 @@ build () {
 
 # This is only for use in E2E tests. It skips testing to
 # speed up the process. This assumes that the code it runs
-# against is unit/integration tested.
+# against is unit/integration tested. This is only aimed at
+# pipeline/running E2E tests, which is why it's not
+# listed in usage here!
 buildForUITests () {
 	echo "Build Klaw project binaries"
   mvn clean install -Dmaven.test.skip=true
