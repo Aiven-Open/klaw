@@ -65,14 +65,23 @@ describe("EnvironmentStatus", () => {
       expect(button).toBeEnabled();
     });
   });
+
   describe("Refresh status", () => {
+    const originalConsoleError = console.error;
+    const errorMessage = "Environment refresh error";
+
     beforeEach(() => {
+      console.error = jest.fn();
+
       customRender(<EnvironmentStatus envId="1" initialEnvStatus="ONLINE" />, {
         queryClient: true,
       });
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
+      jest.clearAllMocks();
+
       cleanup();
     });
 
@@ -90,6 +99,7 @@ describe("EnvironmentStatus", () => {
 
       await userEvent.click(refreshButton);
 
+      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Working")).toBeVisible();
     });
 
@@ -107,11 +117,12 @@ describe("EnvironmentStatus", () => {
 
       await userEvent.click(refreshButton);
 
+      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Not working")).toBeVisible();
     });
 
     it("renders previous Status chip and toast when there is an error", async () => {
-      mockGetUpdateEnvStatus.mockRejectedValue("Oh no");
+      mockGetUpdateEnvStatus.mockRejectedValue(errorMessage);
 
       expect(screen.getByText("Working")).toBeVisible();
 
@@ -130,6 +141,8 @@ describe("EnvironmentStatus", () => {
           variant: "danger",
         })
       );
+
+      expect(console.error).toHaveBeenCalledWith(errorMessage);
     });
   });
 });

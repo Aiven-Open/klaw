@@ -6,10 +6,9 @@ import {
   Typography,
 } from "@aivenio/aquarium";
 import database from "@aivenio/aquarium/dist/src/icons/database";
-import { Dispatch, SetStateAction } from "react";
-import { EnvironmentInfo } from "src/domain/environment";
-import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { DisabledButtonTooltip } from "src/app/components/DisabledButtonTooltip";
+import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import { EnvironmentInfo } from "src/domain/environment";
 
 type TopicOverviewHeaderProps = {
   entity: { name: string; type: "connector" | "topic" };
@@ -20,7 +19,7 @@ type TopicOverviewHeaderProps = {
   entityUpdating: boolean;
   environments?: EnvironmentInfo[];
   environmentId?: string;
-  setEnvironmentId: Dispatch<SetStateAction<string | undefined>>;
+  setEnvironmentId: (id: string) => void;
 };
 
 function EntityDetailsHeader(props: TopicOverviewHeaderProps) {

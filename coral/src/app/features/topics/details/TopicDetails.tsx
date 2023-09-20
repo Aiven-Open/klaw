@@ -6,7 +6,10 @@ import {
   useLocation,
   useMatches,
   useOutletContext,
+  useSearchParams,
 } from "react-router-dom";
+import { ClaimBanner } from "src/app/features/components/ClaimBanner";
+import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
@@ -16,14 +19,12 @@ import {
 } from "src/app/router_utils";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import {
-  requestTopicClaim,
   getSchemaOfTopic,
   getTopicOverview,
+  requestTopicClaim,
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { ClaimBanner } from "src/app/features/components/ClaimBanner";
-import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -45,15 +46,13 @@ function findMatchingTab(
 
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
+  // This state comes from the topic Link components in TopicTable
   const { state: initialEnvironment }: { state: string | null } = useLocation();
   const toast = useToast();
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
-  const [environmentId, setEnvironmentId] = useState<string | undefined>(
-    initialEnvironment ?? undefined
-  );
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined
   );
@@ -62,6 +61,11 @@ function TopicDetails(props: TopicOverviewProps) {
     string | undefined
   >();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedEnvironmentId, setSelectedEnvironmentId] = useState(
+    searchParams.get("env") ?? initialEnvironment ?? undefined
+  );
+
   const {
     data: topicData,
     isError: topicIsError,
@@ -69,8 +73,9 @@ function TopicDetails(props: TopicOverviewProps) {
     isLoading: topicIsLoading,
     isRefetching: topicIsRefetching,
     refetch: refetchTopic,
-  } = useQuery(["topic-overview", topicName, environmentId], {
-    queryFn: () => getTopicOverview({ topicName, environmentId }),
+  } = useQuery(["topic-overview", topicName, selectedEnvironmentId], {
+    queryFn: () =>
+      getTopicOverview({ topicName, environmentId: selectedEnvironmentId }),
   });
 
   const {
@@ -79,18 +84,21 @@ function TopicDetails(props: TopicOverviewProps) {
     error: schemaError,
     isLoading: schemaIsLoading,
     isRefetching: schemaIsRefetching,
-  } = useQuery(["schema-overview", topicName, environmentId, schemaVersion], {
-    queryFn: () => {
-      if (environmentId !== undefined) {
-        return getSchemaOfTopic({
-          topicName,
-          kafkaEnvId: environmentId,
-          schemaVersionSearch: schemaVersion,
-        });
-      }
-    },
-    enabled: environmentId !== undefined,
-  });
+  } = useQuery(
+    ["schema-overview", topicName, selectedEnvironmentId, schemaVersion],
+    {
+      queryFn: () => {
+        if (selectedEnvironmentId !== undefined) {
+          return getSchemaOfTopic({
+            topicName,
+            kafkaEnvId: selectedEnvironmentId,
+            schemaVersionSearch: schemaVersion,
+          });
+        }
+      },
+      enabled: selectedEnvironmentId !== undefined,
+    }
+  );
 
   const {
     mutate: createClaimTopicRequest,
@@ -124,11 +132,15 @@ function TopicDetails(props: TopicOverviewProps) {
   useEffect(() => {
     if (
       topicData?.availableEnvironments !== undefined &&
-      environmentId === undefined
+      selectedEnvironmentId === undefined
     ) {
-      setEnvironmentId(topicData.availableEnvironments[0].id);
+      setSelectedEnvironmentId(topicData.availableEnvironments[0].id);
     }
-  }, [topicData?.availableEnvironments, environmentId, setEnvironmentId]);
+  }, [
+    topicData?.availableEnvironments,
+    setSelectedEnvironmentId,
+    setSelectedEnvironmentId,
+  ]);
 
   if (currentTab === undefined) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
@@ -147,13 +159,16 @@ function TopicDetails(props: TopicOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
-        entityEditLink={`/topic/${topicName}/request-update?env=${topicData?.topicInfo.envId}`}
+        entityEditLink={`/topic/${topicName}/request-update?env=${selectedEnvironmentId}`}
         showEditButton={Boolean(topicData?.topicInfo.showEditTopic)}
         hasPendingRequest={Boolean(topicData?.topicInfo.hasOpenTopicRequest)}
         entityUpdating={topicIsRefetching}
         environments={topicData?.availableEnvironments}
-        environmentId={environmentId}
-        setEnvironmentId={setEnvironmentId}
+        environmentId={selectedEnvironmentId}
+        setEnvironmentId={(id: string) => {
+          setSelectedEnvironmentId(id);
+          setSearchParams({ env: id });
+        }}
       />
       {topicData?.topicInfo !== undefined &&
         !topicData.topicInfo.topicOwner && (
@@ -175,7 +190,7 @@ function TopicDetails(props: TopicOverviewProps) {
         isError={topicIsError || schemaIsError}
         error={topicError || schemaError}
         currentTab={currentTab}
-        environmentId={environmentId}
+        environmentId={selectedEnvironmentId}
         // These state setters are used refresh the queries with the correct params...
         // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
