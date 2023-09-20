@@ -99,6 +99,7 @@ describe("EnvironmentStatus", () => {
 
       await userEvent.click(refreshButton);
 
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Working")).toBeVisible();
     });
@@ -117,6 +118,7 @@ describe("EnvironmentStatus", () => {
 
       await userEvent.click(refreshButton);
 
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Not working")).toBeVisible();
     });
@@ -132,6 +134,7 @@ describe("EnvironmentStatus", () => {
 
       await userEvent.click(refreshButton);
 
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(screen.getByText("Working")).toBeVisible();
 
       await waitFor(() =>
@@ -143,6 +146,37 @@ describe("EnvironmentStatus", () => {
       );
 
       expect(console.error).toHaveBeenCalledWith(errorMessage);
+    });
+
+    it("allows to refetch status several times in a row", async () => {
+      mockGetUpdateEnvStatus.mockResolvedValue({
+        result: "success",
+        envStatus: "OFFLINE",
+      });
+
+      expect(screen.getByText("Working")).toBeVisible();
+
+      const refreshButton = screen.getByRole("button", {
+        name: "Refresh Environment status",
+      });
+
+      await userEvent.click(refreshButton);
+
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(screen.getByText("Not working")).toBeVisible();
+
+      await userEvent.click(refreshButton);
+
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(screen.getByText("Not working")).toBeVisible();
+
+      await userEvent.click(refreshButton);
+
+      expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(screen.getByText("Not working")).toBeVisible();
     });
   });
 });
