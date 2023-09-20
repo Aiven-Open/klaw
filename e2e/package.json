@@ -13,7 +13,8 @@
     "lint": "prettier --check . && eslint .",
     "reformat": "prettier --write . && eslint --fix .",
     "lint-staged": "lint-staged",
-    "prepare": "git config --local core.hooksPath .githooks/"
+    "prepare": "git config --local core.hooksPath .githooks/",
+    "tsc": "tsc -p tsconfig.json"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js}": [

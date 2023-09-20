@@ -1,1 +1,5 @@
-{}
+{
+  "extends": "../coral/tsconfig.json",
+  "include": ["./**/*.ts"],
+  "exclude": ["coral", "proxy"]
+}

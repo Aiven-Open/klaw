@@ -24,7 +24,7 @@
     "test": "jest",
     "test-ci": "jest --ci",
     "test-dev": "jest --watch",
-    "tsc": "tsc",
+    "tsc": "tsc -p tsconfig.json",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
     "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type",
     "add-precommit": "git config --local core.hooksPath .githooks/"
