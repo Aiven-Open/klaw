@@ -31,11 +31,11 @@ const EnvironmentStatus = ({
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isFetching && isSuccess) {
       setShouldUpdateStatus(false);
       setEnvStatus(updatedEnvStatus.envStatus);
     }
-    if (isError) {
+    if (!isFetching && isError) {
       setShouldUpdateStatus(false);
       toast({
         message: `Could not refresh Environment status: ${parseErrorMsg(
@@ -45,7 +45,7 @@ const EnvironmentStatus = ({
         variant: "danger",
       });
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, isFetching]);
 
   if (isFetching || isRefetching) {
     return (
