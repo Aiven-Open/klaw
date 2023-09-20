@@ -21,7 +21,6 @@ const EnvironmentStatus = ({
   const {
     data: updatedEnvStatus,
     isFetching,
-    isRefetching,
     isSuccess,
     isError,
     error,
@@ -47,7 +46,7 @@ const EnvironmentStatus = ({
     }
   }, [isSuccess, isError, isFetching]);
 
-  if (isFetching || isRefetching) {
+  if (isFetching) {
     return (
       <Box.Flex justifyContent="space-between">
         <StatusChip dense status="neutral" text="Refreshing..." />
