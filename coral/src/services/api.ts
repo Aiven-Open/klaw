@@ -252,9 +252,9 @@ const DYNAMIC_API_PATHS = {
   getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
     `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
   addEnvToCache: ({ tenantId, id }: Parameters<AddEnvToCache>[0]) =>
-    `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
+    `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
   removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
-    `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
+    `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,

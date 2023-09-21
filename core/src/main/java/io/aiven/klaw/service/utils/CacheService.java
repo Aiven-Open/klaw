@@ -1,13 +1,9 @@
 package io.aiven.klaw.service.utils;
 
-import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.service.HighAvailabilityUtilsService;
+import io.aiven.klaw.service.HARestMessagingService;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * This cache provides a standardised way with built in inter instance update to other caches when
@@ -20,25 +16,20 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class CacheService<T> {
 
-  public static final String URL_SEPERATOR = "/";
-  public static final String TENANT = "tenant";
-  public static final String ID = "id";
   Map<Integer, Map<Integer, T>> cache;
 
-  RestTemplate rest;
-
   private final String urlEndpoint;
+  private final String entityType;
 
-  private final HighAvailabilityUtilsService utilsService;
+  private final HARestMessagingService utilsService;
 
-  private List<String> clusterUrls;
-
-  public CacheService(String endpoint, HighAvailabilityUtilsService utilsService) {
+  public CacheService(String entityType, HARestMessagingService utilsService) {
     // TODO an interface needs to be added to allow the passing in of different communication
     // methods (kafka/https/rabbitmq etc) to allow any org to use what they want for maintaining
     // cache.
     this.cache = new HashMap<>();
-    this.urlEndpoint = "cache" + URL_SEPERATOR + endpoint;
+    this.urlEndpoint = "cache";
+    this.entityType = entityType;
     this.utilsService = utilsService;
   }
 
@@ -96,66 +87,11 @@ public class CacheService<T> {
     return new ArrayList<>(cache.get(tenantId).values());
   }
 
-  // Implement Interface here so sync can be done via kafka if wanted
   private void sendHighAvailabilityUpdate(int tenantId, Integer id, T entry) {
-
-    if (isLazyLoaded()) {
-      throw new RuntimeException("Unable to load High Availability Cache");
-    }
-
-    for (String url : clusterUrls) {
-      try {
-
-        HttpEntity<T> request = new HttpEntity<>(entry, utilsService.createHeaders());
-        rest.postForObject(getUrl(url, tenantId, id), request, ApiResponse.class);
-
-      } catch (KlawException | RestClientException clientException) {
-        log.error(
-            "Exception while sending HA updates to another instance {} in the cluster.",
-            url,
-            clientException);
-      }
-    }
+    utilsService.sendUpdate(entityType, tenantId, id, entry);
   }
 
   private void sendHighAvailabilityRemove(int tenantId, Integer id) {
-
-    if (isLazyLoaded()) {
-      throw new RuntimeException("Unable to load High Availability Cache");
-    }
-
-    for (String url : clusterUrls) {
-      try {
-        rest.exchange(
-            getUrl(url, tenantId, id),
-            HttpMethod.DELETE,
-            new HttpEntity<>(utilsService.createHeaders()),
-            Void.class);
-      } catch (RestClientException | KlawException clientException) {
-        log.error(
-            "Exception while sending HA updates to another instance {} in the cluster.",
-            url,
-            clientException);
-      }
-    }
-  }
-
-  private String getUrl(String url, int tenantId, Integer id) {
-    if (url.endsWith(URL_SEPERATOR)) {
-      url = url + urlEndpoint;
-    } else {
-      url = url + URL_SEPERATOR + urlEndpoint;
-    }
-    return String.join(
-        URL_SEPERATOR, url, TENANT, Integer.toString(tenantId), ID, Integer.toString(id));
-  }
-
-  private boolean isLazyLoaded() {
-
-    if (rest == null || clusterUrls == null) {
-      this.rest = utilsService.getRestTemplate();
-      this.clusterUrls = utilsService.getHAClusterUrls();
-    }
-    return (rest == null && clusterUrls == null);
+    utilsService.sendRemove(entityType, tenantId, id);
   }
 }

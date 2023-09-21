@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

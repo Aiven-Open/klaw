@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_117;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.net.InetAddress;
@@ -16,28 +17,43 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
-public class HighAvailabilityUtilsService {
+public class HARestMessagingService implements HAMessagingServiceI {
 
+  public static final String URL_SEPERATOR = "/";
+  public static final String TENANT = "tenant";
+  public static final String ID = "id";
   public static final String BEARER = "Bearer ";
   public static final String AUTHORIZATION = "Authorization";
+  public static final String ROLES = "Roles";
+  public static final String NAME = "name";
+  public static final String ENTITY_TYPE = "entityType";
+  public static final String CACHE = "cache";
+  public static final String CACHE_ADMIN = "CACHE_ADMIN";
+  public static final String APP_2_APP = "App2App";
   @Autowired Environment environment;
 
+  private List<String> clusterUrls;
+
+  RestTemplate rest;
   private static HttpComponentsClientHttpRequestFactory requestFactory = null;
 
   private static Map<String, String> baseUrlsMap;
 
-  @Value("${klaw.clusterapi.access.base64.secret:#{''}}")
-  private String clusterApiAccessBase64Secret;
+  @Value("${klaw.core.app2app.base64.secret:#{''}}")
+  private String App2AppApiKey;
 
-  @Value("${klaw.clusterapi.access.username}")
+  @Value("${klaw.core.app2app.username:KlawApp2App}")
   private String apiUser;
 
   @Value("${klaw.uiapi.servers:server1,server2}")
@@ -46,7 +62,7 @@ public class HighAvailabilityUtilsService {
   public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
   public static final String BASE_URL_NAME = "BASE_URL_NAME";
 
-  public Map<String, String> getBaseIpUrlFromEnvironment() {
+  private Map<String, String> getBaseIpUrlFromEnvironment() {
     if (baseUrlsMap != null && !baseUrlsMap.isEmpty()) {
       return baseUrlsMap;
     } else {
@@ -75,7 +91,6 @@ public class HighAvailabilityUtilsService {
   }
 
   public RestTemplate getRestTemplate() {
-    log.info("https start? {}", clusterUrlsAsString);
     if (clusterUrlsAsString.toLowerCase().startsWith("https")) {
       if (requestFactory == null) {
         requestFactory = ClusterApiService.requestFactory;
@@ -106,25 +121,91 @@ public class HighAvailabilityUtilsService {
   }
 
   private String generateToken(String username) throws KlawException {
-    if (clusterApiAccessBase64Secret.isBlank()) {
+    if (App2AppApiKey.isBlank()) {
       log.error(CLUSTER_API_ERR_117);
       throw new KlawException(CLUSTER_API_ERR_117);
     }
 
     Key hmacKey =
         new SecretKeySpec(
-            Base64.decodeBase64(clusterApiAccessBase64Secret),
-            SignatureAlgorithm.HS256.getJcaName());
+            Base64.decodeBase64(App2AppApiKey), SignatureAlgorithm.HS256.getJcaName());
     Instant now = Instant.now();
 
     return Jwts.builder()
-        .claim("name", username)
-        .claim("Role", "CACHE_ADMIN")
+        .claim(NAME, username)
+        .claim(ROLES, List.of(CACHE_ADMIN, APP_2_APP))
         .setSubject(username)
         .setId(UUID.randomUUID().toString())
         .setIssuedAt(Date.from(now))
         .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
         .signWith(hmacKey)
         .compact();
+  }
+
+  @Override
+  public void sendUpdate(String entityType, int tenantId, int id, Object entry) {
+    if (isLazyLoaded()) {
+      throw new RuntimeException("Unable to load High Availability Cache");
+    }
+
+    for (String url : clusterUrls) {
+      try {
+        HttpEntity<Object> request = new HttpEntity<>(entry, createHeaders());
+        rest.postForObject(getUrl(url, entityType, tenantId, id), request, ApiResponse.class);
+
+      } catch (KlawException | RestClientException clientException) {
+        log.error(
+            "Exception while sending HA updates to another instance {} in the cluster.",
+            url,
+            clientException);
+      }
+    }
+  }
+
+  @Override
+  public void sendRemove(String entityType, int tenantId, int id) {
+    if (isLazyLoaded()) {
+      throw new RuntimeException("Unable to load High Availability Cache");
+    }
+
+    for (String url : clusterUrls) {
+      try {
+        rest.exchange(
+            getUrl(url, entityType, tenantId, id),
+            HttpMethod.DELETE,
+            new HttpEntity<>(createHeaders()),
+            Void.class);
+      } catch (RestClientException | KlawException clientException) {
+        log.error(
+            "Exception while sending HA updates to another instance {} in the cluster.",
+            url,
+            clientException);
+      }
+    }
+  }
+
+  private boolean isLazyLoaded() {
+
+    if (rest == null || clusterUrls == null) {
+      this.rest = getRestTemplate();
+      this.clusterUrls = getHAClusterUrls();
+    }
+    return (rest == null && clusterUrls == null);
+  }
+
+  private String getUrl(String url, String entityType, int tenantId, Integer id) {
+    if (url.endsWith(URL_SEPERATOR)) {
+      url = url.substring(0, url.length() - 1);
+    }
+    return String.join(
+        URL_SEPERATOR,
+        url,
+        CACHE,
+        TENANT,
+        Integer.toString(tenantId),
+        ENTITY_TYPE,
+        entityType,
+        ID,
+        Integer.toString(id));
   }
 }

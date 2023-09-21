@@ -2,7 +2,10 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.service.HARestMessagingService;
+import io.aiven.klaw.service.JwtTokenUtilService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +19,36 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class CacheController {
 
+  public static final String CACHE_ADMIN = "CACHE_ADMIN";
   @Autowired private ManageDatabase manageDatabase;
 
+  @Autowired JwtTokenUtilService jwtTokenUtilService;
+
   @PostMapping(
-      value = "/environment/tenant/{tenantId}/id/{id}",
+      value = "/tenant/{tenantId}/entityType/environment/id/{id}",
       produces = {MediaType.APPLICATION_JSON_VALUE},
       consumes = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addEnvToCache(
       @PathVariable("tenantId") Integer tenantId,
       @PathVariable("id") Integer id,
-      @Valid @RequestBody Env env) {
+      @Valid @RequestBody Env env,
+      @RequestHeader(name = "Authorization") String token)
+      throws KlawNotAuthorizedException {
+    jwtTokenUtilService.validateRole(token, HARestMessagingService.CACHE_ADMIN);
     manageDatabase.addEnvToCache(tenantId, env, true);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @DeleteMapping(
-      value = "/environment/tenant/{tenantId}/id/{id}",
+      value = "/tenant/{tenantId}/entityType/environment/id/{id}",
       produces = {MediaType.APPLICATION_JSON_VALUE},
       consumes = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> removeEnvFromCache(
-      @PathVariable("tenantId") Integer tenantId, @PathVariable("id") Integer id) {
+      @PathVariable("tenantId") Integer tenantId,
+      @PathVariable("id") Integer id,
+      @RequestHeader(name = "Authorization") String token)
+      throws KlawNotAuthorizedException {
+    jwtTokenUtilService.validateRole(token, HARestMessagingService.CACHE_ADMIN);
     manageDatabase.removeEnvFromCache(tenantId, id, true);
     return new ResponseEntity<>(HttpStatus.OK);
   }

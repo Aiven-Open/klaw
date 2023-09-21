@@ -2076,7 +2076,7 @@
         }
       }
     },
-    "/cache/environment/tenant/{tenantId}/id/{id}" : {
+    "/cache/tenant/{tenantId}/entityType/environment/id/{id}" : {
       "post" : {
         "tags" : [ "cache-controller" ],
         "operationId" : "addEnvToCache",
@@ -2095,6 +2095,13 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
         } ],
         "requestBody" : {
@@ -2138,6 +2145,13 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
         } ],
         "responses" : {

@@ -104,7 +104,7 @@ public class CommonUtilsService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  @Autowired HighAvailabilityUtilsService highAvailabilityUtilsService;
+  @Autowired HARestMessagingService HARestMessagingService;
 
   @Value("${klaw.uiapi.servers:server1,server2}")
   private String uiApiServers;
@@ -116,7 +116,7 @@ public class CommonUtilsService {
   private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   private RestTemplate getRestTemplate() {
-    return highAvailabilityUtilsService.getRestTemplate();
+    return HARestMessagingService.getRestTemplate();
   }
 
   public Authentication getAuthentication() {
@@ -419,7 +419,7 @@ public class CommonUtilsService {
           }
 
           // ignore metadata cache reset on local.
-          if (highAvailabilityUtilsService.isLocalServerUrl(basePath)) {
+          if (HARestMessagingService.isLocalServerUrl(basePath)) {
             continue;
           }
 
