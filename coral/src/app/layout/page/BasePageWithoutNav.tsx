@@ -18,7 +18,7 @@ function BasePageWithoutNav({
       }}
     >
       <GridItem height={"l5"} backgroundColor={"primary-80"} paddingX={"l2"}>
-        <Box
+        <Box.Flex
           component={"header"}
           display={"flex"}
           height={"full"}
@@ -33,10 +33,10 @@ function BasePageWithoutNav({
             <img aria-hidden="true" alt="" src={logo} height={50} width={150} />
           </a>
           {headerContent}
-        </Box>
+        </Box.Flex>
       </GridItem>
       <GridItem>
-        <Box
+        <Box.Flex
           component={"main"}
           display={"flex"}
           flexDirection={"column"}
@@ -47,7 +47,7 @@ function BasePageWithoutNav({
           margin={"auto"}
         >
           {content}
-        </Box>
+        </Box.Flex>
       </GridItem>
     </Grid>
   );

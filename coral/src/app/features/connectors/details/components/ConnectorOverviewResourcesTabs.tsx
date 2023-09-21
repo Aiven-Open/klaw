@@ -71,33 +71,33 @@ function ConnectorOverviewResourcesTabs({
   function renderTabContent() {
     if (isError) {
       return (
-        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box.Flex marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="error">
             There was an error trying to load the connector details:{" "}
             {parseErrorMsg(error)}.
             <br />
             Please try again later.
           </Alert>
-        </Box>
+        </Box.Flex>
       );
     }
 
     if (isLoading || connectorIsRefetching) {
       return (
-        <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
+        <Box.Flex paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
           <div className={"visually-hidden"}>Loading connector details</div>
           <Icon icon={loading} fontSize={"30px"} />
-        </Box>
+        </Box.Flex>
       );
     }
 
     if (!connectorOverview?.connectorExists) {
       return (
-        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box.Flex marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="warning">
             Connector {connectorName} does not exist.
           </Alert>
-        </Box>
+        </Box.Flex>
       );
     }
 

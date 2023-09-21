@@ -74,7 +74,7 @@ function DocumentationEditor({
       {viewMode === "edit" && (
         <>
           <div className={classes.markdownEditor}>
-            <Box
+            <Box.Flex
               borderColor={"grey-20"}
               borderWidth={"1px"}
               borderRadius={"2px"}
@@ -113,7 +113,7 @@ function DocumentationEditor({
                   {text}
                 </SyntaxHighlighter>
               </div>
-            </Box>
+            </Box.Flex>
           </div>
           <Box.Flex justifyContent={"end"}>
             <Typography.SmallStrong id={"editor-markdown-description"}>

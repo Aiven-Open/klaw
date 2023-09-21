@@ -8,7 +8,7 @@ import {
 
 const SkeletonForm = () => {
   return (
-    <Box data-testid={"skeleton"}>
+    <Box.Flex data-testid={"skeleton"}>
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
           <Box.Flex gap={"4"}>
@@ -51,7 +51,7 @@ const SkeletonForm = () => {
           <Textarea.Skeleton />
         </GridItem>
       </Grid>
-    </Box>
+    </Box.Flex>
   );
 };
 

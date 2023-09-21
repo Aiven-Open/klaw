@@ -41,7 +41,7 @@ const TopicDeleteConfirmationModal = ({
         disabled: isLoading,
       }}
     >
-      <Box display={"flex"} flexDirection={"column"} rowGap={"l1"}>
+      <Box.Flex display={"flex"} flexDirection={"column"} rowGap={"l1"}>
         <p>
           Are you sure you would like to delete this topic? Once this request is
           made it cannot be reversed.
@@ -65,7 +65,7 @@ const TopicDeleteConfirmationModal = ({
           valid={true}
           disabled={isLoading}
         />
-      </Box>
+      </Box.Flex>
     </Modal>
   );
 };

@@ -24,7 +24,7 @@ function TableLayout(props: TableLayoutProps) {
 
   return (
     <>
-      <Box
+      <Box.Flex
         display={"flex"}
         flexDirection={"row"}
         flexWrap={"wrap"}
@@ -35,17 +35,17 @@ function TableLayout(props: TableLayoutProps) {
       >
         {filters.map((element) => {
           return (
-            <Box
+            <Box.Flex
               key={element.key}
               grow={1}
               display={"flex"}
               flexDirection={"column"}
             >
               {element}
-            </Box>
+            </Box.Flex>
           );
         })}
-      </Box>
+      </Box.Flex>
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
         <div role={"alert"}>
@@ -56,14 +56,14 @@ function TableLayout(props: TableLayoutProps) {
       )}
       {!isLoading && !isErrorLoading && (
         <>
-          <Box
+          <Box.Flex
             style={{
               overflow: "auto",
             }}
             marginBottom={"l4"}
           >
-            <Box className={"a11y-enhancement-data-table"}>{table}</Box>
-          </Box>
+            <Box.Flex className={"a11y-enhancement-data-table"}>{table}</Box.Flex>
+          </Box.Flex>
           <Box.Flex justifyContent={"center"}>{pagination}</Box.Flex>
         </>
       )}

@@ -35,7 +35,7 @@ function TopicMessageItem({ offsetId, message }: Props) {
   return (
     <BorderBox padding={"4"} marginBottom={"4"}>
       <Box.Flex component={"h3"}>
-        <Box marginRight="2">
+        <Box.Flex marginRight="2">
           <Button.Icon
             id={panelTrigger}
             icon={expanded ? minimizeIcon : expandIcon}
@@ -45,15 +45,15 @@ function TopicMessageItem({ offsetId, message }: Props) {
             aria-controls={panelId}
             onClick={() => setExpanded(!expanded)}
           />
-        </Box>
-        <Box
+        </Box.Flex>
+        <Box.Flex
           paddingTop="2"
           grow={1}
           id={panelId}
           aria-labelledby={panelTrigger}
         >
           {getMessage()}
-        </Box>
+        </Box.Flex>
       </Box.Flex>
     </BorderBox>
   );

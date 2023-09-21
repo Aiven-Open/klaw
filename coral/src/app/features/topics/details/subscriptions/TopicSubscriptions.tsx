@@ -191,9 +191,9 @@ const TopicSubscriptions = () => {
         }}
       />
       {errorMessage !== "" && (
-        <Box role="alert" marginBottom={"l2"}>
+        <Box.Flex role="alert" marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
-        </Box>
+        </Box.Flex>
       )}
 
       <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>

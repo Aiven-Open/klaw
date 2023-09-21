@@ -134,8 +134,8 @@ function TopicDetailsSchema() {
         />
       )}
       <PageHeader title="Schema" />
-      <Box display={"flex"} justifyContent={"space-between"}>
-        <Box display={"flex"} colGap={"l1"}>
+      <Box.Flex display={"flex"} justifyContent={"space-between"}>
+        <Box.Flex display={"flex"} colGap={"l1"}>
           {topicSchemasIsRefetching ? (
             <>
               <div className={"visually-hidden"}>Versions loading</div>
@@ -156,17 +156,17 @@ function TopicDetailsSchema() {
                 ))}
               </NativeSelect>
               <Typography.SmallStrong color={"grey-40"}>
-                <Box display={"flex"} marginTop={"3"} colGap={"2"}>
+                <Box.Flex display={"flex"} marginTop={"3"} colGap={"2"}>
                   <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
                   <span>{allSchemaVersions.length} versions</span>
-                </Box>
+                </Box.Flex>
               </Typography.SmallStrong>
             </>
           )}
-        </Box>
+        </Box.Flex>
 
         {!topicSchemasIsRefetching && isTopicOwner && (
-          <Box alignSelf={"top"}>
+          <Box.Flex alignSelf={"top"}>
             <Link
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
             >
@@ -174,22 +174,22 @@ function TopicDetailsSchema() {
                 Request a new version
               </Button.Primary>
             </Link>
-          </Box>
+          </Box.Flex>
         )}
-      </Box>
+      </Box.Flex>
 
       {!topicSchemasIsRefetching &&
         isTopicOwner &&
         promotionStatus !== "NO_PROMOTION" && (
           <Banner image={illustration} layout="vertical" title={""}>
-            <Box component={"p"} marginBottom={"l1"}>
+            <Box.Flex component={"p"} marginBottom={"l1"}>
               This schema has not yet been promoted to the {targetEnv}{" "}
               environment.
-            </Box>
+            </Box.Flex>
             {errorMessage.length > 0 && (
-              <Box component={"p"} marginBottom={"l1"}>
+              <Box.Flex component={"p"} marginBottom={"l1"}>
                 <Alert type="error">{errorMessage}</Alert>
-              </Box>
+              </Box.Flex>
             )}
             <Button.Primary
               onClick={() =>
@@ -206,7 +206,7 @@ function TopicDetailsSchema() {
         id={schemaDetailsPerEnv.id}
         compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
       />
-      <Box marginTop={"l3"} marginBottom={"l2"}>
+      <Box.Flex marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
         {topicSchemasIsRefetching ? (
           <>
@@ -214,7 +214,7 @@ function TopicDetailsSchema() {
             <TextareaBase.Skeleton />
           </>
         ) : (
-          <Box borderColor={"grey-20"} borderWidth={"1px"}>
+          <Box.Flex borderColor={"grey-20"} borderWidth={"1px"}>
             <MonacoEditor
               data-testid="topic-schema"
               height="250px"
@@ -232,9 +232,9 @@ function TopicDetailsSchema() {
                 scrollBeyondLastLine: false,
               }}
             />
-          </Box>
+          </Box.Flex>
         )}
-      </Box>
+      </Box.Flex>
     </>
   );
 }

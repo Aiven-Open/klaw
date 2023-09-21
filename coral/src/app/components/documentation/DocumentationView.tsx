@@ -8,11 +8,11 @@ type DocumentationViewProps = {
 
 function DocumentationView({ markdownString }: DocumentationViewProps) {
   return (
-    <Box component={"article"}>
+    <Box.Flex component={"article"}>
       <ReactMarkdown className={classes.reactMarkdown}>
         {markdownString}
       </ReactMarkdown>
-    </Box>
+    </Box.Flex>
   );
 }
 

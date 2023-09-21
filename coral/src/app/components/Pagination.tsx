@@ -25,7 +25,7 @@ function Pagination(props: PaginationProps) {
       role="navigation"
       aria-label={`Pagination navigation, you're on page ${activePage} of ${totalPages}`}
     >
-      <Box
+      <Box.Flex
         component={"ul"}
         display={"flex"}
         colGap={"l1"}
@@ -76,7 +76,7 @@ function Pagination(props: PaginationProps) {
             <Icon aria-hidden={true} icon={chevronForward} />
           </GhostButton>
         </li>
-      </Box>
+      </Box.Flex>
     </nav>
   );
 }

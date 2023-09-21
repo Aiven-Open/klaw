@@ -96,9 +96,9 @@ function ConnectorSettings() {
 
       <PageHeader title={"Settings"} />
       {errorMessage && (
-        <Box role="alert" marginBottom={"l2"}>
+        <Box.Flex role="alert" marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
-        </Box>
+        </Box.Flex>
       )}
 
       {!connectorOwner && (
@@ -124,22 +124,22 @@ function ConnectorSettings() {
               marginTop={"l2"}
               rowGap={"l2"}
             >
-              <Box
+              <Box.Flex
                 display={"flex"}
                 alignItems={"center"}
                 justifyContent={"space-between"}
               >
-                <Box width={"full"}>
+                <Box.Flex width={"full"}>
                   <Skeleton />
                   <Skeleton />
-                </Box>
+                </Box.Flex>
                 <div>
                   {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
                   <Button.Primary onClick={() => {}} disabled={true}>
                     Request connector deletion
                   </Button.Primary>
                 </div>
-              </Box>
+              </Box.Flex>
             </BorderBox>
           )}
 
@@ -169,7 +169,7 @@ function ConnectorSettings() {
                   )}
                 </Alert>
               )}
-              <Box
+              <Box.Flex
                 display={"flex"}
                 alignItems={"center"}
                 justifyContent={"space-between"}
@@ -178,10 +178,10 @@ function ConnectorSettings() {
                   <Typography.DefaultStrong htmlTag={"h3"}>
                     Request connector deletion
                   </Typography.DefaultStrong>
-                  <Box component={"p"}>
+                  <Box.Flex component={"p"}>
                     Once a request for deletion is approved, there is no going
                     back. Please be certain.
-                  </Box>
+                  </Box.Flex>
                 </div>
 
                 <div>
@@ -192,7 +192,7 @@ function ConnectorSettings() {
                     Request connector deletion
                   </Button.Primary>
                 </div>
-              </Box>
+              </Box.Flex>
             </BorderBox>
           )}
         </>

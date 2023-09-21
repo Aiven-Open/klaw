@@ -17,7 +17,7 @@ function MainNavigation() {
   const { pathname } = useLocation();
 
   return (
-    <Box
+    <Box.Flex
       component={"nav"}
       backgroundColor={"grey-0"}
       aria-label={"Main navigation"}
@@ -25,12 +25,12 @@ function MainNavigation() {
       minHeight={"full"}
       paddingTop={"l2"}
     >
-      <Box paddingX={"l3"}>
+      <Box.Flex paddingX={"l3"}>
         <TeamInfo />
-      </Box>
-      <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+      </Box.Flex>
+      <Box.Flex aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
         <Divider direction="horizontal" size={2} />
-      </Box>
+      </Box.Flex>
       <ul>
         <li>
           <MainNavigationLink
@@ -92,9 +92,9 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+          <Box.Flex aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
             <Divider direction="horizontal" size={2} />
-          </Box>
+          </Box.Flex>
           <MainNavigationLink
             icon={cog}
             to={`/serverConfig`}
@@ -102,7 +102,7 @@ function MainNavigation() {
           />
         </li>
       </ul>
-    </Box>
+    </Box.Flex>
   );
 }
 

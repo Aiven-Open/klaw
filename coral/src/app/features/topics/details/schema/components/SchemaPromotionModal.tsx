@@ -47,7 +47,7 @@ const SchemaPromotionModal = ({
         disabled: isLoading,
       }}
     >
-      <Box display={"flex"} flexDirection={"column"} rowGap={"l1"}>
+      <Box.Flex display={"flex"} flexDirection={"column"} rowGap={"l1"}>
         <p>
           {`Promote the Version ${version} of the schema to ${targetEnvironment}?`}
         </p>
@@ -73,7 +73,7 @@ const SchemaPromotionModal = ({
           helperText={"Required"}
           disabled={isLoading}
         />
-      </Box>
+      </Box.Flex>
     </Modal>
   );
 };

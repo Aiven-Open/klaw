@@ -67,7 +67,7 @@ function AdvancedConfiguration({ name }: Props) {
   }
 
   return (
-    <Box component={Box.Flex} gap={"l1"} direction={"column"}>
+    <Box.Flex component={Box.Flex} gap={"l1"} direction={"column"}>
       <Typography.Subheading>
         Advanced Topic Configuration
       </Typography.Subheading>
@@ -122,7 +122,7 @@ function AdvancedConfiguration({ name }: Props) {
           }}
         />
       </BorderBox>
-    </Box>
+    </Box.Flex>
   );
 }
 

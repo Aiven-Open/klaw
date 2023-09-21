@@ -30,9 +30,9 @@ function DefinitionBlock({
         {isUpdating ? <Skeleton /> : definition}
       </Typography.Small>
       {!isUpdating && information && (
-        <Box marginTop={"2"} component={"dd"}>
+        <Box.Flex marginTop={"2"} component={"dd"}>
           <Typography.Caption>{information}</Typography.Caption>
-        </Box>
+        </Box.Flex>
       )}
     </Box.Flex>
   );

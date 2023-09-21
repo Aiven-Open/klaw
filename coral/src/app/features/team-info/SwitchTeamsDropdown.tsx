@@ -106,10 +106,10 @@ function SwitchTeamsDropdown({
       >
         <DropdownMenu.Trigger>
           <Button.SecondaryDropdown dense>
-            <Box width={"l7"} display={"flex"} alignContent={"left"}>
+            <Box.Flex width={"l7"} display={"flex"} alignContent={"left"}>
               <span className={"visually-hidden"}>Change your team</span>
               <span aria-hidden={"true"}>{currentTeam}</span>
-            </Box>
+            </Box.Flex>
           </Button.SecondaryDropdown>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>

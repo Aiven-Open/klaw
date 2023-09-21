@@ -37,14 +37,14 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <Box
+    <Box.Flex
       display={"flex"}
       flexDirection={"row"}
       alignItems={"start"}
       justifyContent={"space-between"}
       marginBottom={"l2"}
     >
-      <Box
+      <Box.Flex
         display={"flex"}
         flexDirection={"row"}
         alignItems={"center"}
@@ -52,7 +52,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
       >
         <Typography.Heading>{entity.name}</Typography.Heading>
 
-        <Box width={"l6"}>
+        <Box.Flex width={"l6"}>
           {!environments && (
             <NativeSelectBase
               placeholder={"Loading"}
@@ -86,10 +86,10 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
                 })}
             </NativeSelectBase>
           )}
-        </Box>
+        </Box.Flex>
 
         {entityExists && environments && environments.length > 0 && (
-          <Box display={"flex"} alignItems={"center"} colGap={"2"}>
+          <Box.Flex display={"flex"} alignItems={"center"} colGap={"2"}>
             <Typography.SmallStrong color={"grey-40"}>
               <Icon icon={database} />
             </Typography.SmallStrong>
@@ -97,9 +97,9 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
               {environments.length}{" "}
               {environments.length === 1 ? "Environment" : "Environments"}
             </Typography.SmallStrong>
-          </Box>
+          </Box.Flex>
         )}
-      </Box>
+      </Box.Flex>
       {showEditButton && (
         <Button.Primary
           disabled={!entityExists || entityUpdating}
@@ -108,7 +108,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
           Edit {entity.type}
         </Button.Primary>
       )}
-    </Box>
+    </Box.Flex>
   );
 }
 

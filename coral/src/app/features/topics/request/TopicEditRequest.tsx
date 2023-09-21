@@ -199,16 +199,16 @@ function TopicEditRequest() {
         </Dialog>
       )}
       {editIsError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box.Flex marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(editError)}</Alert>
-        </Box>
+        </Box.Flex>
       )}
       <Form
         {...form}
         ariaLabel={"Request topic update"}
         onSubmit={onEditSubmit}
       >
-        <Box width={"full"}>
+        <Box.Flex width={"full"}>
           {currentEnvironment !== undefined ? (
             <NativeSelect
               name="environment"
@@ -226,10 +226,10 @@ function TopicEditRequest() {
           ) : (
             <NativeSelect.Skeleton />
           )}
-        </Box>
-        <Box paddingY={"l1"}>
+        </Box.Flex>
+        <Box.Flex paddingY={"l1"}>
           <Divider />
-        </Box>
+        </Box.Flex>
         <TextInput<Schema>
           name={"topicname"}
           labelText="Topic name"
@@ -238,7 +238,7 @@ function TopicEditRequest() {
           readOnly
         />
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box.Flex grow={1} width={"1/2"}>
             {currentEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
@@ -249,8 +249,8 @@ function TopicEditRequest() {
             ) : (
               <Input.Skeleton />
             )}
-          </Box>
-          <Box grow={1} width={"1/2"}>
+          </Box.Flex>
+          <Box.Flex grow={1} width={"1/2"}>
             {currentEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
@@ -261,36 +261,36 @@ function TopicEditRequest() {
             ) : (
               <Input.Skeleton />
             )}
-          </Box>
+          </Box.Flex>
         </Box.Flex>
 
-        <Box paddingY={"l1"}>
+        <Box.Flex paddingY={"l1"}>
           <Divider />
-        </Box>
+        </Box.Flex>
         <AdvancedConfiguration name={"advancedConfiguration"} />
 
-        <Box paddingY={"l1"}>
+        <Box.Flex paddingY={"l1"}>
           <Divider />
-        </Box>
+        </Box.Flex>
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box.Flex grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Description"
               rows={5}
               required={true}
             />
-          </Box>
-          <Box grow={1} width={"1/2"}>
+          </Box.Flex>
+          <Box.Flex grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"
               rows={5}
             />
-          </Box>
+          </Box.Flex>
         </Box.Flex>
 
-        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+        <Box.Flex display={"flex"} colGap={"l1"} marginTop={"3"}>
           <SubmitButton>Submit update request</SubmitButton>
           <Button
             type="button"
@@ -304,7 +304,7 @@ function TopicEditRequest() {
           >
             Cancel
           </Button>
-        </Box>
+        </Box.Flex>
       </Form>
     </>
   );

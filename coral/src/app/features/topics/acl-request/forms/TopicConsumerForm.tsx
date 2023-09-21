@@ -115,9 +115,9 @@ const TopicConsumerForm = ({
   return (
     <>
       {isError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box.Flex marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(error)}</Alert>
-        </Box>
+        </Box.Flex>
       )}
       <Form
         {...topicConsumerForm}
@@ -155,7 +155,7 @@ const TopicConsumerForm = ({
           </GridItem>
           <GridItem>
             {hideConsumerGroupField ? (
-              <Box data-testid={"empty"} style={{ height: "87px" }} />
+              <Box.Flex data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
               <TextInput
                 name="consumergroup"
@@ -171,7 +171,7 @@ const TopicConsumerForm = ({
           </GridItem>
           <GridItem>
             {hideIpOrPrincipalField ? (
-              <Box data-testid={"empty"} style={{ height: "87px" }} />
+              <Box.Flex data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}

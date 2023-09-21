@@ -53,10 +53,10 @@ function TopicDocumentation() {
     return (
       <>
         <PageHeader title={"Documentation"} />
-        <Box paddingTop={"l2"}>
+        <Box.Flex paddingTop={"l2"}>
           <div className={"visually-hidden"}>Loading documentation</div>
           <Skeleton />
-        </Box>
+        </Box.Flex>
       </>
     );
   }
@@ -67,12 +67,12 @@ function TopicDocumentation() {
         <PageHeader title={"Edit documentation"} />
         <>
           {isError && (
-            <Box marginBottom={"l1"} role="alert">
+            <Box.Flex marginBottom={"l1"} role="alert">
               <Alert type="error">
                 The documentation could not be saved, there was an error: <br />
                 {parseErrorMsg(error)}
               </Alert>
-            </Box>
+            </Box.Flex>
           )}
           <DocumentationEditor
             documentation={topicOverview.topicDocumentation}
@@ -101,12 +101,12 @@ function TopicDocumentation() {
     return (
       <>
         <PageHeader title={"Documentation"} />
-        <Box role="alert">
+        <Box.Flex role="alert">
           <Alert type="error">
             Something went wrong while trying to transform the documentation
             into the right format.
           </Alert>
-        </Box>
+        </Box.Flex>
       </>
     );
   }
@@ -120,9 +120,9 @@ function TopicDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <Box paddingTop={"l2"}>
+      <Box.Flex paddingTop={"l2"}>
         <DocumentationView markdownString={topicOverview.topicDocumentation} />
-      </Box>
+      </Box.Flex>
     </>
   );
 }

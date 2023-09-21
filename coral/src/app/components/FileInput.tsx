@@ -43,7 +43,7 @@ function FileInput(props: FileInputProps) {
 
   return (
     <div>
-      <Box
+      <Box.Flex
         aria-hidden={true}
         marginBottom={"2"}
         data-testid="file-input-fake-label"
@@ -52,7 +52,7 @@ function FileInput(props: FileInputProps) {
           <span className={!valid ? "text-error-50" : ""}>{labelText}</span>
           {props.required && <span className={"text-error-50"}>*</span>}
         </Typography.Caption>
-      </Box>
+      </Box.Flex>
       <Grid
         colGap={"l1"}
         cols={"2"}
@@ -62,7 +62,7 @@ function FileInput(props: FileInputProps) {
         }}
       >
         <GridItem colStart={"1"} colEnd={"1"} rowStart={"1"} rowEnd={"1"}>
-          <Box
+          <Box.Flex
             aria-hidden={true}
             display={"flex"}
             alignItems={"center"}
@@ -71,7 +71,7 @@ function FileInput(props: FileInputProps) {
             onClick={handleWrapperClick}
             data-testid="file-input-fake-button"
           >
-            <Box
+            <Box.Flex
               component={"div"}
               display={"flex"}
               alignItems={"center"}
@@ -86,12 +86,12 @@ function FileInput(props: FileInputProps) {
             >
               <Icon icon={cloudUpload} />
               <span>{buttonText}</span>
-            </Box>
-          </Box>
+            </Box.Flex>
+          </Box.Flex>
         </GridItem>
 
         <GridItem colStart={"2"} colEnd={"2"} rowStart={"1"} rowEnd={"1"}>
-          <Box
+          <Box.Flex
             grow={"1"}
             borderWidth={"1px"}
             borderRadius={"2px"}
@@ -103,7 +103,7 @@ function FileInput(props: FileInputProps) {
             data-testid="file-input-filename-info"
           >
             {currentFileName || noFileText}
-          </Box>
+          </Box.Flex>
         </GridItem>
 
         <GridItem
@@ -131,7 +131,7 @@ function FileInput(props: FileInputProps) {
             />
           </label>
         </GridItem>
-        <Box
+        <Box.Flex
           component={"p"}
           id={errorMessageId}
           marginTop={"1"}
@@ -139,7 +139,7 @@ function FileInput(props: FileInputProps) {
           className={"text-error-50 typography-caption-default"}
         >
           {valid ? <>&nbsp;</> : <>{helperText}</>}
-        </Box>
+        </Box.Flex>
       </Grid>
     </div>
   );

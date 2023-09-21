@@ -23,21 +23,21 @@ function TeamInfo() {
   }
 
   return (
-    <Box
+    <Box.Flex
       display={"flex"}
       flexDirection={"column"}
       rowGap={"2"}
       height={"l4"}
       marginBottom={"l1"}
     >
-      <Box display={"flex"} alignItems={"center"} colGap={"2"}>
+      <Box.Flex display={"flex"} alignItems={"center"} colGap={"2"}>
         <Typography.SmallTextBold color={"grey-50"}>
           <span className={"visually-hidden"}>Your </span>
           Team
         </Typography.SmallTextBold>
-      </Box>
+      </Box.Flex>
       {renderTeamData()}
-    </Box>
+    </Box.Flex>
   );
 }
 

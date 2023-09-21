@@ -28,10 +28,10 @@ const TopicClaimBanner = ({
               <Alert type="error">{errorMessage}</Alert>
             </div>
           )}
-          <Box component={"p"} marginBottom={"l1"}>
+          <Box.Flex component={"p"} marginBottom={"l1"}>
             Your team is not the owner of this topic. Click below to create a
             claim request for this topic.
-          </Box>
+          </Box.Flex>
         </Spacing>
         <Button.Primary onClick={() => setShowClaimModal(true)}>
           Claim topic

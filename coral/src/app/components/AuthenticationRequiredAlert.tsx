@@ -2,7 +2,7 @@ import { Box, Typography } from "@aivenio/aquarium";
 
 function AuthenticationRequiredAlert() {
   return (
-    <Box
+    <Box.Flex
       role="alertdialog"
       aria-labelledby={"authentication-required-heading"}
       aria-describedby={"authentication-required-text"}
@@ -23,7 +23,7 @@ function AuthenticationRequiredAlert() {
           Redirecting to login page.
         </span>
       </Typography.LargeText>
-    </Box>
+    </Box.Flex>
   );
 }
 
