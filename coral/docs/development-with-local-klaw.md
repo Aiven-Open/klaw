@@ -6,14 +6,13 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 ## Table of content
 
-* [First setup](#first-setup)
-+ [Note on login and authentication](#note-on-login-and-authentication)
-    * [Login ](#login)
-    * [Authentication expired](#authentication-expired)
-    - [🙋Potential browser problem](#potential-browser-problem)
-* [How to run the project](#how-to-run-the-project)
+- [First setup](#first-setup)
+- [Note on login and authentication](#note-on-login-and-authentication)
+  - [Login ](#login)
+  - [Authentication expired](#authentication-expired)
+  - [🙋Potential browser problem](#potential-browser-problem)
+- [How to run the project](#how-to-run-the-project)
 
- 
 ## First setup
 
 ℹ️ Environment settings are located in the file [`.env.local-api`](../../coral/.env.local-api).
@@ -21,7 +20,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 **⚠️ Requirements**
 
 - [node](https://nodejs.org/en/) needs to be installed. See [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version.
-- Coral uses [pnpm](https://pnpm.io/) (version 8) as a package manager. Read their official documentation [how to 
+- Coral uses [pnpm](https://pnpm.io/) (version 8) as a package manager. Read their official documentation [how to
   install](https://pnpm.io/installation) pnpm.
 
 **Step by step**
@@ -35,19 +34,19 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
 9. Run `pnpm run setup` to build and deploy your docker container for:
-    - Klaw core: the main API Coral interacts with
-    - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
-    - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
+   - Klaw core: the main API Coral interacts with
+   - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
+   - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
 10. Run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
     - Login (❗️The correct redirect for login and authentication is **not** working in the proxy yet):
-        - Go to your [local Klaw](http://localhost:9097/login)
-        - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
-        - Go back to the [proxy](http://localhost:1337)
+      - Go to your [local Klaw](http://localhost:9097/login)
+      - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
+      - Go back to the [proxy](http://localhost:1337)
 11. As superadmin, create one or more users [proxy](http://localhost:1337/users)
-   "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating 
-    the user views in Coral first, so you'll need to log in to Coral with a "user" account to have access to all 
+    "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating
+    the user views in Coral first, so you'll need to log in to Coral with a "user" account to have access to all
     functionality.
 12. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
     - When configuring Kafka clusters: the bootstrap server for Kafka cluster is running on `http://klaw-kafka:9092` in docker
@@ -55,6 +54,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
     - Do not forget to set the following configuration options in the [settings](`http://localhost:1337/serverConfig`) (Dashboard -> settings)
       - Cluster API URL (klaw.clusterapi.url): `http://klaw-cluster-api:9343` (running in docker)
       - Base sync cluster, order of topic promotion environments, topic request envs (klaw.tenant.config): you may copy the example provided, replacing the environment names with the ones you created. For example, if you have only created a `DEV` environment:
+
 ```
     {
         "tenantModel" : {
@@ -68,8 +68,8 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
         }
     }
 ```
-13. You are good to go! 🎉
 
+13. You are good to go! 🎉
 
 ### Note on login and authentication
 
@@ -84,23 +84,23 @@ The correct redirect for login and authentication is **not** working yet.
 ![gif showing the three steps described above](assets/login.gif)
 
 ##### Authentication expired
-Related to that the proxy currently also does not redirect you to the login if your access expires. If you're 
+
+Related to that the proxy currently also does not redirect you to the login if your access expires. If you're
 getting related errors from your API, please log in again like described above 🙏
 
 ![gif showing a redirect error. Pressing the reload button of the browser while the authentication has expired. We see a loading spinner that does not stop. The network tab shows a successful call to `getAuth` and a failed call to `login`. The console shows an error log "Access to fetch at localhost:9097/login from origin http:localhost:1337 has been blocked by CORS policy.](assets/expired1.gif)
 
-
 ![gif showing a redirect error. Pressing the link to the topic details shows the page with a loading spinner running for some time. Then an error is show on the page with the error message "Failed to fetch." The network tab shows a successful calls to `getTopicOverview` and `getSchemaOfTopic` and failed calls to `login`. The console shows an error log "Access to fetch at localhost:9097/login from origin http:localhost:1337 has been blocked by CORS policy.](assets/expired2.gif)
 
-
 #### 🙋Potential browser problem
-**The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making a http request for security. You have to allow `localhost` to be accessed via http explicitly.** 
 
-ℹ️ When you're done, you can run either: 
-- `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 
-- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm run setup` or `pnpm:start` again 
+**The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making a http request for security. You have to allow `localhost` to be accessed via http explicitly.**
+
+ℹ️ When you're done, you can run either:
+
+- `pnpm dev:stop` to stop all containers in docker (enables a fast restart)
+- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm run setup` or `pnpm:start` again
   next time you want to use them, so they get build again)
-
 
 ## How to run the project
 
