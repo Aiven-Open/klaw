@@ -216,7 +216,7 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
-  "/cache/environment/tenant/{tenantId}/id/{id}": {
+  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
     post: operations["addEnvToCache"];
     delete: operations["removeEnvFromCache"];
   };
@@ -2861,6 +2861,9 @@ export type operations = {
   };
   addEnvToCache: {
     parameters: {
+      header: {
+        Authorization: string;
+      };
       path: {
         tenantId: number;
         id: number;
@@ -2882,6 +2885,9 @@ export type operations = {
   };
   removeEnvFromCache: {
     parameters: {
+      header: {
+        Authorization: string;
+      };
       path: {
         tenantId: number;
         id: number;
