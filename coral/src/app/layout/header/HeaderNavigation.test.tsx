@@ -13,13 +13,17 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => jest.fn(),
+}));
+
 const quickLinksNavItems = [
   { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
   },
-  { name: "Go to your profile", linkTo: "/myProfile" },
 ];
 
 describe("HeaderNavigation.tsx", () => {
@@ -48,6 +52,16 @@ describe("HeaderNavigation.tsx", () => {
       });
     });
 
+    it(`renders a button for the profile dropdown`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const button = within(nav).getByRole("button", {
+        name: "Open profile menu",
+      });
+
+      expect(button).toBeEnabled();
+      expect(button).toHaveAttribute("aria-haspopup", "true");
+    });
+
     it("renders all links in the header menu", () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
       const links = within(nav).getAllByRole("link");
@@ -60,6 +74,7 @@ describe("HeaderNavigation.tsx", () => {
     const allHeaderElements = [
       "Request a new",
       ...quickLinksNavItems.map((link) => link.name),
+      "Open profile menu",
     ];
 
     describe("user can navigate through elements", () => {
@@ -75,7 +90,8 @@ describe("HeaderNavigation.tsx", () => {
         const numbersOfTabs = index + 1;
         it(`sets focus on ${headerElement} when user tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new"
+            headerElement !== "Request a new" &&
+            headerElement !== "Open profile menu"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
 
@@ -92,7 +108,7 @@ describe("HeaderNavigation.tsx", () => {
       beforeEach(() => {
         customRender(<HeaderNavigation />, { memoryRouter: true });
         const lastElement = allHeaderElements[allHeaderElements.length - 1];
-        const lastNavItem = screen.getByRole("link", {
+        const lastNavItem = screen.getByRole("button", {
           name: lastElement,
         });
         lastNavItem.focus();
@@ -106,7 +122,8 @@ describe("HeaderNavigation.tsx", () => {
 
         it(`sets focus on ${headerElement} when user shift+tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new"
+            headerElement !== "Request a new" &&
+            headerElement !== "Open profile menu"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
           index > 0 && expect(element).not.toHaveFocus();

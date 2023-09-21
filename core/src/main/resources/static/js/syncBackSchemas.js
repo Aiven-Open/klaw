@@ -277,7 +277,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 
         const topicFilter = $scope.getSchemas.topicnamesearch;
         if(topicFilter && topicFilter.length > 0 && topicFilter.length < 3){
-		    alert("Please enter atleast 3 characters of the topic name.");
+		    alert("Please enter at least 3 characters of the topic name.");
 		        return;
 		    }
 

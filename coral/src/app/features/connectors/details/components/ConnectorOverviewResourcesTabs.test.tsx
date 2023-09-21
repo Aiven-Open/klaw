@@ -77,7 +77,7 @@ const defaultProps = {
   environmentId: "1",
   isError: false,
   isLoading: false,
-  topicName: testConnectorName,
+  connectorName: testConnectorName,
   connectorOverview: testConnectorOverview,
   connectorIsRefetching: false,
 };

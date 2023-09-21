@@ -9,7 +9,6 @@ COMMAND=$1
 PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 build () {
-
 	echo "Build Klaw project binaries"
 	mvn spotless:apply
 	mvn clean install
@@ -19,6 +18,21 @@ build () {
 	echo "Build klaw-cluster-api docker image"
   docker build -t klaw-cluster-api:latest --build-arg PROJECT_VERSION=$PROJECT_VERSION --build-arg JAR_FILE=./cluster-api/target/cluster-api-${PROJECT_VERSION}.jar  -f cluster-api/Dockerfile .
 
+}
+
+# This is only for use in E2E tests. It skips testing to
+# speed up the process. This assumes that the code it runs
+# against is unit/integration tested. This is only aimed at
+# pipeline/running E2E tests, which is why it's not
+# listed in usage here!
+buildForUITests () {
+	echo "Build Klaw project binaries"
+  mvn clean install -Dmaven.test.skip=true
+
+	echo "Build klaw-core docker image"
+  docker build -t klaw-core:latest --build-arg PROJECT_VERSION=$PROJECT_VERSION --build-arg JAR_FILE=./core/target/klaw-${PROJECT_VERSION}.jar -f core/Dockerfile .
+  echo "Build klaw-cluster-api docker image"
+  docker build -t klaw-cluster-api:latest --build-arg PROJECT_VERSION=$PROJECT_VERSION --build-arg JAR_FILE=./cluster-api/target/cluster-api-${PROJECT_VERSION}.jar  -f cluster-api/Dockerfile .
 }
 
 deploy () {
@@ -52,11 +66,17 @@ deployDeveloperEnv() {
   echo `pwd`
   echo "Deploy developer Klaw"
   docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
-}
 
-deployDeveloperTestEnv() {
-  echo "Deploy developer Kafka"
-  docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml up -d
+
+  # Use 'docker-compose ps' to get information about running containers
+  container_info=$(docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml ps -q klaw-core)
+
+  if [ -n "$container_info" ]; then
+    container_address=$(docker port "$container_info" 9097)
+    echo "Klaw container is running at $container_address"
+  else
+    echo "Klaw container not found or not running"
+  fi
 }
 
 
@@ -112,6 +132,17 @@ case $COMMAND in
   --dev-env)
     build
     deployDeveloperEnv
+    shift
+    ;;
+  --dev-ui-tests)
+    buildForUITests
+      if [ $? -eq 0 ]; then
+        echo "⏳ Deploying Klaw for E2E tests..."
+        deployDeveloperEnv
+      else
+        echo "Build failed. Skipping deployment."
+        exit 1
+      fi
     shift
     ;;
   --dev-env-deploy)

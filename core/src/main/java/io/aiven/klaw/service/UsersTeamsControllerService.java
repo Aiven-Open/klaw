@@ -637,7 +637,7 @@ public class UsersTeamsControllerService {
       Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
       if (switchAllowedTeamIds == null
           || switchAllowedTeamIds.isEmpty()
-          || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
+          || switchAllowedTeamIds.size() < 2) { // make sure at least 2 teams are selected to switch
         return Pair.of(Boolean.TRUE, TEAMS_ERR_112);
       } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
         return Pair.of(Boolean.TRUE, TEAMS_ERR_113);

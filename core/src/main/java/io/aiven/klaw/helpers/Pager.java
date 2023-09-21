@@ -14,10 +14,14 @@ public class Pager {
       case ">>" -> totalPages;
       case "<" -> Integer.parseInt(currentPage) - 1;
       case "<<" -> 1;
-      default -> currentPage.isBlank() || !NumberUtils.isCreatable(currentPage)
-          ? 1
-          : Integer.parseInt(currentPage);
+      default -> !NumberUtils.isCreatable(pageNo)
+          ? defaultToCurrentPage(currentPage)
+          : Integer.parseInt(pageNo);
     };
+  }
+
+  private static int defaultToCurrentPage(String currentPage) {
+    return !NumberUtils.isCreatable(currentPage) ? 1 : Integer.parseInt(currentPage);
   }
 
   private static void getAllPagesList(

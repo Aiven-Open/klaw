@@ -1,0 +1,5 @@
+/*Position matches the style in similar dropdown in Aiven console*/
+.profileDropdownHeaderIcon {
+  position: relative;
+  right: -10px;
+}

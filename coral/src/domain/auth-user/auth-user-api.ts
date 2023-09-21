@@ -56,4 +56,8 @@ function getAuth(): Promise<AuthUser> {
     .then((response) => transformAuthResponse(response));
 }
 
-export { getAuthUserMockForLogin, getAuth };
+function logoutUser() {
+  return api.post<KlawApiResponse<"logout">, never>(API_PATHS.logout);
+}
+
+export { getAuthUserMockForLogin, getAuth, logoutUser };

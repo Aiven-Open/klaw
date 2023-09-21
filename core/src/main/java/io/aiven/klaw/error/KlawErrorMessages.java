@@ -323,7 +323,7 @@ public class KlawErrorMessages {
       "There are no topics found with this prefix. You may synchronize metadata.";
 
   public static final String TOPICS_ERR_110 =
-      "There are atleast two topics with same prefix owned by different teams.";
+      "There are at least two topics with same prefix owned by different teams.";
 
   public static final String TOPICS_ERR_111 = "No team found";
 
@@ -444,7 +444,7 @@ public class KlawErrorMessages {
 
   public static final String TEAMS_ERR_111 = "Unable to create the user.";
 
-  public static final String TEAMS_ERR_112 = "Please make sure atleast 2 teams are selected.";
+  public static final String TEAMS_ERR_112 = "Please make sure at least 2 teams are selected.";
 
   public static final String TEAMS_ERR_113 =
       "Please select your own team, in the switch teams list.";

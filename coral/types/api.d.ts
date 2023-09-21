@@ -527,6 +527,9 @@ export type paths = {
   "/environments/kafka/{envId}": {
     get: operations["getKafkaEnv"];
   };
+  "/acl/request/{aclRequestId}": {
+    get: operations["getAclRequest"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -4395,6 +4398,21 @@ export type operations = {
       200: {
         content: {
           "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getAclRequest: {
+    parameters: {
+      path: {
+        aclRequestId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclRequestsResponseModel"];
         };
       };
     };

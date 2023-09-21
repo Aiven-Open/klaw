@@ -16,6 +16,9 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     topicNames: ["hello", "there"],
     isAivenCluster: true,
     type: "kafka",
+    clusterName: "DEV",
+    tenantName: "default",
+    envStatus: "ONLINE",
   },
   {
     name: "TST",
@@ -23,6 +26,9 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     topicNames: ["hello", "there", "general"],
     isAivenCluster: true,
     type: "kafka",
+    clusterName: "DEV",
+    tenantName: "default",
+    envStatus: "ONLINE",
   },
   {
     name: "NOTOPIC",
@@ -30,6 +36,9 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     topicNames: [],
     isAivenCluster: true,
     type: "kafka",
+    clusterName: "DEV",
+    tenantName: "default",
+    envStatus: "ONLINE",
   },
 ];
 

@@ -198,7 +198,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
 
     // check if default superadmin is configured or blank.
-    // in case of blank, there should be atleast one other user with SUPERADMIN role
+    // in case of blank, there should be at least one other user with SUPERADMIN role
     if (superAdminDefaultUserName.isBlank()) {
       if (!validateUsersBeforeAdding()) {
         String errorMsg =
@@ -295,7 +295,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return nextId;
   }
 
-  // verify if there is atleast one user with superadmin access in default tenant
+  // verify if there is at least one user with superadmin access in default tenant
   private boolean validateUsersBeforeAdding() {
     List<UserInfo> allUsers = handleDbRequests.getAllUsersInfo(KwConstants.DEFAULT_TENANT_ID);
     return allUsers.stream()

@@ -1,8 +1,9 @@
 import data from "@aivenio/aquarium/dist/src/icons/console";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const linkText = "Go to your profile page";
 
@@ -10,14 +11,15 @@ describe("HeaderMenuLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
   const mockIcon = "" as unknown as typeof data;
 
-  describe("renders a default link with required props", () => {
+  describe("renders by default link with required props", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
           linkText={linkText}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -91,16 +93,17 @@ describe("HeaderMenuLink.tsx", () => {
     });
   });
 
-  describe("renders additional attributes dependent on props", () => {
+  describe("renders an link with additional attributes dependent on props", () => {
     afterEach(cleanup);
 
     it(`does not add a rel attribute by default`, () => {
-      render(
+      customRender(
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
           linkText={linkText}
-        />
+        />,
+        { memoryRouter: true }
       );
 
       const navLink = screen.getByRole("link", {
@@ -111,13 +114,14 @@ describe("HeaderMenuLink.tsx", () => {
     });
 
     it(`adds a rel attribute with a given value`, () => {
-      render(
+      customRender(
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
           linkText={linkText}
           rel={"noreferrer"}
-        />
+        />,
+        { memoryRouter: true }
       );
 
       const navLink = screen.getByRole("link", {

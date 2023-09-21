@@ -1,3 +1,4 @@
+import { Box, useToast } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -5,7 +6,10 @@ import {
   useLocation,
   useMatches,
   useOutletContext,
+  useSearchParams,
 } from "react-router-dom";
+import { ClaimBanner } from "src/app/features/components/ClaimBanner";
+import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
 import {
@@ -15,9 +19,6 @@ import {
 } from "src/app/router_utils";
 import { ConnectorOverview, requestConnectorClaim } from "src/domain/connector";
 import { getConnectorOverview } from "src/domain/connector/connector-api";
-import { Box, useToast } from "@aivenio/aquarium";
-import { ClaimBanner } from "src/app/features/components/ClaimBanner";
-import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
@@ -44,16 +45,19 @@ function findMatchingTab(
 
 function ConnectorDetails(props: ConnectorOverviewProps) {
   const { connectorName } = props;
+  // This state comes from the topic Link components in ConnectorTable
   const { state: initialEnvironment }: { state: string | null } = useLocation();
 
   const [showClaimModal, setShowClaimModal] = useState(false);
-  const [environmentId, setEnvironmentId] = useState<string | undefined>(
-    initialEnvironment ?? undefined
-  );
 
   const [claimErrorMessage, setClaimErrorMessage] = useState<
     string | undefined
   >();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedEnvironmentId, setSelectedEnvironmentId] = useState(
+    searchParams.get("env") ?? initialEnvironment ?? undefined
+  );
 
   const toast = useToast();
 
@@ -69,11 +73,11 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     isRefetching: connectorIsRefetching,
     refetch: refetchConnectors,
   } = useQuery({
-    queryKey: ["connector-overview", connectorName, environmentId],
+    queryKey: ["connector-overview", connectorName, selectedEnvironmentId],
     queryFn: () =>
       getConnectorOverview({
         connectornamesearch: connectorName,
-        environmentId,
+        environmentId: selectedEnvironmentId,
       }),
   });
 
@@ -118,11 +122,15 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
   useEffect(() => {
     if (
       connectorData?.availableEnvironments !== undefined &&
-      environmentId === undefined
+      selectedEnvironmentId === undefined
     ) {
-      setEnvironmentId(connectorData?.availableEnvironments[0].id);
+      setSelectedEnvironmentId(connectorData?.availableEnvironments[0].id);
     }
-  }, [connectorData?.availableEnvironments, environmentId, setEnvironmentId]);
+  }, [
+    connectorData?.availableEnvironments,
+    selectedEnvironmentId,
+    setSelectedEnvironmentId,
+  ]);
 
   if (currentTab === undefined) {
     return (
@@ -158,10 +166,13 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
         entityUpdating={connectorIsRefetching}
-        entityEditLink={`/connector/${connectorName}/request-update?env=${connectorData?.connectorInfo.environmentId}`}
+        entityEditLink={`/connector/${connectorName}/request-update?env=${selectedEnvironmentId}`}
         environments={connectorData?.availableEnvironments}
-        environmentId={environmentId}
-        setEnvironmentId={setEnvironmentId}
+        environmentId={selectedEnvironmentId}
+        setEnvironmentId={(id: string) => {
+          setSelectedEnvironmentId(id);
+          setSearchParams({ env: id });
+        }}
         showEditButton={Boolean(connectorData?.connectorInfo.showEditConnector)}
         hasPendingRequest={Boolean(connectorData?.connectorInfo.hasOpenRequest)}
       />
@@ -185,11 +196,12 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         )}
 
       <ConnectorOverviewResourcesTabs
+        connectorName={connectorName}
         isError={connectorIsError}
         error={connectorError}
         isLoading={connectorIsLoading}
         currentTab={currentTab}
-        environmentId={environmentId}
+        environmentId={selectedEnvironmentId}
         connectorOverview={connectorData}
         connectorIsRefetching={connectorIsRefetching}
       />

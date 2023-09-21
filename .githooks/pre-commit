@@ -2,11 +2,15 @@
 
 FRONTEND_ROOT="coral"
 PROXY_ROOT="coral/proxy"
+E2E_ROOT="e2e"
 
 GIT_ROOT=$(git rev-parse --show-toplevel)
 STAGED_FILES=$(git diff --staged --name-only)
 
 for file in $STAGED_FILES; do
+    if echo "$file" | grep -q -e "$E2E_ROOT"; then
+        CHANGED_FILE_IN_E2E_DIR=true
+    fi
     if echo "$file" | grep -q -e "$FRONTEND_ROOT"; then
         CHANGED_FILE_IN_CORAL_DIR=true
         if ! echo "$file" | grep -q -e "$PROXY_ROOT"; then
@@ -18,11 +22,22 @@ for file in $STAGED_FILES; do
     fi
 done
 
+# Execute lint-staged for changes in e2e director
+if [ "$CHANGED_FILE_IN_E2E_DIR" = true ]; then
+    pnpm --prefix="$GIT_ROOT"/"$E2E_ROOT" lint-staged
+    if [ $? -ne 0 ]; then
+        echo -e '\n\n🙋 Check "lint-staged" in /e2e failed.'
+        echo -e '   Canceling the commit process.'
+        echo -e '   Please fix and try again!\n\n'
+        exit 1
+    fi
+fi
+
 # Execute lint-staged and tsc jobs regardless of the files' location
 if [ "$CHANGED_FILE_IN_CORAL_DIR" = true ]; then
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
     if [ $? -ne 0 ]; then
-        echo -e '\n\n🙋 Check "lint-staged" failed.'
+        echo -e '\n\n🙋 Check "lint-staged" in /coral failed.'
         echo -e '   Canceling the commit process.'
         echo -e '   Please fix and try again!\n\n'
         exit 1

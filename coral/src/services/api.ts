@@ -34,6 +34,7 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS = {
+  getAclRequest: "/acl/request/{aclRequestId}",
   approveOperationalRequest: "/operationalRequest/reqId/{reqId}/approve",
   declineOperationalRequest: "/operationalRequest/reqId/{reqId}/decline",
   deleteOperationalRequest: "/operationalRequest/reqId/{reqId}/delete",

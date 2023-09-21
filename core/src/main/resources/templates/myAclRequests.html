@@ -511,7 +511,16 @@
 											</td>
 											<td ng-show="aclRequest.requestStatus == 'CREATED'" align="right">
 												<button type="button" ng-click="deleteAclRequest(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-												</button></td>
+												</button>
+											</td>
+											<td ng-show="aclRequest.requestStatus == 'CREATED' && aclRequest.requestor === userlogged &&
+														aclRequest.requestOperationType != 'DELETE' && aclRequest.requestOperationType != 'CLAIM'" align="right" width="2%">
+												<a href="editAclRequest?aclRequestId={{ aclRequest.req_no }}">
+													<button type="button" class="btn btn-info btn-circle">
+														<i class="fa fa-edit"></i>
+													</button>
+												</a>
+											</td>
 										</tr>
 									</table>
 								</div>

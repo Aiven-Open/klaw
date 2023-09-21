@@ -632,20 +632,7 @@ public class TopicAclControllerIT {
   @Order(18)
   @Test
   public void getAclRequests() throws Exception {
-
-    String res =
-        mvc.perform(
-                get("/getAclRequests")
-                    .with(user(user1).password(PASSWORD))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("pageNo", "1")
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<AclRequests> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    List<AclRequests> response = getSubmittedRequests();
     assertThat(response).isEmpty();
   }
 
@@ -717,20 +704,8 @@ public class TopicAclControllerIT {
   @Order(22)
   @Test
   public void getAclResAgainAndApprove() throws Exception {
-    String res =
-        mvc.perform(
-                get("/getAclRequests")
-                    .with(user(user3).password(PASSWORD))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("pageNo", "1")
-                    .param("order", "DESC_REQUESTED_TIME")
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    List<Map<String, Object>> response = getAclReqsDesc();
+    String res;
     Map<String, Object> hMap = response.get(0);
 
     Map<String, String> dataObj = new HashMap<>();
@@ -794,22 +769,32 @@ public class TopicAclControllerIT {
   @Order(24)
   @Test
   public void declineAclReq() throws Exception {
-    String res =
+    List<Map<String, Object>> response = getAclReqsDesc();
+    Map<String, Object> hMap = response.get(0);
+    Integer reqNo = (Integer) hMap.get("req_no");
+
+    // Test editing of request
+
+    AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId1);
+    addAclRequest.setRequestId(reqNo);
+    String newConsumerGroup = "testgroup";
+    addAclRequest.setConsumergroup(newConsumerGroup);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
+
+    String responseCreateAcl =
         mvc.perform(
-                get("/getAclRequests")
-                    .with(user(user3).password(PASSWORD))
+                MockMvcRequestBuilders.post("/createAcl")
+                    .with(user(user1).password(PASSWORD))
+                    .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .param("pageNo", "1")
-                    .param("order", "DESC_REQUESTED_TIME")
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()
             .getContentAsString();
 
-    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
-    Map<String, Object> hMap = response.get(0);
-    Integer reqNo = (Integer) hMap.get("req_no");
+    List<Map<String, Object>> responseAclReqs = getAclReqsDesc();
+    assertThat(responseAclReqs.get(0).get("consumergroup")).isEqualTo(newConsumerGroup);
 
     String resNew =
         mvc.perform(
@@ -1520,5 +1505,38 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     return OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+  }
+
+  private List<AclRequests> getSubmittedRequests() throws Exception {
+    String res =
+        mvc.perform(
+                get("/getAclRequests")
+                    .with(user(user1).password(PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("pageNo", "1")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    return OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+  }
+
+  private List<Map<String, Object>> getAclReqsDesc() throws Exception {
+    String res =
+        mvc.perform(
+                get("/getAclRequests")
+                    .with(user(user3).password(PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("pageNo", "1")
+                    .param("order", "DESC_REQUESTED_TIME")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    return OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
   }
 }

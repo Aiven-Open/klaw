@@ -1,0 +1,142 @@
+# The workflow can be triggered manually.
+# It will build and deploy Klaw and run E2E tests against it.
+name: E2E tests
+on:
+  workflow_dispatch:
+
+jobs:
+  end-to-end-tests:
+    permissions:
+      actions: write
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+
+      - name: Set Node and pnpm versions
+        id: versions
+        working-directory: ./e2e
+        shell: bash
+        run: |
+          NODE_VERSION=$(jq -r '.engines.node' package.json)
+          PNPM_VERSION=$(jq -r '.engines.pnpm' package.json)
+          echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_OUTPUT
+          echo "PNPM_VERSION=$PNPM_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Setup node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: ${{ steps.versions.outputs.NODE_VERSION }}
+
+      # PNPM needs to be available for coral in the build
+      - name: Setup pnpm
+        uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+        with:
+          version: ${{ steps.versions.outputs.PNPM_VERSION }}
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Set up JDK
+        uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
+        with:
+          java-version: 20
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build Klaw
+        working-directory: ./e2e
+        run: pnpm __build-klaw
+
+      # @TODO: make sure Klaw always runs on a predictable address
+      # then this step is unnecessary
+      - name: Get container network address
+        id: containerIp
+        shell: bash
+        run: |
+          container_name="klaw-core"
+          container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container_name")
+
+          if [ -n "$container_ip" ]; then
+            echo "Container is running at IP address: $container_ip"
+            echo "CONTAINER_IP=$container_ip" >> $GITHUB_OUTPUT
+          else
+            echo "Container not found or not running"
+            exit 1
+          fi
+          
+      # This step may be brittle. The service in the container seems not to
+      # be immediately ready to accept connections, so the retry makes sure
+      # we're giving it (hopefully) enough time to be ready.
+      - name: Make sure Klaw is reachable
+        run:  |
+          retries=5  # Number of retries
+          interval=5  # Initial retry interval in seconds
+          max_interval=30  # Max retry interval in seconds
+          success=false
+          
+          echo "Check that Klaw is running on ${{ steps.containerIp.outputs.CONTAINER_IP}}:9097"
+  
+          for ((i = 0; i < retries; i++)); do
+            if curl --fail --silent "${{ steps.containerIp.outputs.CONTAINER_IP}}:9097"; then
+            success=true
+            break 
+          fi
+          
+          # Sleep before the next retry with exponential backoff
+          sleep $interval
+          interval=$((interval * 2))
+        
+          # Ensure the interval doesn't exceed the maximum
+          if [ $interval -gt $max_interval ]; then
+            interval=$max_interval
+          fi
+          done
+          
+          if [ "$success" = false ]; then
+            echo "Klaw is not reachable 😭"
+            exit 1 
+          fi
+
+      - name: Install dependencies
+        working-directory: ./e2e
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./e2e
+        run: pnpm playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        id: playwright-test-run
+        working-directory: ./e2e
+        run: BASE_URL=http://${{ steps.containerIp.outputs.CONTAINER_IP }}:9097 pnpm __test
+
+      - name: Upload Playwright artifacts
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        # Upload whether steps before where a failure, but only when the playwright tests did run
+        # This way we make sure we don't attempt to upload files that are not there, bc.
+        # for example the build has failed.
+        if:  ${{ always() && steps.playwright-test-run.status == 'completed' }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 5
+
+      - name: Teardown Klaw
+        if: always()
+        run:  docker-scripts/klaw-docker.sh --destroy

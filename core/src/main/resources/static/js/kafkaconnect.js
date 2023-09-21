@@ -263,7 +263,7 @@ app.controller("kafkaConnectCtrl", function($scope, $http, $location, $window) {
 
 		    swal({
              title: "",
-             text: "Please enter atleast 3 characters to search.",
+             text: "Please enter at least 3 characters to search.",
              timer: 2000,
              showConfirmButton: false
              });
