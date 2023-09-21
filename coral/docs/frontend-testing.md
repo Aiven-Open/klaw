@@ -3,31 +3,30 @@
 ## Table of content
 
 - [Tools and setup for testing](#tools-and-setup-for-testing)
-    * [Jest](#jest)
-    * [react-testing-library](#react-testing-library)
-    * [jest-dom matchers](#jest-dom-matchers)
-    * [user-events](#user-events)
+  - [Jest](#jest)
+  - [react-testing-library](#react-testing-library)
+  - [jest-dom matchers](#jest-dom-matchers)
+  - [user-events](#user-events)
 - [Frontend testing approach](#frontend-testing-approach)
-    * [General rules](#general-rules)
-    * [Goals of testing approach](#goals-of-testing-approach)
-    * [How to test](#how-to-test)
-        + [How to get the best out of our libs](#how-to-get-the-best-out-of-our-libs)
-            - [Use `screen` when possible](#use-screen-when-possible)
-            - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the-recommended-priority-how-to-use-queries)
-            - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the-jest-dom-matcher)
-                * [Example and benefits of jest-dom matcher](#example-and-benefits-of-jest-dom-matcher)
-        + [How to structure test files](#how-to-structure-test-files)
-        + [How to group tests meaningful](#how-to-group-tests-meaningful)
-            - [Example: Grouping tests that check the default markup is rendered](#example-grouping-tests-that-check-the-default-markup-is-rendered)
-            - [Example: Grouping tests that test user interaction](#example-grouping-tests-that-test-user-interaction)
-    * [How to write test descriptions](#how-to-write-test-descriptions)
-        + [General tip](#general-tip)
-        + [Recommended rules](#recommended-rules)
-            - [1. Use uncomplicated language](#1-use-uncomplicated-language)
-            - [3. Use simple present tense for expected results](#3-use-simple-present-tense-for-expected-results)
-            - [4. Use direct and unambiguous language](#4-use-direct-and-unambiguous-language)
-            - [5. Use user-based language for React component tests](#5-use-user-based-language-for-react-component-tests)
-
+  - [General rules](#general-rules)
+  - [Goals of testing approach](#goals-of-testing-approach)
+  - [How to test](#how-to-test)
+    - [How to get the best out of our libs](#how-to-get-the-best-out-of-our-libs)
+      - [Use `screen` when possible](#use-screen-when-possible)
+      - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the-recommended-priority-how-to-use-queries)
+      - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the-jest-dom-matcher)
+        - [Example and benefits of jest-dom matcher](#example-and-benefits-of-jest-dom-matcher)
+    - [How to structure test files](#how-to-structure-test-files)
+    - [How to group tests meaningful](#how-to-group-tests-meaningful)
+      - [Example: Grouping tests that check the default markup is rendered](#example-grouping-tests-that-check-the-default-markup-is-rendered)
+      - [Example: Grouping tests that test user interaction](#example-grouping-tests-that-test-user-interaction)
+  - [How to write test descriptions](#how-to-write-test-descriptions)
+    - [General tip](#general-tip)
+    - [Recommended rules](#recommended-rules)
+      - [1. Use uncomplicated language](#1-use-uncomplicated-language)
+      - [3. Use simple present tense for expected results](#3-use-simple-present-tense-for-expected-results)
+      - [4. Use direct and unambiguous language](#4-use-direct-and-unambiguous-language)
+      - [5. Use user-based language for React component tests](#5-use-user-based-language-for-react-component-tests)
 
 ## Tools and setup for testing
 
@@ -55,7 +54,7 @@ We use [Jest](hhttps://jestjs.io/docs/) as test runner in Frontend in general an
 
 `Dom testing library` is an opinionated library, which supports a specific way of writing test. It is well documented and supports us in having a consistent code base. It’s best used with jest-dom and the custom [jest-dom matchers](https://github.com/testing-library/jest-dom#readme). The combination of both leads to nice readable tests!
 
-[react-testing-library](https://testing-library.com/docs/react-testing-library/intro) is a react-adapter for the [DOM testing-library](https://testing-library.com/docs/). 
+[react-testing-library](https://testing-library.com/docs/react-testing-library/intro) is a react-adapter for the [DOM testing-library](https://testing-library.com/docs/).
 
 ### jest-dom matchers
 
@@ -67,8 +66,7 @@ To enable us to test the DOM, we use the standard [JSDOM](https://github.com/jsd
 
 🔗 [user-events - official documentation](https://github.com/testing-library/user-event/)
 
-`user-event` is a higher-level abstraction of `fireEvent` from `DOM testing library` and tries to simulate the real events that would happen in the browser as the user interacts with our components. 
-
+`user-event` is a higher-level abstraction of `fireEvent` from `DOM testing library` and tries to simulate the real events that would happen in the browser as the user interacts with our components.
 
 ## Frontend testing approach
 
@@ -78,17 +76,17 @@ To enable us to test the DOM, we use the standard [JSDOM](https://github.com/jsd
 - Test files live right beside the code they test.
 - Extract functionality in pure TypeScript files where possible. They are faster and less complicated to test than React components.
 
-
 ### Goals of testing approach
 
 Our tests...
-- 🧑 confirm code works __as expected for users__.
+
+- 🧑 confirm code works **as expected for users**.
   - User is the consumer of the web app.
   - User is a developer in the code base.
-- ✅ confirm behavior and functionality __for their component__.
+- ✅ confirm behavior and functionality **for their component**.
   - Test every component explicitly.
 - 🔎 help us to locate an error fast.
-- 📕add __readability__ to our code base.
+- 📕add **readability** to our code base.
   - A dev can understand what a component does by looking only at the test.
 
 ### How to test
@@ -100,18 +98,18 @@ Our tests...
 The `screen` object has every query (method used to _query_ for elements) pre-bound to document.body. It is used like this:
 
 ```tsx
-import { screen } from '@testing-library/react'
+import { screen } from "@testing-library/react";
 // ...
-expect(screen.getByRole("button", {name: "click" })).toBeEnabled()
+expect(screen.getByRole("button", { name: "click" })).toBeEnabled();
 ```
 
-We recommend to use screen where it is possible. It helps developer experience because you can see which queries are available on it. There are very few cases where you would need to use the `container` element returned from `render`. 
+We recommend to use screen where it is possible. It helps developer experience because you can see which queries are available on it. There are very few cases where you would need to use the `container` element returned from `render`.
 
 ##### follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)
 
-A great benefit is that this can help us making our markup more accessible. If you can't use the recommended query, you should check if there is a reason for that. 
+A great benefit is that this can help us making our markup more accessible. If you can't use the recommended query, you should check if there is a reason for that.
 
-**Example**: There is an alert, and you can't query it other than with looking for the text? That means assistive 
+**Example**: There is an alert, and you can't query it other than with looking for the text? That means assistive
 technology also has no information that this is a warning. Changing that element to have an [alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) enables you to use the recommended queries. And it makes the content more accessible!
 
 **💡 Tip to remember the right query**
@@ -128,9 +126,9 @@ throwSuggestions: true
 })
 ```
 
-This adds the config only to your test file. No others are not affected! The config is making mistakes and still experimental, so we won't use it in a general config. It's up to you if you want to remove it in your test file after writing the tests. 
+This adds the config only to your test file. No others are not affected! The config is making mistakes and still experimental, so we won't use it in a general config. It's up to you if you want to remove it in your test file after writing the tests.
 
-⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It 
+⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It
 only solves something on the test side (using better queries to make test implicitly test more important things), not on the code side.
 
 ##### make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)
@@ -138,7 +136,6 @@ only solves something on the test side (using better queries to make test implic
 These matchers not only make the tests more declarative, they also support to write test in a natural feeling and user-centered way. The library is actively worked, so make sure to check out their documentation to find useful matchers for specific use-cases!
 
 It’s a good practice to choose a **precise** matcher. For example `.toBeEnabled()` is preferred to `.toBeVisible()` if testing a (non-disabled) button in your React component.
-
 
 ###### Example and benefits of jest-dom matcher
 
@@ -169,39 +166,39 @@ The first `describe` block:
 Example React component
 
 ```typescript
-describe('Dashboard.tsx', () => {
+describe("Dashboard.tsx", () => {
   // all related 'describe's, and 'it's
-})
+});
 ```
 
 Example ts-file
 
 ```typescript
-describe('fancy-util.tsx', () => {
+describe("fancy-util.tsx", () => {
   // all related 'describe's, and 'it's
-})
+});
 ```
 
 #### How to group tests meaningful
 
-Group your tests with nested, meaningful describe scopes. 
+Group your tests with nested, meaningful describe scopes.
 
 Jest offers global methods to create blocks of tests. The most used for us are [describe](https://jestjs.io/docs/api#describename-fn) and [it](https://jestjs.io/docs/api#testname-fn-timeout) (it is an alias for test).
 
     `describe` creates a block that groups together several related tests.
     `it` is the method that actually runs one test.
 
-Grouping several `it` in a `describe` block and nesting `describe` blocks create a more structured test file. It also translates to a nicely readable output in the test runner. 
+Grouping several `it` in a `describe` block and nesting `describe` blocks create a more structured test file. It also translates to a nicely readable output in the test runner.
 
 A `describe` block describes a **scenario or test case**. An `it` block describes the specification of different assertions in this scenario. A rule of the thumb for unit tests is to **only have one assertion (expect) in one `it` block**. This helps us find the cause of a failing test faster. Grouping multiple `it` blocks in one `describe` makes it easier to archive this.
 
-The nesting with `describe` blocks should ot be overused. 
+The nesting with `describe` blocks should ot be overused.
 
 **️✅ Do**
 
 ```jsx
 
-describe('nameOfFunction', () => {  
+describe('nameOfFunction', () => {
   it('returns true when user chose "cat"', ...)
 
   it('returns true when user chose "dog"', ...)
@@ -254,31 +251,30 @@ MyNiceComponent.tsx
 ##### Example: Grouping tests that test user interaction
 
 ```jsx
-describe('MyNiceComponent.tsx', () => {
+describe("MyNiceComponent.tsx", () => {
   //...
-  describe('user can fill out the email field and send the form', () => {
-
+  describe("user can fill out the email field and send the form", () => {
     it('shows a disabled "Send" button while the input is empty', () => {
-     //...
-    })
+      //...
+    });
 
-    it('enables user to fill out input field', () => {
-     //...
-    })
+    it("enables user to fill out input field", () => {
+      //...
+    });
 
     it('shows an enabled "Send" button when user filled out input', () => {
-     //...
-    })
-
-    it('enables user to send the form with their input', () => {
-     //...
-    })
-  })
-
-  describe('now there are more tests', () => {
       //...
-  })
-})
+    });
+
+    it("enables user to send the form with their input", () => {
+      //...
+    });
+  });
+
+  describe("now there are more tests", () => {
+    //...
+  });
+});
 ```
 
 The test output now looks like this:
@@ -296,43 +292,43 @@ MyNiceComponent.tsx
     ✓ enables user to send the form with their input
 ```
 
-
 ### How to write test descriptions
 
 We should use a consistent approach and language in our test description. This help to understand and document the code they are referring to!
 
-🔖 You can read more in the article [Art of test case writing](http://softwaretestingtimes.com/2010/04/art-of-test-case-writing.html). 
+🔖 You can read more in the article [Art of test case writing](http://softwaretestingtimes.com/2010/04/art-of-test-case-writing.html).
 
 #### General tip
 
 Use the `describe` block to describe a **scenario or test case**.
 
 This block can:
+
 - describe a larger block of functionality.
 - contain a set of specific requirements for one test case.
 - group one user-path.
 
 Examples:
 
-- describe *"renders all necessary elements"*
-- describe *"when user selects a certain environment"*
-- describe *"handles the form for deleting a topic"*
+- describe _"renders all necessary elements"_
+- describe _"when user selects a certain environment"_
+- describe _"handles the form for deleting a topic"_
 
-The `it` block contains the specification itself. Together with its assertion it describes the expected outcome. Keep in mind that **one-assertion-per-it** is a good rule to follow for small tests. 
+The `it` block contains the specification itself. Together with its assertion it describes the expected outcome. Keep in mind that **one-assertion-per-it** is a good rule to follow for small tests.
 
 We read the `it` together with the description itself:
 
 ```jsx
-it('closes the modal when user confirms')
+it("closes the modal when user confirms");
 ```
 
-Is read as *"it closes the modal when user confirms"*
+Is read as _"it closes the modal when user confirms"_
 
 Examples:
 
-- it *"shows an input element"*
-- it *"changes the color when user clicks button"*
-- it *"disables the button when required input is missing"*
+- it _"shows an input element"_
+- it _"changes the color when user clicks button"_
+- it _"disables the button when required input is missing"_
 
 #### Recommended rules
 
@@ -343,9 +339,11 @@ In general: Uncomplicated, user-centered language without unneeded implementatio
 It’s shorter, clearer, more emphatic and to-the-point.
 
 **️✅ Do**
+
 - `it("filters a list based on user input")`
 
 **⛔️ Don't**
+
 - `it("a list is filtered based on string submitted by the user")`
 
 ##### 3. Use simple present tense for expected results
@@ -353,28 +351,31 @@ It’s shorter, clearer, more emphatic and to-the-point.
 It’s a good way to express general truths or unchanging situations in an easy-to-read way.
 
 **️✅ Do**
+
 - `it("warns the user when they click delete")`
 
 **⛔️ Don't**
+
 - `it("will warn the user when they clicked delete")`
 
 ##### 4. Use direct and unambiguous language
 
-Don’t use modal verbs! Make direct and unambiguous statements about the expected outcome. The test is not to make sure code *should* (hopefully) do something. The test makes sure the code *does* this.
+Don’t use modal verbs! Make direct and unambiguous statements about the expected outcome. The test is not to make sure code _should_ (hopefully) do something. The test makes sure the code _does_ this.
 
 **️✅ Do**
-- `it("shows list in the right order")`
-- 
-**⛔️ Don't**
-- `it("should show list in the right order")`
 
+- `it("shows list in the right order")`
+- **⛔️ Don't**
+- `it("should show list in the right order")`
 
 ##### 5. Use user-based language for React component tests
 
 For React component tests, try to focus on a more user-based language. Don’t add unnecessary implementation details to the descriptions.
 
 **️✅ Do**
+
 - `it("shows a list of topics filtered by team")`
 
 **⛔️ Don't**
+
 - `it("should call the getTopicByTeam api to fetch new list items")`

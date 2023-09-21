@@ -1,8 +1,10 @@
 # How to Migrate Data between versions.
+
 Occasionally when introducing new features or addressing tech debt we need to migrate data into new tables or into new columns within the same table.
 To address this, Klaw has a method for automatically migrating data to reduce the effort that is required by users to avail of the newest features.
 
 ## Creating Migration Instruction class
+
 Create a class that will handle all data migration between the last version release and the target version release.
 This class should be in the package "io.aiven.klaw.dao.migration"
 The Class should be named with the target release version in the name with the dots replaced by 'x'.
@@ -15,9 +17,10 @@ The version in regular format e.g. "2.2.0" and the order in which the migration 
 This prevents issues with executing instructions out of order and not having data migrated correctly.
 At the class level it should also be annotated with the Spring Boot "@Configuration" to ensure that all the autowired objects are correctly initialised.
 
-The third annotation is a method level annotation called "@MigrationRunner" which signifies the method to invoke to execute the migration instructions. 
+The third annotation is a method level annotation called "@MigrationRunner" which signifies the method to invoke to execute the migration instructions.
 
 ## How does it work ?
+
 The MigrationUtility invokes a PostConstruct method, this means that after Klaw is successfully initialised including all liquibase operations to make changes to the database.
 This PostConstruct then searches the package "io.aiven.klaw.dao.migration" to find all initialised classes annotated with @DataMigration.
 The returned list is stripped of any already applied Migration instructions, for example if upgrading from version 2.5.0 to 3.0.0 the migration included in 2.2.0 would be excluded as it has already been applied before this.
