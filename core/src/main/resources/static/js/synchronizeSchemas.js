@@ -153,7 +153,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -216,7 +216,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
@@ -338,7 +338,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                     closeOnCancel: true
                 }).then(function(isConfirm){
 
-                    if (isConfirm.dismiss !== "cancel") {
+                    if (isConfirm.value) {
                         $scope.ShowSpinnerStatus = true;
                         $http({
                             method: "POST",
@@ -631,7 +631,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.value) {
                         $scope.ShowSpinnerStatus = true;
 
                         $http({

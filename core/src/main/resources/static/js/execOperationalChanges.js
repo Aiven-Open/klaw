@@ -116,7 +116,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                         method: "POST",
                                         url: "operationalRequest/reqId/" + topicId + "/approve",
@@ -195,7 +195,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                             closeOnConfirm: true,
                             closeOnCancel: true
                         }).then(function(isConfirm){
-                            if (isConfirm.dismiss !== "cancel") {
+                            if (isConfirm.value) {
                                 $http({
                                         method: "POST",
                                         url: "operationalRequest/reqId/" + reqNo + "/decline",
@@ -285,7 +285,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -348,7 +348,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
