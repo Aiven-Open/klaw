@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JwtTokenUtilService implements InitializingBean {
-  @Value("${klaw.core.app2app.base64.secret::#{''}}")
+  @Value("${klaw.core.app2app.base64.secret:#{''}}")
   private String App2AppSecret;
 
   public static final String BEARER = "Bearer ";
