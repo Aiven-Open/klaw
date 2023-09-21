@@ -644,9 +644,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         return;
                     }
 
-                    if($scope.envDetails.name.length > 10)
+                    if($scope.envDetails.name.length > 25)
                     {
-                        $scope.alertnote = "Environment name cannot be more than 10 characters.";
+                        $scope.alertnote = "Environment name cannot be more than 25 characters.";
                         $scope.showAlertToast();
                         return;
                     }

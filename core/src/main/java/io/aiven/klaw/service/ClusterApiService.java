@@ -97,8 +97,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class ClusterApiService {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String URL_DELIMITER = "/";
   public static final String URI_CONNECTOR_STATUS = "?connectorStatus=";
 
@@ -127,8 +125,11 @@ public class ClusterApiService {
     this.manageDatabase = manageDatabase;
   }
 
-  private RestTemplate getRestTemplate() {
-    if (clusterConnUrl.toLowerCase().startsWith("https")) {
+  private RestTemplate getRestTemplate(String clusterConnectivityUrl) {
+    if (clusterConnectivityUrl == null) {
+      clusterConnectivityUrl = clusterConnUrl;
+    }
+    if (clusterConnectivityUrl.toLowerCase().startsWith("https")) {
       if (this.httpsRestTemplate == null) {
         this.httpsRestTemplate = new RestTemplate(requestFactory);
       }
@@ -157,14 +158,17 @@ public class ClusterApiService {
     try {
       String uriClusterApiStatus = URI_CLUSTER_API;
       String uri;
+      RestTemplate restTemplate;
       if (testConnection) {
         uri = clusterApiUrl + uriClusterApiStatus;
+        restTemplate = getRestTemplate(clusterApiUrl);
       } else {
         uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
+        restTemplate = getRestTemplate(clusterConnUrl);
       }
 
       ResponseEntity<ClusterStatus> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+          restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
       return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
@@ -197,7 +201,7 @@ public class ClusterApiService {
                   kafkaFlavor);
 
       ResponseEntity<ClusterStatus> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+          getRestTemplate(null).exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
       return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getKafkaClusterStatus ", e);
@@ -227,7 +231,7 @@ public class ClusterApiService {
                   URL_DELIMITER, protocol.getName(), clusterIdentification, consumerGroupId, topic);
 
       ResponseEntity<List<OffsetDetails>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
@@ -269,7 +273,7 @@ public class ClusterApiService {
                   clusterIdentification);
 
       ResponseEntity<Map<String, String>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
@@ -340,7 +344,7 @@ public class ClusterApiService {
       }
 
       ResponseEntity<Set<Map<String, String>>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uri, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
       aclListOriginal = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
@@ -381,7 +385,7 @@ public class ClusterApiService {
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<TopicConfig>> s =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
       topicsList = new ArrayList<>(Objects.requireNonNull(s.getBody()));
@@ -431,7 +435,7 @@ public class ClusterApiService {
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
 
       ApiResponse apiResponse = response.getBody();
@@ -550,7 +554,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
       return throwCommonErrors(e, CLUSTER_API_ERR_106);
@@ -655,7 +659,7 @@ public class ClusterApiService {
 
       HttpEntity<ClusterAclRequest> request = new HttpEntity<>(clusterAclRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
       return response;
     } catch (Exception e) {
@@ -682,7 +686,7 @@ public class ClusterApiService {
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<ServiceAccountDetails> apiResponseResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetServiceAccountDetails,
                   HttpMethod.GET,
@@ -707,7 +711,7 @@ public class ClusterApiService {
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<ApiResponse> apiResponseResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetServiceAccounts,
                   HttpMethod.GET,
@@ -765,7 +769,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("deleteSchema {}", topicName, e);
       return throwCommonErrors(e, CLUSTER_API_ERR_123);
@@ -814,7 +818,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
@@ -858,7 +862,7 @@ public class ClusterApiService {
 
         HttpHeaders headers = createHeaders(clusterApiUser);
         HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-        response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+        response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
       }
     } catch (Exception e) {
       log.error("Error from resetCache ", e);
@@ -898,7 +902,7 @@ public class ClusterApiService {
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-      return getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      return getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from Validating Schema. ", e);
       throw new KlawException(CLUSTER_API_ERR_112);
@@ -925,7 +929,7 @@ public class ClusterApiService {
               + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, topicName);
 
       ResponseEntity<TreeMap<String, Map<String, Object>>> treeMapResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull,
                   HttpMethod.GET,
@@ -968,7 +972,7 @@ public class ClusterApiService {
                   clusterIdentification);
 
       ResponseEntity<SchemasInfoOfClusterResponse> responseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull,
                   HttpMethod.GET,
@@ -1003,7 +1007,7 @@ public class ClusterApiService {
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<Map<String, Object>> s =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetConnectorsFull,
                   HttpMethod.GET,
@@ -1039,7 +1043,7 @@ public class ClusterApiService {
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ConnectorsStatus> responseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetConnectorsFull,
                   HttpMethod.GET,
@@ -1084,7 +1088,7 @@ public class ClusterApiService {
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriPostConnectorsFull,
                   HttpMethod.POST,
@@ -1109,7 +1113,7 @@ public class ClusterApiService {
       params.add("objectName", objectName);
 
       String uriGetTopicsFull = clusterConnUrl + URI_GET_METRICS;
-      RestTemplate restTemplate = getRestTemplate();
+      RestTemplate restTemplate = getRestTemplate(null);
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -1157,7 +1161,7 @@ public class ClusterApiService {
       HttpEntity<ResetConsumerGroupOffsetsRequest> request =
           new HttpEntity<>(resetConsumerGroupOffsetsRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriResetConsumerOffsets,
                   HttpMethod.POST,
