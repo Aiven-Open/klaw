@@ -45,7 +45,7 @@ public class CacheService<T> {
   }
 
   public T remove(int tenantId, Integer id, boolean isLocalUpdate) {
-    log.info("remove id {}", id);
+    log.debug("remove id {}", id);
     if (!isLocalUpdate) {
       sendHighAvailabilityRemove(tenantId, id);
     }
@@ -61,7 +61,7 @@ public class CacheService<T> {
   }
 
   public T addOrUpdate(int tenantId, Integer id, T entry, boolean isLocalUpdate) {
-    log.info("addOrUpdate {}", entry);
+    log.debug("addOrUpdate {}", entry);
     getCache(tenantId).put(id, entry);
     if (!isLocalUpdate) {
       sendHighAvailabilityUpdate(tenantId, id, entry);
