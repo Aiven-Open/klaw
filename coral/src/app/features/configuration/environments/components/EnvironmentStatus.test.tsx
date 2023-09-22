@@ -89,7 +89,7 @@ describe("EnvironmentStatus", () => {
       mockGetUpdateEnvStatus.mockResolvedValue({
         result: "success",
         envStatus: "ONLINE",
-        envStatusTime: '2023-09-21T11:47:15.664615239',
+        envStatusTime: "2023-09-21T11:47:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
@@ -109,7 +109,7 @@ describe("EnvironmentStatus", () => {
       mockGetUpdateEnvStatus.mockResolvedValue({
         result: "success",
         envStatus: "OFFLINE",
-        envStatusTime: '2023-09-21T11:47:15.664615239',
+        envStatusTime: "2023-09-21T11:47:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
@@ -154,7 +154,7 @@ describe("EnvironmentStatus", () => {
       mockGetUpdateEnvStatus.mockResolvedValue({
         result: "success",
         envStatus: "OFFLINE",
-        envStatusTime: '2023-09-21T11:47:15.664615239',
+        envStatusTime: "2023-09-21T11:47:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
