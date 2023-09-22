@@ -18,7 +18,7 @@ Please read through this document before submitting any issues or pull requests.
       - [How to sign off commits](#how-to-sign-off-commits)
       - [How to fix not signed off commits after the fact](#how-to-fix-not-signed-off-commits-after-the-fact)
     - [✅ When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
-  - [How to merge a pull request](#how-to-merge-a-pull-request)
+  - [Review process and merging a pull request](#review-process-and-merging-a-pull-request)
     - [Squash and merge](#squash-and-merge)
   - [Guideline commit messages](#guideline-commit-messages)
     - [ℹ️ Semantic prefixes for commit messages](#ℹ️-semantic-prefixes-for-commit-messages)
@@ -35,38 +35,37 @@ This project has adopted the [Contributor Covenant Code of Conduct](CODE_OF_COND
 
 For more information see the [Code of Conduct FAQ](https://www.contributor-covenant.org/faq/).
 
-
 ## Opening an issue
+
 You should open an issue when you
+
 - checked that there is no issue open already related to your topic
 - want to report an error that you can't resolve by yourself
 - want to propose a new feature
 - want to discuss an idea to improve a higher-level topic, for example about community, documentation
 
-__What information does an issue need?__
+**What information does an issue need?**
 The more information an issue includes, the better! For example:
 
 - If it's a bug, describe in detail how to reproduce it. You can add screenshots or screen recordings for visual bugs.
 - If it's a feature, create a user story. What problem does that feature solve? What value does it add?
 
-
 ## How to work on an issue
 
 - Comment on the issue to inform that you will work on it.
-- If you have the rights: set yourself as an assignee and add the __in progress__ label.
+- If you have the rights: set yourself as an assignee and add the **in progress** label.
 - [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
 - On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
 - 🧑‍💻 Make all of your changes. You may find detailed documentation about how to set up a local development environment in our documentation:
   - [for `coral` development](coral/docs/README.md#installation-and-usage)
   - [for `core` or `cluster-api` development](README.md#install)
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
-- Prefer making small and self-contained commits. It helps doing reviews. 
+- Prefer making small and self-contained commits. It helps doing reviews.
 - Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
 - Make sure you add tests for your changes.
 - If you fix a bug, add a regression test.
 
 - When you're finished and pushed all your changes to GitHub, you're ready to create a pull request 🎉
-
 
 ## How to make a pull request
 
@@ -113,21 +112,21 @@ Every pull request has to be reviewed before merging. At least one maintainer ne
 
 Your pull request should meet the following criteria to be ready for review:
 
-__1. Every PR has to be releasable__
+**1. Every PR has to be releasable**
 
 - Every PR that is merged on `main` should be treated like we release it into production right away.
 - The `main` branch should always be in a state where it can be deployed and used right away.
 - If API changes were made, ensure the `openapi.yaml` spec was generated and added to the commit, and that the frontend types have been generated with `pnpm extract-api-types`. [Read about why here](./docs/openapi.md).
 - All GitHub actions checks must be green.
 
-__2. A clear goal with a small scope__
+**2. A clear goal with a small scope**
 
 - Make small and incremental PRs.
 - The code changes relate to one specific topic.
 - Every PR should have one specific goal (and if you add that goal in your description - all the better).
 - Rather do multiple smaller PRs than one big one! PRs with a lot of changes are difficult to review. It's also more demanding to give constructive feedback to them.
 
-__3. Add meaningful information__
+**3. Add meaningful information**
 
 - A descriptive title and detailed description of your changes help the reviewer gaining context.
 - Include links to relevant issues.
@@ -135,7 +134,7 @@ __3. Add meaningful information__
 - Especially for UI changes it can be helpful to add screenshots or recordings of your changes
 - If you have questions, don't hesitate to add them!
 
-__4. Keep a clear git history in mind__
+**4. Keep a clear git history in mind**
 
 - If you do multiple commits, try to make every commit cover the scope of your changes.
 - Your commit messages should follow our [guideline](#guideline-commit-messages).
@@ -143,16 +142,18 @@ __4. Keep a clear git history in mind__
 
 ## Review process and merging a pull request
 
-A pull request author should never merge themselves. Pull requests are reviewed and merged by one or more maintainer(s). 
+A pull request author should never merge themselves. Pull requests are reviewed and merged by one or more maintainer(s).
 
 The review process goes as follow:
+
 - One or more maintainer(s) will carefully read the description and the code of the pull request
 - Comments may be left on specific parts of the code, or on the pull request as a whole. We strive to always be empathetic and helpful in our reviews. The comments may be questions about technical choices, observations about possible improvements, clarification of some of the project's conventions, or compliments on beautiful code.
-- Comments may be blocking. In these cases, the pull request will not be approved until the comments are addressed. "Addressing" a comment can mean explaining your approach and getting agreement from the reviewer, or implementing the suggested change and pushing a subsequent commit (we appreciate linking to the commit in an answer to the comment). 
+- Comments may be blocking. In these cases, the pull request will not be approved until the comments are addressed. "Addressing" a comment can mean explaining your approach and getting agreement from the reviewer, or implementing the suggested change and pushing a subsequent commit (we appreciate linking to the commit in an answer to the comment).
 - Once all comments have been addressed and resolved, one or more maintainer will approve the pull request. This action means "this code should be part of Klaw".
 - The pull request will then be merged into the `main` branch by a maintainer, usually one of the reviewers.
 
 In summary, the checklist for a pull request to be merged is as follow:
+
 - Reviewed and approved by one or more maintainer(s)
 - GitHub actions all green
 - Pull request branch up to date with `main` branch
@@ -161,9 +162,9 @@ In summary, the checklist for a pull request to be merged is as follow:
 
 While working on a change, making small commits related to specific changes is a good practice. The commit history helps describe the process of building. It helps reviewers doing a good job! But they can clutter the Git history on the main branch a lot.
 
-This is why we use "squash and merge" as merge method. When merging, the small commits are combined into one. It creates a cleaner merge history. It also makes it more straight forward to revert all part of the changes, if that is needed. 
+This is why we use "squash and merge" as merge method. When merging, the small commits are combined into one. It creates a cleaner merge history. It also makes it more straight forward to revert all part of the changes, if that is needed.
 
-The commit message for the pull request can be changed when merging. We recommend updating the automatically created text for this commit to create a meaningful squash commit message. They should follow our [Guideline commit messages](#guideline-commit-messages). 
+The commit message for the pull request can be changed when merging. We recommend updating the automatically created text for this commit to create a meaningful squash commit message. They should follow our [Guideline commit messages](#guideline-commit-messages).
 
 ## Guideline commit messages
 
@@ -171,7 +172,7 @@ We use the [Conventional Commits](https://www.conventionalcommits.org/) specific
 
 ### ℹ️ Semantic prefixes for commit messages
 
-- **fix**: a commit that patches a bug.  
+- **fix**: a commit that patches a bug.
   Example: `fix: Removes circular dependency`
 
 - **feat**: a commit that introduces a new feature.
@@ -182,7 +183,6 @@ We use the [Conventional Commits](https://www.conventionalcommits.org/) specific
 
 - **refactor**: a commit that refactors existing code.
   Example: `refactor: Update footer from kafkawize.io to klaw-project.io`
-
 
 ### ✍️ Writing a great commit message
 
@@ -198,6 +198,7 @@ For more information read this article: [How to Write a Git Commit Message](http
 ```
 
 #### 1. Add a short description as the first line
+
 The first line (`<description>`) should be a short description of your change. Limit it to preferably 50 characters. It never should be longer than 72 characters.
 
 **⛔️ Don't**
@@ -209,6 +210,7 @@ The first line (`<description>`) should be a short description of your change. L
 `Add the first iteration for contribution guide`
 
 #### 2. Use the "imperative mood" in the first line
+
 "Imperative mood" means you form a sentence as if you were giving a command. You can image your commit message completing the sentence _"If applied, this commit will... <do your change>"_.
 
 **⛔️ Don't**
@@ -219,27 +221,29 @@ The first line (`<description>`) should be a short description of your change. L
 `fix: Remove the newline that caused a linting error`
 -> _"If applied, this commit will_ remove the newline that caused a linting error"
 
-
 #### 3. Separate your description with a new line from the body
+
 If you add a body, add an empty line between your description to separate it from the body. This makes the message more readable. It also makes `git log --oneline` or `git shortlog` more usable.
 
-
 #### 4. Use an optional body to explain why not how.
+
 You don't need to explain the code! The commit message has a changeset that contains this information. Use the body to explain _why_ you made a change. Not every commit needs to have a body. Often the code change itself is explanation enough.
 
 **⛔️ Don't**
+
 ```
 fix: Fix typo
 
 Change "optoinal" "to optional"
 ```
 
-
 **️✅ Do**
+
 ```fix: Remove word
 
-Remove "just" from the description, because it can make people feel inadequate. 
+Remove "just" from the description, because it can make people feel inadequate.
 ```
 
 #### 5. Wrap your body at 72 characters
+
 Git does not wrap text, so you have to take care of margins. Editors and IDEs can help with that.

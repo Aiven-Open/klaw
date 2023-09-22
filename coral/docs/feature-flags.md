@@ -1,6 +1,6 @@
 # Feature flags
 
-New features are introduced to Coral in small increments. With small increments, it likely that a certain feature is not working 100% from the end user point of view. One approach to the problem would be to build features in a feature branch and merge the feature branch to main after in being complete. However, that approach will lead into the need of constant rebasing. Instead of using feature branches, we decided to implement feature flag functionality. 
+New features are introduced to Coral in small increments. With small increments, it likely that a certain feature is not working 100% from the end user point of view. One approach to the problem would be to build features in a feature branch and merge the feature branch to main after in being complete. However, that approach will lead into the need of constant rebasing. Instead of using feature branches, we decided to implement feature flag functionality.
 
 Feature flags enable Coral developers to merge incomplete pieces of a feature features to main without breaking the user experience of a production user.
 
@@ -18,7 +18,7 @@ Introducing a new feature flag requires only a few steps.
 
 Define an environment variable represents a flag in [vite.config.ts](../vite.config.ts). Prefix your name with `FEATURE_FLAG_`.
 
-Example: 
+Example:
 
 ```
 "process.env": {
@@ -30,8 +30,8 @@ Example:
 }
 ```
 
-
 ### 2. Add your flag to the `FeatureFlag` enum
+
 Add the environment variable to be part of `FeatureFlag` enum defined in [coral/src/services/feature-flags/types.ts](../src/services/feature-flags/types.ts) like this:
 
 ```
@@ -47,14 +47,14 @@ enum FeatureFlag {
 
 If you're developing a feature that required adding a new route, you can use our helper.
 
-1. Add your new route 
+1. Add your new route
 2. Add your route in [router-utils.ts](../src/app/router.tsx)
 
 ```tsx
 enum Routes {
   TOPICS = "/topics",
   // ...
-  YOUR_NEW_ROUTE = "/your-new-route"
+  YOUR_NEW_ROUTE = "/your-new-route",
 }
 ```
 
@@ -66,7 +66,7 @@ import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-u
 const routes: Array<RouteObject> = [
   {
     path: Routes.TOPICS,
-    element: <Topics/>,
+    element: <Topics />,
   },
   // ...
   createRouteBehindFeatureFlag({
@@ -74,17 +74,17 @@ const routes: Array<RouteObject> = [
     element: <YourPageElement />,
     featureFlag: FeatureFlag.YOUR_NEW_ROUTE,
     // Routes.TOPICS is an example, you can use any
-    // existing route that makes the most sense in 
+    // existing route that makes the most sense in
     // your case
-    redirectRouteWithoutFeatureFlag: Routes.TOPICS
+    redirectRouteWithoutFeatureFlag: Routes.TOPICS,
   }),
   //...
-]
+];
 ```
 
 #### Using the feature flag in components
 
-You can access the feature flag in your components etc. like this. 
+You can access the feature flag in your components etc. like this.
 
 ```
 // Component.tsx
@@ -93,12 +93,12 @@ const topicRequestEnabled = useFeatureFlag(FeatureFlag.TOPIC_REQUEST);
 
 ## Note about testing
 
-If you want to test your new feature, you have to add the feature flag in the test environment. To avoid adding env variables in tests or in various code files, we provide the helper `isFeatureFlagActive`. 
+If you want to test your new feature, you have to add the feature flag in the test environment. To avoid adding env variables in tests or in various code files, we provide the helper `isFeatureFlagActive`.
 
 You can mock that helper in tests like this:
 
 ```tsx
-import {isFeatureFlagActive} from "coral/src/services/feature-flags/utils";
+import { isFeatureFlagActive } from "coral/src/services/feature-flags/utils";
 
 const isFeatureFlagActiveMock = jest.fn();
 
@@ -106,11 +106,8 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
-describe('your test description', () => {
+describe("your test description", () => {
   isFeatureFlagActiveMock.mockReturnValue(false);
   // ...
-})
-
+});
 ```
-
-
