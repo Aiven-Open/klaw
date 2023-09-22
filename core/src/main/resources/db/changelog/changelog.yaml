@@ -1199,3 +1199,11 @@ databaseChangeLog:
                     name: otherparams
                     type: VARCHAR(150)
               tableName: kwoperationalrequests
+    - changeSet:
+        id: 21-09-2023 Modify column envname extend length in kwenv table
+        author: muralibasani
+        changes:
+          - modifyDataType:
+              columnName: envname
+              newDataType: VARCHAR(25)
+              tableName: kwenv
