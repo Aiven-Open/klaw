@@ -1213,7 +1213,7 @@ public class TopicAclControllerIT {
     envModelSch.setClusterId(3);
     envModelSch.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
     EnvTag envTag = new EnvTag();
-    envTag.setName("SCHD");
+    envTag.setName("SCHEMA_ENVIRONMENT_DEV");
     envTag.setId("1");
     envModelSch.setAssociatedEnv(envTag);
     String jsonReqSch = OBJECT_MAPPER.writer().writeValueAsString(envModelSch);
