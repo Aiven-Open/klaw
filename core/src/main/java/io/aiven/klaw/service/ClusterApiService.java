@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
@@ -63,6 +62,7 @@ import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -126,7 +126,7 @@ public class ClusterApiService {
   }
 
   private RestTemplate getRestTemplate(String clusterConnectivityUrl) {
-    if (clusterConnectivityUrl == null) {
+    if (StringUtils.isEmpty(clusterConnectivityUrl)) {
       clusterConnectivityUrl = clusterConnUrl;
     }
     if (clusterConnectivityUrl.toLowerCase().startsWith("https")) {
