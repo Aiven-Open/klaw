@@ -9,12 +9,14 @@ import io.aiven.klaw.service.JwtTokenUtilService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@ConditionalOnProperty(prefix = "klaw.core.ha", name = "enable", matchIfMissing = false)
 @RequestMapping("/cache")
 @Slf4j
 public class CacheController {

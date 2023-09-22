@@ -216,10 +216,6 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
-  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
-    post: operations["addEnvToCache"];
-    delete: operations["removeEnvFromCache"];
-  };
   "/addTenantId": {
     post: operations["addTenantId"];
   };
@@ -888,40 +884,6 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
-    Env: {
-      id?: string;
-      /** Format: int32 */
-      tenantId?: number;
-      name?: string;
-      stretchCode?: string;
-      /** Format: int32 */
-      clusterId?: number;
-      type?: string;
-      otherParams?: string;
-      envExists?: string;
-      /** @enum {string} */
-      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
-      /** Format: date-time */
-      envStatusTime?: string;
-      associatedEnv?: components["schemas"]["EnvTag"];
-      params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: (string)[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
-      topicRegex?: (string)[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
-    };
     KwTenantModel: {
       tenantName: string;
       tenantDesc: string;
@@ -948,6 +910,22 @@ export type components = {
       /** Format: int32 */
       tenantId?: number;
       params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+      topicRegex?: (string)[];
+      applyRegex?: boolean;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
     };
     KwClustersModel: {
       /** Format: int32 */
@@ -2848,49 +2826,6 @@ export type operations = {
     parameters: {
       query: {
         changePwd: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addEnvToCache: {
-    parameters: {
-      header: {
-        Authorization: string;
-      };
-      path: {
-        tenantId: number;
-        id: number;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Env"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  removeEnvFromCache: {
-    parameters: {
-      header: {
-        Authorization: string;
-      };
-      path: {
-        tenantId: number;
-        id: number;
       };
     };
     responses: {

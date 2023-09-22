@@ -14,11 +14,13 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(prefix = "klaw.core.ha", name = "enable", matchIfMissing = false)
 public class JwtTokenUtilService implements InitializingBean {
   @Value("${klaw.core.app2app.base64.secret:#{''}}")
   private String App2AppSecret;
