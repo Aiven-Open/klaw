@@ -202,7 +202,7 @@ public class UiConfigControllerTest {
   @Order(9)
   public void addNewEnvMoreThan10CharsFailure() throws Exception {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
-    env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
+    env.setName("ABCDEFGHIJKLfkjdshfkjhasdkjfhaskjfhkshdfkjhasdk"); // > 25 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.FAILURE;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
