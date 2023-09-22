@@ -309,6 +309,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });

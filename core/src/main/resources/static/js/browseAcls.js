@@ -168,6 +168,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });

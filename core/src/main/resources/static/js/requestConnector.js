@@ -324,6 +324,7 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });

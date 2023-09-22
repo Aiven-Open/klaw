@@ -284,6 +284,7 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });

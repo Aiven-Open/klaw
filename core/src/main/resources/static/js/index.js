@@ -153,6 +153,7 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $ro
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });

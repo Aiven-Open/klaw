@@ -177,6 +177,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
