@@ -24,5 +24,5 @@ _Additional changes, explanations of the approach taken, unresolved issues, nece
 
 # Please check if the PR fulfills these requirements
 
-- [ ] The commit message follows [our guidelines]('../CONTRIBUTING.md#guideline-commit-messages')
+- [ ] The commit message follows [our guidelines]("https://github.com/Aiven-Open/klaw/blob/main/CONTRIBUTING.md#guideline-commit-messages")
 - [ ] Tests for the changes have been added (for bug fixes / features)
