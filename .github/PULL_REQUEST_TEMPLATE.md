@@ -2,12 +2,13 @@
 
 Resolves: #xxxxx
 
-# What kind of change does this PR introduce? (Bug fix, feature, docs update, ...)
+# What kind of change does this PR introduce?
 
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
 - [ ] Docs update
+- [ ] CI update
 
 # What is the current behavior?
 
