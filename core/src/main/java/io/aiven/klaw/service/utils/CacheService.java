@@ -1,6 +1,6 @@
 package io.aiven.klaw.service.utils;
 
-import io.aiven.klaw.service.HARestMessagingService;
+import io.aiven.klaw.service.interfaces.HAMessagingServiceI;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -21,9 +21,9 @@ public class CacheService<T> {
   private final String urlEndpoint;
   private final String entityType;
 
-  private final HARestMessagingService utilsService;
+  private final HAMessagingServiceI utilsService;
 
-  public CacheService(String entityType, HARestMessagingService utilsService) {
+  public CacheService(String entityType, HAMessagingServiceI utilsService) {
     // TODO an interface needs to be added to allow the passing in of different communication
     // methods (kafka/https/rabbitmq etc) to allow any org to use what they want for maintaining
     // cache.
@@ -64,7 +64,7 @@ public class CacheService<T> {
     log.debug("addOrUpdate {}", entry);
     getCache(tenantId).put(id, entry);
     if (!isLocalUpdate) {
-      sendHighAvailabilityUpdate(tenantId, id, entry);
+      sendHighAvailabilityUpdate(tenantId, entry);
     }
     return entry;
   }
@@ -87,8 +87,8 @@ public class CacheService<T> {
     return new ArrayList<>(cache.get(tenantId).values());
   }
 
-  private void sendHighAvailabilityUpdate(int tenantId, Integer id, T entry) {
-    utilsService.sendUpdate(entityType, tenantId, id, entry);
+  private void sendHighAvailabilityUpdate(int tenantId, T entry) {
+    utilsService.sendUpdate(entityType, tenantId, entry);
   }
 
   private void sendHighAvailabilityRemove(int tenantId, Integer id) {

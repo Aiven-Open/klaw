@@ -12,4 +12,6 @@ public class EnvUpdatedStatus {
   @NotNull private ClusterStatus envStatus;
 
   @NotNull private LocalDateTime envStatusTime;
+
+  @NotNull private LocalDateTime entStatusRequestedAtTime;
 }

@@ -34,6 +34,8 @@ public class EnvModelResponse implements Serializable {
 
   @NotNull private LocalDateTime envStatusTime;
 
+  @NotNull private LocalDateTime entStatusRequestedAtTime;
+
   @NotNull private String otherParams;
 
   @NotNull private boolean showDeleteEnv;

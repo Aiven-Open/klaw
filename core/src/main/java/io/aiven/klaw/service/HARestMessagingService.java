@@ -4,6 +4,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_117;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.service.interfaces.HAMessagingServiceI;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.net.InetAddress;
@@ -45,13 +46,13 @@ public class HARestMessagingService implements HAMessagingServiceI {
 
   private List<String> clusterUrls;
 
-  RestTemplate rest;
+  private RestTemplate rest;
   private static HttpComponentsClientHttpRequestFactory requestFactory = null;
 
   private static Map<String, String> baseUrlsMap;
 
   @Value("${klaw.core.app2app.base64.secret:#{''}}")
-  private String App2AppApiKey;
+  private String app2AppApiKey;
 
   @Value("${klaw.core.app2app.username:KlawApp2App}")
   private String apiUser;
@@ -80,14 +81,17 @@ public class HARestMessagingService implements HAMessagingServiceI {
   public boolean isLocalServerUrl(String basePath) {
     Map<String, String> baseUrlsFromEnv = getBaseIpUrlFromEnvironment();
     if (baseUrlsFromEnv != null && !baseUrlsFromEnv.isEmpty()) {
-      if (baseUrlsFromEnv.containsKey(BASE_URL_ADDRESS)
-          && basePath.contains(baseUrlsFromEnv.get(BASE_URL_ADDRESS))) {
+      if (existsInMap(basePath, baseUrlsFromEnv, BASE_URL_ADDRESS)) {
         return true;
       }
-      return baseUrlsFromEnv.containsKey(BASE_URL_NAME)
-          && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME));
+      return existsInMap(basePath, baseUrlsFromEnv, BASE_URL_NAME);
     }
     return false;
+  }
+
+  private static boolean existsInMap(
+      String basePath, Map<String, String> baseUrlsFromEnv, String key) {
+    return baseUrlsFromEnv.containsKey(key) && basePath.contains(baseUrlsFromEnv.get(key));
   }
 
   public RestTemplate getRestTemplate() {
@@ -102,7 +106,7 @@ public class HARestMessagingService implements HAMessagingServiceI {
   }
 
   public List<String> getHAClusterUrls() {
-    if (clusterUrlsAsString != null && clusterUrlsAsString.length() > 0) {
+    if (clusterUrlsAsString != null && !clusterUrlsAsString.isEmpty()) {
       return Arrays.stream(clusterUrlsAsString.split(","))
           .filter(serverUrl -> !isLocalServerUrl(serverUrl))
           .toList();
@@ -121,14 +125,14 @@ public class HARestMessagingService implements HAMessagingServiceI {
   }
 
   private String generateToken(String username) throws KlawException {
-    if (App2AppApiKey.isBlank()) {
+    if (app2AppApiKey.isBlank()) {
       log.error(CLUSTER_API_ERR_117);
       throw new KlawException(CLUSTER_API_ERR_117);
     }
 
     Key hmacKey =
         new SecretKeySpec(
-            Base64.decodeBase64(App2AppApiKey), SignatureAlgorithm.HS256.getJcaName());
+            Base64.decodeBase64(app2AppApiKey), SignatureAlgorithm.HS256.getJcaName());
     Instant now = Instant.now();
 
     return Jwts.builder()
@@ -143,7 +147,7 @@ public class HARestMessagingService implements HAMessagingServiceI {
   }
 
   @Override
-  public void sendUpdate(String entityType, int tenantId, int id, Object entry) {
+  public void sendUpdate(String entityType, int tenantId, Object entry) {
     if (isLazyLoaded()) {
       throw new RuntimeException("Unable to load High Availability Cache");
     }
@@ -151,7 +155,7 @@ public class HARestMessagingService implements HAMessagingServiceI {
     for (String url : clusterUrls) {
       try {
         HttpEntity<Object> request = new HttpEntity<>(entry, createHeaders());
-        rest.postForObject(getUrl(url, entityType, tenantId, id), request, ApiResponse.class);
+        rest.postForObject(getUrl(url, entityType, tenantId, null), request, ApiResponse.class);
 
       } catch (KlawException | RestClientException clientException) {
         log.error(
@@ -197,15 +201,20 @@ public class HARestMessagingService implements HAMessagingServiceI {
     if (url.endsWith(URL_SEPERATOR)) {
       url = url.substring(0, url.length() - 1);
     }
-    return String.join(
-        URL_SEPERATOR,
-        url,
-        CACHE,
-        TENANT,
-        Integer.toString(tenantId),
-        ENTITY_TYPE,
-        entityType,
-        ID,
-        Integer.toString(id));
+    if (id != null) {
+      return String.join(
+          URL_SEPERATOR,
+          url,
+          CACHE,
+          TENANT,
+          Integer.toString(tenantId),
+          ENTITY_TYPE,
+          entityType,
+          ID,
+          Integer.toString(id));
+    } else {
+      return String.join(
+          URL_SEPERATOR, url, CACHE, TENANT, Integer.toString(tenantId), ENTITY_TYPE, entityType);
+    }
   }
 }

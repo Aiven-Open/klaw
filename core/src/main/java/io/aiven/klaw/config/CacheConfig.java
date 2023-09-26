@@ -85,7 +85,7 @@ public class CacheConfig {
     try {
       globalUsers.put(apiUser, ",CACHE_ADMIN,enabled");
     } catch (Exception e) {
-      throw new Exception("Error : Cluster Api User not loaded. Exiting.");
+      throw new Exception("Error : User not loaded. Exiting.");
     }
 
     return new InMemoryUserDetailsManager(globalUsers);

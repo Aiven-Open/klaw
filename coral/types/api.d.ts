@@ -216,9 +216,8 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
-  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+  "/cache/tenant/{tenantId}/entityType/environment": {
     post: operations["addEnvToCache"];
-    delete: operations["removeEnvFromCache"];
   };
   "/addTenantId": {
     post: operations["addTenantId"];
@@ -529,6 +528,9 @@ export type paths = {
   };
   "/acl/request/{aclRequestId}": {
     get: operations["getAclRequest"];
+  };
+  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+    delete: operations["removeEnvFromCache"];
   };
 };
 
@@ -903,6 +905,8 @@ export type components = {
       envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime?: string;
+      /** Format: date-time */
+      entStatusRequestedAtTime?: string;
       associatedEnv?: components["schemas"]["EnvTag"];
       params?: components["schemas"]["EnvParams"];
     };
@@ -1150,6 +1154,8 @@ export type components = {
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime: string;
+      /** Format: date-time */
+      entStatusRequestedAtTime: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1410,6 +1416,8 @@ export type components = {
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime: string;
+      /** Format: date-time */
+      entStatusRequestedAtTime: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -2866,31 +2874,11 @@ export type operations = {
       };
       path: {
         tenantId: number;
-        id: number;
       };
     };
     requestBody: {
       content: {
         "application/json": components["schemas"]["Env"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  removeEnvFromCache: {
-    parameters: {
-      header: {
-        Authorization: string;
-      };
-      path: {
-        tenantId: number;
-        id: number;
       };
     };
     responses: {
@@ -4419,6 +4407,25 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"];
+        };
+      };
+    };
+  };
+  removeEnvFromCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

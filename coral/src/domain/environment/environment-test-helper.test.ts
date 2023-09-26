@@ -14,6 +14,7 @@ describe("environment-test-helper.ts", () => {
         defaultReplicationFactor: undefined,
         envStatus: "ONLINE",
         envStatusTime: "2023-09-08T12:34:10.615919098",
+        entStatusRequestedAtTime: "2023-09-21T11:46:15.664615239",
         id: "1",
         maxPartitions: undefined,
         maxReplicationFactor: undefined,

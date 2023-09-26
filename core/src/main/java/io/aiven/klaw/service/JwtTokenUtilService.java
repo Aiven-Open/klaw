@@ -20,10 +20,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(prefix = "klaw.core.ha", name = "enable", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "klaw.core.ha", name = "enable")
 public class JwtTokenUtilService implements InitializingBean {
   @Value("${klaw.core.app2app.base64.secret:#{''}}")
-  private String App2AppSecret;
+  private String app2AppSecret;
 
   public static final String BEARER = "Bearer ";
   @Autowired UserDetailsService userDetailsService;
@@ -69,7 +69,7 @@ public class JwtTokenUtilService implements InitializingBean {
     UserDetails user = userDetailsService.loadUserByUsername(getUsernameFromToken(token));
     if (user == null
         && !validateToken(token)
-        && !claims.get("Roles", List.class).containsAll(List.of(expectedRole))) {
+        && !claims.get("Roles", List.class).containsAll(List.<String>of(expectedRole))) {
       throw new KlawNotAuthorizedException("UnAuthorized");
     }
   }
@@ -77,9 +77,9 @@ public class JwtTokenUtilService implements InitializingBean {
   // validate secret during app initialization
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (App2AppSecret != null && !App2AppSecret.trim().equals("")) {
+    if (app2AppSecret != null && !app2AppSecret.trim().isEmpty()) {
       try {
-        decodedSecret = Base64.decodeBase64(App2AppSecret);
+        decodedSecret = Base64.decodeBase64(app2AppSecret);
         return;
       } catch (Exception e) {
         throw new Exception("Invalid Base64 value configured. klaw.core.app2app.base64.secret");

@@ -21,18 +21,16 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class CacheController {
 
-  public static final String CACHE_ADMIN = "CACHE_ADMIN";
   @Autowired private ManageDatabase manageDatabase;
 
   @Autowired JwtTokenUtilService jwtTokenUtilService;
 
   @PostMapping(
-      value = "/tenant/{tenantId}/entityType/environment/id/{id}",
+      value = "/tenant/{tenantId}/entityType/environment",
       produces = {MediaType.APPLICATION_JSON_VALUE},
       consumes = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addEnvToCache(
       @PathVariable("tenantId") Integer tenantId,
-      @PathVariable("id") Integer id,
       @Valid @RequestBody Env env,
       @RequestHeader(name = "Authorization") String token)
       throws KlawNotAuthorizedException {

@@ -2076,20 +2076,12 @@
         }
       }
     },
-    "/cache/tenant/{tenantId}/entityType/environment/id/{id}" : {
+    "/cache/tenant/{tenantId}/entityType/environment" : {
       "post" : {
         "tags" : [ "cache-controller" ],
         "operationId" : "addEnvToCache",
         "parameters" : [ {
           "name" : "tenantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "id",
           "in" : "path",
           "required" : true,
           "schema" : {
@@ -2114,46 +2106,6 @@
           },
           "required" : true
         },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "cache-controller" ],
-        "operationId" : "removeEnvFromCache",
-        "parameters" : [ {
-          "name" : "tenantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "Authorization",
-          "in" : "header",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -5869,6 +5821,48 @@
           }
         }
       }
+    },
+    "/cache/tenant/{tenantId}/entityType/environment/id/{id}" : {
+      "delete" : {
+        "tags" : [ "cache-controller" ],
+        "operationId" : "removeEnvFromCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -6922,6 +6916,10 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "entStatusRequestedAtTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
           },
@@ -7041,7 +7039,7 @@
         "properties" : {
           "name" : {
             "type" : "string",
-            "maxLength" : 10,
+            "maxLength" : 25,
             "minLength" : 2,
             "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
           },
@@ -7647,9 +7645,13 @@
           "envStatusTime" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "entStatusRequestedAtTime" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
-        "required" : [ "envStatus", "envStatusTime", "result" ]
+        "required" : [ "entStatusRequestedAtTime", "envStatus", "envStatusTime", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -8397,6 +8399,10 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "entStatusRequestedAtTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "otherParams" : {
             "type" : "string"
           },
@@ -8431,7 +8437,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "envStatusTime", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "entStatusRequestedAtTime", "envStatus", "envStatusTime", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {

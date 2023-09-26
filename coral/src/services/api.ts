@@ -252,8 +252,8 @@ const DYNAMIC_API_PATHS = {
     `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
   getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
     `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
-  addEnvToCache: ({ tenantId, id }: Parameters<AddEnvToCache>[0]) =>
-    `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
+  addEnvToCache: ({ tenantId }: Parameters<AddEnvToCache>[0]) =>
+    `/cache/tenant/${tenantId}/entityType/environment` as keyof ApiPaths,
   removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
     `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
 } satisfies {
