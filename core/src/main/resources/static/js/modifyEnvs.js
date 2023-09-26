@@ -826,7 +826,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -850,6 +850,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -889,7 +890,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;

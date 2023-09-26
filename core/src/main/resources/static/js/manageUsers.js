@@ -132,7 +132,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             		closeOnConfirm: true,
             		closeOnCancel: true
             	}).then(function(isConfirm){
-            		if (isConfirm.dismiss != "cancel") {
+            		if (isConfirm.value) {
             			$http({
                             method: "POST",
                             url: "chPwd",
@@ -175,7 +175,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss != "cancel") {
+        		if (isConfirm.value) {
         			$http({
                             method: "POST",
                             url: "deleteTeamRequest",
@@ -220,7 +220,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss != "cancel") {
+        		if (isConfirm.value) {
         			$http({
                         method: "POST",
                         url: "deleteUserRequest",
@@ -848,7 +848,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -872,6 +872,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -911,7 +912,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
