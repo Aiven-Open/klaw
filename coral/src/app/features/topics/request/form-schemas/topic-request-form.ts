@@ -30,22 +30,12 @@ const environmentParams = z.object({
   topicRegex: z.array(z.string()).optional(),
 });
 
-const environmentField: z.ZodType<Environment> = z.object({
-  name: z.string(),
-  id: z.string(),
-  type: z.string(),
-  params: environmentParams.optional(),
-  clusterName: z.string(),
-  tenantName: z.string(),
-  envStatus: z.union([
-    z.literal("ONLINE"),
-    z.literal("OFFLINE"),
-    z.literal("NOT_KNOWN"),
-  ]),
-  associatedEnv: z
-    .object({ id: z.string().optional(), name: z.string().optional() })
-    .optional(),
-});
+const environmentField: z.ZodType<Pick<Environment, "name" | "id" | "params">> =
+  z.object({
+    name: z.string(),
+    id: z.string(),
+    params: environmentParams.optional(),
+  });
 
 const advancedConfigurationField = z.string().optional();
 
