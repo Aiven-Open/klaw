@@ -492,7 +492,11 @@ describe("<TopicEditRequest />", () => {
           mockTopicDetails.topicContents.advancedTopicConfiguration
         ),
         description: mockTopicDetails.topicContents.description,
-        environment: mockEnvironments[0],
+        environment: {
+          name: mockEnvironments[0].name,
+          id: mockEnvironments[0].id,
+          params: mockEnvironments[0].params,
+        },
         remarks: "please approve",
         replicationfactor: mockTopicDetails.topicContents.noOfReplicas,
         topicname: TOPIC_NAME,

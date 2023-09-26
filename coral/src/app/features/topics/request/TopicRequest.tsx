@@ -19,11 +19,11 @@ import {
   ComplexNativeSelect,
 } from "src/app/components/Form";
 import formSchema, {
+  EnvironmentForTopicForm,
   useExtendedFormValidationAndTriggers,
 } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
-import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTopicRequest } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopicCreation } from "src/domain/topic/topic-api";
@@ -39,9 +39,13 @@ function TopicRequest() {
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
-  const { data: environments } = useQuery<Environment[], Error>(
+  const { data: environments } = useQuery<EnvironmentForTopicForm[], Error>(
     ["environments-for-team"],
-    getEnvironmentsForTopicRequest
+    {
+      queryFn: getEnvironmentsForTopicRequest,
+      select: (data) =>
+        data.map(({ name, id, params }) => ({ name, id, params })),
+    }
   );
 
   const defaultValues = Array.isArray(environments)
@@ -119,7 +123,7 @@ function TopicRequest() {
         >
           <Box width={"full"}>
             {Array.isArray(environments) ? (
-              <ComplexNativeSelect<Schema, Environment>
+              <ComplexNativeSelect<Schema, EnvironmentForTopicForm>
                 name="environment"
                 labelText={"Environment"}
                 placeholder={"-- Please select --"}

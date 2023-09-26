@@ -30,12 +30,12 @@ const environmentParams = z.object({
   topicRegex: z.array(z.string()).optional(),
 });
 
-const environmentField: z.ZodType<Pick<Environment, "name" | "id" | "params">> =
-  z.object({
-    name: z.string(),
-    id: z.string(),
-    params: environmentParams.optional(),
-  });
+type EnvironmentForTopicForm = Pick<Environment, "name" | "id" | "params">;
+const environmentField: z.ZodType<EnvironmentForTopicForm> = z.object({
+  name: z.string(),
+  id: z.string(),
+  params: environmentParams.optional(),
+});
 
 const advancedConfigurationField = z.string().optional();
 
@@ -297,6 +297,8 @@ function findNextValue({
   return fallbackDefault;
 }
 
-export type Schema = z.infer<typeof formSchema>;
+type Schema = z.infer<typeof formSchema>;
+export type { EnvironmentForTopicForm, Schema };
+
 export default formSchema;
 export { useExtendedFormValidationAndTriggers };
