@@ -290,7 +290,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                          } else {
                                serviceInput['remarks'] += " Warning To decrease partitions of a topic the topic has to be deleted";
                          }
-                             if (isConfirm.dismiss !== "cancel") {
+                             if (isConfirm.value) {
                                  $scope.httpCreateUpdateTopicReq(serviceInput);
                              }
                          });
@@ -532,7 +532,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -556,6 +556,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -595,7 +596,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
