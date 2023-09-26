@@ -23,11 +23,13 @@ import {
 } from "src/app/components/Form";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
-import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
+import type {
+  EnvironmentForTopicForm,
+  Schema,
+} from "src/app/features/topics/request/form-schemas/topic-request-form";
 import formSchema from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
 import { Routes } from "src/app/router_utils";
-import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {
   TopicDetailsPerEnv,
@@ -48,13 +50,16 @@ function TopicEditRequest() {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const { data: environments, isFetched: environmentIsFetched } = useQuery<
-    Environment[],
+    EnvironmentForTopicForm[],
     HTTPError
   >(
     ["getAllEnvironmentsForTopicAndAcl", env],
     getAllEnvironmentsForTopicAndAcl,
     {
-      select: (environments) => environments?.filter(({ id }) => id === env),
+      select: (environments) =>
+        environments
+          ?.filter(({ id }) => id === env)
+          .map(({ name, id, params }) => ({ name, id, params })),
     }
   );
 
@@ -126,7 +131,13 @@ function TopicEditRequest() {
           )
         : "{\n}";
       form.reset({
-        environment: currentEnvironment,
+        environment: !currentEnvironment
+          ? undefined
+          : {
+              name: currentEnvironment.name,
+              id: currentEnvironment.id,
+              params: currentEnvironment.params,
+            },
         topicpartitions: String(
           topicDetailsForEnv.topicContents?.noOfPartitions
         ),
