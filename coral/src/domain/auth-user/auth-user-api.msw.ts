@@ -1,11 +1,11 @@
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
-import { SetupServerApi } from "msw/node";
+import { SetupServer } from "msw/node";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const correctUsername = "superadmin";
 
-function mockUserAuthRequest(mswInstance: SetupServerApi) {
+function mockUserAuthRequest(mswInstance: SetupServer) {
   mswInstance.use(
     rest.post(`${getHTTPBaseAPIUrl()}/login`, async (req, res, ctx) => {
       const request = await req.json();
