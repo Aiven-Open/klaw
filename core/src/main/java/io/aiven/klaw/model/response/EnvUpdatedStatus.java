@@ -13,5 +13,5 @@ public class EnvUpdatedStatus {
 
   @NotNull private LocalDateTime envStatusTime;
 
-  @NotNull private LocalDateTime entStatusRequestedAtTime;
+  @NotNull private String envStatusTimeString;
 }

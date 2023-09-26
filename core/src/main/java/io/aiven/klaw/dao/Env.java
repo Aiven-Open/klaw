@@ -51,7 +51,7 @@ public class Env implements Serializable {
 
   @Transient private LocalDateTime envStatusTime;
 
-  @Transient private LocalDateTime entStatusRequestedAtTime;
+  @Transient private String envStatusTimeString;
 
   @Convert(converter = EnvTagConverter.class)
   @Column(name = "associatedenv")

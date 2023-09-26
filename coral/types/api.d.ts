@@ -905,8 +905,7 @@ export type components = {
       envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime?: string;
-      /** Format: date-time */
-      entStatusRequestedAtTime?: string;
+      envStatusTimeString?: string;
       associatedEnv?: components["schemas"]["EnvTag"];
       params?: components["schemas"]["EnvParams"];
     };
@@ -1154,8 +1153,7 @@ export type components = {
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime: string;
-      /** Format: date-time */
-      entStatusRequestedAtTime: string;
+      envStatusTimeString: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1416,8 +1414,7 @@ export type components = {
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       /** Format: date-time */
       envStatusTime: string;
-      /** Format: date-time */
-      entStatusRequestedAtTime: string;
+      envStatusTimeString: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;

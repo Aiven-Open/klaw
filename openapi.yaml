@@ -6916,9 +6916,8 @@
             "type" : "string",
             "format" : "date-time"
           },
-          "entStatusRequestedAtTime" : {
-            "type" : "string",
-            "format" : "date-time"
+          "envStatusTimeString" : {
+            "type" : "string"
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
@@ -7646,12 +7645,11 @@
             "type" : "string",
             "format" : "date-time"
           },
-          "entStatusRequestedAtTime" : {
-            "type" : "string",
-            "format" : "date-time"
+          "envStatusTimeString" : {
+            "type" : "string"
           }
         },
-        "required" : [ "entStatusRequestedAtTime", "envStatus", "envStatusTime", "result" ]
+        "required" : [ "envStatus", "envStatusTime", "envStatusTimeString", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -8399,9 +8397,8 @@
             "type" : "string",
             "format" : "date-time"
           },
-          "entStatusRequestedAtTime" : {
-            "type" : "string",
-            "format" : "date-time"
+          "envStatusTimeString" : {
+            "type" : "string"
           },
           "otherParams" : {
             "type" : "string"
@@ -8437,7 +8434,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "entStatusRequestedAtTime", "envStatus", "envStatusTime", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "envStatusTime", "envStatusTimeString", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {

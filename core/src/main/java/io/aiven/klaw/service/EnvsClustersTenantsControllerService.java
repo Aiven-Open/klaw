@@ -1249,7 +1249,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawBadRequestException {
-    LocalDateTime statusRequestedAtTime = LocalDateTime.now(ZoneOffset.UTC);
+
     EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<Env> allEnvs = manageDatabase.getAllEnvList(tenantId);
@@ -1285,7 +1285,7 @@ public class EnvsClustersTenantsControllerService {
     LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
     env.get().setEnvStatus(status);
     env.get().setEnvStatusTime(statusTime);
-    env.get().setEntStatusRequestedAtTime(statusRequestedAtTime);
+    env.get().setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
 
     // Is this required can we remove it?
     kwClusters.setClusterStatus(status);
@@ -1296,7 +1296,8 @@ public class EnvsClustersTenantsControllerService {
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);
     envUpdatedStatus.setEnvStatusTime(statusTime);
-    envUpdatedStatus.setEntStatusRequestedAtTime(statusRequestedAtTime);
+    envUpdatedStatus.setEnvStatusTimeString(
+        DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
 
     return envUpdatedStatus;
   }

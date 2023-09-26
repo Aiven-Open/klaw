@@ -90,7 +90,7 @@ describe("EnvironmentStatus", () => {
         result: "success",
         envStatus: "ONLINE",
         envStatusTime: "2023-09-21T11:47:15.664615239",
-        entStatusRequestedAtTime: "2023-09-21T11:46:15.664615239",
+        envStatusTimeString: "2023-09-21T11:46:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
@@ -111,7 +111,7 @@ describe("EnvironmentStatus", () => {
         result: "success",
         envStatus: "OFFLINE",
         envStatusTime: "2023-09-21T11:47:15.664615239",
-        entStatusRequestedAtTime: "2023-09-21T11:46:15.664615239",
+        envStatusTimeString: "2023-09-21T11:46:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
@@ -157,7 +157,7 @@ describe("EnvironmentStatus", () => {
         result: "success",
         envStatus: "OFFLINE",
         envStatusTime: "2023-09-21T11:47:15.664615239",
-        entStatusRequestedAtTime: "2023-09-21T11:46:15.664615239",
+        envStatusTimeString: "2023-09-21T11:46:15.664615239",
       });
 
       expect(screen.getByText("Working")).toBeVisible();
