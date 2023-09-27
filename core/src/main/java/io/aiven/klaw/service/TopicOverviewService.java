@@ -228,10 +228,6 @@ public class TopicOverviewService extends BaseOverviewService {
             || isSchemaRequestOpen(topicName, envId, tenantId)
             || isTopicRequestOpen(topicName, envId, tenantId)
             || isClaimTopicRequestOpen(topicName, tenantId));
-    // We also need to account for acls and schemas here so we check those from the previously run
-    // setHasOpenRequest so we dont re-run db queries.
-    topicInfo.setHasOpenRequestOnAnyEnv(
-        topicInfo.isHasOpenRequest() || isTopicRequestOpen(topicName, tenantId));
   }
 
   private void setHasSchema(
@@ -357,6 +353,9 @@ public class TopicOverviewService extends BaseOverviewService {
           topicInfoList
               .get(0)
               .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
+          topicInfoList
+              .get(0)
+              .setHasOpenRequestOnAnyEnv(isTopicRequestOpen(topicNameSearch, tenantId));
           if (topicInfoList.get(0).isHasOpenClaimRequest()) {
             topicInfoList.get(0).setHasOpenRequest(true);
           } else {
