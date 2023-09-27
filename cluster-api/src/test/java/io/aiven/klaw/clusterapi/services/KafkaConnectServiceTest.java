@@ -247,8 +247,7 @@ class KafkaConnectServiceTest {
   }
 
   @Test
-  public void updateConnector_WithMulti_url_success()
-  {
+  public void updateConnector_WithMulti_url_success() {
     ClusterConnectorRequest connectorRequest = stubUpdateConnectorMultiUrl();
 
     this.mockRestServiceServer
@@ -300,8 +299,7 @@ class KafkaConnectServiceTest {
   }
 
   @Test
-  public void updateConnector_WithMulti_url_failure()
-  {
+  public void updateConnector_WithMulti_url_failure() {
     ClusterConnectorRequest connectorRequest = stubUpdateConnector();
 
     this.mockRestServiceServer
@@ -326,26 +324,28 @@ class KafkaConnectServiceTest {
         .thenReturn(new HttpHeaders());
     ClusterConnectorRequest connectorRequest =
         ClusterConnectorRequest.builder()
-                               .connectorName("conn1")
-                               .clusterIdentification("1")
-                               .env("env")
-                               .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                               .build();
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
     return connectorRequest;
   }
 
   private ClusterConnectorRequest stubCreateOrDeleteConnectorMultiUrl() {
     when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env/connectors/conn1", restTemplate)).thenReturn(Pair.of("/env1/connectors/conn1", restTemplate)).thenReturn(Pair.of("/env2/connectors/conn1", restTemplate));
+        .thenReturn(Pair.of("/env/connectors/conn1", restTemplate))
+        .thenReturn(Pair.of("/env1/connectors/conn1", restTemplate))
+        .thenReturn(Pair.of("/env2/connectors/conn1", restTemplate));
     when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
         .thenReturn(new HttpHeaders());
     ClusterConnectorRequest connectorRequest =
         ClusterConnectorRequest.builder()
-                               .connectorName("conn1")
-                               .clusterIdentification("1")
-                               .env("env,env1,env2")
-                               .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                               .build();
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env,env1,env2")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
     return connectorRequest;
   }
 
@@ -356,28 +356,28 @@ class KafkaConnectServiceTest {
         .thenReturn(new HttpHeaders());
     ClusterConnectorRequest connectorRequest =
         ClusterConnectorRequest.builder()
-                               .connectorName("conn1")
-                               .clusterIdentification("1")
-                               .env("env")
-                               .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                               .build();
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
     return connectorRequest;
   }
 
   private ClusterConnectorRequest stubUpdateConnectorMultiUrl() {
     when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate)).thenReturn(Pair.of("/env1/connectors/conn1/config", restTemplate)).thenReturn(Pair.of("/env2/connectors/conn1/config", restTemplate));
+        .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate))
+        .thenReturn(Pair.of("/env1/connectors/conn1/config", restTemplate))
+        .thenReturn(Pair.of("/env2/connectors/conn1/config", restTemplate));
     when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
         .thenReturn(new HttpHeaders());
     ClusterConnectorRequest connectorRequest =
         ClusterConnectorRequest.builder()
-                               .connectorName("conn1")
-                               .clusterIdentification("1")
-                               .env("env,env1,env2")
-                               .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                               .build();
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env,env1,env2")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
     return connectorRequest;
   }
-
-
 }

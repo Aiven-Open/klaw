@@ -147,7 +147,7 @@ public class KafkaConnectService {
 
         responseNew =
             reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
-        if(responseNew.getStatusCode().is2xxSuccessful()) {
+        if (responseNew.getStatusCode().is2xxSuccessful()) {
           return ApiResponse.SUCCESS;
         }
       } catch (HttpServerErrorException | HttpClientErrorException e) {
