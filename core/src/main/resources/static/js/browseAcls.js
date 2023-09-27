@@ -144,7 +144,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -168,6 +168,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -207,7 +208,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
@@ -260,7 +261,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss !== "cancel") {
+                    if (isConfirm.value) {
                         swal({
                             title: "Delete schema ?",
                             text: "Delete associated schema (all versions) of this topic, if it exists ?",
@@ -272,7 +273,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                             closeOnConfirm: true,
                             closeOnCancel: true
                         }).then(function(isConfirm){
-                            if (isConfirm.dismiss !== "cancel") {
+                            if (isConfirm.value) {
                                 $scope.createTopicDeleteRequestHttpCall(env, true); // delete schema
                             } else {
                                 $scope.createTopicDeleteRequestHttpCall(env, false); // don't delete schema
@@ -330,7 +331,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createClaimTopicRequest",
@@ -390,7 +391,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createDeleteAclSubscriptionRequest",
@@ -543,7 +544,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "saveTopicDocumentation",

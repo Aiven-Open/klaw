@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
       - name: Set Node and pnpm versions
         id: versions
@@ -27,13 +27,13 @@ jobs:
           echo "PNPM_VERSION=$PNPM_VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup node.js
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
         with:
           node-version: ${{ steps.versions.outputs.NODE_VERSION }}
 
       # PNPM needs to be available for coral in the build
       - name: Setup pnpm
-        uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+        uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
         with:
           version: ${{ steps.versions.outputs.PNPM_VERSION }}
           run_install: false
@@ -127,7 +127,7 @@ jobs:
         run: BASE_URL=http://${{ steps.containerIp.outputs.CONTAINER_IP }}:9097 pnpm __test
 
       - name: Upload Playwright artifacts
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         # Upload whether steps before where a failure, but only when the playwright tests did run
         # This way we make sure we don't attempt to upload files that are not there, bc.
         # for example the build has failed.
