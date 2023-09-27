@@ -1,13 +1,13 @@
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
-import { SetupServerApi } from "msw/node";
+import { SetupServer } from "msw/node";
 import { KlawApiResponse } from "types/utils";
 
 function mockCreateAclRequest({
   mswInstance,
   response,
 }: {
-  mswInstance: SetupServerApi;
+  mswInstance: SetupServer;
   response: {
     status?: number;
     data: KlawApiResponse<"createAcl"> | { message: string };
