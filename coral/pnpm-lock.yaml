@@ -167,8 +167,8 @@ devDependencies:
     specifier: ^4.17.21
     version: 4.17.21
   msw:
-    specifier: ^0.47.4
-    version: 0.47.4(typescript@5.0.4)
+    specifier: ^1.3.1
+    version: 1.3.1(typescript@5.0.4)
   openapi-typescript:
     specifier: ^6.2.0
     version: 6.2.0
@@ -1288,16 +1288,16 @@ packages:
       set-cookie-parser: 2.5.1
     dev: true
 
-  /@mswjs/interceptors@0.17.6:
-    resolution: {integrity: sha512-201pBIWehTURb6q8Gheu4Zhvd3Ox1U4BJq5KiOQsYzkWyfiOG4pwcz5hPZIEryztgrf8/sdwABpvY757xMmfrQ==}
+  /@mswjs/interceptors@0.17.10:
+    resolution: {integrity: sha512-N8x7eSLGcmUFNWZRxT1vsHvypzIRgQYdG0rJey/rZCy6zT/30qDt8Joj7FxzGNLSwXbeZqJOMqDurp7ra4hgbw==}
     engines: {node: '>=14'}
     dependencies:
       '@open-draft/until': 1.0.3
       '@types/debug': 4.1.7
       '@xmldom/xmldom': 0.8.5
       debug: 4.3.4
-      headers-polyfill: 3.1.2
-      outvariant: 1.3.0
+      headers-polyfill: 3.2.5
+      outvariant: 1.4.0
       strict-event-emitter: 0.2.8
       web-encoding: 1.1.5
     transitivePeerDependencies:
@@ -3527,7 +3527,7 @@ packages:
       call-bind: 1.0.2
       define-properties: 1.1.4
       es-abstract: 1.20.4
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       is-string: 1.0.7
     dev: true
 
@@ -3563,7 +3563,7 @@ packages:
       define-properties: 1.1.4
       es-abstract: 1.20.4
       es-shim-unscopables: 1.0.0
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
     dev: true
 
   /asn1js@3.0.5:
@@ -3746,7 +3746,7 @@ packages:
     resolution: {integrity: sha512-7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==}
     dependencies:
       function-bind: 1.1.1
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
     dev: true
 
   /callsites@3.1.0:
@@ -3784,14 +3784,6 @@ packages:
   /chalk@3.0.0:
     resolution: {integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==}
     engines: {node: '>=8'}
-    dependencies:
-      ansi-styles: 4.3.0
-      supports-color: 7.2.0
-    dev: true
-
-  /chalk@4.1.1:
-    resolution: {integrity: sha512-diHzdDKxcU+bAsUboHLPEDQiw0qEe0qd7SYUn3HgcFlWgbDcfLGswOHYeGrHKzG9z6UYf01d9VFMfZxPM1xZSg==}
-    engines: {node: '>=10'}
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
@@ -4391,7 +4383,7 @@ packages:
       es-to-primitive: 1.2.1
       function-bind: 1.1.1
       function.prototype.name: 1.1.5
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       get-symbol-description: 1.0.0
       has: 1.0.3
       has-property-descriptors: 1.0.0
@@ -5002,14 +4994,6 @@ packages:
     engines: {node: 6.* || 8.* || >= 10.*}
     dev: true
 
-  /get-intrinsic@1.1.3:
-    resolution: {integrity: sha512-QJVz1Tj7MS099PevUG5jvnt9tSkXN8K14dxQlikJuPt4uD9hHAHjLyLBiLR5zELelBdD9QNRAXZzsJx0WaDL9A==}
-    dependencies:
-      function-bind: 1.1.1
-      has: 1.0.3
-      has-symbols: 1.0.3
-    dev: true
-
   /get-intrinsic@1.2.1:
     resolution: {integrity: sha512-2DcsyfABl+gVHEfCOaTrWgyt+tb6MSEGmKq+kI5HwLbIYgjgmMcV8KQ41uaKz1xxUcn9tJtgFbQUEVcEbd0FYw==}
     dependencies:
@@ -5034,7 +5018,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
     dev: true
 
   /get-tsconfig@4.5.0:
@@ -5153,7 +5137,7 @@ packages:
   /has-property-descriptors@1.0.0:
     resolution: {integrity: sha512-62DVLZGoiEBDHQyqG4w9xCuZ7eJEwNmJRWw2VY84Oedb7WFcA27fiEVe8oUQx9hAUJ4ekurquucTGwsyO1XGdQ==}
     dependencies:
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
     dev: true
 
   /has-proto@1.0.1:
@@ -5339,8 +5323,8 @@ packages:
       space-separated-tokens: 2.0.2
     dev: false
 
-  /headers-polyfill@3.1.2:
-    resolution: {integrity: sha512-tWCK4biJ6hcLqTviLXVR9DTRfYGQMXEIUj3gwJ2rZ5wO/at3XtkI4g8mCvFdUF9l1KMBNCfmNAdnahm1cgavQA==}
+  /headers-polyfill@3.2.5:
+    resolution: {integrity: sha512-tUCGvt191vNSQgttSyJoibR+VO+I6+iCHIUdhzEMJKE+EAL8BwCN7fUOZlY4ofOelNHsK+gEjxB/B+9N3EWtdA==}
     dev: true
 
   /highlight.js@10.7.3:
@@ -5490,7 +5474,7 @@ packages:
     resolution: {integrity: sha512-O0DB1JC/sPyZl7cIo78n5dR7eUSwwpYPiXRhTzNxZVAMUuB8vlnRFyLxdrVToks6XPLVnFfbzaVd5WLjhgg+vA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       has: 1.0.3
       side-channel: 1.0.4
     dev: true
@@ -5660,8 +5644,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /is-node-process@1.0.1:
-    resolution: {integrity: sha512-5IcdXuf++TTNt3oGl9EBdkvndXA8gmc4bz/Y+mdEpWh3Mcn/+kOw6hI7LD5CocqJWMzeb0I0ClndRVNdEPuJXQ==}
+  /is-node-process@1.2.0:
+    resolution: {integrity: sha512-Vg4o6/fqPxIjtxgUH5QLJhwZ7gW5diGCVlXpuUfELC62CuxM1iHcRe51f2W1FDy04Ai4KJkagKjx3XaqyfRKXw==}
     dev: true
 
   /is-number-object@1.0.7:
@@ -5740,17 +5724,6 @@ packages:
       call-bind: 1.0.2
       for-each: 0.3.3
       gopd: 1.0.1
-      has-tostringtag: 1.0.0
-    dev: true
-
-  /is-typed-array@1.1.9:
-    resolution: {integrity: sha512-kfrlnTTn8pZkfpJMUgYD7YZ3qzeJgWUn8XfVYBARc4wnmNOmLbmuuaAs3q5fvB0UJOn6yHAKaGTPM7d6ezoD/A==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      available-typed-arrays: 1.0.5
-      call-bind: 1.0.2
-      es-abstract: 1.20.4
-      for-each: 0.3.3
       has-tostringtag: 1.0.0
     dev: true
 
@@ -6953,38 +6926,37 @@ packages:
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
-  /msw@0.47.4(typescript@5.0.4):
-    resolution: {integrity: sha512-Psftt8Yfl0+l+qqg9OlmKEsxF8S/vtda0CmlR6y8wTaWrMMzuCDa55n2hEGC0ZRDwuV6FFWc/4CjoDsBpATKBw==}
+  /msw@1.3.1(typescript@5.0.4):
+    resolution: {integrity: sha512-GhP5lHSTXNlZb9EaKgPRJ01YAnVXwzkvnTzRn4W8fxU2DXuJrRO+Nb6OHdYqB4fCkwSNpIJH9JkON5Y6rHqJMQ==}
     engines: {node: '>=14'}
     hasBin: true
     requiresBuild: true
     peerDependencies:
-      typescript: '>= 4.2.x <= 4.8.x'
+      typescript: '>= 4.4.x <= 5.2.x'
     peerDependenciesMeta:
       typescript:
         optional: true
     dependencies:
       '@mswjs/cookies': 0.2.2
-      '@mswjs/interceptors': 0.17.6
+      '@mswjs/interceptors': 0.17.10
       '@open-draft/until': 1.0.3
       '@types/cookie': 0.4.1
       '@types/js-levenshtein': 1.1.1
-      chalk: 4.1.1
+      chalk: 4.1.2
       chokidar: 3.5.3
       cookie: 0.4.2
       graphql: 16.6.0
-      headers-polyfill: 3.1.2
+      headers-polyfill: 3.2.5
       inquirer: 8.2.5
-      is-node-process: 1.0.1
+      is-node-process: 1.2.0
       js-levenshtein: 1.1.6
       node-fetch: 2.6.7
-      outvariant: 1.3.0
+      outvariant: 1.4.0
       path-to-regexp: 6.2.1
-      statuses: 2.0.1
-      strict-event-emitter: 0.2.8
+      strict-event-emitter: 0.4.6
       type-fest: 2.19.0
       typescript: 5.0.4
-      yargs: 17.6.0
+      yargs: 17.7.2
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -7200,8 +7172,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /outvariant@1.3.0:
-    resolution: {integrity: sha512-yeWM9k6UPfG/nzxdaPlJkB2p08hCg4xP6Lx99F+vP8YF7xyZVfTmJjrrNalkmzudD4WFvNLVudQikqUmF8zhVQ==}
+  /outvariant@1.4.0:
+    resolution: {integrity: sha512-AlWY719RF02ujitly7Kk/0QlV+pXGFDHrHf9O2OKqyqgBieaPOIeuSkL8sRK6j2WK+/ZAURq2kZsY0d8JapUiw==}
     dev: true
 
   /p-limit@2.3.0:
@@ -8014,7 +7986,7 @@ packages:
     resolution: {integrity: sha512-JBUUzyOgEwXQY1NuPtvcj/qcBDbDmEvWufhlnXZIm75DEHp+afM1r1ujJpJsV/gSM4t59tpDyPi1sd6ZaPFfsA==}
     dependencies:
       call-bind: 1.0.2
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       is-regex: 1.1.4
     dev: true
 
@@ -8067,7 +8039,7 @@ packages:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
     dependencies:
       call-bind: 1.0.2
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       object-inspect: 1.12.2
     dev: true
 
@@ -8160,11 +8132,6 @@ packages:
     resolution: {integrity: sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==}
     dev: false
 
-  /statuses@2.0.1:
-    resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
-    engines: {node: '>= 0.8'}
-    dev: true
-
   /stop-iteration-iterator@1.0.0:
     resolution: {integrity: sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==}
     engines: {node: '>= 0.4'}
@@ -8181,6 +8148,10 @@ packages:
     resolution: {integrity: sha512-KDf/ujU8Zud3YaLtMCcTI4xkZlZVIYxTLr+XIULexP+77EEVWixeXroLUXQXiVtH4XH2W7jr/3PT1v3zBuvc3A==}
     dependencies:
       events: 3.3.0
+    dev: true
+
+  /strict-event-emitter@0.4.6:
+    resolution: {integrity: sha512-12KWeb+wixJohmnwNFerbyiBrAlq5qJLwIt38etRtKtmmHyDSoGlIqFE9wx+4IwG0aDjI7GV8tc8ZccjWZZtTg==}
     dev: true
 
   /string-argv@0.3.1:
@@ -8220,7 +8191,7 @@ packages:
       call-bind: 1.0.2
       define-properties: 1.1.4
       es-abstract: 1.20.4
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       has-symbols: 1.0.3
       internal-slot: 1.0.3
       regexp.prototype.flags: 1.4.3
@@ -8696,8 +8667,8 @@ packages:
       inherits: 2.0.4
       is-arguments: 1.1.1
       is-generator-function: 1.0.10
-      is-typed-array: 1.1.9
-      which-typed-array: 1.1.8
+      is-typed-array: 1.1.10
+      which-typed-array: 1.1.9
     dev: true
 
   /uvu@0.5.6:
@@ -8914,18 +8885,6 @@ packages:
       is-set: 2.0.2
       is-weakmap: 2.0.1
       is-weakset: 2.0.2
-    dev: true
-
-  /which-typed-array@1.1.8:
-    resolution: {integrity: sha512-Jn4e5PItbcAHyLoRDwvPj1ypu27DJbtdYXUa5zsinrUx77Uvfb0cXwwnGMTn7cjUfhhqgVQnVJCwF+7cgU7tpw==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      available-typed-arrays: 1.0.5
-      call-bind: 1.0.2
-      es-abstract: 1.20.4
-      for-each: 0.3.3
-      has-tostringtag: 1.0.0
-      is-typed-array: 1.1.9
     dev: true
 
   /which-typed-array@1.1.9:
