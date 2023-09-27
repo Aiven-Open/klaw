@@ -187,7 +187,9 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
                 connectorData?.connectorInfo.hasOpenClaimRequest
               }
               entityOwner={connectorData.connectorInfo.teamName}
-              hasOpenRequest={connectorData?.connectorInfo.hasOpenRequest}
+              hasOpenRequestOnAnyEnv={
+                connectorData?.connectorInfo.hasOpenRequestOnAnyEnv
+              }
               claimEntity={() => setShowClaimModal(true)}
               isError={isErrorCreateClaimConnectorRequest}
               errorMessage={claimErrorMessage}

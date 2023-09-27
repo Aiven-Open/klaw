@@ -178,7 +178,9 @@ function TopicDetails(props: TopicOverviewProps) {
               entityName={topicName}
               hasOpenClaimRequest={topicData?.topicInfo.hasOpenClaimRequest}
               entityOwner={topicData.topicInfo.teamname}
-              hasOpenRequest={topicData?.topicInfo.hasOpenRequest}
+              hasOpenRequestOnAnyEnv={
+                topicData?.topicInfo.hasOpenRequestOnAnyEnv
+              }
               claimEntity={() => setShowClaimModal(true)}
               isError={createClaimTopicRequestIsError}
               errorMessage={claimErrorMessage}
