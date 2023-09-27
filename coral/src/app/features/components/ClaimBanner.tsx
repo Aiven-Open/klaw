@@ -5,7 +5,7 @@ import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 interface ClaimBannerProps {
   entityType: "topic" | "connector";
   entityName: string;
-  hasOpenRequest: boolean;
+  hasOpenRequestOnAnyEnv: boolean;
   hasOpenClaimRequest: boolean;
   claimEntity: () => void;
   isError: boolean;
@@ -17,14 +17,14 @@ const ClaimBanner = ({
   entityType,
   entityName,
   hasOpenClaimRequest,
-  hasOpenRequest,
+  hasOpenRequestOnAnyEnv,
   claimEntity,
   isError,
   errorMessage,
   entityOwner,
 }: ClaimBannerProps) => {
-  // if there is an open claim request, hasOpenRequest is true, too
-  if (hasOpenRequest && !hasOpenClaimRequest) {
+  // if there is an open claim request, hasOpenRequestOnAnyEnv is true, too
+  if (hasOpenRequestOnAnyEnv && !hasOpenClaimRequest) {
     // We do not render an InternalLinkButton to the Requests page for this state...
     // .. because a user cannot see the requests opened by members of other teams
     return (
