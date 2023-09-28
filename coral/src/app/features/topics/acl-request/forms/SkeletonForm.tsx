@@ -1,7 +1,6 @@
 import {
   Box,
   Divider,
-  Flexbox,
   Grid,
   GridItem,
   RadioButton,
@@ -18,10 +17,10 @@ const SkeletonForm = () => {
     <Box data-testid={"skeleton"}>
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
-          <Flexbox gap={"4"}>
+          <Box.Flex gap={"4"}>
             <RadioButton.Skeleton data-testid="skeleton" />
             <RadioButton.Skeleton />
-          </Flexbox>
+          </Box.Flex>
         </GridItem>
         <GridItem>
           <NativeSelect.Skeleton />
@@ -32,10 +31,10 @@ const SkeletonForm = () => {
         </GridItem>
 
         <GridItem>
-          <Flexbox gap={"4"}>
+          <Box.Flex gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
-          </Flexbox>{" "}
+          </Box.Flex>{" "}
         </GridItem>
         <GridItem>
           <TextInput.Skeleton />
@@ -46,10 +45,10 @@ const SkeletonForm = () => {
         </GridItem>
 
         <GridItem>
-          <Flexbox gap={"4"}>
+          <Box.Flex gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
-          </Flexbox>
+          </Box.Flex>
         </GridItem>
         <GridItem>
           <MultiInput.Skeleton />
