@@ -9,7 +9,7 @@ function LinkContent({
   icon,
 }: Pick<MainNavigationLinkProps, "linkText" | "icon">) {
   return (
-    <Box.Flex
+    <Box
       component={"span"}
       display={"flex"}
       flexDirection={"row"}
@@ -18,7 +18,7 @@ function LinkContent({
     >
       {icon && <Icon icon={icon} />}
       <span>{linkText}</span>
-    </Box.Flex>
+    </Box>
   );
 }
 
@@ -39,7 +39,7 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
   }
 
   return (
-    <Box.Flex
+    <Box
       className={
         active ? classes.mainNavigationLinkActive : classes.mainNavigationLink
       }
@@ -60,7 +60,7 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
           <LinkContent icon={icon} linkText={linkText} />
         </a>
       )}
-    </Box.Flex>
+    </Box>
   );
 }
 

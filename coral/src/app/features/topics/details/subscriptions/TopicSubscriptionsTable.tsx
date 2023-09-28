@@ -113,13 +113,13 @@ const getColumns = (
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ principals }: AclInfoListRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box flexWrap={"wrap"} gap={"2"} component={"ul"}>
             {principals.map((principal, index) => (
               <li key={`${principal}-${index}`}>
                 <StatusChip dense status="neutral" text={principal} />
               </li>
             ))}
-          </Box.Flex>
+          </Box>
         );
       },
     },
@@ -131,13 +131,13 @@ const getColumns = (
           return "*";
         }
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box flexWrap={"wrap"} gap={"2"} component={"ul"}>
             {ips.map((ip, index) => (
               <li key={`${ip}-${index}`}>
                 <StatusChip dense status="neutral" text={ip} />
               </li>
             ))}
-          </Box.Flex>
+          </Box>
         );
       },
     },

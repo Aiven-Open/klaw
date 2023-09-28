@@ -12,9 +12,9 @@ const ConnectorOverview = () => {
   );
 
   return (
-    <Box.Flex marginTop={"l3"} marginBottom={"l2"}>
+    <Box marginTop={"l3"} marginBottom={"l2"}>
       <Label>Connector</Label>
-      <Box.Flex borderColor={"grey-20"} borderWidth={"1px"}>
+      <Box borderColor={"grey-20"} borderWidth={"1px"}>
         <MonacoEditor
           data-testid="topic-connector"
           height="300px"
@@ -33,8 +33,8 @@ const ConnectorOverview = () => {
             scrollBeyondLastLine: false,
           }}
         />
-      </Box.Flex>
-    </Box.Flex>
+      </Box>
+    </Box>
   );
 };
 

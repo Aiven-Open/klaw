@@ -23,7 +23,7 @@ function SchemaStats({
     >
       <GridItem colSpan={"span-2"}>
         <Card title="" fullWidth>
-          <Box.Flex display="flex" gap={"l7"}>
+          <Box display="flex" gap={"l7"}>
             <StatsDisplay
               isLoading={isLoading}
               amount={version}
@@ -35,7 +35,7 @@ function SchemaStats({
               chip={{ status: "info", text: compatibility }}
               entity={"Compatibility"}
             />
-          </Box.Flex>
+          </Box>
         </Card>
       </GridItem>
     </Grid>

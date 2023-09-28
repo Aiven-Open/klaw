@@ -26,7 +26,7 @@ function HeaderNavigation() {
   );
 
   return (
-    <Box.Flex display={"flex"} colGap={"l2"} alignItems="center">
+    <Box display={"flex"} colGap={"l2"} alignItems="center">
       {dropDownEnabled && (
         <DropdownMenu
           onAction={(key) => {
@@ -60,7 +60,7 @@ function HeaderNavigation() {
         </DropdownMenu>
       )}
       <nav aria-label={"Quick links"}>
-        <Box.Flex component={"ul"} display={"flex"} colGap={"l2"}>
+        <Box component={"ul"} display={"flex"} colGap={"l2"}>
           <li>
             <HeaderMenuLink
               icon={notifications}
@@ -83,9 +83,9 @@ function HeaderNavigation() {
               href={`/myProfile`}
             />
           </li>
-        </Box.Flex>
+        </Box>
       </nav>
-    </Box.Flex>
+    </Box>
   );
 }
 

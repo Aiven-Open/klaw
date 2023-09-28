@@ -42,13 +42,13 @@ const LoginForm = () => {
   }
 
   return (
-    <Box.Flex
+    <Box
       display={"flex"}
       flexDirection={"column"}
       alignItems={"center"}
       width={"3/5"}
     >
-      <Box.Flex width={"3/5"}>
+      <Box width={"3/5"}>
         <Form {...form} onSubmit={onSubmitForm} onError={onErrorForm}>
           <TextInput<Schema>
             name={"username"}
@@ -66,8 +66,8 @@ const LoginForm = () => {
         </Form>
         {loginUser.isSuccess && <div>Login successful 🎉 </div>}
         {loginUser.isError && <div>Something went wrong 😞</div>}
-      </Box.Flex>
-    </Box.Flex>
+      </Box>
+    </Box>
   );
 };
 

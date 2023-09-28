@@ -16,23 +16,23 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
-      </Box.Flex>
+      </Box>
 
       <GridItem colSpan={"span-2"}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -54,24 +54,24 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
 
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </Box.Flex>
+      </Box>
     </Grid>
   );
 }

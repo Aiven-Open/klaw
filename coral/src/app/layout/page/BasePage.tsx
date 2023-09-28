@@ -23,7 +23,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
         backgroundColor={"primary-80"}
         paddingX={"l2"}
       >
-        <Box.Flex
+        <Box
           component={"header"}
           display={"flex"}
           height={"full"}
@@ -38,7 +38,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
             <img aria-hidden="true" alt="" src={logo} height={50} width={150} />
           </a>
           {headerContent}
-        </Box.Flex>
+        </Box>
       </GridItem>
       {sidebar && (
         <GridItem colStart={"1"} colEnd={"2"} rowStart={"2"}>
@@ -46,7 +46,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
         </GridItem>
       )}
       <GridItem colStart={sidebar ? "2" : "1"} colEnd={"12"}>
-        <Box.Flex
+        <Box
           component={"main"}
           display={"flex"}
           flexDirection={"column"}
@@ -55,7 +55,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
           style={{ isolation: "isolate" }}
         >
           {content}
-        </Box.Flex>
+        </Box>
       </GridItem>
     </Grid>
   );

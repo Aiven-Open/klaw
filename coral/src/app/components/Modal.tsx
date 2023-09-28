@@ -109,13 +109,13 @@ function Modal(props: ModalProps) {
   return (
     <>
       {createPortal(
-        <Box.Flex
+        <Box
           display={"flex"}
           alignItems={"center"}
           justifyContent={"center"}
           className={classes.modalWrapper}
         >
-          <Box.Flex
+          <Box
             component={"dialog"}
             aria-modal={"true"}
             paddingX={"l3"}
@@ -131,7 +131,7 @@ function Modal(props: ModalProps) {
             //@ts-ignore*
             minWidth={"600px"}
           >
-            <Box.Flex
+            <Box
               display={"flex"}
               justifyContent={"space-between"}
               alignItems={"start"}
@@ -165,9 +165,9 @@ function Modal(props: ModalProps) {
                   disabled={secondaryAction?.loading || primaryAction.loading}
                 />
               )}
-            </Box.Flex>
-            <Box.Flex className={classes.modalTextBlock}>{children}</Box.Flex>
-            <Box.Flex
+            </Box>
+            <Box className={classes.modalTextBlock}>{children}</Box>
+            <Box
               paddingTop={"l2"}
               display={"flex"}
               justifyContent={"end"}
@@ -194,9 +194,9 @@ function Modal(props: ModalProps) {
               >
                 {primaryAction.text}
               </Button>
-            </Box.Flex>
-          </Box.Flex>
-        </Box.Flex>,
+            </Box>
+          </Box>
+        </Box>,
         document.body
       )}
     </>

@@ -3,7 +3,7 @@ import { Box, Typography } from "@aivenio/aquarium";
 const NotFound = () => {
   return (
     <>
-      <Box.Flex role="main" display={"flex"} flexDirection={"column"} gap={"5"}>
+      <Box role="main" display={"flex"} flexDirection={"column"} gap={"5"}>
         <Typography.Heading color={"primary-100"}>
           Page not found
         </Typography.Heading>
@@ -15,7 +15,7 @@ const NotFound = () => {
         <Typography.MediumText>
           <a href={"/index"}>Return to the old interface.</a>
         </Typography.MediumText>
-      </Box.Flex>
+      </Box>
     </>
   );
 };

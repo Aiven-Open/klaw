@@ -55,7 +55,7 @@ function TopicOverview() {
     <Grid cols={"2"} rows={"2"} gap={"l2"} style={{ gridTemplateRows: "auto" }}>
       <GridItem colSpan={"span-2"}>
         <Card title="Topic details" fullWidth>
-          <Box.Flex display="flex" gap={"l7"}>
+          <Box display="flex" gap={"l7"}>
             <StatsDisplay
               isLoading={topicOverviewIsRefetching}
               amount={stats.replicas}
@@ -66,7 +66,7 @@ function TopicOverview() {
               amount={stats.partitions}
               entity={"Partitions"}
             />
-          </Box.Flex>
+          </Box>
         </Card>
       </GridItem>
 
@@ -100,7 +100,7 @@ function TopicOverview() {
       </GridItem>
 
       <Card title={"Subscriptions"} fullWidth>
-        <Box.Flex gap={"l7"}>
+        <Box gap={"l7"}>
           <StatsDisplay
             isLoading={topicOverviewIsRefetching}
             amount={stats.producers}
@@ -111,8 +111,8 @@ function TopicOverview() {
             amount={stats.consumers}
             entity={"Consumers"}
           />
-        </Box.Flex>
-        <Box.Flex flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
+        </Box>
+        <Box flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
           <Link to={`/topic/${topicName}/subscribe?env=${environmentId}`}>
             <Button.Ghost icon={add}>
               <Typography.SmallStrong color={"primary-80"}>
@@ -127,7 +127,7 @@ function TopicOverview() {
               </Typography.SmallStrong>
             </Button.Ghost>
           </Link>
-        </Box.Flex>
+        </Box>
       </Card>
       <Card title={"Schemas"} fullWidth>
         <StatsDisplay
@@ -139,7 +139,7 @@ function TopicOverview() {
           }
           entity={"Schemas"}
         />
-        <Box.Flex flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
+        <Box flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
           <Link to={`/topic/${topicName}/request-schema`}>
             <Button.Ghost icon={add}>
               <Typography.SmallStrong color={"primary-80"}>
@@ -154,7 +154,7 @@ function TopicOverview() {
               </Typography.SmallStrong>
             </Button.Ghost>
           </Link>
-        </Box.Flex>
+        </Box>
       </Card>
     </Grid>
   );

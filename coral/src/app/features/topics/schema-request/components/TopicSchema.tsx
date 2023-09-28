@@ -99,7 +99,7 @@ function TopicSchema(props: TopicSchemaProps) {
             >
               {!schema && (
                 <div style={{ height: "200px" }}>
-                  <Box.Flex
+                  <Box
                     display={"flex"}
                     justifyContent={"center"}
                     alignItems={"center"}
@@ -108,7 +108,7 @@ function TopicSchema(props: TopicSchemaProps) {
                     aria-hidden={"true"}
                   >
                     Preview for your schema
-                  </Box.Flex>
+                  </Box>
                 </div>
               )}
               {schema && (
@@ -133,11 +133,11 @@ function TopicSchema(props: TopicSchemaProps) {
                 />
               )}
             </BorderBox>
-            <Box.Flex marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
+            <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
               <Typography.Caption color={"error-50"}>
                 {error?.message ? `${error?.message}` : <>&nbsp;</>}
               </Typography.Caption>
-            </Box.Flex>
+            </Box>
           </div>
         );
       }}

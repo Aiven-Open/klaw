@@ -37,7 +37,7 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
         />
         <span className={"visually-hidden"}>{buttonText}</span>
 
-        <Box.Flex
+        <Box
           display={"flex"}
           aria-hidden={"true"}
           flexDirection={"row"}
@@ -48,12 +48,12 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
         >
           <Icon icon={icon} />
           <span>{text}</span>
-        </Box.Flex>
+        </Box>
       </button>
 
-      <Box.Flex marginTop={"l1"} aria-hidden={open ? "false" : "true"}>
+      <Box marginTop={"l1"} aria-hidden={open ? "false" : "true"}>
         {open && (
-          <Box.Flex
+          <Box
             component={"ul"}
             paddingLeft={"l3"}
             aria-label={`${text} submenu`}
@@ -63,9 +63,9 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
                 <li key={`${text.replaceAll(" ", "")}-${index}`}>{child}</li>
               );
             })}
-          </Box.Flex>
+          </Box>
         )}
-      </Box.Flex>
+      </Box>
     </>
   );
 }

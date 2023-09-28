@@ -30,7 +30,7 @@ const ConnectorDeleteConfirmationModal = ({
         disabled: isLoading,
       }}
     >
-      <Box.Flex flexDirection={"column"} rowGap={"l1"}>
+      <Box flexDirection={"column"} rowGap={"l1"}>
         <p>
           Are you sure you would like to request the deletion of this connector?
         </p>
@@ -43,7 +43,7 @@ const ConnectorDeleteConfirmationModal = ({
           valid={true}
           disabled={isLoading}
         />
-      </Box.Flex>
+      </Box>
     </Modal>
   );
 };

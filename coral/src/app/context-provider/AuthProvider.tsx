@@ -28,10 +28,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <BasePage
       content={
-        <Box.Flex paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
+        <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
           <div className={"visually-hidden"}>Loading Klaw</div>
           <Icon icon={loading} fontSize={"30px"} />
-        </Box.Flex>
+        </Box>
       }
     />
   );

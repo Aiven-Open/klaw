@@ -150,7 +150,7 @@ const TopicAclRequest = () => {
       : selectedEnvironment?.topicNames;
 
   return (
-    <Box.Flex>
+    <Box>
       {aclType === "CONSUMER" ? (
         <TopicConsumerForm
           renderAclTypeField={() => (
@@ -178,7 +178,7 @@ const TopicAclRequest = () => {
           isSubscription={topicName !== undefined && environment !== undefined}
         />
       )}
-    </Box.Flex>
+    </Box>
   );
 };
 

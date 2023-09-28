@@ -30,7 +30,7 @@ const TopicClaimConfirmationModal = ({
         disabled: isLoading,
       }}
     >
-      <Box.Flex flexDirection={"column"} rowGap={"l1"}>
+      <Box flexDirection={"column"} rowGap={"l1"}>
         <p>Are you sure you would like to claim this topic?</p>
         <Textarea
           labelText="You can add the reason to claim the topic (optional)"
@@ -41,7 +41,7 @@ const TopicClaimConfirmationModal = ({
           valid={true}
           disabled={isLoading}
         />
-      </Box.Flex>
+      </Box>
     </Modal>
   );
 };

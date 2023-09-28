@@ -73,13 +73,13 @@ function ConnectorRequest() {
 
   return (
     <>
-      <Box.Flex>
+      <Box>
         {connectorRequestMutation.isError && (
-          <Box.Flex marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"} role="alert">
             <Alert type="error">
               {parseErrorMsg(connectorRequestMutation.error)}
             </Alert>
-          </Box.Flex>
+          </Box>
         )}
         <Form
           {...form}
@@ -162,11 +162,11 @@ function ConnectorRequest() {
                       }}
                     />
                   </BorderBox>
-                  <Box.Flex marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
+                  <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
                     <Typography.Caption color={"error-50"}>
                       {error !== undefined ? error.message : <>&nbsp;</>}
                     </Typography.Caption>
-                  </Box.Flex>
+                  </Box>
                 </>
               );
             }}
@@ -184,7 +184,7 @@ function ConnectorRequest() {
             />
           </Grid>
 
-          <Box.Flex display={"flex"} colGap={"l1"} marginTop={"3"}>
+          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton disabled={connectorRequestMutation.isLoading}>
               Submit request
             </SubmitButton>
@@ -199,9 +199,9 @@ function ConnectorRequest() {
             >
               Cancel
             </Button>
-          </Box.Flex>
+          </Box>
         </Form>
-      </Box.Flex>
+      </Box>
       {cancelDialogVisible && (
         <Dialog
           title={"Cancel connector request?"}

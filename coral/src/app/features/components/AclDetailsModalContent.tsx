@@ -31,7 +31,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>
-      <Box.Flex direction={"column"} width={"min"}>
+      <Box direction={"column"} width={"min"}>
         <Label>ACL type</Label>
         <dd>
           <StatusChip
@@ -39,27 +39,27 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
             text={aclType}
           />
         </dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Requesting team</Label>
         <dd>{requestingTeamName}</dd>
-      </Box.Flex>
+      </Box>
 
-      <Box.Flex direction={"column"} width={"min"}>
+      <Box direction={"column"} width={"min"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Topic</Label>
         <dd>{topicname}</dd>
-      </Box.Flex>
+      </Box>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Principals/Usernames</Label>
-          <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
+          <Box flexDirection={"row"} gap={"2"} component={"ul"}>
             {acl_ssl.map((principal) => (
               <li key={principal}>
                 <dd>
@@ -67,15 +67,15 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
                 </dd>
               </li>
             ))}
-          </Box.Flex>
-        </Box.Flex>
+          </Box>
+        </Box>
       </GridItem>
 
       {acl_ip.length > 0 && (
         <GridItem colSpan={"span-2"}>
-          <Box.Flex direction={"column"}>
+          <Box direction={"column"}>
             <Label>IP addresses</Label>
-            <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
+            <Box flexDirection={"row"} gap={"2"} component={"ul"}>
               {acl_ip.map((ip) => (
                 <li key={ip}>
                   <dd>
@@ -83,13 +83,13 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
                   </dd>
                 </li>
               ))}
-            </Box.Flex>
-          </Box.Flex>
+            </Box>
+          </Box>
         </GridItem>
       )}
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Consumer group</Label>
           <dd>
             {
@@ -103,24 +103,24 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
               )
             }
           </dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{remarks || <i>No message</i>}</dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
 
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
-      </Box.Flex>
+      </Box>
     </Grid>
   );
 };

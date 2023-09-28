@@ -94,11 +94,11 @@ function TopicRequest() {
           Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
-      <Box.Flex>
+      <Box>
         {isError && (
-          <Box.Flex marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"} role="alert">
             <Alert type="error">{parseErrorMsg(error)}</Alert>
-          </Box.Flex>
+          </Box>
         )}
         <Form
           {...form}
@@ -106,7 +106,7 @@ function TopicRequest() {
           onSubmit={onSubmit}
           onError={onError}
         >
-          <Box.Flex width={"full"}>
+          <Box width={"full"}>
             {Array.isArray(environments) ? (
               <ComplexNativeSelect<Schema, Environment>
                 name="environment"
@@ -120,11 +120,11 @@ function TopicRequest() {
             ) : (
               <NativeSelect.Skeleton></NativeSelect.Skeleton>
             )}
-          </Box.Flex>
-          <Box.Flex>
-            <Box.Flex paddingY={"l1"}>
+          </Box>
+          <Box>
+            <Box paddingY={"l1"}>
               <Divider />
-            </Box.Flex>
+            </Box>
             <TextInput<Schema>
               name={"topicname"}
               labelText="Topic name"
@@ -133,57 +133,57 @@ function TopicRequest() {
               )}
               required={true}
             />
-            <Box.Flex component={Box.Flex} gap={"l1"}>
-              <Box.Flex component={Box.Flex} grow={1} width={"1/2"}>
+            <Box component={Box} gap={"l1"}>
+              <Box component={Box} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
                   max={selectedEnvironment?.params?.maxPartitions}
                   required={true}
                 />
-              </Box.Flex>
-              <Box.Flex component={Box.Flex} grow={1} width={"1/2"}>
+              </Box>
+              <Box component={Box} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
                   max={selectedEnvironment?.params?.maxRepFactor}
                   required={true}
                 />
-              </Box.Flex>
-            </Box.Flex>
-          </Box.Flex>
-          <Box.Flex>
-            <Box.Flex paddingY={"l1"}>
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Box paddingY={"l1"}>
               <Divider />
-            </Box.Flex>
+            </Box>
             <AdvancedConfiguration name={"advancedConfiguration"} />
-          </Box.Flex>
+          </Box>
 
-          <Box.Flex>
-            <Box.Flex paddingY={"l1"}>
+          <Box>
+            <Box paddingY={"l1"}>
               <Divider />
-            </Box.Flex>
-            <Box.Flex component={Box.Flex} gap={"l1"}>
-              <Box.Flex component={Box.Flex} grow={1} width={"1/2"}>
+            </Box>
+            <Box component={Box} gap={"l1"}>
+              <Box component={Box} grow={1} width={"1/2"}>
                 <Textarea<Schema>
                   name="description"
                   labelText="Description"
                   rows={5}
                   required={true}
                 />
-              </Box.Flex>
-              <Box.Flex component={Box.Flex} grow={1} width={"1/2"}>
+              </Box>
+              <Box component={Box} grow={1} width={"1/2"}>
                 {" "}
                 <Textarea<Schema>
                   name="remarks"
                   labelText="Message for approval"
                   rows={5}
                 />
-              </Box.Flex>
-            </Box.Flex>
-          </Box.Flex>
+              </Box>
+            </Box>
+          </Box>
 
-          <Box.Flex display={"flex"} colGap={"l1"} marginTop={"3"}>
+          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
             <Button
               type="button"
@@ -196,9 +196,9 @@ function TopicRequest() {
             >
               Cancel
             </Button>
-          </Box.Flex>
+          </Box>
         </Form>
-      </Box.Flex>
+      </Box>
     </>
   );
 

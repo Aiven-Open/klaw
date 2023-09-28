@@ -56,41 +56,41 @@ const TopicDetailsModalContent = ({
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Request type</Label>
         <dd>
           <StatusChip status={"neutral"} text={requestOperationType} />
         </dd>
-      </Box.Flex>
+      </Box>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Description</Label>
           <dd>{description}</dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Topic replication factor</Label>
         <dd>{replicationfactor}</dd>
-      </Box.Flex>
+      </Box>
       {hasAdvancedConfig && (
         <GridItem colSpan={"span-2"}>
-          <Box.Flex direction={"column"}>
+          <Box direction={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
               <MonacoEditor
@@ -111,23 +111,23 @@ const TopicDetailsModalContent = ({
                 }}
               />
             </BorderBox>
-          </Box.Flex>
+          </Box>
         </GridItem>
       )}
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{remarks || <i>No message</i>}</dd>
-        </Box.Flex>
+        </Box>
       </GridItem>
-      <Box.Flex direction={"column"}>
+      <Box direction={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
-      </Box.Flex>
-      <Box.Flex direction={"column"}>
+      </Box>
+      <Box direction={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
-      </Box.Flex>
+      </Box>
     </Grid>
   );
 };

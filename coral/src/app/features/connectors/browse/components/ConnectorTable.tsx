@@ -59,13 +59,13 @@ function ConnectorTable(props: ConnectorTableProps) {
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: ConnectorTableRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box flexWrap={"wrap"} gap={"2"} component={"ul"}>
             {environmentsList?.map(({ name, id }) => (
               <li key={id}>
                 <StatusChip dense status="neutral" text={name} />
               </li>
             ))}
-          </Box.Flex>
+          </Box>
         );
       },
     },

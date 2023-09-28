@@ -90,31 +90,31 @@ function TopicOverviewResourcesTabs({
   const renderTabContent = () => {
     if (isError) {
       return (
-        <Box.Flex marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="error">
             There was an error trying to load the topic details:{" "}
             {parseErrorMsg(error)}.
             <br />
             Please try again later.
           </Alert>
-        </Box.Flex>
+        </Box>
       );
     }
 
     if (isLoading) {
       return (
-        <Box.Flex paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
+        <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
           <div className={"visually-hidden"}>Loading topic details</div>
           <Icon icon={loading} fontSize={"30px"} />
-        </Box.Flex>
+        </Box>
       );
     }
 
     if (!topicOverview?.topicExists) {
       return (
-        <Box.Flex marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="warning">Topic {topicName} does not exist.</Alert>
-        </Box.Flex>
+        </Box>
       );
     }
     return (

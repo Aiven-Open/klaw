@@ -128,29 +128,29 @@ const TopicSubscriptionsDetailsModal = ({
         {errors.length > 0 && (
           <GridItem colSpan={"span-2"}>
             <Alert type="error">
-              <Box.Flex flexDirection={"column"}>
+              <Box flexDirection={"column"}>
                 {errors.map((error) => (
                   <div key={error}>{error}</div>
                 ))}
-              </Box.Flex>
+              </Box>
             </Alert>
           </GridItem>
         )}
 
         <GridItem colSpan={"span-2"}>
-          <Box.Flex flexDirection={"column"} width={"min"}>
+          <Box flexDirection={"column"} width={"min"}>
             <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
               Environment
             </Typography.SmallStrong>
             <Typography.Default htmlTag="dd">
               {environmentName}
             </Typography.Default>
-          </Box.Flex>
+          </Box>
         </GridItem>
         <GridItem colSpan={"span-2"}>
           <Divider />
         </GridItem>
-        <Box.Flex flexDirection={"column"}>
+        <Box flexDirection={"column"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Subscription type
           </Typography.SmallStrong>
@@ -160,30 +160,30 @@ const TopicSubscriptionsDetailsModal = ({
               text={topictype.toUpperCase()}
             />
           </Typography.Default>
-        </Box.Flex>
-        <Box.Flex flexDirection={"column"}>
+        </Box>
+        <Box flexDirection={"column"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Pattern type
           </Typography.SmallStrong>
           <Typography.Default htmlTag="dd">{aclPatternType}</Typography.Default>
-        </Box.Flex>
+        </Box>
         <GridItem colSpan={"span-2"}>
           <Divider />
         </GridItem>
-        <Box.Flex flexDirection={"column"} width={"min"}>
+        <Box flexDirection={"column"} width={"min"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Topic name
           </Typography.SmallStrong>
           <Typography.Default htmlTag="dd">{topicname}</Typography.Default>
-        </Box.Flex>
-        <Box.Flex flexDirection={"column"}>
+        </Box>
+        <Box flexDirection={"column"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Consumer group
           </Typography.SmallStrong>
           <Typography.Default htmlTag="dd">{consumergroup}</Typography.Default>
-        </Box.Flex>
+        </Box>
 
-        <Box.Flex flexDirection={"column"}>
+        <Box flexDirection={"column"}>
           <Typography.SmallStrong
             htmlTag={"dt"}
             color={"grey-60"}
@@ -191,8 +191,8 @@ const TopicSubscriptionsDetailsModal = ({
           <Typography.Default htmlTag="dd">
             {acl_ip === undefined ? serviceAccountOrPrincipalText : "IP"}
           </Typography.Default>
-        </Box.Flex>
-        <Box.Flex flexDirection={"column"}>
+        </Box>
+        <Box flexDirection={"column"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             {acl_ip === undefined ? serviceAccountOrPrincipalText : "IP"}
           </Typography.SmallStrong>
@@ -202,10 +202,10 @@ const TopicSubscriptionsDetailsModal = ({
               text={acl_ip || acl_ssl || "Not found"}
             />
           </Typography.Default>
-        </Box.Flex>
+        </Box>
         {isAivenCluster ? (
           <GridItem colSpan={"span-2"}>
-            <Box.Flex flexDirection={"column"}>
+            <Box flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Service account password
               </Typography.SmallStrong>
@@ -218,12 +218,12 @@ const TopicSubscriptionsDetailsModal = ({
                   <Skeleton height={25} width={250} />
                 </div>
               )}
-            </Box.Flex>
+            </Box>
           </GridItem>
         ) : null}
         {!isAivenCluster && selectedSubscription.topictype === "Consumer" ? (
           <GridItem colSpan={"span-2"}>
-            <Box.Flex flexDirection={"column"}>
+            <Box flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Consumer offset
               </Typography.SmallStrong>
@@ -239,7 +239,7 @@ const TopicSubscriptionsDetailsModal = ({
                   <Skeleton height={25} width={350} />
                 </div>
               )}
-            </Box.Flex>
+            </Box>
           </GridItem>
         ) : null}
       </Grid>

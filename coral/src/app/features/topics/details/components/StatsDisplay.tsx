@@ -31,7 +31,7 @@ const StatsDisplay = ({
   }
 
   return (
-    <Box.Flex flexDirection="column" justifyContent={"space-around"}>
+    <Box flexDirection="column" justifyContent={"space-around"}>
       {isLoading && (
         <Typography.Heading htmlTag={"div"}>
           <span className={"visually-hidden"}>Loading information</span>
@@ -48,7 +48,7 @@ const StatsDisplay = ({
       )}
 
       <Typography.Small color={"grey-50"}>{entity}</Typography.Small>
-    </Box.Flex>
+    </Box>
   );
 };
 

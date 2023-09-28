@@ -46,8 +46,8 @@ function DocumentationEditor({
   }
 
   return (
-    <Box.Flex flexDirection={"column"} rowGap={"3"}>
-      <Box.Flex
+    <Box flexDirection={"column"} rowGap={"3"}>
+      <Box
         alignSelf={"start"}
         component={"section"}
         aria-label={"Switch between edit and preview mode"}
@@ -69,12 +69,12 @@ function DocumentationEditor({
             Preview
           </SegmentedControl>
         </SegmentedControlGroup>
-      </Box.Flex>
+      </Box>
 
       {viewMode === "edit" && (
         <>
           <div className={classes.markdownEditor}>
-            <Box.Flex
+            <Box
               borderColor={"grey-20"}
               borderWidth={"1px"}
               borderRadius={"2px"}
@@ -113,28 +113,28 @@ function DocumentationEditor({
                   {text}
                 </SyntaxHighlighter>
               </div>
-            </Box.Flex>
+            </Box>
           </div>
-          <Box.Flex justifyContent={"end"}>
+          <Box justifyContent={"end"}>
             <Typography.SmallStrong id={"editor-markdown-description"}>
               We are supporting markdown following the{" "}
               <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
             </Typography.SmallStrong>
-          </Box.Flex>
+          </Box>
         </>
       )}
 
       {viewMode === "preview" && <DocumentationView markdownString={text} />}
 
-      <Box.Flex colGap={"l1"} justifyContent={"start"} alignItems={"center"}>
+      <Box colGap={"l1"} justifyContent={"start"} alignItems={"center"}>
         <Button.Secondary onClick={cancel} disabled={isSaving}>
           Cancel
         </Button.Secondary>
         <Button.Primary onClick={saveDocumentation} loading={isSaving}>
           {isSaving ? "Saving documentation" : "Save documentation"}
         </Button.Primary>
-      </Box.Flex>
-    </Box.Flex>
+      </Box>
+    </Box>
   );
 }
 

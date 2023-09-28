@@ -113,9 +113,9 @@ const TopicProducerForm = ({
   return (
     <>
       {isError && (
-        <Box.Flex marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(error)}</Alert>
-        </Box.Flex>
+        </Box>
       )}
       <Form
         {...topicProducerForm}
@@ -173,7 +173,7 @@ const TopicProducerForm = ({
           </GridItem>
           <GridItem>
             {hideIpOrPrincipalField ? (
-              <Box.Flex data-testid={"empty"} style={{ height: "87px" }} />
+              <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}

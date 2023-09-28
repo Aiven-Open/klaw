@@ -187,16 +187,16 @@ function TopicPromotionRequest() {
         </Dialog>
       )}
       {promoteIsError && (
-        <Box.Flex marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
-        </Box.Flex>
+        </Box>
       )}
       <Form
         {...form}
         ariaLabel={"Request topic promotion"}
         onSubmit={onPromoteSubmit}
       >
-        <Box.Flex width={"full"}>
+        <Box width={"full"}>
           {targetEnvironment !== undefined ? (
             <NativeSelect
               name="environment"
@@ -214,10 +214,10 @@ function TopicPromotionRequest() {
           ) : (
             <NativeSelect.Skeleton />
           )}
-        </Box.Flex>
-        <Box.Flex paddingY={"l1"}>
+        </Box>
+        <Box paddingY={"l1"}>
           <Divider />
-        </Box.Flex>
+        </Box>
         <TextInput<Schema>
           name={"topicname"}
           labelText="Topic name"
@@ -225,8 +225,8 @@ function TopicPromotionRequest() {
           required={true}
           readOnly
         />
-        <Box.Flex gap={"l1"}>
-          <Box.Flex grow={1} width={"1/2"}>
+        <Box gap={"l1"}>
+          <Box grow={1} width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
@@ -237,8 +237,8 @@ function TopicPromotionRequest() {
             ) : (
               <Input.Skeleton />
             )}
-          </Box.Flex>
-          <Box.Flex grow={1} width={"1/2"}>
+          </Box>
+          <Box grow={1} width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
@@ -249,19 +249,19 @@ function TopicPromotionRequest() {
             ) : (
               <Input.Skeleton />
             )}
-          </Box.Flex>
-        </Box.Flex>
+          </Box>
+        </Box>
 
-        <Box.Flex paddingY={"l1"}>
+        <Box paddingY={"l1"}>
           <Divider />
-        </Box.Flex>
+        </Box>
         <AdvancedConfiguration name={"advancedConfiguration"} />
 
-        <Box.Flex paddingY={"l1"}>
+        <Box paddingY={"l1"}>
           <Divider />
-        </Box.Flex>
-        <Box.Flex gap={"l1"}>
-          <Box.Flex grow={1} width={"1/2"}>
+        </Box>
+        <Box gap={"l1"}>
+          <Box grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Description"
@@ -269,17 +269,17 @@ function TopicPromotionRequest() {
               required={true}
               readOnly
             />
-          </Box.Flex>
-          <Box.Flex grow={1} width={"1/2"}>
+          </Box>
+          <Box grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"
               rows={5}
             />
-          </Box.Flex>
-        </Box.Flex>
+          </Box>
+        </Box>
 
-        <Box.Flex display={"flex"} colGap={"l1"} marginTop={"3"}>
+        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
           <SubmitButton loading={promoteIsLoading}>
             Submit promotion request
           </SubmitButton>
@@ -294,7 +294,7 @@ function TopicPromotionRequest() {
           >
             Cancel
           </Button>
-        </Box.Flex>
+        </Box>
       </Form>
     </>
   );

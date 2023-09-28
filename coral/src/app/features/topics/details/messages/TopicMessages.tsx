@@ -98,14 +98,14 @@ function TopicMessages() {
             disabled={isConsuming}
             onChange={handleOffsetChange}
           />,
-          <Box.Flex key={"consume"} justifyContent="flex-end">
-            <Box.Flex alignItems="center" marginRight={"6"}>
+          <Box key={"consume"} justifyContent="flex-end">
+            <Box alignItems="center" marginRight={"6"}>
               {Boolean(messagesUpdatedAt) && (
                 <Typography.Caption>
                   <i>Last updated {getMessagesUpdatedAt()}</i>
                 </Typography.Caption>
               )}
-            </Box.Flex>
+            </Box>
             <Button.Primary
               onClick={handleUpdateResultClick}
               disabled={isConsuming}
@@ -115,7 +115,7 @@ function TopicMessages() {
             >
               Update results
             </Button.Primary>
-          </Box.Flex>,
+          </Box>,
         ]}
         isLoading={isConsuming}
         isErrorLoading={isError}

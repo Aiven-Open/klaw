@@ -8,13 +8,13 @@ import {
 
 const SkeletonForm = () => {
   return (
-    <Box.Flex data-testid={"skeleton"}>
+    <Box data-testid={"skeleton"}>
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
-          <Box.Flex gap={"4"}>
+          <Box gap={"4"}>
             <RadioButton.Skeleton data-testid="skeleton" />
             <RadioButton.Skeleton />
-          </Box.Flex>
+          </Box>
         </GridItem>
         <GridItem>
           <NativeSelect.Skeleton />
@@ -25,10 +25,10 @@ const SkeletonForm = () => {
         </GridItem>
 
         <GridItem>
-          <Box.Flex gap={"4"}>
+          <Box gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
-          </Box.Flex>{" "}
+          </Box>{" "}
         </GridItem>
         <GridItem>
           <TextInput.Skeleton />
@@ -39,10 +39,10 @@ const SkeletonForm = () => {
         </GridItem>
 
         <GridItem>
-          <Box.Flex gap={"4"}>
+          <Box gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
-          </Box.Flex>
+          </Box>
         </GridItem>
         <GridItem>
           <MultiInput.Skeleton />
@@ -51,7 +51,7 @@ const SkeletonForm = () => {
           <Textarea.Skeleton />
         </GridItem>
       </Grid>
-    </Box.Flex>
+    </Box>
   );
 };
 

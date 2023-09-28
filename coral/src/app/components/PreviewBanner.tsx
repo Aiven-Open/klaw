@@ -25,7 +25,7 @@ function Link({
 
 function PreviewBanner({ linkTarget }: { linkTarget: string }) {
   return (
-    <Box.Flex
+    <Box
       component={"section"}
       display={"flex"}
       gap={"l1"}
@@ -50,7 +50,7 @@ function PreviewBanner({ linkTarget }: { linkTarget: string }) {
         will help us improve the product. You can always go back to the{" "}
         <Link text={"old interface"} target={linkTarget} isRemote={false} />.
       </Typography.SmallText>
-    </Box.Flex>
+    </Box>
   );
 }
 

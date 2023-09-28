@@ -97,9 +97,9 @@ function TopicSettings() {
 
       <PageHeader title={"Settings"} />
       {errorMessage && (
-        <Box.Flex role="alert" marginBottom={"l2"}>
+        <Box role="alert" marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
-        </Box.Flex>
+        </Box>
       )}
 
       {!isTopicOwner && (
@@ -125,22 +125,22 @@ function TopicSettings() {
               marginTop={"l2"}
               rowGap={"l2"}
             >
-              <Box.Flex
+              <Box
                 display={"flex"}
                 alignItems={"center"}
                 justifyContent={"space-between"}
               >
-                <Box.Flex width={"full"}>
+                <Box width={"full"}>
                   <Skeleton />
                   <Skeleton />
-                </Box.Flex>
+                </Box>
                 <div>
                   {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
                   <Button.Primary onClick={() => {}} disabled={true}>
                     Delete topic
                   </Button.Primary>
                 </div>
-              </Box.Flex>
+              </Box>
             </BorderBox>
           )}
 
@@ -169,7 +169,7 @@ function TopicSettings() {
                   )}
                 </Alert>
               )}
-              <Box.Flex
+              <Box
                 display={"flex"}
                 alignItems={"center"}
                 justifyContent={"space-between"}
@@ -178,10 +178,10 @@ function TopicSettings() {
                   <Typography.DefaultStrong htmlTag={"h3"}>
                     Delete this topic
                   </Typography.DefaultStrong>
-                  <Box.Flex component={"p"}>
+                  <Box component={"p"}>
                     Once you delete a topic, there is no going back. Please be
                     certain.
-                  </Box.Flex>
+                  </Box>
                 </div>
 
                 <div>
@@ -192,7 +192,7 @@ function TopicSettings() {
                     Delete topic
                   </Button.Primary>
                 </div>
-              </Box.Flex>
+              </Box>
             </BorderBox>
           )}
         </>

@@ -125,23 +125,23 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   return (
     <>
       {!topicNamesIsLoading && topicNames === undefined && (
-        <Box.Flex marginBottom={"l1"}>
+        <Box marginBottom={"l1"}>
           {" "}
           <Alert type="error">Could not fetch topic names.</Alert>
-        </Box.Flex>
+        </Box>
       )}
       {!environmentsIsLoading && environments === undefined && (
-        <Box.Flex marginBottom={"l1"}>
+        <Box marginBottom={"l1"}>
           <Alert type="error">Could not fetch environments.</Alert>
-        </Box.Flex>
+        </Box>
       )}
-      <Box.Flex>
+      <Box>
         {schemaRequestMutation.isError && (
-          <Box.Flex marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"} role="alert">
             <Alert type="error">
               {parseErrorMsg(schemaRequestMutation.error)}
             </Alert>
-          </Box.Flex>
+          </Box>
         )}
         <Form
           {...form}
@@ -200,7 +200,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             labelText={"Enter a message for approval"}
           />
 
-          <Box.Flex display={"flex"} colGap={"l1"} marginTop={"3"}>
+          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton>Submit request</SubmitButton>
             <Button
               type="button"
@@ -213,9 +213,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             >
               Cancel
             </Button>
-          </Box.Flex>
+          </Box>
         </Form>
-      </Box.Flex>
+      </Box>
       {cancelDialogVisible && (
         <Dialog
           title={"Cancel schema request?"}

@@ -43,7 +43,7 @@ function Dialog(props: DialogProps) {
       data-focusable
       color={dialogTypeMap[type].color}
     >
-      <Box.Flex
+      <Box
         component={"span"}
         display={"flex"}
         alignItems={"center"}
@@ -51,7 +51,7 @@ function Dialog(props: DialogProps) {
       >
         <Icon icon={dialogTypeMap[type].icon} />
         <span>{title}</span>
-      </Box.Flex>
+      </Box>
     </Typography.LargeStrong>
   );
 

@@ -54,10 +54,10 @@ function ConnectorDocumentation() {
     return (
       <>
         <PageHeader title={"Documentation"} />
-        <Box.Flex paddingTop={"l2"}>
+        <Box paddingTop={"l2"}>
           <div className={"visually-hidden"}>Loading documentation</div>
           <Skeleton />
-        </Box.Flex>
+        </Box>
       </>
     );
   }
@@ -68,12 +68,12 @@ function ConnectorDocumentation() {
         <PageHeader title={"Edit documentation"} />
         <>
           {isError && (
-            <Box.Flex marginBottom={"l1"} role="alert">
+            <Box marginBottom={"l1"} role="alert">
               <Alert type="error">
                 The documentation could not be saved, there was an error: <br />
                 {parseErrorMsg(error)}
               </Alert>
-            </Box.Flex>
+            </Box>
           )}
           <DocumentationEditor
             documentation={connectorOverview.connectorDocumentation}
@@ -104,12 +104,12 @@ function ConnectorDocumentation() {
     return (
       <>
         <PageHeader title={"Documentation"} />
-        <Box.Flex role="alert">
+        <Box role="alert">
           <Alert type="error">
             Something went wrong while trying to transform the documentation
             into the right format.
           </Alert>
-        </Box.Flex>
+        </Box>
       </>
     );
   }
@@ -123,11 +123,11 @@ function ConnectorDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <Box.Flex paddingTop={"l2"}>
+      <Box paddingTop={"l2"}>
         <DocumentationView
           markdownString={connectorOverview.connectorDocumentation}
         />
-      </Box.Flex>
+      </Box>
     </>
   );
 }

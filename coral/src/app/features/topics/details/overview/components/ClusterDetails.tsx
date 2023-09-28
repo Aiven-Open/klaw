@@ -21,7 +21,7 @@ function DefinitionBlock({
   information?: string;
 }) {
   return (
-    <Box.Flex flexDirection={"column"}>
+    <Box flexDirection={"column"}>
       <dt className="inline-block mb-2 typography-small-strong text-grey-60">
         {term}
       </dt>
@@ -30,11 +30,11 @@ function DefinitionBlock({
         {isUpdating ? <Skeleton /> : definition}
       </Typography.Small>
       {!isUpdating && information && (
-        <Box.Flex marginTop={"2"} component={"dd"}>
+        <Box marginTop={"2"} component={"dd"}>
           <Typography.Caption>{information}</Typography.Caption>
-        </Box.Flex>
+        </Box>
       )}
-    </Box.Flex>
+    </Box>
   );
 }
 
