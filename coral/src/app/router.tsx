@@ -123,11 +123,9 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_OVERVIEW,
         element: <ConnectorDetailsPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
         children: [
           {
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
@@ -158,7 +156,7 @@ const routes: Array<RouteObject> = [
             id: ConnectorOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,
@@ -288,13 +286,10 @@ const routes: Array<RouteObject> = [
         featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_CONNECTOR,
         redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
       }),
-
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
-      }),
+      },
     ],
   },
   {
