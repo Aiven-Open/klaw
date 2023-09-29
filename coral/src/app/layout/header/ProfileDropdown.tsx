@@ -46,6 +46,7 @@ function ProfileDropdown() {
         variant: "default",
       });
       logoutUser().catch((error) => {
+        // dismiss toast in case logout fails
         dismiss("logout");
         if (error.status !== 401) {
           toast({
