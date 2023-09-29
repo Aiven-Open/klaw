@@ -42,6 +42,7 @@ const KafkaEnvironments = () => {
       ariaLabel={`Kafka Environments overview, page ${
         environments?.currentPage ?? 0
       } of ${environments?.totalPages ?? 0}`}
+      search={search}
     />
   );
 

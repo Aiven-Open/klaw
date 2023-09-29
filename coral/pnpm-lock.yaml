@@ -17,6 +17,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^4.29.5
     version: 4.29.5(react-dom@18.2.0)(react@18.2.0)
+  '@types/react-highlight-words':
+    specifier: ^0.16.5
+    version: 0.16.5
   '@types/react-syntax-highlighter':
     specifier: ^15.5.7
     version: 15.5.7
@@ -35,6 +38,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  react-highlight-words:
+    specifier: ^0.20.0
+    version: 0.20.0(react@18.2.0)
   react-hook-form:
     specifier: ^7.43.9
     version: 7.43.9(react@18.2.0)
@@ -3204,6 +3210,12 @@ packages:
       '@types/react': 18.2.21
     dev: true
 
+  /@types/react-highlight-words@0.16.5:
+    resolution: {integrity: sha512-5vUJpVzB3G15nwXB8OEfWgAhEnwAlDXkm8SH6qF8i5jCSTEG2JOygKMJIsvetgYBJS6Sq1I8x3YQcAUDMjKxzg==}
+    dependencies:
+      '@types/react': 18.2.21
+    dev: false
+
   /@types/react-syntax-highlighter@15.5.7:
     resolution: {integrity: sha512-bo5fEO5toQeyCp0zVHBeggclqf5SQ/Z5blfFmjwO5dkMVGPgmiwZsJh9nu/Bo5L7IHTuGWrja6LxJVE2uB5ZrQ==}
     dependencies:
@@ -5411,6 +5423,10 @@ packages:
     resolution: {integrity: sha512-tUCGvt191vNSQgttSyJoibR+VO+I6+iCHIUdhzEMJKE+EAL8BwCN7fUOZlY4ofOelNHsK+gEjxB/B+9N3EWtdA==}
     dev: true
 
+  /highlight-words-core@1.2.2:
+    resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
+    dev: false
+
   /highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
     dev: false
@@ -6770,6 +6786,10 @@ packages:
       '@types/mdast': 3.0.11
     dev: false
 
+  /memoize-one@4.0.3:
+    resolution: {integrity: sha512-QmpUu4KqDmX0plH4u+tf0riMc1KHE1+lw95cMrLlXQAFOx/xnBtwhZ52XJxd9X2O6kwKBqX32kmhbhlobD0cuw==}
+    dev: false
+
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
     dev: true
@@ -7585,6 +7605,17 @@ packages:
       '@babel/runtime': 7.19.4
       react: 18.2.0
     dev: true
+
+  /react-highlight-words@0.20.0(react@18.2.0):
+    resolution: {integrity: sha512-asCxy+jCehDVhusNmCBoxDf2mm1AJ//D+EzDx1m5K7EqsMBIHdZ5G4LdwbSEXqZq1Ros0G0UySWmAtntSph7XA==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+    dependencies:
+      highlight-words-core: 1.2.2
+      memoize-one: 4.0.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
 
   /react-hook-form@7.43.9(react@18.2.0):
     resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}

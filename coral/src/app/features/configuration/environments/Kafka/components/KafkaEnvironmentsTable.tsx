@@ -7,10 +7,12 @@ import {
 } from "@aivenio/aquarium";
 import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
 import { Environment } from "src/domain/environment";
+import Highlighter from "react-highlight-words";
 
 type KafkaEnvironmentsTableProps = {
   environments: Environment[];
   ariaLabel: string;
+  search: string;
 };
 
 interface KafkaEnvironmentsTableRow {
@@ -24,23 +26,44 @@ interface KafkaEnvironmentsTableRow {
 }
 
 const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
-  const { environments, ariaLabel } = props;
+  const { environments, ariaLabel, search } = props;
 
   const columns: Array<DataTableColumn<KafkaEnvironmentsTableRow>> = [
     {
-      type: "text",
-      field: "environmentName",
+      type: "custom",
       headerName: "Environment",
+      UNSAFE_render: ({ environmentName }: KafkaEnvironmentsTableRow) => (
+        <Highlighter
+          highlightClassName="YourHighlightClass"
+          searchWords={[search]}
+          autoEscape={true}
+          textToHighlight={environmentName}
+        />
+      ),
     },
     {
-      type: "text",
-      field: "clusterName",
+      type: "custom",
       headerName: "Cluster",
+      UNSAFE_render: ({ clusterName }: KafkaEnvironmentsTableRow) => (
+        <Highlighter
+          highlightClassName="YourHighlightClass"
+          searchWords={[search]}
+          autoEscape={true}
+          textToHighlight={clusterName}
+        />
+      ),
     },
     {
-      type: "text",
-      field: "tenantName",
+      type: "custom",
       headerName: "Tenant",
+      UNSAFE_render: ({ tenantName }: KafkaEnvironmentsTableRow) => (
+        <Highlighter
+          highlightClassName="YourHighlightClass"
+          searchWords={[search]}
+          autoEscape={true}
+          textToHighlight={tenantName}
+        />
+      ),
     },
     {
       type: "custom",
