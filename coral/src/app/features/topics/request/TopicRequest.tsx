@@ -140,8 +140,8 @@ function TopicRequest() {
               )}
               required={true}
             />
-            <Box component={Box.Flex} gap={"l1"}>
-              <Box component={Box.Flex} grow={1} width={"1/2"}>
+            <Box.Flex gap={"l1"}>
+              <Box grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
@@ -149,7 +149,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box component={Box.Flex} grow={1} width={"1/2"}>
+              <Box grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
@@ -157,7 +157,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-            </Box>
+            </Box.Flex>
           </Box>
           <Box>
             <Box paddingY={"l1"}>
@@ -170,8 +170,8 @@ function TopicRequest() {
             <Box paddingY={"l1"}>
               <Divider />
             </Box>
-            <Box component={Box.Flex} gap={"l1"}>
-              <Box component={Box.Flex} grow={1} width={"1/2"}>
+            <Box.Flex gap={"l1"}>
+              <Box grow={1} width={"1/2"}>
                 <Textarea<Schema>
                   name="description"
                   labelText="Topic description"
@@ -179,7 +179,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box component={Box.Flex} grow={1} width={"1/2"}>
+              <Box grow={1} width={"1/2"}>
                 {" "}
                 <Textarea<Schema>
                   name="remarks"
@@ -188,7 +188,7 @@ function TopicRequest() {
                   rows={5}
                 />
               </Box>
-            </Box>
+            </Box.Flex>
           </Box>
 
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
