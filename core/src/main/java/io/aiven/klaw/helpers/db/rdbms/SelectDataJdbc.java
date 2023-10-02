@@ -981,22 +981,21 @@ public class SelectDataJdbc {
         selectAllTeams(tenantId).stream()
             .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
 
-    List<Team> teamList = new ArrayList<>();
-    List<UserInfo> userInfoList =
-        Lists.newArrayList(userInfoRepo.findAllByTenantIdAndUsername(tenantId, username));
-    Integer teamId;
-
-    for (UserInfo row : userInfoList) {
-      teamId = row.getTeamId();
-
-      Team teamSel = allTeams.get(teamId);
-
-      if (teamSel != null) {
-        teamList.add(teamSel);
-      }
+    Optional<UserInfo> userInfoOpt =
+        userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
+    if (userInfoOpt.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    return teamList;
+    Integer teamId = userInfoOpt.get().getTeamId();
+
+    Team teamSel = allTeams.get(teamId);
+
+    if (teamSel == null) {
+      return Collections.emptyList();
+    }
+
+    return List.of(teamSel);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
