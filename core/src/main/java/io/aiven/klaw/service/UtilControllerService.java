@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -242,8 +241,6 @@ public class UtilControllerService implements InitializingBean {
       allConnectorReqs = new ArrayList<>();
     }
 
-    List<RegisterUserInfo> allUserReqs = reqsHandle.getAllRegisterUsersInfoForTenant(tenantId);
-
     countList.put("topics", allTopicReqs.size() + "");
     countList.put("acls", allAclReqs.size() + "");
     countList.put("schemas", allSchemaReqs.size() + "");
@@ -253,7 +250,7 @@ public class UtilControllerService implements InitializingBean {
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       countList.put("users", "0");
     } else {
-      countList.put("users", allUserReqs.size() + "");
+      countList.put("users", reqsHandle.getCountRegisterUsersInfoForTenant(tenantId) + "");
     }
 
     return countList;

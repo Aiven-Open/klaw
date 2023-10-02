@@ -263,6 +263,8 @@ public interface HandleDbRequests {
 
   List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId);
 
+  int getCountRegisterUsersInfoForTenant(int tenantId);
+
   List<RegisterUserInfo> getAllRegisterUsersInformation();
 
   RegisterUserInfo getFirstStagingRegisterUsersInfo(String userName);

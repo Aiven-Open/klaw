@@ -598,6 +598,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public int getCountRegisterUsersInfoForTenant(int tenantId) {
+    return jdbcSelectHelper.countRegisterUsersInfoForTenant(tenantId);
+  }
+
+  @Override
   public List<RegisterUserInfo> getAllRegisterUsersInformation() {
     return jdbcSelectHelper.selectAllRegisterUsersInfo();
   }
