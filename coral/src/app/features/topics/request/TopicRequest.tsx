@@ -141,7 +141,7 @@ function TopicRequest() {
               required={true}
             />
             <Box.Flex gap={"l1"}>
-              <Box grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
@@ -149,7 +149,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
@@ -171,7 +171,7 @@ function TopicRequest() {
               <Divider />
             </Box>
             <Box.Flex gap={"l1"}>
-              <Box grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 <Textarea<Schema>
                   name="description"
                   labelText="Topic description"
@@ -179,7 +179,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 {" "}
                 <Textarea<Schema>
                   name="remarks"

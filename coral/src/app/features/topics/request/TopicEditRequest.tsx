@@ -263,7 +263,7 @@ function TopicEditRequest() {
           readOnly
         />
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {currentEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
@@ -275,7 +275,7 @@ function TopicEditRequest() {
               <Input.Skeleton />
             )}
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {currentEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
@@ -298,7 +298,7 @@ function TopicEditRequest() {
           <Divider />
         </Box>
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Topic description"
@@ -306,7 +306,7 @@ function TopicEditRequest() {
               required={true}
             />
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"

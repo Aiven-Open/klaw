@@ -37,7 +37,6 @@ function TableLayout(props: TableLayoutProps) {
           return (
             <Box
               key={element.key}
-              grow={1}
               display={"flex"}
               flexDirection={"column"}
             >

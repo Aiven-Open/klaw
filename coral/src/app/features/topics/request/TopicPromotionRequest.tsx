@@ -224,7 +224,7 @@ function TopicPromotionRequest() {
           readOnly
         />
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
@@ -236,7 +236,7 @@ function TopicPromotionRequest() {
               <Input.Skeleton />
             )}
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
@@ -259,7 +259,7 @@ function TopicPromotionRequest() {
           <Divider />
         </Box>
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Topic description (read-only)"
@@ -267,7 +267,7 @@ function TopicPromotionRequest() {
               readOnly
             />
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"
