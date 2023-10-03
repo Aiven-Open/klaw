@@ -16,8 +16,12 @@ const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 const mockedUseToastContext = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
-  useToastContext: () => mockedUseToastContext,
+  useToastContext: () => ({
+    toast: mockedUseToastContext,
+    onDismiss: jest.fn(),
+  }),
 }));
+
 describe("ProfileDropdown", () => {
   const user = userEvent.setup();
 
