@@ -4,7 +4,7 @@ import {
   Button,
   Card,
   Grid,
-  GridItem,
+  Grid.Item,
   Typography,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
@@ -58,7 +58,7 @@ function TopicOverview() {
 
   return (
     <Grid cols={"2"} rows={"2"} gap={"l2"} style={{ gridTemplateRows: "auto" }}>
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item colSpan={"span-2"}>
         <Card title="Topic details" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
             <StatsDisplay
@@ -73,20 +73,20 @@ function TopicOverview() {
             />
           </Box.Flex>
         </Card>
-      </GridItem>
+      </Grid.Item>
 
       {!topicOverviewIsRefetching && topicOwner && (
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item colSpan={"span-2"}>
           <TopicPromotionBanner
             topicName={topicName}
             topicPromotionDetails={topicPromotionDetails}
             hasOpenClaimRequest={hasOpenClaimRequest}
             hasOpenTopicRequest={hasOpenTopicRequest}
           />
-        </GridItem>
+        </Grid.Item>
       )}
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item colSpan={"span-2"}>
         <Card title={"Cluster details"} fullWidth>
           {clusterDetailsIsError && (
             <Alert type={"error"}>
@@ -105,7 +105,7 @@ function TopicOverview() {
             }
           />
         </Card>
-      </GridItem>
+      </Grid.Item>
 
       <Card title={"Subscriptions"} fullWidth>
         <Box.Flex gap={"l7"}>

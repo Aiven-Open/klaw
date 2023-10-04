@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem } from "@aivenio/aquarium";
+import { Box, Grid } from "@aivenio/aquarium";
 import logo from "/src/app/layout/header/klaw_logo.png";
 
 type BasePageWithoutNavProps = {
@@ -17,7 +17,7 @@ function BasePageWithoutNav({
         gridTemplateRows: "auto 1fr",
       }}
     >
-      <GridItem height={"l5"} backgroundColor={"primary-80"} paddingX={"l2"}>
+      <Grid.Item height={"l5"} backgroundColor={"primary-80"} paddingX={"l2"}>
         <Box
           component={"header"}
           display={"flex"}
@@ -34,8 +34,8 @@ function BasePageWithoutNav({
           </a>
           {headerContent}
         </Box>
-      </GridItem>
-      <GridItem>
+      </Grid.Item>
+      <Grid.Item>
         <Box
           component={"main"}
           display={"flex"}
@@ -48,7 +48,7 @@ function BasePageWithoutNav({
         >
           {content}
         </Box>
-      </GridItem>
+      </Grid.Item>
     </Grid>
   );
 }

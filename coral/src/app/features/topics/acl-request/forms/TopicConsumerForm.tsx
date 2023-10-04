@@ -4,7 +4,7 @@ import {
   Button,
   Divider,
   Grid,
-  GridItem,
+  Grid.Item,
   Input,
   useToast,
 } from "@aivenio/aquarium";
@@ -147,20 +147,20 @@ const TopicConsumerForm = ({
         onSubmit={onSubmitTopicConsumer}
       >
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-          <GridItem>{renderAclTypeField()}</GridItem>
-          <GridItem>
+          <Grid.Item>{renderAclTypeField()}</Grid.Item>
+          <Grid.Item>
             <EnvironmentField
               environments={environments}
               selectedTopic={topicname}
               readOnly={isSubscription}
             />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+          <Grid.Item colSpan={"span-2"} paddingBottom={"l2"}>
             <Divider />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem>
+          <Grid.Item>
             {environment === undefined ? (
               <Input
                 // This is not really a readOnly field but
@@ -178,8 +178,8 @@ const TopicConsumerForm = ({
                 readOnly={isSubscription}
               />
             )}
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             {hideConsumerGroupField ? (
               <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
@@ -190,12 +190,12 @@ const TopicConsumerForm = ({
                 required
               />
             )}
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem>
+          <Grid.Item>
             <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             {hideIpOrPrincipalField ? (
               <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
@@ -205,18 +205,18 @@ const TopicConsumerForm = ({
                 environment={environment}
               />
             )}
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
+          <Grid.Item colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
             <RemarksField />
-          </GridItem>
+          </Grid.Item>
         </Grid>
 
         <Grid cols={"2"} colGap={"4"} width={"fit"}>
-          <GridItem>
+          <Grid.Item>
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             <Button.Secondary
               disabled={isLoading}
               type="button"
@@ -228,7 +228,7 @@ const TopicConsumerForm = ({
             >
               Cancel
             </Button.Secondary>
-          </GridItem>
+          </Grid.Item>
         </Grid>
       </Form>
       {cancelDialogVisible && (

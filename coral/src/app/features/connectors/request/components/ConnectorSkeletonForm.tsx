@@ -1,4 +1,4 @@
-import { Grid, GridItem } from "@aivenio/aquarium";
+import { Grid } from "@aivenio/aquarium";
 import { NativeSelect, Textarea, TextInput } from "src/app/components/Form";
 
 const ConnectorSkeletonForm = () => {
@@ -7,23 +7,23 @@ const ConnectorSkeletonForm = () => {
       <span className={"visually-hidden"}>Form is loading.</span>
       <div aria-hidden={true}>
         <Grid cols={"2"} minWidth={"fit"} colGap={"9"}>
-          <GridItem colSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"}>
             <NativeSelect.Skeleton />
-          </GridItem>
-          <GridItem colSpan={"span-2"}>
+          </Grid.Item>
+          <Grid.Item colSpan={"span-2"}>
             <TextInput.Skeleton />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"} rowSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"} rowSpan={"span-2"}>
             <Textarea.Skeleton />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem>
+          <Grid.Item>
             <Textarea.Skeleton />
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             <Textarea.Skeleton />
-          </GridItem>
+          </Grid.Item>
         </Grid>
       </div>
     </div>

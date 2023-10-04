@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem } from "@aivenio/aquarium";
+import { Box, Grid } from "@aivenio/aquarium";
 import logo from "/src/app/layout/header/klaw_logo.png";
 
 type BasePageProps = {
@@ -16,7 +16,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
         gridTemplateRows: "auto 1fr",
       }}
     >
-      <GridItem
+      <Grid.Item
         colStart={"1"}
         colEnd={"12"}
         height={"l5"}
@@ -39,13 +39,13 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
           </a>
           {headerContent}
         </Box>
-      </GridItem>
+      </Grid.Item>
       {sidebar && (
-        <GridItem colStart={"1"} colEnd={"2"} rowStart={"2"}>
+        <Grid.Item colStart={"1"} colEnd={"2"} rowStart={"2"}>
           {sidebar}
-        </GridItem>
+        </Grid.Item>
       )}
-      <GridItem colStart={sidebar ? "2" : "1"} colEnd={"12"}>
+      <Grid.Item colStart={sidebar ? "2" : "1"} colEnd={"12"}>
         <Box
           component={"main"}
           display={"flex"}
@@ -56,7 +56,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
         >
           {content}
         </Box>
-      </GridItem>
+      </Grid.Item>
     </Grid>
   );
 }

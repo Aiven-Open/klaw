@@ -1,4 +1,4 @@
-import { BorderBox, Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { BorderBox, Box, Grid, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import fromPairs from "lodash/fromPairs";
 import isEmpty from "lodash/isEmpty";
@@ -67,18 +67,18 @@ const TopicDetailsModalContent = ({
           <StatusChip status={"neutral"} text={requestOperationType} />
         </dd>
       </Box.Flex>
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item colSpan={"span-2"}>
         <Box.Flex direction={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
         </Box.Flex>
-      </GridItem>
-      <GridItem colSpan={"span-2"}>
+      </Grid.Item>
+      <Grid.Item colSpan={"span-2"}>
         <Box.Flex direction={"column"}>
           <Label>Topic description</Label>
           <dd>{description}</dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
       <Box.Flex direction={"column"}>
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
@@ -88,7 +88,7 @@ const TopicDetailsModalContent = ({
         <dd>{replicationfactor}</dd>
       </Box.Flex>
       {hasAdvancedConfig && (
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item colSpan={"span-2"}>
           <Box.Flex direction={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
@@ -111,14 +111,14 @@ const TopicDetailsModalContent = ({
               />
             </BorderBox>
           </Box.Flex>
-        </GridItem>
+        </Grid.Item>
       )}
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item colSpan={"span-2"}>
         <Box.Flex direction={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
       <Box.Flex direction={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
