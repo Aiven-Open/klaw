@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     "noErrorTruncation": true
   },
-  "include": ["src"],
+  "include": ["src", "test-setup/setup-files-after-env.ts"],
   "exclude": ["proxy", "../e2e"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
