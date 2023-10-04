@@ -232,10 +232,9 @@ public class InsertDataJdbc {
 
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getRequestor()).getTeamId());
+    final UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getRequestor());
+    aclReq.setRequestingteam(userInfo.getTeamId());
     aclRequestsRepo.save(aclReq);
-
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getRequestor());
 
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(aclReq.getTenantId()));
