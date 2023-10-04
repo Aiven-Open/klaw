@@ -1,4 +1,4 @@
-import { Box, Card, Grid, GridItem } from "@aivenio/aquarium";
+import { Box, Card, Grid } from "@aivenio/aquarium";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 
 type SchemaStatsProps = {
@@ -21,7 +21,7 @@ function SchemaStats({
       style={{ gridTemplateRows: "auto" }}
       marginTop={"l2"}
     >
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item colSpan={"span-2"}>
         <Card title="" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
             <StatsDisplay
@@ -37,7 +37,7 @@ function SchemaStats({
             />
           </Box.Flex>
         </Card>
-      </GridItem>
+      </Grid.Item>
     </Grid>
   );
 }

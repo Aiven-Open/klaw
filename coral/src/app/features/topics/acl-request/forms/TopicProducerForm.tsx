@@ -5,7 +5,6 @@ import {
   Button,
   Divider,
   Grid,
-  GridItem,
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
@@ -148,21 +147,21 @@ const TopicProducerForm = ({
         onSubmit={onSubmitTopicProducer}
       >
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-          <GridItem>{renderAclTypeField()}</GridItem>
-          <GridItem>
+          <Grid.Item>{renderAclTypeField()}</Grid.Item>
+          <Grid.Item>
             <EnvironmentField
               environments={environments}
               selectedTopic={topicname}
               prefixed={aclPatternType === "PREFIXED"}
               readOnly={isSubscription}
             />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+          <Grid.Item colSpan={"span-2"} paddingBottom={"l2"}>
             <Divider />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem>
+          <Grid.Item>
             <RadioButtonGroup
               name="aclPatternType"
               labelText="Topic pattern type"
@@ -174,16 +173,16 @@ const TopicProducerForm = ({
               <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
               <BaseRadioButton value="PREFIXED">Prefixed</BaseRadioButton>
             </RadioButtonGroup>
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             <TopicNameOrPrefixField
               topicNames={topicNames}
               aclPatternType={aclPatternType}
               readOnly={isSubscription}
             />
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"}>
             {!isAivenCluster && (
               <TextInput
                 name="transactionalId"
@@ -191,12 +190,12 @@ const TopicProducerForm = ({
                 placeholder="Necessary for exactly-once semantics on producer"
               />
             )}
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem>
+          <Grid.Item>
             <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             {hideIpOrPrincipalField ? (
               <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
@@ -206,18 +205,18 @@ const TopicProducerForm = ({
                 environment={environment}
               />
             )}
-          </GridItem>
+          </Grid.Item>
 
-          <GridItem colSpan={"span-2"} minWidth={"full"}>
+          <Grid.Item colSpan={"span-2"} minWidth={"full"}>
             <RemarksField />
-          </GridItem>
+          </Grid.Item>
         </Grid>
 
         <Grid cols={"2"} colGap={"4"} width={"fit"}>
-          <GridItem>
+          <Grid.Item>
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
-          </GridItem>
-          <GridItem>
+          </Grid.Item>
+          <Grid.Item>
             <Button.Secondary
               disabled={isLoading}
               type="button"
@@ -229,7 +228,7 @@ const TopicProducerForm = ({
             >
               Cancel
             </Button.Secondary>
-          </GridItem>
+          </Grid.Item>
         </Grid>
       </Form>
       {cancelDialogVisible && (

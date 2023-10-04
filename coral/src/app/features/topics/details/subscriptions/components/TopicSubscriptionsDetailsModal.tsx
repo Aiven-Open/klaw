@@ -3,7 +3,6 @@ import {
   Box,
   Divider,
   Grid,
-  GridItem,
   Skeleton,
   StatusChip,
   Typography,
@@ -118,7 +117,7 @@ const TopicSubscriptionsDetailsModal = ({
     >
       <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
         {errors.length > 0 && (
-          <GridItem colSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"}>
             <Alert type="error">
               <Box.Flex flexDirection={"column"}>
                 {errors.map((error) => (
@@ -126,10 +125,10 @@ const TopicSubscriptionsDetailsModal = ({
                 ))}
               </Box.Flex>
             </Alert>
-          </GridItem>
+          </Grid.Item>
         )}
 
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item colSpan={"span-2"}>
           <Box.Flex flexDirection={"column"} width={"min"}>
             <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
               Environment
@@ -138,10 +137,10 @@ const TopicSubscriptionsDetailsModal = ({
               {environmentName}
             </Typography.Default>
           </Box.Flex>
-        </GridItem>
-        <GridItem colSpan={"span-2"}>
+        </Grid.Item>
+        <Grid.Item colSpan={"span-2"}>
           <Divider />
-        </GridItem>
+        </Grid.Item>
         <Box.Flex flexDirection={"column"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Subscription type
@@ -159,9 +158,9 @@ const TopicSubscriptionsDetailsModal = ({
           </Typography.SmallStrong>
           <Typography.Default htmlTag="dd">{aclPatternType}</Typography.Default>
         </Box.Flex>
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item colSpan={"span-2"}>
           <Divider />
-        </GridItem>
+        </Grid.Item>
         <Box.Flex flexDirection={"column"} width={"min"}>
           <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
             Topic name
@@ -196,7 +195,7 @@ const TopicSubscriptionsDetailsModal = ({
           </Typography.Default>
         </Box.Flex>
         {isAivenCluster ? (
-          <GridItem colSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Service account password
@@ -211,10 +210,10 @@ const TopicSubscriptionsDetailsModal = ({
                 </div>
               )}
             </Box.Flex>
-          </GridItem>
+          </Grid.Item>
         ) : null}
         {!isAivenCluster && selectedSubscription.topictype === "Consumer" ? (
-          <GridItem colSpan={"span-2"}>
+          <Grid.Item colSpan={"span-2"}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Consumer offset
@@ -232,7 +231,7 @@ const TopicSubscriptionsDetailsModal = ({
                 </div>
               )}
             </Box.Flex>
-          </GridItem>
+          </Grid.Item>
         ) : null}
       </Grid>
     </Modal>
