@@ -63,7 +63,7 @@
     "remark-rehype": "^10.1.0",
     "remark-stringify": "^10.0.3",
     "unified": "^10.1.2",
-    "zod": "^3.19.1"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@peculiar/webcrypto": "^1.4.3",

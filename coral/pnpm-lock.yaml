@@ -75,8 +75,8 @@ dependencies:
     specifier: 2.2.2
     version: 2.2.2
   zod:
-    specifier: ^3.19.1
-    version: 3.19.1
+    specifier: ^3.22.3
+    version: 3.22.3
 
 devDependencies:
   '@peculiar/webcrypto':
@@ -9038,8 +9038,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zod@3.19.1:
-    resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
 
   /zwitch@2.0.4:
