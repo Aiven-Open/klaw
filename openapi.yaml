@@ -6845,7 +6845,7 @@
         "properties" : {
           "name" : {
             "type" : "string",
-            "maxLength" : 10,
+            "maxLength" : 25,
             "minLength" : 2,
             "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
           },
@@ -7785,10 +7785,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
@@ -7908,13 +7908,13 @@
       },
       "Scales" : {
         "properties" : {
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
