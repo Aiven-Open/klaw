@@ -7916,6 +7916,9 @@
           "hasOpenClaimRequest" : {
             "type" : "boolean"
           },
+          "hasOpenRequestOnAnyEnv" : {
+            "type" : "boolean"
+          },
           "hasACL" : {
             "type" : "boolean"
           },
@@ -7933,7 +7936,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicBaseConfig" : {
         "properties" : {
@@ -8322,6 +8325,9 @@
           "hasOpenClaimRequest" : {
             "type" : "boolean"
           },
+          "hasOpenRequestOnAnyEnv" : {
+            "type" : "boolean"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -8362,7 +8368,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {

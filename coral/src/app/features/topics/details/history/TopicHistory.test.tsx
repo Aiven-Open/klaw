@@ -41,6 +41,7 @@ const testTopicOverview: TopicOverview = {
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
+    hasOpenRequestOnAnyEnv: false,
     envName: "DEV",
     topicName: "my awesome topic",
     hasACL: false,
