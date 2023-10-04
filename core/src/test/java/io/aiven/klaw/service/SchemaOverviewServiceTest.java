@@ -419,6 +419,7 @@ public class SchemaOverviewServiceTest {
       e.setTenantId(101);
       e.setClusterId(i);
       e.setType(clusterType.value);
+      when(manageDatabase.getEnv(eq(101), eq(i))).thenReturn(Optional.of(e));
       envs.add(e);
     }
 
@@ -436,10 +437,9 @@ public class SchemaOverviewServiceTest {
 
   private void stubSchemaPromotionInfo(
       String testtopic, KafkaClustersType clusterType, int numberOfEnvs) throws Exception {
-    List<Env> listOfEnvs = createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
-    when(manageDatabase.getAllEnvList(101)).thenReturn(listOfEnvs);
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
+
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.getAllSchemaRegEnvs(101)).thenReturn(listOfEnvs);
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(createClusterMap(numberOfEnvs));
     when(clusterApiService.getAvroSchema(any(), any(), any(), eq(testtopic), eq(101)))

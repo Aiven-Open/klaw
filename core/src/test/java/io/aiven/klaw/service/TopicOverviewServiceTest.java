@@ -112,7 +112,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getEnv(anyInt(), anyInt()))
+        .thenReturn(Optional.of(utilMethods.getEnvLists().get(0)));
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
@@ -127,9 +128,8 @@ public class TopicOverviewServiceTest {
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
     TopicOverviewInfo topicOverviewInfo =
@@ -158,7 +158,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getEnv(anyInt(), anyInt()))
+        .thenReturn(Optional.of(utilMethods.getEnvLists().get(0)));
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
@@ -171,8 +172,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
+
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
 
@@ -255,7 +256,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getEnv(anyInt(), anyInt()))
+        .thenReturn(Optional.of(utilMethods.getEnvLists().get(0)));
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
@@ -268,8 +270,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
+
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
     List<AclOverviewInfo> aclList =
@@ -297,8 +299,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
         .thenReturn(createAcls(20));
-    when(manageDatabase.getAllEnvList(eq(101)))
-        .thenReturn(createListOfEnvs(KafkaClustersType.KAFKA, 3));
+    createListOfEnvs(KafkaClustersType.KAFKA, 3);
+
     when(manageDatabase.getTeamNameFromTeamId(eq(101), anyInt()))
         .thenReturn("Octopus")
         .thenReturn("Town")
@@ -345,8 +347,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
+
     when(commonUtilsService.isCreateNewSchemaAllowed(eq("4"), eq(101))).thenReturn(true);
 
     TopicOverview topicOverview =
@@ -415,8 +417,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     TopicOverview topicOverview =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -475,8 +476,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     when(manageDatabase.getAssociatedSchemaEnvIdFromTopicId(eq("1"), eq(101)))
         .thenReturn(Optional.of("3"));
@@ -541,8 +541,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     TopicOverview topicOverview =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -607,8 +606,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     TopicOverview topicOverview =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -721,8 +719,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     when(manageDatabase.getAssociatedSchemaEnvIdFromTopicId(eq("1"), eq(101)))
         .thenReturn(Optional.of("3"));
@@ -785,8 +782,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
     when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
@@ -865,7 +861,7 @@ public class TopicOverviewServiceTest {
       e.setTenantId(101);
       e.setClusterId(i);
       e.setType(clusterType.value);
-      envs.add(e);
+      when(manageDatabase.getEnv(eq(101), eq(i))).thenReturn(Optional.of(e));
     }
 
     return envs;
@@ -896,11 +892,9 @@ public class TopicOverviewServiceTest {
 
   private void stubSchemaPromotionInfo(
       String testtopic, KafkaClustersType clusterType, int numberOfEnvs) throws Exception {
-    when(manageDatabase.getAllEnvList(101))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.getAllSchemaRegEnvs(101))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
+    createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
         .thenReturn(createClusterMap(numberOfEnvs));
     when(clusterApiService.getAvroSchema(any(), any(), any(), eq(testtopic), eq(101)))

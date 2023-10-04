@@ -10,6 +10,8 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
   tenantName: "default",
   clusterName: "DEV",
   envStatus: "ONLINE",
+  envStatusTimeString: "21-Sep-2023 11:46:15",
+  envStatusTime: "2023-09-08T12:34:10.615919098",
   otherParams:
     "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
   showDeleteEnv: false,

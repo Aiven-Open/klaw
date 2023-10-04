@@ -278,7 +278,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
+                    <jvmArguments>
+                        -Dspringdoc.writer-with-default-pretty-printer=true
+                        -Dklaw.core.ha.enable=true
+                    </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -287,8 +290,8 @@
                             <goal>stop</goal>
                         </goals>
                         <configuration>
-
                             <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+
                         </configuration>
                     </execution>
                 </executions>
