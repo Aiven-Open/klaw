@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- the list is sorted-->
         <apachecommons.version>2.13.0</apachecommons.version>
-        <apachepoi.version>5.2.3</apachepoi.version>
+        <apachepoi.version>5.2.4</apachepoi.version>
         <commons-text.version>1.10.0</commons-text.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
