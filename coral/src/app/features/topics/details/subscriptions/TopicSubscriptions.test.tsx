@@ -89,6 +89,7 @@ const testTopicOverview: TopicOverview = {
     highestEnv: true,
     hasOpenClaimRequest: false,
     hasOpenSchemaRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     hasOpenRequest: false,
     hasSchema: false,
     description: "my description",

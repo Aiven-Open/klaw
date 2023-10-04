@@ -21,6 +21,9 @@ public interface KwKafkaConnectorRequestsRepo
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndConnectorName(
       int tenantId, String environment, String requestStatus, String connectorName);
 
+  boolean existsByTenantIdAndRequestStatusAndConnectorName(
+      int tenantId, String requestStatus, String connectorName);
+
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
       int tenantId,
       String environment,

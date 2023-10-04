@@ -812,11 +812,15 @@ public class KafkaConnectControllerServiceTest {
             .existsConnectorRequest(
                 eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
         .thenReturn(true);
-
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
+        .thenReturn(true);
     ConnectorOverview response =
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequestOnAnyEnv()).isTrue();
     assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
@@ -857,6 +861,7 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
     assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isFalse();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequestOnAnyEnv()).isFalse();
     assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
@@ -952,11 +957,16 @@ public class KafkaConnectControllerServiceTest {
             .existsClaimConnectorRequest(
                 eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
+        .thenReturn(true);
 
     ConnectorOverview response =
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequestOnAnyEnv()).isTrue();
     assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.SUCCESS);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
@@ -1002,11 +1012,15 @@ public class KafkaConnectControllerServiceTest {
                 eq("2"),
                 eq(101)))
         .thenReturn(true);
-
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
+        .thenReturn(true);
     ConnectorOverview response =
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequestOnAnyEnv()).isTrue();
     assertThat(response.getPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.REQUEST_OPEN);
     assertThat(response.getAvailableEnvironments()).hasSize(2);

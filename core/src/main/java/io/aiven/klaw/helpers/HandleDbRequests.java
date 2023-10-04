@@ -188,6 +188,10 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsTopicRequest(String topicName, String requestStatus, int tenantId);
+
+  boolean existsConnectorRequest(String connectorName, String requestStatus, int tenantId);
+
   boolean existsClaimTopicRequest(String topicName, String requestStatus, int tenantId);
 
   boolean existsConnectorRequest(

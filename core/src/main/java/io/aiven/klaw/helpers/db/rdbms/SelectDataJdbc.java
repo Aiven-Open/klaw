@@ -1919,6 +1919,17 @@ public class SelectDataJdbc {
             tenantId, env, requestStatus, requestOperationType, connectorName);
   }
 
+  public boolean existsConnectorRequestOnAnyEnv(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo.existsByTenantIdAndRequestStatusAndConnectorName(
+        tenantId, requestStatus, connectorName);
+  }
+
+  public boolean existsTopicRequestOnAnyEnv(String topicName, String requestStatus, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndTopicname(
+        tenantId, requestStatus, topicName);
+  }
+
   public boolean existsClaimConnectorRequest(
       String connectorName, String requestStatus, int tenantId) {
     return kafkaConnectorRequestsRepo
