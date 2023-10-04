@@ -1059,6 +1059,10 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
   }
 
+  public int countRegisterUsersInfoForTenant(int tenantId) {
+    return registerInfoRepo.countByStatusAndTenantId("PENDING", tenantId);
+  }
+
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
