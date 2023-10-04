@@ -29,6 +29,7 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
@@ -60,6 +61,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -462,10 +465,8 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public EnvParams getEnvParams(String targetEnv) {
-    return manageDatabase
-        .getEnvParamsMap(commonUtilsService.getTenantId(getUserName()))
-        .get(targetEnv);
+  public EnvParams getEnvParams(Integer targetEnv) {
+    return manageDatabase.getEnvParams(commonUtilsService.getTenantId(getUserName()), targetEnv);
   }
 
   public List<EnvModelResponse> getSchemaRegEnvs() {
@@ -641,8 +642,7 @@ public class EnvsClustersTenantsControllerService {
       env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE, null);
+        manageDatabase.addEnvToCache(tenantId, env, false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -853,8 +853,7 @@ public class EnvsClustersTenantsControllerService {
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE, null);
+        manageDatabase.removeEnvFromCache(tenantId, Integer.valueOf(envId), false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -926,6 +925,8 @@ public class EnvsClustersTenantsControllerService {
               .getEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
       linkedEnv.setAssociatedEnv(null);
       manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+      // add to cache
+      manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
     }
   }
 
@@ -943,6 +944,8 @@ public class EnvsClustersTenantsControllerService {
     }
     linkedEnv.setAssociatedEnv(new EnvTag(envId, envName));
     manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+    // add update to cache
+    manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
   }
 
   private String getUserName() {
@@ -1245,24 +1248,33 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKey;
   }
 
-  public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawException {
+  public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawBadRequestException {
+
     EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
+    List<Env> allEnvs = manageDatabase.getAllEnvList(tenantId);
+    Optional<Env> env =
+        allEnvs.stream()
+            .filter(e -> e.getId().equals(envId) && e.getTenantId().equals(tenantId))
+            .findFirst();
+
+    if (env.isEmpty()) {
+      throw new KlawBadRequestException("No Such environment.");
+    }
 
     ClusterStatus status;
     KwClusters kwClusters = null;
     kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.of(env.getType()), tenantId)
-            .get(env.getClusterId());
+            .getClusters(KafkaClustersType.of(env.get().getType()), tenantId)
+            .get(env.get().getClusterId());
     try {
       status =
           clusterApiService.getKafkaClusterStatus(
               kwClusters.getBootstrapServers(),
               kwClusters.getProtocol(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
-              env.getType(),
+              env.get().getType(),
               kwClusters.getKafkaFlavor(),
               tenantId);
 
@@ -1270,14 +1282,22 @@ public class EnvsClustersTenantsControllerService {
       status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
-    env.setEnvStatus(status);
+    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
+    env.get().setEnvStatus(status);
+    env.get().setEnvStatusTime(statusTime);
+    env.get().setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
+
+    // Is this required can we remove it?
     kwClusters.setClusterStatus(status);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
-    manageDatabase.getHandleDbRequests().addNewEnv(env);
-    manageDatabase.loadEnvMapForOneTenant(tenantId);
+
+    manageDatabase.addEnvToCache(tenantId, env.get(), false);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);
+    envUpdatedStatus.setEnvStatusTime(statusTime);
+    envUpdatedStatus.setEnvStatusTimeString(
+        DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
 
     return envUpdatedStatus;
   }

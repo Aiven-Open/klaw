@@ -2076,6 +2076,50 @@
         }
       }
     },
+    "/cache/tenant/{tenantId}/entityType/environment" : {
+      "post" : {
+        "tags" : [ "cache-controller" ],
+        "operationId" : "addEnvToCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Env"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/addTenantId" : {
       "post" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
@@ -4272,7 +4316,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -5776,6 +5821,48 @@
           }
         }
       }
+    },
+    "/cache/tenant/{tenantId}/entityType/environment/id/{id}" : {
+      "delete" : {
+        "tags" : [ "cache-controller" ],
+        "operationId" : "removeEnvFromCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -6793,87 +6880,52 @@
         },
         "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
       },
-      "KwTenantModel" : {
+      "Env" : {
         "properties" : {
-          "tenantName" : {
-            "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 12,
-            "pattern" : "^[a-zA-Z0-9]{3,}$"
-          },
-          "tenantDesc" : {
-            "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 6,
-            "pattern" : "^[a-zA-Z 0-9]{3,}$"
+          "id" : {
+            "type" : "string"
           },
           "tenantId" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "licenseExpiryDate" : {
-            "type" : "string"
-          },
-          "contactPerson" : {
-            "type" : "string"
-          },
-          "inTrialPhase" : {
-            "type" : "boolean"
-          },
-          "numberOfDays" : {
-            "type" : "string"
-          },
-          "numberOfHours" : {
-            "type" : "string"
-          },
-          "orgName" : {
-            "type" : "string"
-          },
-          "authorizedToDelete" : {
-            "type" : "boolean"
-          },
-          "emailId" : {
-            "type" : "string"
-          },
-          "activeTenant" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "tenantDesc", "tenantName" ]
-      },
-      "EnvModel" : {
-        "properties" : {
           "name" : {
-            "type" : "string",
-            "maxLength" : 10,
-            "minLength" : 2,
-            "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
+            "type" : "string"
           },
-          "type" : {
+          "stretchCode" : {
             "type" : "string"
           },
           "clusterId" : {
             "type" : "integer",
             "format" : "int32"
           },
+          "type" : {
+            "type" : "string"
+          },
           "otherParams" : {
             "type" : "string"
           },
-          "id" : {
+          "envExists" : {
+            "type" : "string"
+          },
+          "envStatus" : {
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
             "type" : "string"
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
           },
-          "tenantId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "params" : {
             "$ref" : "#/components/schemas/EnvParams"
           }
-        },
-        "required" : [ "clusterId", "name", "type" ]
+        }
       },
       "EnvParams" : {
         "properties" : {
@@ -6933,6 +6985,88 @@
             "type" : "string"
           }
         }
+      },
+      "KwTenantModel" : {
+        "properties" : {
+          "tenantName" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 12,
+            "pattern" : "^[a-zA-Z0-9]{3,}$"
+          },
+          "tenantDesc" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 6,
+            "pattern" : "^[a-zA-Z 0-9]{3,}$"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "licenseExpiryDate" : {
+            "type" : "string"
+          },
+          "contactPerson" : {
+            "type" : "string"
+          },
+          "inTrialPhase" : {
+            "type" : "boolean"
+          },
+          "numberOfDays" : {
+            "type" : "string"
+          },
+          "numberOfHours" : {
+            "type" : "string"
+          },
+          "orgName" : {
+            "type" : "string"
+          },
+          "authorizedToDelete" : {
+            "type" : "boolean"
+          },
+          "emailId" : {
+            "type" : "string"
+          },
+          "activeTenant" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "tenantDesc", "tenantName" ]
+      },
+      "EnvModel" : {
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 2,
+            "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "clusterId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "associatedEnv" : {
+            "$ref" : "#/components/schemas/EnvTag"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/EnvParams"
+          }
+        },
+        "required" : [ "clusterId", "name", "type" ]
       },
       "KwClustersModel" : {
         "properties" : {
@@ -7506,9 +7640,16 @@
           "envStatus" : {
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
+            "type" : "string"
           }
         },
-        "required" : [ "envStatus", "result" ]
+        "required" : [ "envStatus", "envStatusTime", "envStatusTimeString", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -7785,10 +7926,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
@@ -8252,6 +8393,13 @@
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
+            "type" : "string"
+          },
           "otherParams" : {
             "type" : "string"
           },
@@ -8286,7 +8434,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "envStatusTime", "envStatusTimeString", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {
