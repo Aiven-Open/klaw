@@ -47,8 +47,8 @@ function ProfileDropdown() {
       });
       logoutUser().catch((error) => {
         // dismiss toast in case logout fails
-        dismiss("logout");
         if (error.status !== 401) {
+          dismiss("logout");
           toast({
             message:
               "Something went wrong in the log out process. Please try again or contact your administrator.",
