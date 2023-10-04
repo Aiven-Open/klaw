@@ -15,7 +15,6 @@ import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.error.RestErrorResponse;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,11 +50,7 @@ public class KafkaConnectService {
 
   public ApiResponse deleteConnector(ClusterConnectorRequest clusterConnectorRequest) {
     Set<String> errMsgResponse = new HashSet<>();
-    for (String envUrl :
-        getEnvironment(
-            clusterConnectorRequest.getEnv(),
-            clusterConnectorRequest.getClusterIdentification(),
-            clusterConnectorRequest.getProtocol())) {
+    for (String envUrl : getEnvironment(clusterConnectorRequest.getEnv())) {
       try {
         log.info("Into deleteConnector {}", clusterConnectorRequest);
         String suffixUrl = envUrl + "/connectors/" + clusterConnectorRequest.getConnectorName();
@@ -88,11 +83,7 @@ public class KafkaConnectService {
 
   public ApiResponse updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
     Set<String> errMsgResponse = new HashSet<>();
-    for (String envUrl :
-        getEnvironment(
-            clusterConnectorRequest.getEnv(),
-            clusterConnectorRequest.getClusterIdentification(),
-            clusterConnectorRequest.getProtocol())) {
+    for (String envUrl : getEnvironment(clusterConnectorRequest.getEnv())) {
       try {
         log.info("Into updateConnector {}", clusterConnectorRequest);
         String suffixUrl =
@@ -140,11 +131,7 @@ public class KafkaConnectService {
     log.info("Into postNewConnector clusterConnectorRequest {} ", clusterConnectorRequest);
     Set<String> errMsgResponse = new HashSet<>();
     ResponseEntity<String> responseNew = null;
-    for (String envUrl :
-        getEnvironment(
-            clusterConnectorRequest.getEnv(),
-            clusterConnectorRequest.getClusterIdentification(),
-            clusterConnectorRequest.getProtocol())) {
+    for (String envUrl : getEnvironment(clusterConnectorRequest.getEnv())) {
       try {
         String suffixUrl = envUrl + "/connectors";
         Pair<String, RestTemplate> reqDetails =
@@ -181,7 +168,7 @@ public class KafkaConnectService {
     ConnectorsStatus connectorsStatus = new ConnectorsStatus();
     List<ConnectorState> connectorStateList = new ArrayList<>();
     connectorsStatus.setConnectorStateList(connectorStateList);
-    for (String envUrl : getEnvironment(environmentVal, clusterIdentification, protocol)) {
+    for (String envUrl : getEnvironment(environmentVal)) {
       try {
         log.info("Into getConnectors {} {}", environmentVal, protocol);
         if (envUrl == null) {
@@ -277,7 +264,7 @@ public class KafkaConnectService {
       String environmentVal,
       KafkaSupportedProtocol protocol,
       String clusterIdentification) {
-    for (String envUrl : getEnvironment(environmentVal, clusterIdentification, protocol)) {
+    for (String envUrl : getEnvironment(environmentVal)) {
       try {
         log.info("Into getConnectorDetails {} {}", environmentVal, protocol);
         if (envUrl == null) {
@@ -319,7 +306,7 @@ public class KafkaConnectService {
         environment,
         protocol,
         clusterIdentification);
-    for (String env : getEnvironment(environment, clusterIdentification, protocol)) {
+    for (String env : getEnvironment(environment)) {
       String suffixUrl = env + "/connectors";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
@@ -346,11 +333,7 @@ public class KafkaConnectService {
   public ApiResponse restartConnector(ClusterConnectorRequest clusterConnectorRequest) {
     log.info("Into restartConnector clusterConnectorRequest {} ", clusterConnectorRequest);
     ResponseEntity<String> responseNew = null;
-    for (String envUrl :
-        getEnvironment(
-            clusterConnectorRequest.getEnv(),
-            clusterConnectorRequest.getClusterIdentification(),
-            clusterConnectorRequest.getProtocol())) {
+    for (String envUrl : getEnvironment(clusterConnectorRequest.getEnv())) {
       try {
         String suffixUrl =
             envUrl
@@ -398,38 +381,7 @@ public class KafkaConnectService {
     return ApiResponse.notOk("To be implemented");
   }
 
-  public List<String> getEnvironment(
-      String environments, String clusterIdentification, KafkaSupportedProtocol protocol) {
-    List<String> envUrls = new ArrayList<>();
-    for (String envUrl : environments.split(",")) {
-      try {
-        String suffixUrl = envUrl + "/connectors";
-
-        Pair<String, RestTemplate> reqDetails =
-            clusterApiUtils.getRequestDetails(suffixUrl, protocol);
-
-        HttpHeaders headers =
-            clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.KAFKA_CONNECT);
-        HttpEntity<Object> request = new HttpEntity<>(headers);
-        Map<String, String> params = new HashMap<>();
-        ResponseEntity<Map<String, Map<String, Status>>> responseEntity =
-            getConnectorStatus(reqDetails, request, params);
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-          envUrls.add(envUrl);
-          for (String secondaryUrls : environments.split(",")) {
-            // add all oter uls as back up, when adding the already added url it will return false
-            // leaving the set unchanged.
-            if (!envUrls.contains(secondaryUrls)) {
-              envUrls.add(secondaryUrls);
-            }
-          }
-          return envUrls;
-        }
-      } catch (Exception ex) {
-        // Ignore this exception and keep looping.
-        log.debug("When checking for status of api encountered an error: ", ex);
-      }
-    }
-    return Arrays.stream(environments.split(",")).collect(Collectors.toList());
+  public String[] getEnvironment(String environments) {
+    return environments.split(",");
   }
 }

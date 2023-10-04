@@ -56,19 +56,14 @@ class KafkaConnectServiceTest {
   // TODO need to add proper return value
   @Test
   public void getConnectors_returnList() throws JsonProcessingException {
-
     when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors", restTemplate));
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors"))
         .andRespond(
             withSuccess(
                 objectMapper.writeValueAsString(utilMethods.getConnectorsListMap()),
                 MediaType.APPLICATION_JSON));
-
     assertThat(
             kafkaConnectService
                 .getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", true)
@@ -80,17 +75,11 @@ class KafkaConnectServiceTest {
   @Test
   public void getConnectorDetails_returnMap() throws JsonProcessingException {
 
-    when(getAdminClient.getRequestDetails(
-            eq("env/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env/connectors", restTemplate));
     // Connector operations
     when(getAdminClient.getRequestDetails(
             eq("env/connectors/conn1"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1", restTemplate));
-    ;
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -107,9 +96,6 @@ class KafkaConnectServiceTest {
   @Test
   public void createConnector_bad_request() throws Exception {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors/conn1"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -132,7 +118,7 @@ class KafkaConnectServiceTest {
   @Test
   public void createConnector_success() throws Exception {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    mockStatusResponse(0);
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
@@ -144,9 +130,7 @@ class KafkaConnectServiceTest {
   @Test
   public void createConnector_fail() throws Exception {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors/conn1"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
@@ -160,10 +144,6 @@ class KafkaConnectServiceTest {
     ClusterConnectorRequest connectorRequest = stubUpdateConnector();
 
     this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
-
-    this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1/config"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
     ApiResponse connectorResponse = kafkaConnectService.updateConnector(connectorRequest);
@@ -174,9 +154,7 @@ class KafkaConnectServiceTest {
   @Test
   public void updateConnector_badRequest() throws JsonProcessingException {
     ClusterConnectorRequest connectorRequest = stubUpdateConnector();
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1/config"))
         .andRespond(
@@ -192,7 +170,7 @@ class KafkaConnectServiceTest {
   @Test
   public void deleteConnector_badRequest() throws JsonProcessingException {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    mockStatusResponse(0);
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -208,7 +186,7 @@ class KafkaConnectServiceTest {
   @Test
   public void deleteConnector_badRequest_undetermined_response() throws JsonProcessingException {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    mockStatusResponse(0);
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -224,7 +202,7 @@ class KafkaConnectServiceTest {
   @Test
   public void deleteConnector_success() {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-    mockStatusResponse(0);
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
@@ -244,9 +222,6 @@ class KafkaConnectServiceTest {
     this.mockRestServiceServer
         .expect(requestTo("/env1/connectors"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
     ApiResponse connectorResponse = kafkaConnectService.postNewConnector(connectorRequest);
     assertThat(connectorResponse.isSuccess()).isTrue();
     assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -258,16 +233,12 @@ class KafkaConnectServiceTest {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
 
     this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
+        .expect(requestTo("/env/connectors/conn1"))
         .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
     this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
+        .expect(requestTo("/env1/connectors/conn1"))
         .andRespond(withRawStatus(500).contentType(MediaType.APPLICATION_JSON));
-    // Status
-    this.mockRestServiceServer
-        .expect(requestTo("/env2/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
-    // Delete
+
     this.mockRestServiceServer
         .expect(requestTo("/env2/connectors/conn1"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
@@ -282,11 +253,8 @@ class KafkaConnectServiceTest {
     ClusterConnectorRequest connectorRequest = stubUpdateConnectorMultiUrl();
 
     this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
+        .expect(requestTo("/env/connectors/conn1/config"))
         .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
     this.mockRestServiceServer
         .expect(requestTo("/env1/connectors/conn1/config"))
         .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
@@ -303,9 +271,6 @@ class KafkaConnectServiceTest {
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors"))
         .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
 
     this.mockRestServiceServer
         .expect(requestTo("/env1/connectors"))
@@ -321,17 +286,6 @@ class KafkaConnectServiceTest {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
 
     this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
-        .andRespond(withRawStatus(500).contentType(MediaType.APPLICATION_JSON));
-
-    this.mockRestServiceServer
-        .expect(requestTo("/env2/connectors"))
-        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
-
-    this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
     this.mockRestServiceServer
@@ -341,7 +295,6 @@ class KafkaConnectServiceTest {
     this.mockRestServiceServer
         .expect(requestTo("/env2/connectors/conn1"))
         .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
-
     ApiResponse connectorResponse = kafkaConnectService.deleteConnector(connectorRequest);
     assertThat(connectorResponse.getMessage()).isEqualTo("Unable To Delete Connector on Cluster.");
     mockRestServiceServer.verify();
@@ -349,17 +302,7 @@ class KafkaConnectServiceTest {
 
   @Test
   public void updateConnector_WithMulti_url_failure() {
-    ClusterConnectorRequest connectorRequest = stubUpdateConnectorMultiUrl();
-
-    this.mockRestServiceServer
-        .expect(requestTo("/env/connectors"))
-        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env1/connectors"))
-        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
-    this.mockRestServiceServer
-        .expect(requestTo("/env2/connectors"))
-        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+    ClusterConnectorRequest connectorRequest = stubUpdateConnector();
 
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1/config"))
@@ -392,7 +335,6 @@ class KafkaConnectServiceTest {
   }
 
   private ClusterConnectorRequest stubCreateOrDeleteConnectorMultiUrl() {
-    // Status
     when(getAdminClient.getRequestDetails(
             eq("env/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors", restTemplate));
@@ -428,9 +370,6 @@ class KafkaConnectServiceTest {
     when(getAdminClient.getRequestDetails(
             eq("env/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate));
-    when(getAdminClient.getRequestDetails(
-            eq("env/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("env/connectors", restTemplate));
     when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
         .thenReturn(new HttpHeaders());
     ClusterConnectorRequest connectorRequest =
@@ -444,16 +383,6 @@ class KafkaConnectServiceTest {
   }
 
   private ClusterConnectorRequest stubUpdateConnectorMultiUrl() {
-    when(getAdminClient.getRequestDetails(
-            eq("env/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env/connectors", restTemplate));
-    when(getAdminClient.getRequestDetails(
-            eq("env1/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env1/connectors", restTemplate));
-    when(getAdminClient.getRequestDetails(
-            eq("env2/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of("/env2/connectors", restTemplate));
-
     when(getAdminClient.getRequestDetails(
             eq("env/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate));
@@ -474,17 +403,5 @@ class KafkaConnectServiceTest {
             .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .build();
     return connectorRequest;
-  }
-
-  private void mockStatusResponse(int i) {
-    String url;
-    if (i == 0) {
-      url = "/env/connectors/conn1";
-    } else {
-      url = "/env" + i + "/connectors/conn1";
-    }
-    this.mockRestServiceServer
-        .expect(requestTo(url))
-        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
   }
 }
