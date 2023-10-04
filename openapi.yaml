@@ -3020,7 +3020,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -3113,7 +3113,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -3727,7 +3727,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -3819,7 +3819,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -4609,7 +4609,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -4694,7 +4694,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -5376,7 +5376,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "topic",
@@ -5505,7 +5505,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -5871,7 +5871,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6000,7 +6000,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6637,7 +6637,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6718,7 +6718,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6794,7 +6794,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -7187,7 +7187,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -7472,7 +7472,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "count" : {
             "type" : "integer",
@@ -7929,10 +7929,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -8173,7 +8173,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -8557,7 +8557,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -8782,7 +8782,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -9297,7 +9297,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",

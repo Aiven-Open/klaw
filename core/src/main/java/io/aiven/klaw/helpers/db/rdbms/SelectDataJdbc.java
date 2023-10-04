@@ -227,7 +227,7 @@ public class SelectDataJdbc {
     if (requestor != null && !requestor.isEmpty()) {
       request.setRequestor(requestor);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && !requestOperationType.value.equalsIgnoreCase("all")) {
       request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a

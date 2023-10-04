@@ -9,7 +9,8 @@ public enum RequestOperationType {
   UPDATE("Update"),
   PROMOTE("Promote"),
   CLAIM("Claim"),
-  DELETE("Delete");
+  DELETE("Delete"),
+  ALL("All"); // All is applicable only to query requests
 
   public final String value;
 
