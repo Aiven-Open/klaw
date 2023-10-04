@@ -13,13 +13,13 @@ jest.mock("src/domain/auth-user/auth-user-api");
 
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 
-const mockedUseToastContext = jest.fn();
+const mockToast = jest.fn();
 const mockDismiss = jest.fn();
 
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToastContext: () => ({
-    toast: mockedUseToastContext,
+    toast: mockToast,
     onDismiss: mockDismiss,
   }),
 }));
@@ -152,7 +152,7 @@ describe("ProfileDropdown", () => {
       const logout = screen.getByRole("menuitem", { name: "Log out" });
       await user.click(logout);
 
-      expect(mockedUseToastContext).toHaveBeenCalledWith(
+      expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "You are being logged out of Klaw...",
         })
@@ -224,7 +224,7 @@ describe("ProfileDropdown", () => {
 
       expect(mockDismiss).toHaveBeenCalledWith("logout");
 
-      expect(mockedUseToastContext).toHaveBeenCalledWith(
+      expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message:
             "Something went wrong in the log out process. Please try again or contact your administrator.",
