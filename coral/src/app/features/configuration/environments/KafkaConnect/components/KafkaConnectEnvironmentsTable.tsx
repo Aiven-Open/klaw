@@ -13,6 +13,7 @@ interface KafkaConnectEnvironmentsTableRow {
   clusterName: Environment["clusterName"];
   tenantName: Environment["tenantName"];
   status: Environment["envStatus"];
+  envStatusTimeString: Environment["envStatusTimeString"];
 }
 
 const KafkaConnectEnvironmentsTable = (
@@ -39,9 +40,19 @@ const KafkaConnectEnvironmentsTable = (
     {
       type: "custom",
       headerName: "Status",
-      width: 150,
-      UNSAFE_render: ({ status, id }: KafkaConnectEnvironmentsTableRow) => {
-        return <EnvironmentStatus envId={id} initialEnvStatus={status} />;
+      width: 450,
+      UNSAFE_render: ({
+        status,
+        id,
+        envStatusTimeString,
+      }: KafkaConnectEnvironmentsTableRow) => {
+        return (
+          <EnvironmentStatus
+            envId={id}
+            initialEnvStatus={status}
+            initialUpdateTime={envStatusTimeString}
+          />
+        );
       },
     },
   ];
@@ -53,6 +64,7 @@ const KafkaConnectEnvironmentsTable = (
       clusterName: env.clusterName,
       tenantName: env.tenantName,
       status: env.envStatus,
+      envStatusTimeString: env.envStatusTimeString,
     };
   });
 
