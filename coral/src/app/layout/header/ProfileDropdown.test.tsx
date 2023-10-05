@@ -18,10 +18,7 @@ const mockDismiss = jest.fn();
 
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
-  useToastContext: () => ({
-    toast: mockToast,
-    onDismiss: mockDismiss,
-  }),
+  useToastContext: () => [mockToast, mockDismiss],
 }));
 
 describe("ProfileDropdown", () => {
