@@ -17,7 +17,7 @@ import {
 } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import {
   Environment,
-  getEnvironmentsForSchemaRequest,
+  getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
@@ -86,8 +86,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     Environment[],
     Error
   >({
-    queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getEnvironmentsForSchemaRequest(),
+    queryKey: ["getEnvs"],
+    queryFn: () => getAllEnvironmentsForTopicAndAcl(),
     onSuccess: (environments) => {
       if (presetEnvironment) {
         const validEnv = environments.find(

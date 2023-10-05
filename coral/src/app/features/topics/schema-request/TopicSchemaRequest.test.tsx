@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { requestSchemaCreation } from "src/domain/schema-request";
@@ -19,9 +19,9 @@ jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
+const mockgetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 const mockCreateSchemaRequest = requestSchemaCreation as jest.MockedFunction<
   typeof requestSchemaCreation
@@ -75,7 +75,7 @@ describe("TopicSchemaRequest", () => {
 
   describe("checks if topicName passed from url is part of topics user can request schemas for", () => {
     beforeEach(() => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
@@ -145,7 +145,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("does not redirect user if env ID query is part of list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
       ]);
 
@@ -184,7 +184,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("does not redirect user if env name query is part of list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
       ]);
 
@@ -223,7 +223,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("redirects user if env id query does not exist in list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
       ]);
 
@@ -244,7 +244,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("redirects user if env name query does not exist in list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
       ]);
 
@@ -270,7 +270,7 @@ describe("TopicSchemaRequest", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       useQuerySpy.mockReturnValue({ data: [], isLoading: true });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
@@ -308,7 +308,7 @@ describe("TopicSchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
@@ -441,7 +441,7 @@ describe("TopicSchemaRequest", () => {
 
   describe("shows errors when user does not fill out correctly", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
@@ -519,7 +519,7 @@ describe("TopicSchemaRequest", () => {
 
   describe("enables user to cancel the form input", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
@@ -635,7 +635,7 @@ describe("TopicSchemaRequest", () => {
 
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockRejectedValue({
@@ -740,7 +740,7 @@ describe("TopicSchemaRequest", () => {
 
   describe("enables user to send a schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockResolvedValue({
