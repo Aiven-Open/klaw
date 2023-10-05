@@ -4,15 +4,9 @@ import io.aiven.klaw.helpers.EnvParamsConverter;
 import io.aiven.klaw.helpers.EnvTagConverter;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.response.EnvParams;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -54,6 +48,10 @@ public class Env implements Serializable {
   @Column(name = "envstatus")
   @Enumerated(EnumType.STRING)
   private ClusterStatus envStatus;
+
+  @Transient private LocalDateTime envStatusTime;
+
+  @Transient private String envStatusTimeString;
 
   @Convert(converter = EnvTagConverter.class)
   @Column(name = "associatedenv")

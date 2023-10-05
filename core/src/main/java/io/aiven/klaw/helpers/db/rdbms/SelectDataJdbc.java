@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -977,25 +977,25 @@ public class SelectDataJdbc {
 
   public List<Team> selectTeamsOfUsers(String username, int tenantId) {
     log.debug("selectTeamsOfUsers {}", username);
-    List<Team> allTeams = selectAllTeams(tenantId);
+    Map<Integer, Team> allTeams =
+        selectAllTeams(tenantId).stream()
+            .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
 
-    List<Team> teamList = new ArrayList<>();
-    List<UserInfo> userInfoList = Lists.newArrayList(userInfoRepo.findAllByTenantId(tenantId));
-    Integer teamId;
-
-    for (UserInfo row : userInfoList) {
-      teamId = row.getTeamId();
-
-      Integer finalTeamId = teamId;
-      Optional<Team> teamSel =
-          allTeams.stream().filter(a -> Objects.equals(a.getTeamId(), finalTeamId)).findFirst();
-
-      if (Objects.equals(username, row.getUsername())) {
-        teamSel.ifPresent(teamList::add);
-      }
+    Optional<UserInfo> userInfoOpt =
+        userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
+    if (userInfoOpt.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    return teamList;
+    Integer teamId = userInfoOpt.get().getTeamId();
+
+    Team teamSel = allTeams.get(teamId);
+
+    if (teamSel == null) {
+      return Collections.emptyList();
+    }
+
+    return List.of(teamSel);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
@@ -1057,6 +1057,10 @@ public class SelectDataJdbc {
 
   public List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId) {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
+  }
+
+  public int countRegisterUsersInfoForTenant(int tenantId) {
+    return registerInfoRepo.countByStatusAndTenantId("PENDING", tenantId);
   }
 
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
@@ -1913,6 +1917,17 @@ public class SelectDataJdbc {
     return kafkaConnectorRequestsRepo
         .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
             tenantId, env, requestStatus, requestOperationType, connectorName);
+  }
+
+  public boolean existsConnectorRequestOnAnyEnv(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo.existsByTenantIdAndRequestStatusAndConnectorName(
+        tenantId, requestStatus, connectorName);
+  }
+
+  public boolean existsTopicRequestOnAnyEnv(String topicName, String requestStatus, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndTopicname(
+        tenantId, requestStatus, topicName);
   }
 
   public boolean existsClaimConnectorRequest(

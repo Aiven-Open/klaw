@@ -68,6 +68,7 @@ const testTopicOverview: TopicOverview = {
     hasACL: false,
     hasOpenTopicRequest: false,
     hasOpenACLRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: true,
     hasOpenClaimRequest: false,
     hasOpenSchemaRequest: false,

@@ -43,6 +43,7 @@ const testConnectorOverview: ConnectorOverview = {
     connectorDeletable: true,
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: false,
     connectorOwner: false,
     connectorConfig:
