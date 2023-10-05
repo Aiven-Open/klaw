@@ -64,7 +64,7 @@ function SchemaRequests() {
         requestStatus: status !== "ALL" ? status : undefined,
         search: search,
         isMyRequest: showOnlyMyRequests,
-        operationType: requestType !== "ALL" ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
