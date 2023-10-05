@@ -67,13 +67,13 @@ const TopicDetailsModalContent = ({
           <StatusChip status={"neutral"} text={requestOperationType} />
         </dd>
       </Box.Flex>
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
         </Box.Flex>
       </Grid.Item>
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Topic description</Label>
           <dd>{description}</dd>
@@ -88,7 +88,7 @@ const TopicDetailsModalContent = ({
         <dd>{replicationfactor}</dd>
       </Box.Flex>
       {hasAdvancedConfig && (
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <Box.Flex direction={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
@@ -113,7 +113,7 @@ const TopicDetailsModalContent = ({
           </Box.Flex>
         </Grid.Item>
       )}
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>

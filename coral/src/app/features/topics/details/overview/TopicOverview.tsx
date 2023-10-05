@@ -58,7 +58,7 @@ function TopicOverview() {
 
   return (
     <Grid cols={"2"} rows={"2"} gap={"l2"} style={{ gridTemplateRows: "auto" }}>
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Card title="Topic details" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
             <StatsDisplay
@@ -76,7 +76,7 @@ function TopicOverview() {
       </Grid.Item>
 
       {!topicOverviewIsRefetching && topicOwner && (
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <TopicPromotionBanner
             topicName={topicName}
             topicPromotionDetails={topicPromotionDetails}
@@ -86,7 +86,7 @@ function TopicOverview() {
         </Grid.Item>
       )}
 
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Card title={"Cluster details"} fullWidth>
           {clusterDetailsIsError && (
             <Alert type={"error"}>

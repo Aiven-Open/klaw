@@ -157,7 +157,7 @@ const TopicProducerForm = ({
             />
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"} paddingBottom={"l2"}>
+          <Grid.Item xs={2} paddingBottom={"l2"}>
             <Divider />
           </Grid.Item>
 
@@ -182,7 +182,7 @@ const TopicProducerForm = ({
             />
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             {!isAivenCluster && (
               <TextInput
                 name="transactionalId"
@@ -207,7 +207,7 @@ const TopicProducerForm = ({
             )}
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"} minWidth={"full"}>
+          <Grid.Item xs={2} minWidth={"full"}>
             <RemarksField />
           </Grid.Item>
         </Grid>

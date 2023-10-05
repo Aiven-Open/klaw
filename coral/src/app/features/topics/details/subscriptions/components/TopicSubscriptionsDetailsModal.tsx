@@ -117,7 +117,7 @@ const TopicSubscriptionsDetailsModal = ({
     >
       <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
         {errors.length > 0 && (
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             <Alert type="error">
               <Box.Flex flexDirection={"column"}>
                 {errors.map((error) => (
@@ -128,7 +128,7 @@ const TopicSubscriptionsDetailsModal = ({
           </Grid.Item>
         )}
 
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <Box.Flex flexDirection={"column"} width={"min"}>
             <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
               Environment
@@ -138,7 +138,7 @@ const TopicSubscriptionsDetailsModal = ({
             </Typography.Default>
           </Box.Flex>
         </Grid.Item>
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <Divider />
         </Grid.Item>
         <Box.Flex flexDirection={"column"}>
@@ -158,7 +158,7 @@ const TopicSubscriptionsDetailsModal = ({
           </Typography.SmallStrong>
           <Typography.Default htmlTag="dd">{aclPatternType}</Typography.Default>
         </Box.Flex>
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <Divider />
         </Grid.Item>
         <Box.Flex flexDirection={"column"} width={"min"}>
@@ -195,7 +195,7 @@ const TopicSubscriptionsDetailsModal = ({
           </Typography.Default>
         </Box.Flex>
         {isAivenCluster ? (
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Service account password
@@ -213,7 +213,7 @@ const TopicSubscriptionsDetailsModal = ({
           </Grid.Item>
         ) : null}
         {!isAivenCluster && selectedSubscription.topictype === "Consumer" ? (
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
                 Consumer offset

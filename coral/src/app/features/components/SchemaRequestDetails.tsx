@@ -27,11 +27,11 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.topicname}</dd>
       </Box.Flex>
 
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
       </Grid.Item>
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Schema preview</Label>
           <dd>
@@ -57,7 +57,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         </Box.Flex>
       </Grid.Item>
 
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>

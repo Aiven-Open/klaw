@@ -1,9 +1,4 @@
-import {
-  Box,
-  Divider,
-  Grid,
-  RadioButton
-} from "@aivenio/aquarium";
+import { Box, Divider, Grid, RadioButton } from "@aivenio/aquarium";
 import {
   MultiInput,
   NativeSelect,
@@ -25,7 +20,7 @@ const SkeletonForm = () => {
           <NativeSelect.Skeleton />
         </Grid.Item>
 
-        <Grid.Item colSpan={"span-2"} paddingBottom={"l2"}>
+        <Grid.Item xs={2} paddingBottom={"l2"}>
           <Divider />
         </Grid.Item>
 
@@ -39,7 +34,7 @@ const SkeletonForm = () => {
           <TextInput.Skeleton />
         </Grid.Item>
 
-        <Grid.Item colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <TextInput.Skeleton />
         </Grid.Item>
 
@@ -52,7 +47,7 @@ const SkeletonForm = () => {
         <Grid.Item>
           <MultiInput.Skeleton />
         </Grid.Item>
-        <Grid.Item colSpan={"span-2"} minWidth={"full"}>
+        <Grid.Item xs={2} minWidth={"full"}>
           <Textarea.Skeleton />
         </Grid.Item>
       </Grid>

@@ -21,7 +21,7 @@ function SchemaStats({
       style={{ gridTemplateRows: "auto" }}
       marginTop={"l2"}
     >
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Card title="" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
             <StatsDisplay

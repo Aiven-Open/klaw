@@ -7,14 +7,14 @@ const ConnectorSkeletonForm = () => {
       <span className={"visually-hidden"}>Form is loading.</span>
       <div aria-hidden={true}>
         <Grid cols={"2"} minWidth={"fit"} colGap={"9"}>
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             <NativeSelect.Skeleton />
           </Grid.Item>
-          <Grid.Item colSpan={"span-2"}>
+          <Grid.Item xs={2}>
             <TextInput.Skeleton />
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"} rowSpan={"span-2"}>
+          <Grid.Item xs={2} rowSpan={"span-2"}>
             <Textarea.Skeleton />
           </Grid.Item>
 

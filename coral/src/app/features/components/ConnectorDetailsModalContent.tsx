@@ -28,11 +28,11 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.connectorName}</dd>
       </Box.Flex>
 
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Label>Connector description</Label>
         <dd>{request.description}</dd>
       </Grid.Item>
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Connector configuration</Label>
           <dd>
@@ -58,7 +58,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
         </Box.Flex>
       </Grid.Item>
 
-      <Grid.Item colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>

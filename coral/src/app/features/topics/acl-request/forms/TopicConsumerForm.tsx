@@ -156,7 +156,7 @@ const TopicConsumerForm = ({
             />
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"} paddingBottom={"l2"}>
+          <Grid.Item xs={2} paddingBottom={"l2"}>
             <Divider />
           </Grid.Item>
 
@@ -207,7 +207,7 @@ const TopicConsumerForm = ({
             )}
           </Grid.Item>
 
-          <Grid.Item colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
+          <Grid.Item xs={2} minWidth={"full"} paddingBottom={"l2"}>
             <RemarksField />
           </Grid.Item>
         </Grid>
