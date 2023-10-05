@@ -396,6 +396,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
+        .isFalse(); // topic hasAcl
     assertThat(topicOverview.isCreateSchemaAllowed()).isFalse();
   }
 
@@ -455,6 +457,7 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
         .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv()).isTrue();
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
 
@@ -520,6 +523,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
+        .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
 
@@ -585,6 +590,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
         .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
+        .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
 
@@ -643,6 +650,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+        .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isTrue(); // topic hasAcl
   }
@@ -768,12 +777,14 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
+        .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
 
   @Test
   @Order(16)
-  public void getTopicOverviewFromDifferentTeam_OnlyReturnClaimBoolean() {
+  public void getTopicOverviewFromDifferentTeam_OnlyReturnClaimBooleanAndOpenRequstAndAnyEnv() {
 
     mockTenantConfig();
     stubUserInfo();
@@ -798,6 +809,9 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.existsClaimTopicRequest(
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
+    when(handleDbRequests.existsTopicRequest(
+            eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
+        .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     TopicOverview topicOverview =
@@ -812,6 +826,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest()).isFalse();
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest()).isFalse();
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
+        .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse();
   }
 

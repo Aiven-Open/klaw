@@ -25,6 +25,8 @@ public class TopicOverviewInfo extends TopicBaseInfo {
 
   @NotNull private boolean hasOpenClaimRequest;
 
+  @NotNull private boolean hasOpenRequestOnAnyEnv;
+
   @NotNull private boolean hasACL;
 
   @NotNull private boolean hasSchema;
