@@ -16,7 +16,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
           class="block mb-2"
         >
           <span
-            class="inline-flex items-center typography-small-strong text-grey-60"
+            class="inline-flex items-center typography-small-strong text-grey-70"
           >
             PasswordInput
           </span>
@@ -63,7 +63,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
           class="block mb-2"
         >
           <span
-            class="inline-flex items-center typography-small-strong text-grey-60"
+            class="inline-flex items-center typography-small-strong text-grey-70"
           >
             TextInput
           </span>
