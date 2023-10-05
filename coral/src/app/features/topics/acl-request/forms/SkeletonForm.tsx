@@ -1,10 +1,4 @@
-import {
-  Box,
-  Divider,
-  Grid,
-  GridItem,
-  RadioButton,
-} from "@aivenio/aquarium";
+import { Box, Divider, Grid, GridItem, RadioButton } from "@aivenio/aquarium";
 import {
   MultiInput,
   NativeSelect,
