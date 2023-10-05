@@ -47,6 +47,18 @@ const acl_ssl = z
       message: "Every element must have at least 3 characters.",
     }
   )
+  .refine(
+    (values) => {
+      const allowedCharactersRegex = /^[a-zA-Z0-9_.,=-]+$/;
+      return (
+        values.find((value) => allowedCharactersRegex.test(value)) === undefined
+      );
+    },
+    {
+      message:
+        "Elements can only contain letters, numbers or these (_.,=-) symbols.",
+    }
+  )
   .optional();
 const aclPatternType = z.union([
   z.literal("LITERAL", {
