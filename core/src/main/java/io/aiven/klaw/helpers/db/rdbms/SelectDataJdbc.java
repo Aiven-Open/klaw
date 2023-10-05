@@ -1059,6 +1059,10 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
   }
 
+  public int countRegisterUsersInfoForTenant(int tenantId) {
+    return registerInfoRepo.countByStatusAndTenantId("PENDING", tenantId);
+  }
+
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
@@ -1913,6 +1917,17 @@ public class SelectDataJdbc {
     return kafkaConnectorRequestsRepo
         .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
             tenantId, env, requestStatus, requestOperationType, connectorName);
+  }
+
+  public boolean existsConnectorRequestOnAnyEnv(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo.existsByTenantIdAndRequestStatusAndConnectorName(
+        tenantId, requestStatus, connectorName);
+  }
+
+  public boolean existsTopicRequestOnAnyEnv(String topicName, String requestStatus, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndTopicname(
+        tenantId, requestStatus, topicName);
   }
 
   public boolean existsClaimConnectorRequest(

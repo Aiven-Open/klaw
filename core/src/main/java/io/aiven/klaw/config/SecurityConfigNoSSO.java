@@ -64,6 +64,9 @@ public class SecurityConfigNoSSO {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
+  @Value("${klaw.core.app2app.username:KlawApp2App}")
+  private String apiUser;
+
   @Autowired LdapTemplate ldapTemplate;
 
   private void shutdownApp() {
@@ -151,6 +154,7 @@ public class SecurityConfigNoSSO {
       Iterator<UserInfo> iter = users.iterator();
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
       loadAllUsers(globalUsers, iter, encoder);
+      globalUsers.put(apiUser, ",CACHE_ADMIN,enabled");
     }
     return new InMemoryUserDetailsManager(globalUsers);
   }
