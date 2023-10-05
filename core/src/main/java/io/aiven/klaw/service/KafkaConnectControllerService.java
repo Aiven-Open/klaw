@@ -407,6 +407,8 @@ public class KafkaConnectControllerService {
         connectorInfo.isHasOpenClaimRequest()
             || isConnectorRequestOpen(
                 tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
+    connectorInfo.setHasOpenRequestOnAnyEnv(
+        isConnectorRequestOpen(tenantId, connectorSOT.getConnectorName()));
   }
 
   private boolean isConnectorRequestOpen(int tenantId, String connectorName, String environment) {
@@ -421,6 +423,20 @@ public class KafkaConnectControllerService {
     return manageDatabase
         .getHandleDbRequests()
         .existsClaimConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
+  }
+
+  /**
+   * Checks if any connector request is open
+   *
+   * @param tenantId the id of the tenant
+   * @param connectorName the name of the connector
+   * @return true/false if there is any request open on any environment for a connector
+   */
+  private boolean isConnectorRequestOpen(int tenantId, String connectorName) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
   }
 
   private boolean isPromoteRequestOpen(int tenantId, String connectorName, String environment) {
@@ -1111,6 +1127,9 @@ public class KafkaConnectControllerService {
             connectorInfo.isConnectorOwner()
                 && connectorInfo.isHighestEnv()
                 && !connectorInfo.isHasOpenRequest());
+
+        connectorInfo.setHasOpenRequestOnAnyEnv(
+            isConnectorRequestOpen(tenantId, conn.getConnectorName()));
 
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());

@@ -216,6 +216,9 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
+  "/cache/tenant/{tenantId}/entityType/environment": {
+    post: operations["addEnvToCache"];
+  };
   "/addTenantId": {
     post: operations["addTenantId"];
   };
@@ -525,6 +528,9 @@ export type paths = {
   };
   "/acl/request/{aclRequestId}": {
     get: operations["getAclRequest"];
+  };
+  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+    delete: operations["removeEnvFromCache"];
   };
 };
 
@@ -884,6 +890,41 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
+    Env: {
+      id?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      name?: string;
+      stretchCode?: string;
+      /** Format: int32 */
+      clusterId?: number;
+      type?: string;
+      otherParams?: string;
+      envExists?: string;
+      /** @enum {string} */
+      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime?: string;
+      envStatusTimeString?: string;
+      associatedEnv?: components["schemas"]["EnvTag"];
+      params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+      topicRegex?: (string)[];
+      applyRegex?: boolean;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
     KwTenantModel: {
       tenantName: string;
       tenantDesc: string;
@@ -910,22 +951,6 @@ export type components = {
       /** Format: int32 */
       tenantId?: number;
       params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: (string)[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
-      topicRegex?: (string)[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
     };
     KwClustersModel: {
       /** Format: int32 */
@@ -1126,6 +1151,9 @@ export type components = {
       result: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1215,12 +1243,13 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasOpenSchemaRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       hasACL: boolean;
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1361,6 +1390,7 @@ export type components = {
       highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -1384,6 +1414,9 @@ export type components = {
       clusterName: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -2833,6 +2866,29 @@ export type operations = {
       };
     };
   };
+  addEnvToCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Env"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   addTenantId: {
     requestBody: {
       content: {
@@ -3731,7 +3787,7 @@ export type operations = {
   getEnvParams: {
     parameters: {
       query: {
-        envSelected: string;
+        envSelected: number;
       };
     };
     responses: {
@@ -4350,6 +4406,25 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"];
+        };
+      };
+    };
+  };
+  removeEnvFromCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

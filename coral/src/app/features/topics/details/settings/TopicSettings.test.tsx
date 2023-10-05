@@ -40,6 +40,7 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   hasACL: false,
   hasOpenTopicRequest: false,
   hasOpenACLRequest: false,
+  hasOpenRequestOnAnyEnv: false,
   highestEnv: true,
   hasOpenRequest: false,
   hasOpenClaimRequest: false,
