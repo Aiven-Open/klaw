@@ -64,7 +64,6 @@ class KafkaConnectServiceTest {
             withSuccess(
                 objectMapper.writeValueAsString(utilMethods.getConnectorsListMap()),
                 MediaType.APPLICATION_JSON));
-
     assertThat(
             kafkaConnectService
                 .getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", true)
@@ -75,8 +74,12 @@ class KafkaConnectServiceTest {
   // TODO need to add proper return value
   @Test
   public void getConnectorDetails_returnMap() throws JsonProcessingException {
-    when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
+
+    // Connector operations
+    when(getAdminClient.getRequestDetails(
+            eq("env/connectors/conn1"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1", restTemplate));
+
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -93,7 +96,6 @@ class KafkaConnectServiceTest {
   @Test
   public void createConnector_bad_request() throws Exception {
     ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnector();
-
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
         .andRespond(
@@ -131,10 +133,10 @@ class KafkaConnectServiceTest {
 
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))
-        .andRespond(withRawStatus(207).contentType(MediaType.APPLICATION_JSON));
+        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
     ApiResponse connectorResponse = kafkaConnectService.postNewConnector(connectorRequest);
     assertThat(connectorResponse.isSuccess()).isFalse();
-    assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThat(connectorResponse.getMessage()).isEqualTo("Unable to create Connector on Cluster.");
   }
 
   @Test
@@ -209,6 +211,114 @@ class KafkaConnectServiceTest {
     assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
+  @Test
+  public void createConnectorMultiEnvs_success() throws Exception {
+    ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors"))
+        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors"))
+        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+    ApiResponse connectorResponse = kafkaConnectService.postNewConnector(connectorRequest);
+    assertThat(connectorResponse.isSuccess()).isTrue();
+    assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void deleteConnectorMultiEnvs_success() throws Exception {
+    ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors/conn1"))
+        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors/conn1"))
+        .andRespond(withRawStatus(500).contentType(MediaType.APPLICATION_JSON));
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env2/connectors/conn1"))
+        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+
+    ApiResponse connectorResponse = kafkaConnectService.deleteConnector(connectorRequest);
+    assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void updateConnector_WithMulti_url_success() {
+    ClusterConnectorRequest connectorRequest = stubUpdateConnectorMultiUrl();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors/conn1/config"))
+        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors/conn1/config"))
+        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+
+    ApiResponse connectorResponse = kafkaConnectService.updateConnector(connectorRequest);
+    assertThat(connectorResponse.isSuccess()).isTrue();
+    assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void createConnectorMultiEnvs_failure() throws Exception {
+    ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors"))
+        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors"))
+        .andRespond(withRawStatus(201).contentType(MediaType.APPLICATION_JSON));
+    ApiResponse connectorResponse = kafkaConnectService.postNewConnector(connectorRequest);
+    assertThat(connectorResponse.isSuccess()).isTrue();
+    assertThat(connectorResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void deleteConnectorMultiEnvs_failure() throws Exception {
+    ClusterConnectorRequest connectorRequest = stubCreateOrDeleteConnectorMultiUrl();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors/conn1"))
+        .andRespond(withRawStatus(404).contentType(MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors/conn1"))
+        .andRespond(withRawStatus(500).contentType(MediaType.APPLICATION_JSON));
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env2/connectors/conn1"))
+        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+    ApiResponse connectorResponse = kafkaConnectService.deleteConnector(connectorRequest);
+    assertThat(connectorResponse.getMessage()).isEqualTo("Unable To Delete Connector on Cluster.");
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void updateConnector_WithMulti_url_failure() {
+    ClusterConnectorRequest connectorRequest = stubUpdateConnector();
+
+    this.mockRestServiceServer
+        .expect(requestTo("/env/connectors/conn1/config"))
+        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/env1/connectors/conn1/config"))
+        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/env2/connectors/conn1/config"))
+        .andRespond(withRawStatus(401).contentType(MediaType.APPLICATION_JSON));
+
+    ApiResponse connectorResponse = kafkaConnectService.updateConnector(connectorRequest);
+    assertThat(connectorResponse.isSuccess()).isFalse();
+    assertThat(connectorResponse.getMessage()).isEqualTo("Unable to update Connector on Cluster");
+  }
+
   private ClusterConnectorRequest stubCreateOrDeleteConnector() {
     when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1", restTemplate));
@@ -224,8 +334,41 @@ class KafkaConnectServiceTest {
     return connectorRequest;
   }
 
+  private ClusterConnectorRequest stubCreateOrDeleteConnectorMultiUrl() {
+    when(getAdminClient.getRequestDetails(
+            eq("env/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env/connectors", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env1/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env1/connectors", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env2/connectors"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env2/connectors", restTemplate));
+    // Connector operations
+    when(getAdminClient.getRequestDetails(
+            eq("env/connectors/conn1"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env/connectors/conn1", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env1/connectors/conn1"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env1/connectors/conn1", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env2/connectors/conn1"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env2/connectors/conn1", restTemplate));
+    when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
+        .thenReturn(new HttpHeaders());
+    ClusterConnectorRequest connectorRequest =
+        ClusterConnectorRequest.builder()
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env,env1,env2")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
+    return connectorRequest;
+  }
+
   private ClusterConnectorRequest stubUpdateConnector() {
-    when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
+    when(getAdminClient.getRequestDetails(
+            eq("env/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate));
     when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
         .thenReturn(new HttpHeaders());
@@ -234,6 +377,29 @@ class KafkaConnectServiceTest {
             .connectorName("conn1")
             .clusterIdentification("1")
             .env("env")
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
+            .build();
+    return connectorRequest;
+  }
+
+  private ClusterConnectorRequest stubUpdateConnectorMultiUrl() {
+    when(getAdminClient.getRequestDetails(
+            eq("env/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env/connectors/conn1/config", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env1/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env1/connectors/conn1/config", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq("env2/connectors/conn1/config"), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of("/env2/connectors/conn1/config", restTemplate));
+
+    when(getAdminClient.createHeaders(eq("1"), eq(KafkaClustersType.KAFKA_CONNECT)))
+        .thenReturn(new HttpHeaders());
+    ClusterConnectorRequest connectorRequest =
+        ClusterConnectorRequest.builder()
+            .connectorName("conn1")
+            .clusterIdentification("1")
+            .env("env,env1,env2")
             .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .build();
     return connectorRequest;
