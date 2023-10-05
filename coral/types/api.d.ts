@@ -1243,6 +1243,7 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasOpenSchemaRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       hasACL: boolean;
       hasSchema: boolean;
       /** Format: int32 */
@@ -1389,6 +1390,7 @@ export type components = {
       highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;

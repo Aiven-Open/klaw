@@ -30,6 +30,9 @@ public interface TopicRequestsRepo
   boolean existsByTenantIdAndRequestStatusAndRequestOperationTypeAndTopicname(
       int tenantId, String requestStatus, String requestOperationType, String topicname);
 
+  boolean existsByTenantIdAndRequestStatusAndTopicname(
+      int tenantId, String requestStatus, String topicname);
+
   boolean existsByTenantIdAndEnvironmentAndRequestStatus(
       int tenantId, String environment, String requestStatus);
 

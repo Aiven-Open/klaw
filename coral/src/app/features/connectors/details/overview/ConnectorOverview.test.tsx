@@ -14,6 +14,7 @@ const connectorInfoPromotion: ConnectorOverviewType["connectorInfo"] = {
   hasOpenClaimRequest: false,
   hasOpenRequest: false,
   highestEnv: false,
+  hasOpenRequestOnAnyEnv: false,
   connectorOwner: true,
   connectorId: 1003,
   connectorName: "release240",

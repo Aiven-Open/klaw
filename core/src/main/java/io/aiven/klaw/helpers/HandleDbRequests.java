@@ -188,6 +188,10 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsTopicRequest(String topicName, String requestStatus, int tenantId);
+
+  boolean existsConnectorRequest(String connectorName, String requestStatus, int tenantId);
+
   boolean existsClaimTopicRequest(String topicName, String requestStatus, int tenantId);
 
   boolean existsConnectorRequest(
@@ -262,6 +266,8 @@ public interface HandleDbRequests {
   boolean existsUsersInfoForTeam(Integer teamId, int tenantId);
 
   List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId);
+
+  int getCountRegisterUsersInfoForTenant(int tenantId);
 
   List<RegisterUserInfo> getAllRegisterUsersInformation();
 
