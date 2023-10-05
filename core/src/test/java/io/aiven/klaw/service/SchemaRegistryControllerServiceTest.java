@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -306,6 +307,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    mockGetEnvironment();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("1");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -380,6 +383,7 @@ public class SchemaRegistryControllerServiceTest {
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -397,6 +401,7 @@ public class SchemaRegistryControllerServiceTest {
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -418,6 +423,7 @@ public class SchemaRegistryControllerServiceTest {
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "2"));
@@ -439,6 +445,7 @@ public class SchemaRegistryControllerServiceTest {
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "3"));
@@ -461,6 +468,7 @@ public class SchemaRegistryControllerServiceTest {
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
@@ -475,13 +483,14 @@ public class SchemaRegistryControllerServiceTest {
 
   @Test
   @Order(17)
-  public void promoteSchemaWithInCompaitbleSchemaReturnFailure() throws Exception {
+  public void promoteSchemaWithInCompatibleSchemaReturnFailure() throws Exception {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(false));
     mockSchemaCreation();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("8");
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
@@ -505,6 +514,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    mockGetEnvironment();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("1");
 
     ApiResponse resultResp =
         schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
@@ -611,6 +622,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
+    mockGetEnvironment();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("1");
 
     ApiResponse resultResp =
         schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
@@ -636,6 +649,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    mockGetEnvironment();
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_SCHEMA_OF_ENVS))).thenReturn("1");
 
     NullPointerException ex =
         assertThrows(
@@ -781,7 +796,6 @@ public class SchemaRegistryControllerServiceTest {
   }
 
   private void mockGetEnvironment() {
-
     when(manageDatabase.getSchemaRegEnvList(anyInt())).thenReturn(createEnvList(8));
   }
 
