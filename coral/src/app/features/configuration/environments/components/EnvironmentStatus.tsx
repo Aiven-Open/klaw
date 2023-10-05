@@ -97,7 +97,10 @@ const EnvironmentStatus = ({
           <StatusChip dense status="danger" text="Not working" />
         </GridItem>
         <GridItem>
-          <Typography.Small>Last update: {updateTime} UTC</Typography.Small>
+          <Typography.Small>
+            Last update:{" "}
+            {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+          </Typography.Small>
         </GridItem>
         <Button.Icon
           icon={refresh}
@@ -120,7 +123,10 @@ const EnvironmentStatus = ({
           <StatusChip dense status="success" text="Working" />
         </GridItem>
         <GridItem>
-          <Typography.Small>Last update: {updateTime} UTC</Typography.Small>
+          <Typography.Small>
+            Last update:{" "}
+            {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+          </Typography.Small>
         </GridItem>
         <Button.Icon
           icon={refresh}
@@ -143,7 +149,10 @@ const EnvironmentStatus = ({
         <StatusChip dense status="neutral" text="Unknown" />
       </GridItem>
       <GridItem>
-        <Typography.Small>Last update: {updateTime} UTC</Typography.Small>
+        <Typography.Small>
+          Last update:{" "}
+          {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+        </Typography.Small>
       </GridItem>
       <Button.Icon
         icon={refresh}
