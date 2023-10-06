@@ -227,7 +227,7 @@ public class SelectDataJdbc {
     if (requestor != null && !requestor.isEmpty()) {
       request.setRequestor(requestor);
     }
-    if (requestOperationType != null && !requestOperationType.value.equalsIgnoreCase("all")) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
@@ -344,7 +344,7 @@ public class SelectDataJdbc {
     if (userName != null && !userName.isEmpty()) {
       request.setRequestor(userName);
     }
-    if (requestOperationType != null && !requestOperationType.value.equalsIgnoreCase("all")) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
 
@@ -684,7 +684,8 @@ public class SelectDataJdbc {
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
 
-    if (requestOperationType != null && !requestOperationType.equalsIgnoreCase("all")) {
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
       request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
@@ -832,7 +833,8 @@ public class SelectDataJdbc {
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
 
-    if (requestOperationType != null && !requestOperationType.equalsIgnoreCase("all")) {
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
       request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
