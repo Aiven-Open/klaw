@@ -46,12 +46,7 @@ function TopicMessageItem({ offsetId, message }: Props) {
             onClick={() => setExpanded(!expanded)}
           />
         </Box>
-        <Box
-          paddingTop="2"
-          grow={1}
-          id={panelId}
-          aria-labelledby={panelTrigger}
-        >
+        <Box paddingTop="2" id={panelId} aria-labelledby={panelTrigger}>
           {getMessage()}
         </Box>
       </Box.Flex>

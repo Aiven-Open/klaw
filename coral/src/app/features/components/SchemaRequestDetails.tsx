@@ -1,5 +1,5 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
@@ -16,23 +16,23 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
-      </Flexbox>
+      </Box.Flex>
 
       <GridItem colSpan={"span-2"}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -54,24 +54,24 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
 
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </Flexbox>
+      </Box.Flex>
     </Grid>
   );
 }

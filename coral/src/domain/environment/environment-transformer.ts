@@ -45,6 +45,7 @@ function transformEnvironmentApiResponse(
       tenantName: environment?.tenantName,
       envStatus: environment?.envStatus,
       associatedEnv: environment?.associatedEnv,
+      envStatusTimeString: environment.envStatusTimeString,
     };
     return rv;
   });
@@ -95,6 +96,7 @@ function transformPaginatedEnvironmentApiResponse(
       tenantName: environment?.tenantName,
       envStatus: environment?.envStatus,
       associatedEnv: environment?.associatedEnv,
+      envStatusTimeString: environment.envStatusTimeString,
     };
     return rv;
   });
