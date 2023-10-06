@@ -5,6 +5,8 @@ import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
+const TEST_UPDATE_TIME = "${TEST_UPDATE_TIME}";
+
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
@@ -23,6 +25,7 @@ const mockEnvironments: Environment[] = [
       maxPartitions: 3,
       maxRepFactor: 4,
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     name: "TST",
@@ -35,6 +38,7 @@ const mockEnvironments: Environment[] = [
       maxPartitions: 3,
       maxRepFactor: 5,
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     name: "PROD",
@@ -47,6 +51,7 @@ const mockEnvironments: Environment[] = [
       maxPartitions: 6,
       maxRepFactor: 8,
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
 ];
 
@@ -198,7 +203,7 @@ describe("KafkaEnvironmentsTable.tsx", () => {
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
-          name: statusText,
+          name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,
         });
 
         expect(status).toBeVisible();

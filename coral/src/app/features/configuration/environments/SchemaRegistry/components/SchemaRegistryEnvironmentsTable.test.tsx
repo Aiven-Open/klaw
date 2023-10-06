@@ -5,6 +5,8 @@ import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
+const TEST_UPDATE_TIME = "14-Sep-2023 12:30:38 UTC";
+
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
@@ -19,6 +21,7 @@ const mockEnvironments: Environment[] = [
     clusterName: "DEV_CL",
     envStatus: "ONLINE",
     associatedEnv: { id: "1", name: "DEV" },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     type: "schemaregistry",
@@ -27,6 +30,7 @@ const mockEnvironments: Environment[] = [
     clusterName: "TST_CL",
     envStatus: "OFFLINE",
     associatedEnv: { id: "2", name: "TST" },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     type: "schemaregistry",
@@ -35,6 +39,7 @@ const mockEnvironments: Environment[] = [
     clusterName: "PROD_CL",
     envStatus: "NOT_KNOWN",
     associatedEnv: { id: "3", name: "PROD" },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
 ];
 
@@ -172,7 +177,7 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
-          name: statusText,
+          name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,
         });
 
         expect(status).toBeVisible();
