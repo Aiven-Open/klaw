@@ -87,7 +87,7 @@ git commit -s -m"docs: Update contribution guide with DCO guidelines"
 
 #### How to fix not signed off commits after the fact
 
-If you opened a Pull Request but not all commits were signed off, no worries, it can be easily fixed. If you had only one commit, go and amend it like follows:
+If you opened a Pull Request but not all commits were signed off, no worries, it can be fixed. If you had only one commit, go and amend it like follows:
 
 ```
 git commit --amend --signoff
