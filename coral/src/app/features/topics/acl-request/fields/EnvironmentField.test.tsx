@@ -19,6 +19,7 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     clusterName: "DEV",
     tenantName: "default",
     envStatus: "ONLINE",
+    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
   {
     name: "TST",
@@ -29,6 +30,7 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     clusterName: "DEV",
     tenantName: "default",
     envStatus: "ONLINE",
+    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
   {
     name: "NOTOPIC",
@@ -39,6 +41,7 @@ const mockedEnvironments: ExtendedEnvironment[] = [
     clusterName: "DEV",
     tenantName: "default",
     envStatus: "ONLINE",
+    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
 ];
 
