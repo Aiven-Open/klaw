@@ -109,6 +109,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -128,6 +129,7 @@ describe("TopicRequests", () => {
           isMyRequest: false,
           requestStatus: "ALL",
           env: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -151,6 +153,7 @@ describe("TopicRequests", () => {
         search: "",
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -170,6 +173,7 @@ describe("TopicRequests", () => {
           search: "",
           requestStatus: "ALL",
           env: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -191,6 +195,7 @@ describe("TopicRequests", () => {
           search: "",
           requestStatus: "ALL",
           env: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -228,6 +233,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -245,6 +251,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -355,6 +362,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
     });
   });
@@ -386,6 +394,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+        operationType: "ALL",
       });
     });
 
@@ -405,6 +414,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: mockedEnvironmentResponse[0].id,
+        operationType: "ALL",
       });
     });
   });
@@ -438,6 +448,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -458,6 +469,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
+        operationType: "ALL",
       });
     });
   });
@@ -606,6 +618,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {
@@ -632,6 +645,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -644,6 +658,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {
@@ -679,6 +694,7 @@ describe("TopicRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {
