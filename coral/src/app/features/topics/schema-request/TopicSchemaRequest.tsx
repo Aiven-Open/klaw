@@ -88,6 +88,11 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   >({
     queryKey: ["getEnvs"],
     queryFn: () => getAllEnvironmentsForTopicAndAcl(),
+    // not every Kafka Environment has an associated env for schemas,
+    // so we only want to show those who do.
+    // We use name and ID related to the Kafka Environment in form and mutation.
+    select: (kafkaEnvironments) =>
+      kafkaEnvironments.filter((env) => env.associatedEnv),
     onSuccess: (environments) => {
       if (presetEnvironment) {
         const validEnv = environments.find(
