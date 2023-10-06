@@ -1,22 +1,35 @@
-import { useToast, Box, StatusChip, Button } from "@aivenio/aquarium";
+import {
+  Button,
+  Grid,
+  GridItem,
+  Skeleton,
+  StatusChip,
+  Typography,
+  useToast,
+} from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
 import refresh from "@aivenio/aquarium/icons/refresh";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Environment, getUpdateEnvStatus } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
+
+interface EnvironmentStatusProps {
+  envId: Environment["id"];
+  initialEnvStatus: Environment["envStatus"];
+  initialUpdateTime: Environment["envStatusTimeString"];
+}
 
 const EnvironmentStatus = ({
   envId,
   initialEnvStatus,
-}: {
-  envId: Environment["id"];
-  initialEnvStatus: Environment["envStatus"];
-}) => {
+  initialUpdateTime,
+}: EnvironmentStatusProps) => {
   const toast = useToast();
   const [shoudlUpdateStatus, setShouldUpdateStatus] = useState(false);
   const [envStatus, setEnvStatus] =
     useState<Environment["envStatus"]>(initialEnvStatus);
+  const [updateTime, setUpdateTime] = useState(initialUpdateTime || "Unknown");
 
   const {
     data: updatedEnvStatus,
@@ -33,6 +46,7 @@ const EnvironmentStatus = ({
     if (!isFetching && isSuccess) {
       setShouldUpdateStatus(false);
       setEnvStatus(updatedEnvStatus.envStatus);
+      setUpdateTime(updatedEnvStatus.envStatusTimeString);
     }
     if (!isFetching && isError) {
       setShouldUpdateStatus(false);
@@ -48,8 +62,18 @@ const EnvironmentStatus = ({
 
   if (isFetching) {
     return (
-      <Box.Flex justifyContent="space-between">
-        <StatusChip dense status="neutral" text="Refreshing..." />
+      <Grid
+        justifyContent={"stretch"}
+        alignItems="center"
+        colGap="3"
+        style={{ gridTemplateColumns: "100px 280px 20px" }}
+      >
+        <GridItem>
+          <StatusChip dense status="neutral" text="Refreshing..." />
+        </GridItem>
+        <GridItem>
+          <Skeleton width={275} height={20} />
+        </GridItem>
         <Button.Icon
           icon={loading}
           onClick={() => setShouldUpdateStatus(true)}
@@ -57,47 +81,86 @@ const EnvironmentStatus = ({
           tooltip={"Refreshing Environment status"}
           disabled
         />
-      </Box.Flex>
+      </Grid>
     );
   }
 
   if (envStatus === "OFFLINE") {
     return (
-      <Box.Flex justifyContent="space-between">
-        <StatusChip dense status="danger" text="Not working" />
+      <Grid
+        justifyContent={"stretch"}
+        alignItems="center"
+        colGap="3"
+        style={{ gridTemplateColumns: "100px 280px 20px" }}
+      >
+        <GridItem>
+          <StatusChip dense status="danger" text="Not working" />
+        </GridItem>
+        <GridItem>
+          <Typography.Small>
+            Last update:{" "}
+            {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+          </Typography.Small>
+        </GridItem>
         <Button.Icon
           icon={refresh}
           onClick={() => setShouldUpdateStatus(true)}
           aria-label={"Refresh Environment status"}
           tooltip={"Refresh Environment status"}
         />
-      </Box.Flex>
+      </Grid>
     );
   }
   if (envStatus === "ONLINE") {
     return (
-      <Box.Flex justifyContent="space-between">
-        <StatusChip dense status="success" text="Working" />
+      <Grid
+        justifyContent={"stretch"}
+        alignItems="center"
+        colGap="3"
+        style={{ gridTemplateColumns: "100px 280px 20px" }}
+      >
+        <GridItem>
+          <StatusChip dense status="success" text="Working" />
+        </GridItem>
+        <GridItem>
+          <Typography.Small>
+            Last update:{" "}
+            {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+          </Typography.Small>
+        </GridItem>
         <Button.Icon
           icon={refresh}
           onClick={() => setShouldUpdateStatus(true)}
           aria-label={"Refresh Environment status"}
           tooltip={"Refresh Environment status"}
         />
-      </Box.Flex>
+      </Grid>
     );
   }
 
   return (
-    <Box.Flex justifyContent="space-between">
-      <StatusChip dense status="neutral" text="Unknown" />
+    <Grid
+      justifyContent={"stretch"}
+      alignItems="center"
+      colGap="3"
+      style={{ gridTemplateColumns: "100px 280px 20px" }}
+    >
+      <GridItem>
+        <StatusChip dense status="neutral" text="Unknown" />
+      </GridItem>
+      <GridItem>
+        <Typography.Small>
+          Last update:{" "}
+          {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
+        </Typography.Small>
+      </GridItem>
       <Button.Icon
         icon={refresh}
         onClick={() => setShouldUpdateStatus(true)}
         aria-label={"Refresh Environment status"}
         tooltip={"Refresh Environment status"}
       />
-    </Box.Flex>
+    </Grid>
   );
 };
 

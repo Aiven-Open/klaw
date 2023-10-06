@@ -14,6 +14,7 @@ interface SchemaRegistryEnvironmentsTableRow {
   tenantName: Environment["tenantName"];
   associatedEnv: Environment["associatedEnv"];
   status: Environment["envStatus"];
+  envStatusTimeString: Environment["envStatusTimeString"];
 }
 
 const SchemaRegistryEnvironmentsTable = (
@@ -53,9 +54,19 @@ const SchemaRegistryEnvironmentsTable = (
     {
       type: "custom",
       headerName: "Status",
-      width: 150,
-      UNSAFE_render: ({ status, id }: SchemaRegistryEnvironmentsTableRow) => {
-        return <EnvironmentStatus envId={id} initialEnvStatus={status} />;
+      width: 450,
+      UNSAFE_render: ({
+        status,
+        id,
+        envStatusTimeString,
+      }: SchemaRegistryEnvironmentsTableRow) => {
+        return (
+          <EnvironmentStatus
+            envId={id}
+            initialEnvStatus={status}
+            initialUpdateTime={envStatusTimeString}
+          />
+        );
       },
     },
   ];
@@ -68,6 +79,7 @@ const SchemaRegistryEnvironmentsTable = (
       tenantName: env.tenantName,
       associatedEnv: env.associatedEnv,
       status: env.envStatus,
+      envStatusTimeString: env.envStatusTimeString,
     };
   });
 
