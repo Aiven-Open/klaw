@@ -46,6 +46,7 @@ const defaultEnvironment: Environment = {
   clusterName: "DEV",
   tenantName: "default",
   envStatus: "ONLINE",
+  envStatusTimeString: "21-Sep-2023 11:46:15",
 };
 
 function createEnvironment(environment: Partial<Environment>): Environment {

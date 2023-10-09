@@ -28,13 +28,12 @@ function RequestTypeFilter() {
       defaultValue={requestType}
       onChange={handleChangeRequestType}
     >
-      <option key={"ALL"} value={"ALL"}>
-        All request types
-      </option>
       {requestOperationTypeList.map((operationType) => {
         return (
           <option key={operationType} value={operationType}>
-            {requestOperationTypeNameMap[operationType]}
+            {operationType === "ALL"
+              ? "All request types"
+              : requestOperationTypeNameMap[operationType]}
           </option>
         );
       })}

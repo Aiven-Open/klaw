@@ -157,7 +157,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -176,7 +176,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -285,7 +285,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -309,7 +309,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -330,7 +330,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "ALL",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -365,7 +365,7 @@ describe("AclRequests", () => {
         env: "1",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -393,7 +393,7 @@ describe("AclRequests", () => {
           env: "1",
           aclType: "ALL",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -424,7 +424,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "CONSUMER",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -448,7 +448,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "CONSUMER",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -479,7 +479,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "APPROVED",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -504,7 +504,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "ALL",
           requestStatus: "APPROVED",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -536,7 +536,7 @@ describe("AclRequests", () => {
         aclType: "ALL",
         requestStatus: "ALL",
         isMyRequest: true,
-        operationType: undefined,
+        operationType: "ALL",
       });
     });
 
@@ -564,7 +564,7 @@ describe("AclRequests", () => {
           aclType: "ALL",
           requestStatus: "ALL",
           isMyRequest: true,
-          operationType: undefined,
+          operationType: "ALL",
         });
       });
     });

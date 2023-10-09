@@ -5,6 +5,8 @@ import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
+const TEST_UPDATE_TIME = "14-Sep-2023 12:30:38 UTC";
+
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
@@ -18,6 +20,7 @@ const mockEnvironments: Environment[] = [
     id: "1",
     clusterName: "DEV_CL",
     envStatus: "ONLINE",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     type: "kafkaconnect",
@@ -25,6 +28,7 @@ const mockEnvironments: Environment[] = [
     id: "2",
     clusterName: "TST_CL",
     envStatus: "OFFLINE",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
   createEnvironment({
     type: "kafkaconnect",
@@ -32,6 +36,7 @@ const mockEnvironments: Environment[] = [
     id: "3",
     clusterName: "PROD_CL",
     envStatus: "NOT_KNOWN",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
 ];
 
@@ -149,7 +154,7 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
-          name: statusText,
+          name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,
         });
 
         expect(status).toBeVisible();

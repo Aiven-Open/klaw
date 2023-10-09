@@ -81,7 +81,7 @@ function ConnectorRequests() {
         env: environment,
         search,
         requestStatus: status,
-        operationType: requestType !== "ALL" ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
