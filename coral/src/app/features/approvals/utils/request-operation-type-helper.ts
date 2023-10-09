@@ -6,6 +6,7 @@ import { ChipStatus } from "@aivenio/aquarium";
 // here TS won't complain if a possible
 // value is missing from the array.
 const requestOperationTypeList: RequestOperationType[] = [
+  "ALL",
   "CLAIM",
   "CREATE",
   "DELETE",
@@ -16,6 +17,7 @@ const requestOperationTypeList: RequestOperationType[] = [
 const requestOperationTypeChipStatusMap: {
   [key in RequestOperationType]: ChipStatus;
 } = {
+  ALL: "neutral",
   CLAIM: "neutral",
   CREATE: "neutral",
   DELETE: "neutral",
@@ -26,6 +28,7 @@ const requestOperationTypeChipStatusMap: {
 const requestOperationTypeNameMap: {
   [key in RequestOperationType]: string;
 } = {
+  ALL: "All",
   CLAIM: "Claim",
   CREATE: "Create",
   DELETE: "Delete",

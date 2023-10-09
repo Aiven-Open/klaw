@@ -1,7 +1,7 @@
 import { cleanup, screen, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
-import { logoutUser } from "src/domain/auth-user";
+import { AuthUser, logoutUser } from "src/domain/auth-user";
 
 const menuItems = [
   { path: "/myProfile", name: "My profile" },
@@ -16,16 +16,30 @@ const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
 
+const mockAuthUser = jest.fn();
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUser(),
+}));
+
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToastContext: () => [mockToast, mockDismiss],
 }));
 
 describe("ProfileDropdown", () => {
+  const testUser: AuthUser = {
+    teamname: "new team",
+    teamId: "1234",
+    username: "It is a me",
+    userrole: "USER",
+    canSwitchTeams: "false",
+  };
+
   const user = userEvent.setup();
 
   describe("renders all necessary elements when dropdown is closed", () => {
     beforeAll(() => {
+      mockAuthUser.mockReturnValue(testUser);
       render(<ProfileDropdown />);
     });
     afterAll(cleanup);
@@ -50,12 +64,25 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is open", () => {
     beforeAll(async () => {
+      mockAuthUser.mockReturnValue(testUser);
       render(<ProfileDropdown />);
       const button = screen.getByRole("button", { name: "Open profile menu" });
       await user.click(button);
     });
 
     afterAll(cleanup);
+
+    it("shows the user name", () => {
+      const userName = screen.getByText(testUser.username);
+
+      expect(userName).toBeVisible();
+    });
+
+    it("shows the team name", () => {
+      const teamName = screen.getByText(testUser.teamname);
+
+      expect(teamName).toBeVisible();
+    });
 
     it("shows all necessary menu items", () => {
       const menuItems = screen.getAllByRole("menuitem");
@@ -74,6 +101,7 @@ describe("ProfileDropdown", () => {
 
   describe("handles user choosing items from the menu", () => {
     beforeEach(() => {
+      mockAuthUser.mockReturnValue(testUser);
       Object.defineProperty(window, "location", {
         value: {
           assign: jest.fn(),
@@ -111,6 +139,7 @@ describe("ProfileDropdown", () => {
 
   describe("handles user sucessfully login out", () => {
     beforeEach(() => {
+      mockAuthUser.mockReturnValue(testUser);
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
       mockLogoutUser.mockRejectedValue({ status: 401 });
@@ -172,6 +201,7 @@ describe("ProfileDropdown", () => {
   });
 
   describe("handles error in logout process", () => {
+    mockAuthUser.mockReturnValue(testUser);
     const testError = {
       status: 500,
       message: "bad error",

@@ -30,11 +30,11 @@
     "add-precommit": "git config --local core.hooksPath .githooks/"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js}": [
+    "**/!(*api.d).{ts,tsx,js}": [
       "prettier --check",
       "eslint"
     ],
-    "**/*.css": [
+    "**/*.{md, css}": [
       "prettier --check"
     ],
     "../openapi.yaml": [

@@ -193,6 +193,7 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -210,6 +211,7 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -320,6 +322,7 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
   });
@@ -342,6 +345,7 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -364,6 +368,7 @@ describe("ConnectorRequests", () => {
           env: "ALL",
           isMyRequest: false,
           requestStatus: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -399,6 +404,7 @@ describe("ConnectorRequests", () => {
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -418,6 +424,7 @@ describe("ConnectorRequests", () => {
         env: mockedEnvironmentResponse[0].id,
         isMyRequest: false,
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
   });
@@ -440,6 +447,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "ALL",
         requestStatus: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -459,6 +467,7 @@ describe("ConnectorRequests", () => {
           search: "",
           env: "ALL",
           requestStatus: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -480,6 +489,7 @@ describe("ConnectorRequests", () => {
           search: "",
           env: "ALL",
           requestStatus: "ALL",
+          operationType: "ALL",
         });
       });
     });
@@ -516,6 +526,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         env: "ALL",
+        operationType: "ALL",
       });
     });
 
@@ -536,6 +547,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
+        operationType: "ALL",
       });
     });
   });
@@ -657,6 +669,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {
@@ -683,6 +696,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -695,6 +709,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {
@@ -730,6 +745,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
+        operationType: "ALL",
       });
 
       const deleteButton = screen.getByRole("button", {

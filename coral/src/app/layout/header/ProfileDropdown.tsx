@@ -9,6 +9,7 @@ import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
 import { logoutUser } from "src/domain/auth-user";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 type MenuItem = {
   path: string;
@@ -32,6 +33,8 @@ const menuItems: MenuItem[] = [
 
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
+  const authUser = useAuthContext();
+
   function navigateToAngular(path: string) {
     window.location.assign(`${window.origin}${path}`);
   }
@@ -82,9 +85,11 @@ function ProfileDropdown() {
         <Box.Flex backgroundColor={"primary-10"} paddingLeft={"l1"}>
           <Box paddingTop={"l1"} className={"profile-dropdown-header"}>
             <Typography.Large color="grey-90" className="panel-header-title">
-              User name
+              {authUser?.username}
             </Typography.Large>
-            <Typography.Caption color="grey-50">Team</Typography.Caption>
+            <Typography.Caption color="grey-50">
+              {authUser?.teamname}
+            </Typography.Caption>
           </Box>
           <Icon
             color={"primary-30"}

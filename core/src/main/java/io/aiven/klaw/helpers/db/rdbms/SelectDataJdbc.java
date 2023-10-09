@@ -227,7 +227,7 @@ public class SelectDataJdbc {
     if (requestor != null && !requestor.isEmpty()) {
       request.setRequestor(requestor);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
@@ -344,7 +344,7 @@ public class SelectDataJdbc {
     if (userName != null && !userName.isEmpty()) {
       request.setRequestor(userName);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
 
@@ -663,7 +663,7 @@ public class SelectDataJdbc {
    * Query the TopicRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -673,7 +673,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<TopicRequest> findTopicRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -684,8 +684,9 @@ public class SelectDataJdbc {
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -812,7 +813,7 @@ public class SelectDataJdbc {
    * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
    * parameters will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -821,7 +822,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -832,8 +833,9 @@ public class SelectDataJdbc {
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);

@@ -1,11 +1,15 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +27,7 @@ public class EnvControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   // every 1 hour
-  @Scheduled(fixedRateString = "PT1H", initialDelay = 60000)
+  @Scheduled(fixedRateString = "PT1H", initialDelay = 60)
   public void loadTenantActiveStatus() {
     try {
       for (Integer tenantId : manageDatabase.getTenantMap().keySet()) {
@@ -40,7 +44,7 @@ public class EnvControllerService {
     }
   }
 
-  @Scheduled(fixedRateString = "PT1H", initialDelay = 60000)
+  @Scheduled(fixedRateString = "PT1H", initialDelay = 9000)
   public void loadEnvsWithStatus() {
     updateEnvsStatus();
   }
@@ -56,7 +60,6 @@ public class EnvControllerService {
         for (Env env : envList) {
           updateEnvStatusPerEnv(tenantId, env);
         }
-        manageDatabase.loadEnvMapForOneTenant(tenantId);
       }
 
       for (Integer tenantId : tenants) {
@@ -65,7 +68,6 @@ public class EnvControllerService {
         for (Env env : envList) {
           updateEnvStatusPerEnv(tenantId, env);
         }
-        manageDatabase.loadEnvMapForOneTenant(tenantId);
       }
 
       for (Integer tenantId : tenants) {
@@ -74,7 +76,6 @@ public class EnvControllerService {
         for (Env env : envList) {
           updateEnvStatusPerEnv(tenantId, env);
         }
-        manageDatabase.loadEnvMapForOneTenant(tenantId);
       }
     } catch (Exception e) {
       log.error("Error in loading cluster status ", e);
@@ -83,6 +84,7 @@ public class EnvControllerService {
 
   private void updateEnvStatusPerEnv(Integer tenantId, Env env) throws KlawException {
     ClusterStatus status;
+    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
     KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.of(env.getType()), tenantId)
@@ -98,6 +100,9 @@ public class EnvControllerService {
 
     env.setEnvStatus(status);
     kwClusters.setClusterStatus(status);
+    env.setEnvStatusTime(statusTime);
+    env.setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
+    manageDatabase.addEnvToCache(tenantId, env, true);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
   }

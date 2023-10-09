@@ -24,9 +24,16 @@ describe("EnvironmentStatus", () => {
     });
 
     it("renders correct Status chip for ONLINE and refresh button", () => {
-      customRender(<EnvironmentStatus envId="1" initialEnvStatus="ONLINE" />, {
-        queryClient: true,
-      });
+      customRender(
+        <EnvironmentStatus
+          envId="1"
+          initialUpdateTime={""}
+          initialEnvStatus="ONLINE"
+        />,
+        {
+          queryClient: true,
+        }
+      );
       const text = screen.getByText("Working");
       const button = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -37,9 +44,16 @@ describe("EnvironmentStatus", () => {
     });
 
     it("renders correct Status chip for OFFLINE and refresh button", () => {
-      customRender(<EnvironmentStatus envId="1" initialEnvStatus="OFFLINE" />, {
-        queryClient: true,
-      });
+      customRender(
+        <EnvironmentStatus
+          envId="1"
+          initialUpdateTime={""}
+          initialEnvStatus="OFFLINE"
+        />,
+        {
+          queryClient: true,
+        }
+      );
       const text = screen.getByText("Not working");
       const button = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -51,7 +65,11 @@ describe("EnvironmentStatus", () => {
 
     it("renders correct Status chip for NOT_KNOWN and refresh button", () => {
       customRender(
-        <EnvironmentStatus envId="1" initialEnvStatus="NOT_KNOWN" />,
+        <EnvironmentStatus
+          envId="1"
+          initialUpdateTime={""}
+          initialEnvStatus="NOT_KNOWN"
+        />,
         {
           queryClient: true,
         }
@@ -73,9 +91,16 @@ describe("EnvironmentStatus", () => {
     beforeEach(() => {
       console.error = jest.fn();
 
-      customRender(<EnvironmentStatus envId="1" initialEnvStatus="ONLINE" />, {
-        queryClient: true,
-      });
+      customRender(
+        <EnvironmentStatus
+          envId="1"
+          initialUpdateTime={""}
+          initialEnvStatus="ONLINE"
+        />,
+        {
+          queryClient: true,
+        }
+      );
     });
 
     afterEach(() => {

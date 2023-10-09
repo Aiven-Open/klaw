@@ -40,7 +40,10 @@ describe("RequestTypeFilter.tsx", () => {
 
       requestOperationTypeList.forEach((type) => {
         const option = screen.getByRole("option", {
-          name: requestOperationTypeNameMap[type],
+          name:
+            requestOperationTypeNameMap[type] === "All"
+              ? "All request types"
+              : requestOperationTypeNameMap[type],
         });
 
         expect(option).toBeEnabled();
