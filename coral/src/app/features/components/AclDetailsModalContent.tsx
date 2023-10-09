@@ -74,6 +74,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
       {acl_ip.length > 0 && (
         <Grid.Item xs={2}>
+
           <Box.Flex direction={"column"}>
             <Label>IP addresses</Label>
             <Box.Flex direction={"row"} gap={"2"} component={"ul"}>

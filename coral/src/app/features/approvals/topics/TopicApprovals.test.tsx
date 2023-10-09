@@ -145,6 +145,7 @@ describe("TopicApprovals", () => {
     pageNo: "1",
     requestStatus: "CREATED",
     search: "",
+    operationType: "ALL",
   };
   beforeAll(() => {
     mockIntersectionObserver();
@@ -422,6 +423,7 @@ describe("TopicApprovals", () => {
         requestStatus: "CREATED",
         search: "",
         teamId: undefined,
+        operationType: "ALL",
       });
     });
   });
