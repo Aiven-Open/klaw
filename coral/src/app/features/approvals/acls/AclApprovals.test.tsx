@@ -126,6 +126,7 @@ describe("AclApprovals", () => {
     env: "ALL",
     pageNo: "1",
     requestStatus: "CREATED",
+    operationType: "ALL",
     search: "",
   };
 

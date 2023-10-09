@@ -540,7 +540,7 @@ export type components = {
   schemas: {
     SchemaRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -583,7 +583,7 @@ export type components = {
     };
     TopicUpdateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -804,7 +804,7 @@ export type components = {
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -833,7 +833,7 @@ export type components = {
     };
     KafkaConnectorRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -861,7 +861,7 @@ export type components = {
     };
     AclRequestsModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -994,7 +994,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1087,7 +1087,7 @@ export type components = {
     };
     RequestsOperationTypeCount: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** Format: int64 */
       count?: number;
     };
@@ -1248,8 +1248,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1335,7 +1335,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1466,7 +1466,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1552,7 +1552,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1734,7 +1734,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -3276,7 +3276,7 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
@@ -3299,7 +3299,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
@@ -3528,7 +3528,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
@@ -3551,7 +3551,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -3897,7 +3897,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         isMyRequest?: boolean;
       };
@@ -3919,7 +3919,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
       };
     };
@@ -4239,7 +4239,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         topic?: string;
         env?: string;
         search?: string;
@@ -4267,7 +4267,7 @@ export type operations = {
         env?: string;
         search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };

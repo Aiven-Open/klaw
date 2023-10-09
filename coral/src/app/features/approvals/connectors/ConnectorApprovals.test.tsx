@@ -115,6 +115,7 @@ describe("ConnectorApprovals", () => {
     requestStatus: "CREATED",
     env: "ALL",
     search: "",
+    operationType: "ALL",
   };
 
   beforeAll(() => {
