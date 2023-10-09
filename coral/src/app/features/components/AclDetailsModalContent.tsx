@@ -31,7 +31,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>
-      <Box.Flex direction={"column"} width={"min"}>
+      <Box.Flex flexDirection={"column"} width={"min"}>
         <Label>ACL type</Label>
         <dd>
           <StatusChip
@@ -40,26 +40,26 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
           />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requesting team</Label>
         <dd>{requestingTeamName}</dd>
       </Box.Flex>
 
-      <Box.Flex direction={"column"} width={"min"}>
+      <Box.Flex flexDirection={"column"} width={"min"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic</Label>
         <dd>{topicname}</dd>
       </Box.Flex>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Principals/Usernames</Label>
-          <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
+          <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
             {acl_ssl.map((principal) => (
               <li key={principal}>
                 <dd>
@@ -73,9 +73,9 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
       {acl_ip.length > 0 && (
         <GridItem colSpan={"span-2"}>
-          <Box.Flex direction={"column"}>
+          <Box.Flex flexDirection={"column"}>
             <Label>IP addresses</Label>
-            <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
+            <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
               {acl_ip.map((ip) => (
                 <li key={ip}>
                   <dd>
@@ -89,7 +89,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
       )}
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Consumer group</Label>
           <dd>
             {
@@ -107,17 +107,17 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>
       </GridItem>
 
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
       </Box.Flex>

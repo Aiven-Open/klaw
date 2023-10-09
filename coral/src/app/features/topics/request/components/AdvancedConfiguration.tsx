@@ -67,7 +67,7 @@ function AdvancedConfiguration({ name }: Props) {
   }
 
   return (
-    <Box.Flex gap={"l1"} direction={"column"}>
+    <Box.Flex gap={"l1"} flexDirection={"column"}>
       <Typography.Subheading>
         Advanced Topic Configuration
       </Typography.Subheading>
