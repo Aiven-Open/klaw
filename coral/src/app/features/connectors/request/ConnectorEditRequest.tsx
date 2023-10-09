@@ -255,9 +255,9 @@ function ConnectorEditRequest() {
                     />
                   </BorderBox>
                   <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
-                    <Typography.Caption color={"error-50"}>
+                    <Typography.LargeStrong color={"error-50"}>
                       {error !== undefined ? error.message : <>&nbsp;</>}
-                    </Typography.Caption>
+                    </Typography.LargeStrong>
                   </Box>
                 </>
               );

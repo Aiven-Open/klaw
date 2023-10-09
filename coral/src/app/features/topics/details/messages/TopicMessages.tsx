@@ -102,9 +102,9 @@ function TopicMessages() {
           <Box.Flex key={"consume"} justifyContent="flex-end">
             <Box.Flex alignItems="center" marginRight={"6"}>
               {Boolean(messagesUpdatedAt) && (
-                <Typography.Caption>
+                <Typography.LargeStrong>
                   <i>Last updated {getMessagesUpdatedAt()}</i>
-                </Typography.Caption>
+                </Typography.LargeStrong>
               )}
             </Box.Flex>
             <Button.Primary

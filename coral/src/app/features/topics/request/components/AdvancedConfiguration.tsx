@@ -71,7 +71,7 @@ function AdvancedConfiguration({ name }: Props) {
       <Typography.Subheading>
         Advanced Topic Configuration
       </Typography.Subheading>
-      <Typography.Caption>
+      <Typography.LargeStrong>
         For advanced topic-level configurations, refer to the official{" "}
         <Link
           href="https://kafka.apache.org/documentation/#topicconfigs"
@@ -81,7 +81,7 @@ function AdvancedConfiguration({ name }: Props) {
           Apache Kafka Documentation
         </Link>
         .
-      </Typography.Caption>
+      </Typography.LargeStrong>
       <BorderBox borderColor="grey-20">
         <_Controller
           name={name}

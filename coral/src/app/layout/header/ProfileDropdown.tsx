@@ -85,9 +85,9 @@ function ProfileDropdown() {
             <Typography.Large color="grey-90" className="panel-header-title">
               {authUser?.username}
             </Typography.Large>
-            <Typography.Caption color="grey-50">
+            <Typography.LargeStrong color="grey-50">
               {authUser?.teamname}
-            </Typography.Caption>
+            </Typography.LargeStrong>
           </Box>
           <Icon
             color={"primary-30"}

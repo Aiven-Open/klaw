@@ -31,7 +31,7 @@ function DefinitionBlock({
       </Typography.Small>
       {!isUpdating && information && (
         <Box marginTop={"2"} component={"dd"}>
-          <Typography.Caption>{information}</Typography.Caption>
+          <Typography.LargeStrong>{information}</Typography.LargeStrong>
         </Box>
       )}
     </Box.Flex>

@@ -88,11 +88,11 @@ function TopicSchema(props: TopicSchemaProps) {
               onChange={uploadFile}
               valid={!error}
             />
-            <Typography.Caption htmlTag={"label"}>
+            <Typography.LargeStrong htmlTag={"label"}>
               <span className={error?.message && "text-error-50"}>
                 Schema preview (read-only)
               </span>
-            </Typography.Caption>
+            </Typography.LargeStrong>
             <BorderBox
               borderColor={error?.message ? "error-50" : "grey-20"}
               marginTop={"1"}
@@ -134,9 +134,9 @@ function TopicSchema(props: TopicSchemaProps) {
               )}
             </BorderBox>
             <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
-              <Typography.Caption color={"error-50"}>
+              <Typography.LargeStrong color={"error-50"}>
                 {error?.message ? `${error?.message}` : <>&nbsp;</>}
-              </Typography.Caption>
+              </Typography.LargeStrong>
             </Box>
           </div>
         );
