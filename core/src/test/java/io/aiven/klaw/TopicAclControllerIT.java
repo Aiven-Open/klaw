@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
@@ -1470,6 +1471,31 @@ public class TopicAclControllerIT {
     List<OperationalRequestsResponseModel> operationalRequestList =
         getOperationalRequestsFromStatus(RequestStatus.APPROVED.name());
     assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(47)
+  public void editTopicRequestFailureTopicDoesNotExist() throws JsonProcessingException {
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
+    addTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
+    addTopicRequest.setTopicname("nonexistingtopic");
+    addTopicRequest.setRequestId(1001);
+    addTopicRequest.setTopicpartitions(2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
+    try {
+      mvc.perform(
+              MockMvcRequestBuilders.post("/createTopics")
+                  .with(user(user1).password(PASSWORD).roles("USER"))
+                  .content(jsonReq)
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .accept(MediaType.APPLICATION_JSON))
+          .andExpect(status().is4xxClientError())
+          .andReturn()
+          .getResponse();
+    } catch (Exception e) {
+      assertThat(e.getMessage()).isEqualTo("Failure. This topic does not exist in the cluster.");
+      throw new RuntimeException(e);
+    }
   }
 
   private String createOffsetRequest() throws Exception {
