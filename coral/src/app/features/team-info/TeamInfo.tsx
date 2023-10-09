@@ -31,10 +31,10 @@ function TeamInfo() {
       marginBottom={"l1"}
     >
       <Box display={"flex"} alignItems={"center"} colGap={"2"}>
-        <Typography.SmallTextBold color={"grey-50"}>
+        <Typography.SmallStrongBold color={"grey-50"}>
           <span className={"visually-hidden"}>Your </span>
           Team
-        </Typography.SmallTextBold>
+        </Typography.SmallStrongBold>
       </Box>
       {renderTeamData()}
     </Box>

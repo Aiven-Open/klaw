@@ -149,9 +149,9 @@ function Modal(props: ModalProps) {
                       {title}
                     </Typography.Subheading>
                     {subtitle && (
-                      <Typography.SmallText htmlTag={"h2"} color={"grey-60"}>
+                      <Typography.SmallStrong htmlTag={"h2"} color={"grey-60"}>
                         {subtitle}
-                      </Typography.SmallText>
+                      </Typography.SmallStrong>
                     )}
                   </>
                 )}

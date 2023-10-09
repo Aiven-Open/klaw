@@ -23,7 +23,7 @@ const readmeDescription = (topicOwner: boolean) => {
   const fixedText = `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage.`;
   const additionalTextTopicOwner = `Edit the readme to update the information as the topic evolves.`;
   return (
-    <Box component={Typography.SmallText} marginBottom={"l2"}>
+    <Box component={Typography.SmallStrong} marginBottom={"l2"}>
       {fixedText} {topicOwner ? additionalTextTopicOwner : ""}
     </Box>
   );
