@@ -125,8 +125,9 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
-    // Check if topic exists on update requests
-    if (RequestOperationType.UPDATE == topicRequestModel.getRequestOperationType()
+    // Check if topic exists on update/delete requests
+    if ((RequestOperationType.UPDATE == topicRequestModel.getRequestOperationType()
+            || RequestOperationType.DELETE == topicRequestModel.getRequestOperationType())
         && (topics == null || topics.isEmpty())) {
       updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
       return false;
