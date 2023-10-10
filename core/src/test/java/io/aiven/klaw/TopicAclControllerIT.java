@@ -1476,16 +1476,15 @@ public class TopicAclControllerIT {
   @Test
   @Order(47)
   public void editTopicRequestFailureTopicDoesNotExist() throws Exception {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
-    addTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
-    addTopicRequest.setTopicname("nonexistingtopic");
-    addTopicRequest.setRequestId(1001);
-    addTopicRequest.setTopicpartitions(2);
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
+    TopicRequestModel updateTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId1);
+    updateTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
+    updateTopicRequest.setTopicname("nonexistingtopic");
+    updateTopicRequest.setTopicpartitions(2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(updateTopicRequest);
 
     String str =
         mvc.perform(
-                MockMvcRequestBuilders.post("/createTopics")
+                MockMvcRequestBuilders.post("/updateTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)

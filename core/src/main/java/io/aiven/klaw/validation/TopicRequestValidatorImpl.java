@@ -125,14 +125,6 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
-    // Check if topic exists on update/delete requests
-    if ((RequestOperationType.UPDATE == topicRequestModel.getRequestOperationType()
-            || RequestOperationType.DELETE == topicRequestModel.getRequestOperationType())
-        && (topics == null || topics.isEmpty())) {
-      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
-      return false;
-    }
-
     // validation on promotion of a topic
     if (!checkIfPromotionOfTopic(
         topics, tenantId, topicRequestModel, syncCluster, constraintValidatorContext)) return false;
@@ -159,6 +151,27 @@ public class TopicRequestValidatorImpl
           .getRequestStatus()
           .equals(RequestStatus.CREATED.value)) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_123);
+        return false;
+      }
+    }
+
+    // Check if topic exists on update/delete requests
+    if (RequestOperationType.UPDATE == topicRequestModel.getRequestOperationType()
+        || RequestOperationType.DELETE == topicRequestModel.getRequestOperationType()) {
+      if (topics == null
+          || topics.isEmpty()
+          || topics.stream()
+              .noneMatch(
+                  topic -> topic.getEnvironment().equals(topicRequestModel.getEnvironment()))) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
+        return false;
+      }
+    }
+
+    // Check if topic exists on claim requests
+    if (RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
+      if (topics == null || topics.isEmpty()) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
         return false;
       }
     }
