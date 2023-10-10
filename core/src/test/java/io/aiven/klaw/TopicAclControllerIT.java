@@ -1,5 +1,6 @@
 package io.aiven.klaw;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_124;
 import static io.aiven.klaw.helpers.KwConstants.TENANT_CONFIG_PROPERTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -14,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
@@ -1475,27 +1475,25 @@ public class TopicAclControllerIT {
 
   @Test
   @Order(47)
-  public void editTopicRequestFailureTopicDoesNotExist() throws JsonProcessingException {
+  public void editTopicRequestFailureTopicDoesNotExist() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
     addTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
     addTopicRequest.setTopicname("nonexistingtopic");
     addTopicRequest.setRequestId(1001);
     addTopicRequest.setTopicpartitions(2);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    try {
-      mvc.perform(
-              MockMvcRequestBuilders.post("/createTopics")
-                  .with(user(user1).password(PASSWORD).roles("USER"))
-                  .content(jsonReq)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().is4xxClientError())
-          .andReturn()
-          .getResponse();
-    } catch (Exception e) {
-      assertThat(e.getMessage()).isEqualTo("Failure. This topic does not exist in the cluster.");
-      throw new RuntimeException(e);
-    }
+
+    String str =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createTopics")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(str).contains(TOPICS_VLD_ERR_124);
   }
 
   private String createOffsetRequest() throws Exception {
