@@ -263,10 +263,7 @@ function SchemaApprovals() {
       {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environment"}
-            environmentEndpoint={"getAllEnvironmentsForSchema"}
-          />,
+          <EnvironmentFilter key={"environment"} environmentsFor={"SCHEMA"} />,
           <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <SearchTopicFilter key={"topic"} />,

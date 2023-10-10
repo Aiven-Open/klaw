@@ -266,7 +266,7 @@ function ConnectorApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getAllEnvironmentsForConnector"}
+            environmentsFor={"CONNECTOR"}
           />,
           <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,

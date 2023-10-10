@@ -89,8 +89,9 @@ const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
   transformGetSchemaRequests(mockedApiResponses);
 
 const mockedEnvironments = [
-  { name: "DEV", id: "1" },
-  { name: "TST", id: "2" },
+  { name: "DEV", id: "1", associatedEnv: { name: "DEV_SCH", id: "111" } },
+  { name: "TST", id: "2", associatedEnv: { name: "TST_SCH", id: "222" } },
+  { name: "RANDOM", id: "2" },
 ];
 
 const mockedEnvironmentResponse = transformEnvironmentApiResponse([

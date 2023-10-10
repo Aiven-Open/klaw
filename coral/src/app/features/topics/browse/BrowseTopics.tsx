@@ -57,7 +57,7 @@ function BrowseTopics() {
         <TeamFilter key="team" />,
         <EnvironmentFilter
           key="environment"
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+          environmentsFor={"TOPIC_AND_ACL"}
         />,
         <SearchTopicFilter key={"search"} />,
       ]}

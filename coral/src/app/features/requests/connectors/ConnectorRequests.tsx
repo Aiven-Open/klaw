@@ -150,10 +150,7 @@ function ConnectorRequests() {
       {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key="environment"
-            environmentEndpoint="getAllEnvironmentsForConnector"
-          />,
+          <EnvironmentFilter key="environment" environmentsFor="CONNECTOR" />,
           <StatusFilter key="request-status" />,
           <RequestTypeFilter key={"request-type"} />,
           <SearchConnectorFilter key="connector" />,
