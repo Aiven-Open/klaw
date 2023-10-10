@@ -17,13 +17,13 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Connector name</Label>
         <dd>{request.connectorName}</dd>
       </Box.Flex>
@@ -33,7 +33,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.description}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Connector configuration</Label>
           <dd>
             <MonacoEditor
@@ -59,17 +59,17 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
         </Box.Flex>
       </GridItem>
 
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
       </Box.Flex>
