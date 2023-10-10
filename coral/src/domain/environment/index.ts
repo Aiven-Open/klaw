@@ -1,6 +1,5 @@
 import {
   getAllEnvironmentsForConnector,
-  getAllEnvironmentsForSchema,
   getAllEnvironmentsForTopicAndAcl,
   getEnvironmentsForTopicRequest,
   getPaginatedEnvironmentsForConnector,
@@ -18,7 +17,6 @@ import {
 export {
   ALL_ENVIRONMENTS_VALUE,
   getAllEnvironmentsForConnector,
-  getAllEnvironmentsForSchema,
   getAllEnvironmentsForTopicAndAcl,
   getEnvironmentsForTopicRequest,
   getPaginatedEnvironmentsForConnector,
