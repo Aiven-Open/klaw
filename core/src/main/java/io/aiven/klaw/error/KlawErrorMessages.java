@@ -394,6 +394,9 @@ public class KlawErrorMessages {
   public static final String TOPICS_VLD_ERR_123 =
       "Failure. This topic request cannot be edited, as it's not in CREATED state.";
 
+  public static final String TOPICS_VLD_ERR_124 =
+      "Failure. This topic does not exist in the cluster.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
