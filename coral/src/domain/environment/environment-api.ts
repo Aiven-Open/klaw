@@ -51,14 +51,6 @@ const getEnvironmentsForTopicRequest = async (): Promise<Environment[]> => {
   return transformEnvironmentApiResponse(apiResponse);
 };
 
-const getAllEnvironmentsForSchema = async (): Promise<Environment[]> => {
-  const apiResponse = await api.get<KlawApiResponse<"getSchemaRegEnvs">>(
-    API_PATHS.getSchemaRegEnvs
-  );
-
-  return transformEnvironmentApiResponse(apiResponse);
-};
-
 const getPaginatedEnvironmentsForSchema = async (
   params: KlawApiRequestQueryParameters<"getSchemaRegEnvsPaginated">
 ): Promise<EnvironmentPaginatedApiResponse> => {
@@ -112,7 +104,6 @@ export {
   getAllEnvironmentsForTopicAndAcl,
   getPaginatedEnvironmentsForTopicAndAcl,
   getEnvironmentsForTopicRequest,
-  getAllEnvironmentsForSchema,
   getPaginatedEnvironmentsForSchema,
   getAllEnvironmentsForConnector,
   getPaginatedEnvironmentsForConnector,
