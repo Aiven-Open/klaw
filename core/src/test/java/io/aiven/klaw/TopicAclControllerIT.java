@@ -1,5 +1,6 @@
 package io.aiven.klaw;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_124;
 import static io.aiven.klaw.helpers.KwConstants.TENANT_CONFIG_PROPERTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -1470,6 +1471,28 @@ public class TopicAclControllerIT {
     List<OperationalRequestsResponseModel> operationalRequestList =
         getOperationalRequestsFromStatus(RequestStatus.APPROVED.name());
     assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(47)
+  public void editTopicRequestFailureTopicDoesNotExist() throws Exception {
+    TopicRequestModel updateTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId1);
+    updateTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
+    updateTopicRequest.setTopicname("nonexistingtopic");
+    updateTopicRequest.setTopicpartitions(2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(updateTopicRequest);
+
+    String str =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/updateTopics")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(str).contains(TOPICS_VLD_ERR_124);
   }
 
   private String createOffsetRequest() throws Exception {
