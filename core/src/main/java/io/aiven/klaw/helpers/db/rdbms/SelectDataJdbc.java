@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -227,7 +227,7 @@ public class SelectDataJdbc {
     if (requestor != null && !requestor.isEmpty()) {
       request.setRequestor(requestor);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
@@ -344,7 +344,7 @@ public class SelectDataJdbc {
     if (userName != null && !userName.isEmpty()) {
       request.setRequestor(userName);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
 
@@ -663,7 +663,7 @@ public class SelectDataJdbc {
    * Query the TopicRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -673,7 +673,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<TopicRequest> findTopicRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -684,8 +684,9 @@ public class SelectDataJdbc {
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -812,7 +813,7 @@ public class SelectDataJdbc {
    * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
    * parameters will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -821,7 +822,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -832,8 +833,9 @@ public class SelectDataJdbc {
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -977,25 +979,25 @@ public class SelectDataJdbc {
 
   public List<Team> selectTeamsOfUsers(String username, int tenantId) {
     log.debug("selectTeamsOfUsers {}", username);
-    List<Team> allTeams = selectAllTeams(tenantId);
+    Map<Integer, Team> allTeams =
+        selectAllTeams(tenantId).stream()
+            .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
 
-    List<Team> teamList = new ArrayList<>();
-    List<UserInfo> userInfoList = Lists.newArrayList(userInfoRepo.findAllByTenantId(tenantId));
-    Integer teamId;
-
-    for (UserInfo row : userInfoList) {
-      teamId = row.getTeamId();
-
-      Integer finalTeamId = teamId;
-      Optional<Team> teamSel =
-          allTeams.stream().filter(a -> Objects.equals(a.getTeamId(), finalTeamId)).findFirst();
-
-      if (Objects.equals(username, row.getUsername())) {
-        teamSel.ifPresent(teamList::add);
-      }
+    Optional<UserInfo> userInfoOpt =
+        userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
+    if (userInfoOpt.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    return teamList;
+    Integer teamId = userInfoOpt.get().getTeamId();
+
+    Team teamSel = allTeams.get(teamId);
+
+    if (teamSel == null) {
+      return Collections.emptyList();
+    }
+
+    return List.of(teamSel);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
@@ -1057,6 +1059,10 @@ public class SelectDataJdbc {
 
   public List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId) {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
+  }
+
+  public int countRegisterUsersInfoForTenant(int tenantId) {
+    return registerInfoRepo.countByStatusAndTenantId("PENDING", tenantId);
   }
 
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
@@ -1913,6 +1919,17 @@ public class SelectDataJdbc {
     return kafkaConnectorRequestsRepo
         .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
             tenantId, env, requestStatus, requestOperationType, connectorName);
+  }
+
+  public boolean existsConnectorRequestOnAnyEnv(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo.existsByTenantIdAndRequestStatusAndConnectorName(
+        tenantId, requestStatus, connectorName);
+  }
+
+  public boolean existsTopicRequestOnAnyEnv(String topicName, String requestStatus, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndTopicname(
+        tenantId, requestStatus, topicName);
   }
 
   public boolean existsClaimConnectorRequest(

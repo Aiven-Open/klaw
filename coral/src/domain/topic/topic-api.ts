@@ -211,8 +211,7 @@ const getTopicRequests = (
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =
-        property === "operationType" &&
-        (value === "ALL" || value === undefined);
+        property === "operationType" && value === undefined;
 
       return (
         omitIsMyRequest || omitSearch || omitEnv || omitRequestOperationType

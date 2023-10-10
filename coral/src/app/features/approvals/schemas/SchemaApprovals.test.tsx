@@ -110,6 +110,7 @@ describe("SchemaApprovals", () => {
     requestStatus: "CREATED",
     env: "ALL",
     search: "",
+    operationType: "ALL",
   };
   beforeAll(() => {
     mockIntersectionObserver();

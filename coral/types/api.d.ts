@@ -216,6 +216,9 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
+  "/cache/tenant/{tenantId}/entityType/environment": {
+    post: operations["addEnvToCache"];
+  };
   "/addTenantId": {
     post: operations["addTenantId"];
   };
@@ -526,6 +529,9 @@ export type paths = {
   "/acl/request/{aclRequestId}": {
     get: operations["getAclRequest"];
   };
+  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+    delete: operations["removeEnvFromCache"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -534,7 +540,7 @@ export type components = {
   schemas: {
     SchemaRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -577,7 +583,7 @@ export type components = {
     };
     TopicUpdateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -798,7 +804,7 @@ export type components = {
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -827,7 +833,7 @@ export type components = {
     };
     KafkaConnectorRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -855,7 +861,7 @@ export type components = {
     };
     AclRequestsModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -884,6 +890,41 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
+    Env: {
+      id?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      name?: string;
+      stretchCode?: string;
+      /** Format: int32 */
+      clusterId?: number;
+      type?: string;
+      otherParams?: string;
+      envExists?: string;
+      /** @enum {string} */
+      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime?: string;
+      envStatusTimeString?: string;
+      associatedEnv?: components["schemas"]["EnvTag"];
+      params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+      topicRegex?: (string)[];
+      applyRegex?: boolean;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
     KwTenantModel: {
       tenantName: string;
       tenantDesc: string;
@@ -910,22 +951,6 @@ export type components = {
       /** Format: int32 */
       tenantId?: number;
       params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: (string)[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
-      topicRegex?: (string)[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
     };
     KwClustersModel: {
       /** Format: int32 */
@@ -969,7 +994,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1062,7 +1087,7 @@ export type components = {
     };
     RequestsOperationTypeCount: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** Format: int64 */
       count?: number;
     };
@@ -1126,6 +1151,9 @@ export type components = {
       result: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1215,6 +1243,7 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasOpenSchemaRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       hasACL: boolean;
       hasSchema: boolean;
       /** Format: int32 */
@@ -1306,7 +1335,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1361,6 +1390,7 @@ export type components = {
       highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -1384,6 +1414,9 @@ export type components = {
       clusterName: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -1433,7 +1466,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1519,7 +1552,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1701,7 +1734,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -2833,6 +2866,29 @@ export type operations = {
       };
     };
   };
+  addEnvToCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Env"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   addTenantId: {
     requestBody: {
       content: {
@@ -3220,7 +3276,7 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
@@ -3243,7 +3299,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
@@ -3472,7 +3528,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
@@ -3495,7 +3551,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -3731,7 +3787,7 @@ export type operations = {
   getEnvParams: {
     parameters: {
       query: {
-        envSelected: string;
+        envSelected: number;
       };
     };
     responses: {
@@ -3841,7 +3897,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         isMyRequest?: boolean;
       };
@@ -3863,7 +3919,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
       };
     };
@@ -4183,7 +4239,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         topic?: string;
         env?: string;
         search?: string;
@@ -4211,7 +4267,7 @@ export type operations = {
         env?: string;
         search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -4350,6 +4406,25 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"];
+        };
+      };
+    };
+  };
+  removeEnvFromCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

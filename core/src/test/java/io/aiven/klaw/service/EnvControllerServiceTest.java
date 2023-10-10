@@ -73,8 +73,6 @@ class EnvControllerServiceTest {
     envControllerService.loadEnvsWithStatus();
 
     Mockito.verify(handleDbRequestsJdbc, Mockito.times(3)).addNewEnv(env);
-    Mockito.verify(manageDatabase, Mockito.times(3))
-        .loadEnvMapForOneTenant(TestConstants.TENANT_ID);
     Assertions.assertEquals(env.getEnvStatus(), ClusterStatus.ONLINE);
   }
 }

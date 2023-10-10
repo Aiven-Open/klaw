@@ -24,6 +24,7 @@ type Environment = {
   clusterName: KlawApiModel<"EnvModelResponse">["clusterName"];
   tenantName: KlawApiModel<"EnvModelResponse">["tenantName"];
   envStatus: KlawApiModel<"EnvModelResponse">["envStatus"];
+  envStatusTimeString: KlawApiModel<"EnvModelResponse">["envStatusTimeString"];
   // This property is optional because only Schema Registry environments get it
   associatedEnv?: KlawApiModel<"EnvModelResponse">["associatedEnv"];
   // even though the openapi definition defines `params` as required

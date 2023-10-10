@@ -23,6 +23,7 @@ interface KafkaEnvironmentsTableRow {
   replicationFactor: { default: number; max: number };
   partition: { default: number; max: number };
   status: Environment["envStatus"];
+  envStatusTimeString: Environment["envStatusTimeString"];
 }
 
 const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
@@ -116,9 +117,19 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
     {
       type: "custom",
       headerName: "Status",
-      width: 150,
-      UNSAFE_render: ({ status, id }: KafkaEnvironmentsTableRow) => {
-        return <EnvironmentStatus envId={id} initialEnvStatus={status} />;
+      width: 450,
+      UNSAFE_render: ({
+        status,
+        id,
+        envStatusTimeString,
+      }: KafkaEnvironmentsTableRow) => {
+        return (
+          <EnvironmentStatus
+            envId={id}
+            initialEnvStatus={status}
+            initialUpdateTime={envStatusTimeString}
+          />
+        );
       },
     },
   ];
@@ -138,6 +149,7 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
         max: env.params?.maxPartitions || 0,
       },
       status: env.envStatus,
+      envStatusTimeString: env.envStatusTimeString,
     };
   });
 

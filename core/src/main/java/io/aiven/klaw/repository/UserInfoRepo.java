@@ -12,6 +12,8 @@ public interface UserInfoRepo extends CrudRepository<UserInfo, String> {
 
   List<UserInfo> findAllByTenantId(int tenantId);
 
+  Optional<UserInfo> findFirstByTenantIdAndUsername(int tenantId, String username);
+
   List<UserInfo> findAllByTeamIdAndTenantId(Integer teamId, int tenantId);
 
   boolean existsByTeamIdAndTenantId(Integer teamId, int tenantId);
