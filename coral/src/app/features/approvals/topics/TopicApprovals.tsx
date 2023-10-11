@@ -25,8 +25,6 @@ import {
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
-const defaultType = "ALL";
-
 function TopicApprovals() {
   const queryClient = useQueryClient();
 
@@ -81,9 +79,9 @@ function TopicApprovals() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status,
-        teamId: teamId !== defaultType ? Number(teamId) : undefined,
+        teamId: teamId !== "ALL" ? Number(teamId) : undefined,
         search: search,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });

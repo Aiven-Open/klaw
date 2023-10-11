@@ -56,7 +56,7 @@ function TopicRequests() {
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
-        operationType: requestType !== "ALL" ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });

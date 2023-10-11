@@ -31,6 +31,7 @@ describe("environment-transformer.ts", () => {
           clusterName: "DEV",
           tenantName: "default",
           envStatus: "ONLINE",
+          envStatusTimeString: "21-Sep-2023 11:46:15",
         },
       ];
 
@@ -65,6 +66,7 @@ describe("environment-transformer.ts", () => {
           clusterName: "DEV",
           tenantName: "default",
           envStatus: "ONLINE",
+          envStatusTimeString: "21-Sep-2023 11:46:15",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(
@@ -110,6 +112,7 @@ describe("environment-transformer.ts", () => {
           clusterName: "DEV",
           tenantName: "default",
           envStatus: "ONLINE",
+          envStatusTimeString: "21-Sep-2023 11:46:15",
         },
       ];
 
@@ -146,6 +149,7 @@ describe("environment-transformer.ts", () => {
           clusterName: "DEV",
           tenantName: "default",
           envStatus: "ONLINE",
+          envStatusTimeString: "21-Sep-2023 11:46:15",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(

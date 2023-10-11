@@ -41,7 +41,7 @@ describe("SchemaRequest", () => {
   const defaultApiParams = {
     env: "ALL",
     pageNo: "1",
-    operationType: undefined,
+    operationType: "ALL",
     requestStatus: undefined,
     search: "",
     isMyRequest: false,

@@ -53,8 +53,6 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -123,11 +121,9 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_OVERVIEW,
         element: <ConnectorDetailsPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
         children: [
           {
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
@@ -158,7 +154,7 @@ const routes: Array<RouteObject> = [
             id: ConnectorOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,
@@ -214,10 +210,8 @@ const routes: Array<RouteObject> = [
       {
         path: Routes.CONFIGURATION,
         children: [
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.ENVIRONMENTS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_CONFIGURATIONS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <EnvironmentsPage />,
             children: [
               {
@@ -240,7 +234,7 @@ const routes: Array<RouteObject> = [
                 id: EnvironmentsTabEnum.KAFKA_CONNECT,
               },
             ],
-          }),
+          },
         ],
       },
     ],
@@ -282,19 +276,14 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_EDIT_REQUEST,
         element: <TopicEditRequestPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_EDIT_REQUEST,
         element: <ConnectorEditRequest />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_CONNECTOR,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
-      }),
-
-      createRouteBehindFeatureFlag({
+      },
+      {
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
-      }),
+      },
     ],
   },
   {

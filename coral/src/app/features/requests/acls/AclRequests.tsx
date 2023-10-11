@@ -79,7 +79,7 @@ function AclRequests() {
         env: environment,
         aclType,
         requestStatus: status,
-        operationType: requestType === "ALL" ? undefined : requestType,
+        operationType: requestType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
