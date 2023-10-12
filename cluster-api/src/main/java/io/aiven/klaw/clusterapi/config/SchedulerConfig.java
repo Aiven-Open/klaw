@@ -20,4 +20,11 @@ public class SchedulerConfig {
     threadPoolTaskExecutor.setCorePoolSize(poolSize);
     return threadPoolTaskExecutor;
   }
+
+  @Bean(name = "resetTopicsCacheTaskExecutor")
+  public Executor topicsThreadPoolTaskExecutor() {
+    ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+    threadPoolTaskExecutor.setCorePoolSize(poolSize);
+    return threadPoolTaskExecutor;
+  }
 }

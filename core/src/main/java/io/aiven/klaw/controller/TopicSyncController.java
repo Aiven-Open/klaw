@@ -82,6 +82,8 @@ public class TopicSyncController {
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "showAllTopics", defaultValue = "false", required = false)
           String showAllTopics,
+      @RequestParam(value = "resetTopicsCache", defaultValue = "false", required = false)
+          boolean resetTopicsCache,
       @RequestParam(value = "isBulkOption", defaultValue = "false", required = false)
           String isBulkOption)
       throws Exception {
@@ -93,7 +95,8 @@ public class TopicSyncController {
               currentPage,
               topicNameSearch,
               showAllTopics,
-              Boolean.parseBoolean(isBulkOption)),
+              Boolean.parseBoolean(isBulkOption),
+              resetTopicsCache),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(

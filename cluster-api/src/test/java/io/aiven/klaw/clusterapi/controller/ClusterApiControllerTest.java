@@ -111,7 +111,7 @@ public class ClusterApiControllerTest {
     String bootstrapServers = "localhost:9092";
 
     when(apacheKafkaTopicService.loadTopics(
-            bootstrapServers, KafkaSupportedProtocol.PLAINTEXT, clusterName))
+            bootstrapServers, KafkaSupportedProtocol.PLAINTEXT, clusterName, false))
         .thenReturn(utilMethods.getTopics());
 
     String urlTemplate =
@@ -123,7 +123,9 @@ public class ClusterApiControllerTest {
             KafkaSupportedProtocol.PLAINTEXT.getValue(),
             clusterName,
             "topicsNativeType",
-            AclsNativeType.NATIVE.value);
+            AclsNativeType.NATIVE.value,
+            "resetCache",
+            "false");
     mvc.perform(get(urlTemplate))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

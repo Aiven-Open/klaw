@@ -83,7 +83,10 @@ class ApacheKafkaTopicServiceTest {
         assertThatThrownBy(
             () ->
                 apacheKafkaTopicService.loadTopics(
-                    TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION));
+                    TestConstants.ENVIRONMENT,
+                    protocol,
+                    TestConstants.CLUSTER_IDENTIFICATION,
+                    false));
 
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Cannot connect to cluster.");
@@ -107,13 +110,13 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(listTopicsResult.names()).thenReturn(KafkaFuture.completedFuture(Set.of("name")));
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.all())
+    Mockito.when(describeTopicsResult.allTopicNames())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
     Set<TopicConfig> topicConfigs =
         apacheKafkaTopicService.loadTopics(
-            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION);
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION, false);
 
     Assertions.assertThat(topicConfigs.size()).isEqualTo(1);
   }

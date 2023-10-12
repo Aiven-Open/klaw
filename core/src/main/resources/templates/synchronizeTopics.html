@@ -513,6 +513,33 @@
 											</td>
 										</tr>
 									</table>
+									<div class="col-lg-12">
+										<div class="form-actions">
+
+											<table>
+												<tr>
+													<td>
+														<text class="info">Note : Topics Cache reset happens at a scheduled interval, but if you would like to retrieve current state of topics,
+														select this checkbox.</text>
+													</td>
+												</tr>
+											</table>
+											<br>
+											<table width = "25%">
+												<tr>
+													<td><h6>Reset Topics Cache.</h6></td>
+													<td>
+														<label class="custom-control custom-checkbox">
+															<input type="checkbox" value="false" ng-click="resetTopicCacheCheck(resetTopicsCache);"
+																   ng-init="false" ng-model="resetTopicsCache" class="custom-control-input">
+															<span class="custom-control-label"></span>
+														</label>
+													</td>
+												</tr>
+
+											</table>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

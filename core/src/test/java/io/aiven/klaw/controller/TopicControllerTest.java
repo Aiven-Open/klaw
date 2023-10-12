@@ -275,7 +275,13 @@ public class TopicControllerTest {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
     when(topicSyncControllerService.getSyncTopics(
-            anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            anyBoolean()))
         .thenReturn(syncTopicsList);
 
     mvcSync

@@ -189,7 +189,7 @@ public class ClusterApiServiceTest {
         .thenReturn(response);
 
     List<TopicConfig> result =
-        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
+        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1, false);
     assertThat(result).isEqualTo(new ArrayList<>(topicsList));
   }
 
@@ -202,7 +202,9 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(
-            () -> clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1))
+            () ->
+                clusterApiService.getAllTopics(
+                    "", KafkaSupportedProtocol.PLAINTEXT, "", "", 1, false))
         .isInstanceOf(KlawException.class);
   }
 

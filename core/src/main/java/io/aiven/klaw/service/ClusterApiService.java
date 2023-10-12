@@ -360,7 +360,8 @@ public class ClusterApiService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
       String kafkaFlavors,
-      int tenantId)
+      int tenantId,
+      boolean resetTopicsCache)
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
@@ -381,7 +382,9 @@ public class ClusterApiService {
                   protocol.getName(),
                   clusterIdentification,
                   "topicsNativeType",
-                  aclsNativeType);
+                  aclsNativeType,
+                  "resetCache",
+                  String.valueOf(resetTopicsCache));
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<TopicConfig>> s =

@@ -82,20 +82,22 @@ public class ClusterApiController {
 
   @RequestMapping(
       value =
-          "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}",
+          "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}/resetCache/{resetCache}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Set<TopicConfig>> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
-      @PathVariable String aclsNativeType)
+      @PathVariable String aclsNativeType,
+      @PathVariable boolean resetCache)
       throws Exception {
     Set<TopicConfig> topics;
     if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
       topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
     } else {
-      topics = apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
+      topics =
+          apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName, resetCache);
     }
     return new ResponseEntity<>(topics, HttpStatus.OK);
   }

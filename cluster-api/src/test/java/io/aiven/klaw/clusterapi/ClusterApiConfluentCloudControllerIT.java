@@ -135,7 +135,7 @@ public class ClusterApiConfluentCloudControllerIT {
     String url =
         "/topics/getTopics/"
             + CONFLUENT_CLOUD_REST_API
-            + "/SSL/DEV2/topicsNativeType/CONFLUENT_CLOUD";
+            + "/SSL/DEV2/topicsNativeType/CONFLUENT_CLOUD/resetCache/false";
     response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)

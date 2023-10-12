@@ -135,7 +135,8 @@ public class TopicSyncControllerService {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
     List<TopicSyncResponseModel> topicRequestModelList =
-        getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
+        getSyncTopics(
+                envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption, false)
             .getResultSet();
 
     topicRequestModelList =
@@ -183,7 +184,8 @@ public class TopicSyncControllerService {
       String currentPage,
       String topicNameSearch,
       String showAllTopics,
-      boolean isBulkOption)
+      boolean isBulkOption,
+      boolean resetTopicsCache)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
     SyncTopicsList syncTopicsList = new SyncTopicsList();
@@ -196,7 +198,8 @@ public class TopicSyncControllerService {
       }
     }
 
-    List<TopicConfig> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
+    List<TopicConfig> topicFilteredList =
+        getTopicsFromKafkaCluster(env, topicNameSearch, resetTopicsCache);
     List<TopicConfig> topicsList;
 
     topicsList =
@@ -819,7 +822,7 @@ public class TopicSyncControllerService {
       try {
         List<TopicConfig> topicsMap =
             getTopicsFromKafkaCluster(
-                syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter());
+                syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter(), false);
         for (TopicConfig hashMap : topicsMap) {
           invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
         }
@@ -861,8 +864,8 @@ public class TopicSyncControllerService {
     }
   }
 
-  private List<TopicConfig> getTopicsFromKafkaCluster(String env, String topicNameSearch)
-      throws Exception {
+  private List<TopicConfig> getTopicsFromKafkaCluster(
+      String env, String topicNameSearch, boolean resetTopicsCache) throws Exception {
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
     }
@@ -879,7 +882,8 @@ public class TopicSyncControllerService {
             kwClusters.getProtocol(),
             kwClusters.getClusterName() + kwClusters.getClusterId(),
             kwClusters.getKafkaFlavor(),
-            tenantId);
+            tenantId,
+            resetTopicsCache);
 
     topicCounter = 0;
 

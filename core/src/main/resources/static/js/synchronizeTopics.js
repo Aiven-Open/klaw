@@ -355,8 +355,14 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
         };
 
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
+
+
+    $scope.resetTopicCacheCheck = function(resetTopicsCache){
+        $scope.resetTopicsCache = resetTopicsCache;
+        if($scope.getTopics.envName){
+            $scope.getTopics(1);
+        }
+    }
 
 	$scope.getTopics = function(pageNoSelected) {
 
@@ -375,6 +381,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             params: {'env' : $scope.getTopics.envName,
              'topicnamesearch' : $scope.getTopics.topicnamesearch,
              'showAllTopics' : "" + $scope.showAllTopics,
+                'resetTopicsCache' : $scope.resetTopicsCache,
                 'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected}
 		}).success(function(output) {
