@@ -426,8 +426,7 @@ public class SelectDataJdbc {
     }
     dashboardStats.setConsumerCount(countConsumers);
 
-    List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardStats.setTeamMembersCount(allUsers.size());
+    dashboardStats.setTeamMembersCount(userInfoRepo.countByTeamIdAndTenantId(teamId, tenantId));
 
     return dashboardStats;
   }
