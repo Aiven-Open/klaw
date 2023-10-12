@@ -755,6 +755,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return jdbcSelectHelper.existsClusters(typeOfCluster, tenantId);
+  }
+
+  @Override
   public KwClusters getClusterDetails(int id, int tenantId) {
     return jdbcSelectHelper.getClusterDetails(id, tenantId);
   }
