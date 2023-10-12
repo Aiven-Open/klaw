@@ -8,13 +8,13 @@ const NotFound = () => {
           Page not found
         </Typography.Heading>
 
-        <Typography.DefaultStrong>
+        <Typography.LargeStrong>
           Sorry, the page you are looking for does not exist.
-        </Typography.DefaultStrong>
+        </Typography.LargeStrong>
 
-        <Typography.Default>
+        <Typography.DefaultStrong>
           <Link href={"/index"}>Return to the old interface.</Link>
-        </Typography.Default>
+        </Typography.DefaultStrong>
       </Box>
     </>
   );
