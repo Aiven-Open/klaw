@@ -1,13 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { ConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 
 function ConnectorDetailsPage() {
   const { connectorName } = useParams();
-  const navigate = useNavigate();
+  
 
   if (!connectorName) {
-    navigate("/connectors");
-    return <></>;
+    
+    return <Navigate to="/connectors" replace={true}/>;
   }
 
   return <ConnectorDetails connectorName={connectorName} />;
