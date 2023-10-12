@@ -16,11 +16,6 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   },
 }));
 
-const isFeatureFlagActiveMock = jest.fn();
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
-}));
-
 const navLinks = [
   {
     name: "Dashboard",
@@ -47,9 +42,7 @@ const submenuItems = [
       { name: "Teams", linkTo: "/teams" },
       {
         name: "Environments",
-        linkTo: isFeatureFlagActiveMock()
-          ? `/configuration/environments`
-          : `/envs`,
+        linkTo: "/configuration/environments",
       },
     ],
   },
@@ -184,16 +177,6 @@ describe("MainNavigation.tsx", () => {
             name: `${submenu.name} submenu`,
           });
 
-          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === true
-          isFeatureFlagActiveMock.mockReturnValue(true);
-          submenu.links.forEach(({ name, linkTo }) => {
-            const link = within(list).getByRole("link", { name });
-            expect(link).toBeVisible();
-            expect(link).toHaveAttribute("href", linkTo);
-          });
-
-          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === false
-          isFeatureFlagActiveMock.mockReturnValue(false);
           submenu.links.forEach(({ name, linkTo }) => {
             const link = within(list).getByRole("link", { name });
             expect(link).toBeVisible();
