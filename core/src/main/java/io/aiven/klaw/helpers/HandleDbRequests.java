@@ -327,6 +327,8 @@ public interface HandleDbRequests {
 
   List<KwClusters> getAllClusters(KafkaClustersType typeOfCluster, int tenantId);
 
+  boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId);
+
   KwClusters getClusterDetails(int id, int tenantId);
 
   // Analytics - charts - dashboard

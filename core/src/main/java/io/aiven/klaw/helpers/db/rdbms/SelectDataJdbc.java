@@ -366,23 +366,13 @@ public class SelectDataJdbc {
 
   public List<Topic> selectTopicDetails(String topic, int tenantId) {
     List<Topic> topicOpt = topicRepo.findAllByTopicnameAndTenantId(topic, tenantId);
-
-    if (topicOpt.size() > 0) {
-      return topicOpt;
-    } else {
-      return new ArrayList<>();
-    }
+    return topicOpt.isEmpty() ? Collections.emptyList() : topicOpt;
   }
 
   public List<KwKafkaConnector> selectConnectorDetails(String connectorName, int tenantId) {
     List<KwKafkaConnector> topicOpt =
         kafkaConnectorRepo.findAllByConnectorNameAndTenantId(connectorName, tenantId);
-
-    if (topicOpt.size() > 0) {
-      return topicOpt;
-    } else {
-      return new ArrayList<>();
-    }
+    return topicOpt.isEmpty() ? Collections.emptyList() : topicOpt;
   }
 
   // "All teams"
@@ -426,8 +416,7 @@ public class SelectDataJdbc {
     }
     dashboardStats.setConsumerCount(countConsumers);
 
-    List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardStats.setTeamMembersCount(allUsers.size());
+    dashboardStats.setTeamMembersCount(userInfoRepo.countByTeamIdAndTenantId(teamId, tenantId));
 
     return dashboardStats;
   }
@@ -1387,6 +1376,10 @@ public class SelectDataJdbc {
     }
   }
 
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return kwClusterRepo.existsByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
+  }
+
   public KwClusters getClusterDetails(int id, int tenantId) {
     KwClusterID kwClusterID = new KwClusterID();
     kwClusterID.setClusterId(id);
@@ -1573,7 +1566,7 @@ public class SelectDataJdbc {
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return topicRepo.findAllTopicsCount();
   }
 
   // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except

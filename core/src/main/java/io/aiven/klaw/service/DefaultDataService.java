@@ -487,9 +487,7 @@ public class DefaultDataService {
       HandleDbRequestsJdbc handleDbRequests, String encryptorSecretKey, String infraTeam) {
     if (quickStartEnabled) {
       // verify if quick start data already exists tbd
-      List<KwClusters> kwClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
-      if (!kwClusters.isEmpty()) {
+      if (handleDbRequests.existsClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID)) {
         return;
       }
 
@@ -536,7 +534,7 @@ public class DefaultDataService {
       handleDbRequests.addNewCluster(kwClusterSchemaRegistry);
 
       // Add kafka environment
-      kwClusters =
+      var kwClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
       Env envKafka = new Env();
       envKafka.setClusterId(kwClusters.get(0).getClusterId());
