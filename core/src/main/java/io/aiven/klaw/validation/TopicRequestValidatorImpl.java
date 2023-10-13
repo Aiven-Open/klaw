@@ -155,6 +155,27 @@ public class TopicRequestValidatorImpl
       }
     }
 
+    // Check if topic exists on update/delete requests
+    if (RequestOperationType.UPDATE == topicRequestModel.getRequestOperationType()
+        || RequestOperationType.DELETE == topicRequestModel.getRequestOperationType()) {
+      if (topics == null
+          || topics.isEmpty()
+          || topics.stream()
+              .noneMatch(
+                  topic -> topic.getEnvironment().equals(topicRequestModel.getEnvironment()))) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
+        return false;
+      }
+    }
+
+    // Check if topic exists on claim requests
+    if (RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
+      if (topics == null || topics.isEmpty()) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_124);
+        return false;
+      }
+    }
+
     // Check if topic exists on cluster
     // Ignore topic exists check if Update request
     if (RequestOperationType.UPDATE != topicRequestModel.getRequestOperationType()) {

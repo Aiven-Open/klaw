@@ -1,5 +1,3 @@
-enum FeatureFlag {
-  FEATURE_FLAG_CONFIGURATIONS = "FEATURE_FLAG_CONFIGURATIONS",
-}
+enum FeatureFlag {}
 
 export { FeatureFlag };

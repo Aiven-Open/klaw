@@ -55,41 +55,41 @@ const TopicDetailsModalContent = ({
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Request type</Label>
         <dd>
           <StatusChip status={"neutral"} text={requestOperationType} />
         </dd>
       </Box.Flex>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
         </Box.Flex>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Topic description</Label>
           <dd>{description}</dd>
         </Box.Flex>
       </GridItem>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic replication factor</Label>
         <dd>{replicationfactor}</dd>
       </Box.Flex>
       {hasAdvancedConfig && (
         <GridItem colSpan={"span-2"}>
-          <Box.Flex direction={"column"}>
+          <Box.Flex flexDirection={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
               <MonacoEditor
@@ -114,16 +114,16 @@ const TopicDetailsModalContent = ({
         </GridItem>
       )}
       <GridItem colSpan={"span-2"}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>
       </GridItem>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
       </Box.Flex>
