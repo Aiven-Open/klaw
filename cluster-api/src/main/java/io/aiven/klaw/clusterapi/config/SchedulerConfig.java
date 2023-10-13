@@ -14,6 +14,9 @@ public class SchedulerConfig {
   @Value("${klaw.schemainfo.scheduler.threadcount:4}")
   private int poolSize;
 
+  @Value("${klaw.topics.scheduler.threadcount:4}")
+  private int poolSizeTopics;
+
   @Bean(name = "resetSchemaCacheTaskExecutor")
   public Executor threadPoolTaskExecutor() {
     ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
@@ -24,7 +27,7 @@ public class SchedulerConfig {
   @Bean(name = "resetTopicsCacheTaskExecutor")
   public Executor topicsThreadPoolTaskExecutor() {
     ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-    threadPoolTaskExecutor.setCorePoolSize(poolSize);
+    threadPoolTaskExecutor.setCorePoolSize(poolSizeTopics);
     return threadPoolTaskExecutor;
   }
 }
