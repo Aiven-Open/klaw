@@ -1376,6 +1376,10 @@ public class SelectDataJdbc {
     }
   }
 
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return kwClusterRepo.existsByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
+  }
+
   public KwClusters getClusterDetails(int id, int tenantId) {
     KwClusterID kwClusterID = new KwClusterID();
     kwClusterID.setClusterId(id);
