@@ -4244,27 +4244,6 @@
         }
       }
     },
-    "/getEnvsForSchemaRequests" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getEnvsForSchemaRequests",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/EnvModelResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/getEnvsBaseCluster" : {
       "get" : {
         "tags" : [ "envs-clusters-tenants-controller" ],

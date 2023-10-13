@@ -1233,6 +1233,33 @@ public class TopicAclControllerIT {
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
 
+    KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
+    kwPropertiesModel.setKwKey(TENANT_CONFIG_PROPERTY);
+    kwPropertiesModel.setKwValue(
+        """
+                        {
+                          "tenantModel":
+                            {
+                              "tenantName": "default",
+                              "baseSyncEnvironment": "DEV",
+                              "orderOfTopicPromotionEnvsList": ["DEV"],
+                              "requestTopicsEnvironmentsList": ["DEV"],
+                              "requestSchemaEnvironmentsList": ["DEVSCH"]
+                            }
+                        }""");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwPropertiesModel);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/updateKwCustomProperty")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
     // get SR envs
     response =
         mvc.perform(
@@ -1256,7 +1283,7 @@ public class TopicAclControllerIT {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     schemaRequest.setTopicname(topicName + topicId1);
     schemaRequest.setRequestor(user1);
-    schemaRequest.setEnvironment("3"); // Schema reg env
+    schemaRequest.setEnvironment("1"); // Schema reg env
     schemaRequest.setSchemafull(
         "{\n"
             + "   \"type\" : \"record\",\n"
