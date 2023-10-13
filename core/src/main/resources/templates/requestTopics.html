@@ -494,7 +494,7 @@
 												<label class="control-label">Select Environment</label>
 												<select ng-show="requestType == 'CreateTopic'" required class="form-control custom-select"
 														ng-model="addTopic.envName"
-														ng-change="getEnvTopicPartitions(addTopic.envName, '', '')"
+														ng-change="getEnvTopicPartitions(addTopic.envName, requestType, '')"
 														ng-options="env.id as env.name for env in allenvs">
 													<option value="" selected="selected">
 														Select Environment</option>
