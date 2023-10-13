@@ -1566,7 +1566,7 @@ public class SelectDataJdbc {
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return topicRepo.findAllTopicsCount();
   }
 
   // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except
