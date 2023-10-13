@@ -160,10 +160,7 @@ function SchemaRequests() {
       {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environments"}
-            environmentEndpoint={"getAllEnvironmentsForSchema"}
-          />,
+          <EnvironmentFilter key={"environments"} environmentsFor={"SCHEMA"} />,
           <StatusFilter key={"request-status"} />,
           <RequestTypeFilter key={"request-type"} />,
           <SearchTopicFilter key={"topic"} />,

@@ -453,7 +453,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getSchemaEnvs();loadParams();getAllTopics();">
+			<div class="row" ng-init="loadParams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 
@@ -474,30 +474,25 @@
 
 									<hr size="1" color="black">
 
-									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label class="control-label">Select Environment</label>
-												<select class="form-control custom-select" ng-model="addSchema.envName" ng-options="env.id as env.name for env in allschemaenvs">
-
-												</select>
+												<label>Environment</label>
+												<input disabled type="text" value="{{environmentDetails.name}}" class="form-control">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
 											<div class="form-group">
-												<label>Select Topic</label>
-												<select class="form-control custom-select"  ng-model="addSchema.topicname" ng-options="o as o for o in alltopics">
-												</select>
-												<small class="form-control-feedback"> Please select the topic on which schema has to be registered. </small>
+												<label>Topic</label>
+												<input disabled type="text" value="{{addSchema.topicname}}" class="form-control">
 											</div>
 										</div>
 										<!--/span-->
 									</div>
 
+									<!--/row-->
 									<div class="row">
-
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Upload Avro Schema File</label>

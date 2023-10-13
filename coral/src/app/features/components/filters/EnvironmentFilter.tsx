@@ -4,35 +4,66 @@ import { useFiltersContext } from "src/app/features/components/filters/useFilter
 import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
-  getAllEnvironmentsForSchema,
   getAllEnvironmentsForConnector,
 } from "src/domain/environment";
 import { HTTPError } from "src/services/api";
 
-type EnvironmentEndpoint =
-  | "getAllEnvironmentsForTopicAndAcl"
-  | "getAllEnvironmentsForSchema"
-  | "getAllEnvironmentsForConnector";
+type EnvironmentFor = "TOPIC_AND_ACL" | "SCHEMA" | "CONNECTOR";
 interface EnvironmentFilterProps {
-  isSchemaRegistryEnvironments?: boolean;
-  environmentEndpoint: EnvironmentEndpoint;
+  environmentsFor: EnvironmentFor;
 }
 
 const environmentEndpointMap: {
-  [key in EnvironmentEndpoint]: () => Promise<Environment[]>;
+  [key in EnvironmentFor]: {
+    apiEndpoint: () => Promise<Environment[]>;
+    // we use the api function name as query usually, so we
+    // want to keep that pattern here, too.
+    queryFn: string;
+  };
 } = {
-  getAllEnvironmentsForTopicAndAcl: getAllEnvironmentsForTopicAndAcl,
-  getAllEnvironmentsForSchema: getAllEnvironmentsForSchema,
-  getAllEnvironmentsForConnector: getAllEnvironmentsForConnector,
+  TOPIC_AND_ACL: {
+    apiEndpoint: getAllEnvironmentsForTopicAndAcl,
+    queryFn: "getAllEnvironmentsForTopicAndAcl",
+  },
+  SCHEMA: {
+    apiEndpoint: getAllEnvironmentsForTopicAndAcl,
+    queryFn: "getAllEnvironmentsForTopicAndAcl",
+  },
+  CONNECTOR: {
+    apiEndpoint: getAllEnvironmentsForConnector,
+    queryFn: "getAllEnvironmentsForConnector",
+  },
 };
 
-function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
+function filterEnvironmentsForSchema(
+  environments: Environment[]
+): Environment[] {
+  return environments
+    .map((env) => {
+      if (env.associatedEnv) {
+        return {
+          ...env,
+          id: env.associatedEnv.id,
+          name: env.associatedEnv.name,
+        };
+      }
+    })
+    .filter((entry) => entry !== undefined) as Environment[];
+}
+
+function EnvironmentFilter({ environmentsFor }: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersContext();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
-    [environmentEndpoint],
+    [environmentEndpointMap[environmentsFor].queryFn],
     {
-      queryFn: environmentEndpointMap[environmentEndpoint],
+      queryFn: environmentEndpointMap[environmentsFor].apiEndpoint,
+      select: (environments) => {
+        if (environmentsFor === "SCHEMA") {
+          return filterEnvironmentsForSchema(environments);
+        }
+        return environments;
+      },
     }
   );
 
