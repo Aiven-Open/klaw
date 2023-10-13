@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ public class GetAdminClientTest {
       when(adminClient.listTopics()).thenReturn(listTopicsResult);
       when(listTopicsResult.names()).thenReturn(kafkaFuture);
       Set<String> setStr = new HashSet<>();
-      when(kafkaFuture.get()).thenReturn(setStr);
+      when(kafkaFuture.get(anyLong(), any())).thenReturn(setStr);
 
       AdminClient result =
           getAdminClient.getAdminClient(LOCALHOST_9092, KafkaSupportedProtocol.PLAINTEXT, "");

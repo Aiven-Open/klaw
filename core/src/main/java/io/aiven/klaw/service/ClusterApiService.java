@@ -17,6 +17,7 @@ import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
 import io.aiven.klaw.model.cluster.ConnectorsStatus;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.cluster.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -31,7 +32,6 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
-import io.aiven.klaw.model.response.TopicConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -355,7 +355,7 @@ public class ClusterApiService {
     return aclListOriginal;
   }
 
-  public List<TopicConfig> getAllTopics(
+  public LoadTopicsResponse getAllTopics(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -365,7 +365,8 @@ public class ClusterApiService {
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
-    List<TopicConfig> topicsList;
+
+    LoadTopicsResponse loadTopicsResponse;
     String aclsNativeType = AclsNativeType.NATIVE.value;
 
     if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
@@ -387,17 +388,17 @@ public class ClusterApiService {
                   String.valueOf(resetTopicsCache));
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<Set<TopicConfig>> s =
+      ResponseEntity<LoadTopicsResponse> s =
           getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
-      topicsList = new ArrayList<>(Objects.requireNonNull(s.getBody()));
+      loadTopicsResponse = Objects.requireNonNull(s.getBody());
     } catch (Exception e) {
       log.error("Error from getAllTopics", e);
       throw new KlawException(CLUSTER_API_ERR_104);
     }
 
-    return topicsList;
+    return loadTopicsResponse;
   }
 
   public String approveConnectorRequests(

@@ -3411,6 +3411,14 @@
             "default" : "false"
           }
         }, {
+          "name" : "resetTopicsCache",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
           "name" : "isBulkOption",
           "in" : "query",
           "required" : false,
@@ -8150,6 +8158,9 @@
           "allTopicWarningsCount" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "topicsLoadingStatus" : {
+            "type" : "boolean"
           }
         }
       },

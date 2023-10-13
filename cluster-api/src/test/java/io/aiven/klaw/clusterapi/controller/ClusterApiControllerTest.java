@@ -129,7 +129,7 @@ public class ClusterApiControllerTest {
     mvc.perform(get(urlTemplate))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$.topicConfigSet", hasSize(1)));
   }
 
   @Test

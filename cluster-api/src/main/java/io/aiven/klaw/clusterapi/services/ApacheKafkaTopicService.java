@@ -1,8 +1,9 @@
 package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
+import io.aiven.klaw.clusterapi.models.ClusterKeyIdentifier;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.SchemaInfoCacheKeySet;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -46,16 +47,18 @@ public class ApacheKafkaTopicService {
 
   private final SchemaService schemaService;
 
-  private static Map<SchemaInfoCacheKeySet, Set<TopicConfig>> cachedTopics = new HashMap<>();
+  private static Map<ClusterKeyIdentifier, Set<TopicConfig>> cachedTopics = new HashMap<>();
 
-  private static Set<SchemaInfoCacheKeySet> topicCacheKeySets = new HashSet<>();
+  private static Set<ClusterKeyIdentifier> topicCacheKeySets = new HashSet<>();
+
+  private static Map<ClusterKeyIdentifier, Boolean> topicsLoadingStatusOfClusters = new HashMap<>();
 
   public ApacheKafkaTopicService(ClusterApiUtils clusterApiUtils, SchemaService schemaService) {
     this.clusterApiUtils = clusterApiUtils;
     this.schemaService = schemaService;
   }
 
-  public synchronized Set<TopicConfig> loadTopics(
+  public synchronized LoadTopicsResponse loadTopics(
       String environment,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -69,24 +72,37 @@ public class ApacheKafkaTopicService {
       throw new Exception("Cannot connect to cluster.");
     }
 
-    SchemaInfoCacheKeySet schemaInfoCacheKeySet =
-        new SchemaInfoCacheKeySet(environment, protocol, clusterIdentification);
+    ClusterKeyIdentifier clusterKeyIdentifier =
+        new ClusterKeyIdentifier(environment, protocol, clusterIdentification);
 
-    if (resetCache) {
-      loadTopicsForCache(client, topics, schemaInfoCacheKeySet);
+    boolean topicsLoadingStatus = false;
+    if (topicsLoadingStatusOfClusters.containsKey(clusterKeyIdentifier)) {
+      topicsLoadingStatus = topicsLoadingStatusOfClusters.get(clusterKeyIdentifier);
     } else {
-      if (cachedTopics.containsKey(schemaInfoCacheKeySet)) {
-        return cachedTopics.get(schemaInfoCacheKeySet);
-      } else {
-        loadTopicsForCache(client, topics, schemaInfoCacheKeySet);
-      }
+      topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, false);
     }
 
-    return topics;
+    if (topicsLoadingStatus) {
+      return LoadTopicsResponse.builder()
+          .loadingInProgress(true)
+          .topicConfigSet(new HashSet<>())
+          .build();
+    } else {
+      topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, true);
+    }
+
+    if (resetCache || !cachedTopics.containsKey(clusterKeyIdentifier)) {
+      loadTopicsForCache(client, topics, clusterKeyIdentifier);
+    } else {
+      topics = cachedTopics.get(clusterKeyIdentifier);
+    }
+
+    topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, false);
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(topics).build();
   }
 
   private void loadTopicsForCache(
-      AdminClient client, Set<TopicConfig> topics, SchemaInfoCacheKeySet schemaInfoCacheKeySet) {
+      AdminClient client, Set<TopicConfig> topics, ClusterKeyIdentifier clusterKeyIdentifier) {
     try {
       Map<String, TopicDescription> topicDescriptionsPerAdminClient =
           loadTopicDescriptionsMap(client);
@@ -107,17 +123,16 @@ public class ApacheKafkaTopicService {
         topicConfig.setPartitions("" + topicDescription.partitions().size());
         topics.add(topicConfig);
       }
-
+      updateCache(clusterKeyIdentifier, topics);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       log.error("Exception:", e);
     }
-    updateCache(schemaInfoCacheKeySet, topics);
   }
 
   private void updateCache(
-      SchemaInfoCacheKeySet schemaInfoCacheKeySet, Set<TopicConfig> topicConfigSet) {
-    cachedTopics.put(schemaInfoCacheKeySet, topicConfigSet);
-    topicCacheKeySets.add(schemaInfoCacheKeySet);
+      ClusterKeyIdentifier clusterKeyIdentifier, Set<TopicConfig> topicConfigSet) {
+    cachedTopics.put(clusterKeyIdentifier, topicConfigSet);
+    topicCacheKeySets.add(clusterKeyIdentifier);
   }
 
   private Map<String, TopicDescription> loadTopicDescriptionsMap(AdminClient client)
@@ -323,16 +338,16 @@ public class ApacheKafkaTopicService {
       zone = "${klaw.topics.cron.expression.timezone:UTC}")
   public void resetTopicsCacheScheduler() {
     topicCacheKeySets.forEach(
-        schemaInfoCacheKeySet -> {
+        clusterKeyIdentifier -> {
           try {
-            log.info("Loading topics {}", schemaInfoCacheKeySet);
+            log.info("Loading topics {}", clusterKeyIdentifier);
             loadTopics(
-                schemaInfoCacheKeySet.getBootstrapServers(),
-                schemaInfoCacheKeySet.getProtocol(),
-                schemaInfoCacheKeySet.getClusterIdentification(),
+                clusterKeyIdentifier.getBootstrapServers(),
+                clusterKeyIdentifier.getProtocol(),
+                clusterKeyIdentifier.getClusterIdentification(),
                 true);
           } catch (Exception e) {
-            log.error("Error while loading topics {}", schemaInfoCacheKeySet);
+            log.error("Error while loading topics {}", clusterKeyIdentifier);
           }
         });
   }

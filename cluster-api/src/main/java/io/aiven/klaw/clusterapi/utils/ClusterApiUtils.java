@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -42,6 +43,7 @@ public class ClusterApiUtils {
   public static final String KAFKA_SR_CREDENTIALS_PROPERTY_SFX = ".klaw.schemaregistry.credentials";
   public static final String KAFKA_CONFLUENT_CLOUD_CREDENTIALS_PROPERTY_SFX =
       ".klaw.confluentcloud.credentials";
+  private static final long TIME_OUT_SECS_FOR_TOPICS = 5;
   private static MessageDigest messageDigest;
 
   static {
@@ -181,7 +183,8 @@ public class ClusterApiUtils {
     }
 
     try {
-      adminClient.listTopics().names().get();
+
+      adminClient.listTopics().names().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
       if (!adminClientsMap.containsKey(adminClientKey)) {
         adminClientsMap.put(adminClientKey, adminClient);
       }

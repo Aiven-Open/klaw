@@ -106,7 +106,8 @@ public class TopicSyncController {
               currentPage,
               topicNameSearch,
               showAllTopics,
-              Boolean.parseBoolean(isBulkOption)),
+              Boolean.parseBoolean(isBulkOption),
+              resetTopicsCache),
           HttpStatus.OK);
     }
   }

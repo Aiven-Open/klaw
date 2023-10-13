@@ -32,6 +32,7 @@ import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -99,7 +101,7 @@ public class TopicSyncControllerService {
         reconStr = new StringBuilder();
         try {
           List<TopicSyncResponseModel> results =
-              getReconTopics(envStr, "-1", "", null, "false", false).getResultSet();
+              getReconTopics(envStr, "-1", "", null, "false", false, false).getResultSet();
 
           for (TopicSyncResponseModel topicRequestModel : results) {
             reconStr
@@ -130,14 +132,21 @@ public class TopicSyncControllerService {
       String currentPage,
       String topicNameSearch,
       String showAllTopics,
-      boolean isBulkOption)
+      boolean isBulkOption,
+      boolean resetTopicsCache)
       throws Exception {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
-    List<TopicSyncResponseModel> topicRequestModelList =
+    SyncTopicsList loadTopicsResponse =
         getSyncTopics(
-                envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption, false)
-            .getResultSet();
+            envId,
+            pageNo,
+            currentPage,
+            topicNameSearch,
+            showAllTopics,
+            isBulkOption,
+            resetTopicsCache);
+    List<TopicSyncResponseModel> topicRequestModelList = loadTopicsResponse.getResultSet();
 
     topicRequestModelList =
         topicRequestModelList.stream()
@@ -175,6 +184,7 @@ public class TopicSyncControllerService {
     syncTopicsList.setAllTopicWarningsCount(
         Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidatedTopic()).count())
             .intValue());
+    syncTopicsList.setTopicsLoadingStatus(loadTopicsResponse.isTopicsLoadingStatus());
     return syncTopicsList;
   }
 
@@ -198,12 +208,13 @@ public class TopicSyncControllerService {
       }
     }
 
-    List<TopicConfig> topicFilteredList =
+    LoadTopicsResponse loadTopicsResponse =
         getTopicsFromKafkaCluster(env, topicNameSearch, resetTopicsCache);
+    syncTopicsList.setTopicsLoadingStatus(loadTopicsResponse.isLoadingInProgress());
     List<TopicConfig> topicsList;
 
     topicsList =
-        topicFilteredList.stream()
+        loadTopicsResponse.getTopicConfigSet().stream()
             .sorted(new TopicControllerService.TopicNameSyncComparator())
             .collect(Collectors.toList());
 
@@ -820,10 +831,10 @@ public class TopicSyncControllerService {
       }
     } else {
       try {
-        List<TopicConfig> topicsMap =
+        LoadTopicsResponse loadTopicsResponse =
             getTopicsFromKafkaCluster(
                 syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter(), false);
-        for (TopicConfig hashMap : topicsMap) {
+        for (TopicConfig hashMap : loadTopicsResponse.getTopicConfigSet()) {
           invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
         }
       } catch (Exception e) {
@@ -864,7 +875,7 @@ public class TopicSyncControllerService {
     }
   }
 
-  private List<TopicConfig> getTopicsFromKafkaCluster(
+  private LoadTopicsResponse getTopicsFromKafkaCluster(
       String env, String topicNameSearch, boolean resetTopicsCache) throws Exception {
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
@@ -876,7 +887,7 @@ public class TopicSyncControllerService {
             .getClusters(KafkaClustersType.KAFKA, tenantId)
             .get(envSelected.getClusterId());
 
-    List<TopicConfig> topicsList =
+    LoadTopicsResponse loadTopicsResponse =
         clusterApiService.getAllTopics(
             kwClusters.getBootstrapServers(),
             kwClusters.getProtocol(),
@@ -887,17 +898,23 @@ public class TopicSyncControllerService {
 
     topicCounter = 0;
 
-    List<TopicConfig> topicFilteredList = topicsList;
+    Set<TopicConfig> topicFilteredList = loadTopicsResponse.getTopicConfigSet();
     // Filter topics on topic name for search
 
-    if (topicNameSearch != null && topicNameSearch.length() > 0) {
+    if (topicNameSearch != null
+        && topicNameSearch.length() > 0
+        && !loadTopicsResponse.isLoadingInProgress()) {
       final String topicSearchFilter = topicNameSearch;
       topicFilteredList =
-          topicsList.stream()
+          loadTopicsResponse.getTopicConfigSet().stream()
               .filter(topic -> topic.getTopicName().contains(topicSearchFilter))
-              .collect(Collectors.toList());
+              .collect(Collectors.toSet());
     }
-    return topicFilteredList;
+
+    return LoadTopicsResponse.builder()
+        .topicConfigSet(topicFilteredList)
+        .loadingInProgress(loadTopicsResponse.isLoadingInProgress())
+        .build();
   }
 
   private void invokeUpdateSync(

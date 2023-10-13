@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SchemaInfoCacheKeySet {
+public class ClusterKeyIdentifier {
   private String bootstrapServers;
   private KafkaSupportedProtocol protocol;
   private String clusterIdentification;

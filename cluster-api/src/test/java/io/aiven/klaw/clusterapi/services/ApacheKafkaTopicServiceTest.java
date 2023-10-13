@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.TopicConfig;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
@@ -114,11 +114,11 @@ class ApacheKafkaTopicServiceTest {
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
-    Set<TopicConfig> topicConfigs =
+    LoadTopicsResponse topicConfigs =
         apacheKafkaTopicService.loadTopics(
             TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION, false);
 
-    Assertions.assertThat(topicConfigs.size()).isEqualTo(1);
+    Assertions.assertThat(topicConfigs.getTopicConfigSet().size()).isEqualTo(1);
   }
 
   @Test
