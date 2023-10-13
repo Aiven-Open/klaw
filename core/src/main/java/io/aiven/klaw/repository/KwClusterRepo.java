@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 public interface KwClusterRepo extends CrudRepository<KwClusters, KwClusterID> {
   List<KwClusters> findAllByClusterTypeAndTenantId(String type, int tenantId);
 
+  boolean existsByClusterTypeAndTenantId(String type, int tenantId);
+
   @Query(
       value = "select max(clusterid) from kwclusters where tenantid = :tenantId",
       nativeQuery = true)

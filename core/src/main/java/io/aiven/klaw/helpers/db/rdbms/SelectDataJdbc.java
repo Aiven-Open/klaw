@@ -1376,6 +1376,10 @@ public class SelectDataJdbc {
     }
   }
 
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return kwClusterRepo.existsByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
+  }
+
   public KwClusters getClusterDetails(int id, int tenantId) {
     KwClusterID kwClusterID = new KwClusterID();
     kwClusterID.setClusterId(id);
@@ -1562,7 +1566,7 @@ public class SelectDataJdbc {
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return topicRepo.findAllTopicsCount();
   }
 
   // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except
