@@ -552,7 +552,9 @@ public class SelectDataJdbc {
                           topicRequest.getRequestOperationType()))
               .collect(Collectors.toList());
 
-      if (requestOperationType == null || requestOperationType.equals(RequestOperationType.CLAIM)) {
+      if (requestOperationType == null
+          || requestOperationType.equals(RequestOperationType.CLAIM)
+          || requestOperationType.equals(RequestOperationType.ALL)) {
         // Team Name is null here as it is the team who created the requested
         // Approving Team includes the teamId as that is how Claim topics know who is the owning
         // team.
