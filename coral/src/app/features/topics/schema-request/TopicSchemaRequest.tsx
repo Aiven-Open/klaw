@@ -9,6 +9,7 @@ import {
   SubmitButton,
   Textarea,
   useForm,
+  Checkbox,
 } from "src/app/components/Form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import {
@@ -22,6 +23,7 @@ import {
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { KlawApiError } from "src/services/api";
 
 type TopicSchemaRequestProps = {
   topicName?: string;
@@ -42,6 +44,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+  const [isValidationError, setIsValidationError] = useState(false);
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -115,12 +118,16 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {
+      setIsValidationError(false);
       navigate("/requests/schemas?status=CREATED");
       toast({
         message: "Schema request successfully created",
         position: "bottom-left",
         variant: "default",
       });
+    },
+    onError: (error: KlawApiError | Error) => {
+      setIsValidationError(error?.message.includes("Invalid Schema"));
     },
   });
 
@@ -147,10 +154,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         </Box>
       )}
       <Box>
-        {schemaRequestMutation.isError && (
+        {schemaRequestMutation.isError && !isValidationError && (
           <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(schemaRequestMutation.error)}
+            </Alert>
+          </Box>
+        )}
+        {isValidationError && (
+          <Box marginBottom={"l1"}>
+            <Alert type={"warning"}>
+              The uploaded schema does not appear to be valid. You can force
+              register the schema.
             </Alert>
           </Box>
         )}
@@ -213,6 +228,20 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             labelText={"Message for approval"}
             placeholder="Comments about this request for the approver."
           />
+          {isValidationError && (
+            <Box marginBottom={"l2"}>
+              {/*We only allow users to use the forceRegister option when the promotion request failed*/}
+              {/*And the failure is because of a schema compatibility issue*/}
+              <Checkbox<TopicRequestFormSchema>
+                name={"forceRegister"}
+                caption={
+                  "Overrides some validation that the schema registry would normally do."
+                }
+              >
+                Force register
+              </Checkbox>
+            </Box>
+          )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton>Submit request</SubmitButton>
             <Button
