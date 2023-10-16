@@ -145,10 +145,11 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     }
 
                     if($scope.addSchema.forceRegister === true) {
+                    var forceRegisterString = " Force register for schema selected. This overrides standard schema compatibility.";
                         if($scope.addSchema.remarks == null) {
-                        $scope.addSchema.remarks = " Force register for schema selected. This overrides standard schema compatibility."
+                        $scope.addSchema.remarks = forceRegisterString
                         } else {
-                         $scope.addSchema.remarks += " Force register for schema selected. This overrides standard schema compatibility."
+                         $scope.addSchema.remarks += forceRegisterString;
                         }
                     }
 
