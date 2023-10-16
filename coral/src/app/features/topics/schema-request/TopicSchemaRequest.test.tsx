@@ -929,4 +929,132 @@ describe("TopicSchemaRequest", () => {
       );
     });
   });
+
+  describe("enables user to send a schema request even if it's not compatible", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
+      );
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
+      // The first response to the test should be the compatibility error
+      // second response will be the success
+      mockCreateSchemaRequest
+        .mockRejectedValueOnce({
+          success: false,
+          message: "failure: Schema is not compatible",
+        })
+        .mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      mockedUseToast.mockReset();
+      cleanup();
+    });
+
+    it("gives user the option to force register", async () => {
+      const form = getForm();
+
+      const checkBoxBefore = within(form).queryByRole("checkbox", {
+        name: "Force register Overrides some validation that the schema registry would normally do.",
+      });
+      expect(checkBoxBefore).not.toBeInTheDocument();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register Overrides some validation that the schema registry would normally do.",
+      });
+
+      expect(checkboxForceRegister).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({
+        message: "failure: Schema is not compatible",
+        success: false,
+      });
+    });
+
+    it("shows a notification informing user that force register for schema request was successful and redirects them", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(submitButton);
+
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register Overrides some validation that the schema registry would normally do.",
+      });
+
+      await userEvent.click(checkboxForceRegister);
+      await userEvent.click(submitButton);
+
+      expect(mockCreateSchemaRequest).toHaveBeenNthCalledWith(2, {
+        forceRegister: true,
+        environment: "1",
+        remarks: "",
+        schemafull: "{}",
+        topicname: "my-awesome-topic",
+      });
+
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "Schema request successfully created",
+          position: "bottom-left",
+          variant: "default",
+        })
+      );
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(
+        "/requests/schemas?status=CREATED"
+      );
+    });
+  });
 });
