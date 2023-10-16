@@ -16,13 +16,13 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
       </Box.Flex>
@@ -31,6 +31,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
       </Grid.Item>
+
       <Grid.Item xs={2}>
         <Box.Flex direction={"column"}>
           <Label>Schema preview</Label>
@@ -64,11 +65,11 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         </Box.Flex>
       </Grid.Item>
 
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
       </Box.Flex>

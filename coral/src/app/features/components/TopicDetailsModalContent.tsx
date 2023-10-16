@@ -55,13 +55,13 @@ const TopicDetailsModalContent = ({
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Request type</Label>
         <dd>
           <StatusChip status={"neutral"} text={requestOperationType} />
@@ -83,7 +83,7 @@ const TopicDetailsModalContent = ({
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic replication factor</Label>
         <dd>{replicationfactor}</dd>
       </Box.Flex>
@@ -123,7 +123,7 @@ const TopicDetailsModalContent = ({
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
       </Box.Flex>
