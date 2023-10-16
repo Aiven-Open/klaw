@@ -197,6 +197,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               }
               required={!hasPresetTopicName}
               readOnly={hasPresetTopicName}
+              placeholder={"-- Please select --"}
             >
               {topicNames.map((topic) => {
                 return (
