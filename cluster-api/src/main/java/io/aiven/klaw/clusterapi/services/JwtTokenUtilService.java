@@ -38,7 +38,7 @@ public class JwtTokenUtilService implements InitializingBean {
   // for retrieving any information from token we will need the secret key
   private Claims getAllClaimsFromToken(String token) {
     Key hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
-    Jws<Claims> jwt = Jwts.parserBuilder().setSigningKey(hmacKey).build().parseClaimsJws(token);
+    Jws<Claims> jwt = Jwts.parser().setSigningKey(hmacKey).build().parseClaimsJws(token);
     return jwt.getBody();
   }
 
