@@ -49,7 +49,7 @@ function TopicDetailsSchema() {
     topicOverview,
   } = useTopicDetails();
   const [showSchemaPromotionModal, setShowSchemaPromotionModal] =
-    useState(false);
+    useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isValidationError, setIsValidationError] = useState(false);
 

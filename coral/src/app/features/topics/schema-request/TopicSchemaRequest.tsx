@@ -175,8 +175,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         {isValidationError && (
           <Box marginBottom={"l1"}>
             <Alert type={"warning"}>
-              The uploaded schema does not appear to be valid. You can force
-              register the schema.
+              Uploaded schema appears invalid. Are you sure you want to force
+              register it?
             </Alert>
           </Box>
         )}
@@ -247,7 +247,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               <Checkbox<TopicRequestFormSchema>
                 name={"forceRegister"}
                 caption={
-                  "Overrides some validation that the schema registry would normally do."
+                  "Overrides standard validation processes of the schema registry."
                 }
               >
                 Force register

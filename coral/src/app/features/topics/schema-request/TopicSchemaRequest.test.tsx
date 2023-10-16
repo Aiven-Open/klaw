@@ -977,9 +977,12 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const checkBoxBefore = within(form).queryByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
+
+      const warningBefore = screen.queryByText("alertdialog");
       expect(checkBoxBefore).not.toBeInTheDocument();
+      expect(warningBefore).not.toBeInTheDocument();
 
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,
@@ -999,9 +1002,15 @@ describe("TopicSchemaRequest", () => {
       await userEvent.upload(fileInput, testFile);
       await userEvent.click(button);
 
+      const warningForceRegister = screen.getByRole("alert");
       const checkboxForceRegister = within(form).getByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
+      expect(warningForceRegister).toBeVisible();
+      expect(warningForceRegister).toHaveTextContent(
+        "Uploaded schema appears invalid. Are you sure you want to" +
+          " force register it?"
+      );
 
       expect(checkboxForceRegister).toBeVisible();
       expect(console.error).toHaveBeenCalledWith({
@@ -1031,7 +1040,7 @@ describe("TopicSchemaRequest", () => {
       await userEvent.click(submitButton);
 
       const checkboxForceRegister = within(form).getByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
 
       await userEvent.click(checkboxForceRegister);

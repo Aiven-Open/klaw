@@ -970,7 +970,7 @@ describe("TopicDetailsSchema", () => {
           });
 
         const checkBoxBefore = screen.queryByRole("checkbox", {
-          name: "Force register Overrides some validation that the schema registry would normally do.",
+          name: "Force register Overrides standard validation processes of the schema registry.",
         });
 
         expect(checkBoxBefore).not.toBeInTheDocument();
@@ -996,7 +996,7 @@ describe("TopicDetailsSchema", () => {
         });
 
         const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides some validation that the schema registry would normally do.",
+          name: "Force register Overrides standard validation processes of the schema registry.",
         });
 
         expect(checkboxToForceRegister).toBeVisible();
@@ -1032,7 +1032,7 @@ describe("TopicDetailsSchema", () => {
         await user.click(buttonRequest);
 
         const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides some validation that the schema registry would normally do.",
+          name: "Force register Overrides standard validation processes of the schema registry.",
         });
 
         await user.click(checkboxToForceRegister);
@@ -1078,7 +1078,7 @@ describe("TopicDetailsSchema", () => {
         await user.click(buttonRequest);
 
         const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides some validation that the schema registry would normally do.",
+          name: "Force register Overrides standard validation processes of the schema registry.",
         });
 
         await user.click(checkboxToForceRegister);

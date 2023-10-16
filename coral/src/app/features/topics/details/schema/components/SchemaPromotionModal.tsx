@@ -1,4 +1,4 @@
-import { Box, Checkbox, Textarea } from "@aivenio/aquarium";
+import { Alert, Box, Checkbox, Textarea } from "@aivenio/aquarium";
 import { useState } from "react";
 import { Modal } from "src/app/components/Modal";
 
@@ -52,16 +52,12 @@ const SchemaPromotionModal = ({
           {`Promote the Version ${version} of the schema to ${targetEnvironment}?`}
         </p>
         {showForceRegister && (
-          <Checkbox
-            disabled={isLoading}
-            checked={forceRegister}
-            caption={
-              "Overrides some validation that the schema registry would normally do."
-            }
-            onChange={(e) => setForceRegister(e.target.checked)}
-          >
-            Force register
-          </Checkbox>
+          <Box marginBottom={"l1"}>
+            <Alert type={"warning"}>
+              Uploaded schema appears invalid. Are you sure you want to force
+              register it?
+            </Alert>
+          </Box>
         )}
         <Textarea
           labelText="You can add the reason to promote the schema (optional)"
@@ -73,6 +69,18 @@ const SchemaPromotionModal = ({
           helperText={"Required"}
           disabled={isLoading}
         />
+        {showForceRegister && (
+          <Checkbox
+            disabled={isLoading}
+            checked={forceRegister}
+            caption={
+              "Overrides standard validation processes of the schema registry."
+            }
+            onChange={(e) => setForceRegister(e.target.checked)}
+          >
+            Force register
+          </Checkbox>
+        )}
       </Box>
     </Modal>
   );
