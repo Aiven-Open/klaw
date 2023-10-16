@@ -16,6 +16,8 @@ public interface UserInfoRepo extends CrudRepository<UserInfo, String> {
 
   List<UserInfo> findAllByTeamIdAndTenantId(Integer teamId, int tenantId);
 
+  int countByTeamIdAndTenantId(Integer teamId, int tenantId);
+
   boolean existsByTeamIdAndTenantId(Integer teamId, int tenantId);
 
   void deleteByTenantId(int tenantId);

@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
@@ -549,7 +550,7 @@ public class CommonUtilsService {
             requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           }
         }
-        case "REQUEST_SCHEMA_OF_ENVS" -> {
+        case REQUEST_SCHEMA_OF_ENVS -> {
           List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
           if (requestSchema != null && !requestSchema.isEmpty()) {
             requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
