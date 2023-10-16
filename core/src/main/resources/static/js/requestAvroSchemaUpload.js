@@ -145,11 +145,11 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     }
 
                     if($scope.addSchema.forceRegister === true) {
-                    if($scope.addSchema.remarks == null) {
-                    $scope.addSchema.remarks = " Force Register Schema option overriding schema compatibility has been selected."
-                    } else {
-                     $scope.addSchema.remarks += " Force Register Schema option overriding schema compatibility has been selected."
-                    }
+                        if($scope.addSchema.remarks == null) {
+                        $scope.addSchema.remarks = " Force Register Schema option overriding schema compatibility has been selected."
+                        } else {
+                         $scope.addSchema.remarks += " Force Register Schema option overriding schema compatibility has been selected."
+                        }
                     }
 
                     var serviceInput = {};
@@ -163,7 +163,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     serviceInput['schemafull'] = $scope.addSchema.schemafull;
                     serviceInput['schemaversion'] = "1.0";
                     serviceInput['requestOperationType'] = 'CREATE';
-                    serviceInput['forceRegister'] = $scope.addSchema.forceRegister
+                    serviceInput['forceRegister'] = $scope.addSchema.forceRegister;
 
                     $http({
                         method: "POST",
