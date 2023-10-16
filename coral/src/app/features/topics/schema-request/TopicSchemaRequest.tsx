@@ -127,7 +127,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       });
     },
     onError: (error: KlawApiError | Error) => {
-      setIsValidationError(error?.message.includes("Invalid Schema"));
+      const validationErrorMessages = [
+        "schema is not compatible",
+        "unable to validate schema compatibility",
+      ];
+
+      const matchedError = validationErrorMessages.some((errorMessage) => {
+        return error?.message
+          .toLowerCase()
+          .includes(errorMessage.toLowerCase());
+      });
+
+      setIsValidationError(matchedError);
     },
   });
 
