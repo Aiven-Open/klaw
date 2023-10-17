@@ -922,6 +922,179 @@ describe("TopicDetailsSchema", () => {
         });
       });
     });
+
+    describe("enables topic owner to promote a schema even if it's not compatible", () => {
+      const originalConsoleError = console.error;
+
+      beforeEach(() => {
+        console.error = jest.fn();
+
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterEach(() => {
+        console.error = originalConsoleError;
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("gives user option to force register if request fails with certain error", async () => {
+        // The first response to the test should be the compatibility error
+        // second response will be the success
+        mockPromoteSchemaRequest
+          .mockRejectedValueOnce({
+            success: false,
+            message: "failure: Schema is not compatible",
+          })
+          .mockResolvedValue({
+            success: true,
+            message: "",
+          });
+
+        const checkBoxBefore = screen.queryByRole("checkbox", {
+          name: "Force register Overrides standard validation processes of the schema registry.",
+        });
+
+        expect(checkBoxBefore).not.toBeInTheDocument();
+
+        const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+        await user.click(buttonPromote);
+
+        const modal = screen.getByRole("dialog");
+        const buttonRequest = within(modal).getByRole("button", {
+          name: "Request schema promotion",
+        });
+
+        await user.click(buttonRequest);
+
+        expect(mockPromoteSchemaRequest).toHaveBeenCalledWith({
+          forceRegister: false,
+          remarks: "",
+          schemaVersion: "3",
+          sourceEnvironment: "1",
+          targetEnvironment: "2",
+          topicName: "topic-name",
+        });
+
+        const checkboxToForceRegister = screen.getByRole("checkbox", {
+          name: "Force register Overrides standard validation processes of the schema registry.",
+        });
+
+        expect(checkboxToForceRegister).toBeVisible();
+
+        expect(console.error).toHaveBeenCalledWith({
+          message: "failure: Schema is not compatible",
+          success: false,
+        });
+      });
+
+      it("enables user to force register the schema if needed", async () => {
+        // The first response to the test should be the compatibility error
+        // second response will be the success
+        mockPromoteSchemaRequest
+          .mockRejectedValueOnce({
+            success: false,
+            message: "failure: Schema is not compatible",
+          })
+          .mockResolvedValue({
+            success: true,
+            message: "",
+          });
+
+        const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+        await user.click(buttonPromote);
+
+        const modal = screen.getByRole("dialog");
+        const buttonRequest = within(modal).getByRole("button", {
+          name: "Request schema promotion",
+        });
+
+        await user.click(buttonRequest);
+
+        const checkboxToForceRegister = screen.getByRole("checkbox", {
+          name: "Force register Overrides standard validation processes of the schema registry.",
+        });
+
+        await user.click(checkboxToForceRegister);
+        await user.click(buttonRequest);
+
+        expect(mockPromoteSchemaRequest).toHaveBeenNthCalledWith(2, {
+          forceRegister: true,
+          remarks: "",
+          schemaVersion: "3",
+          sourceEnvironment: "1",
+          targetEnvironment: "2",
+          topicName: "topic-name",
+        });
+
+        expect(console.error).toHaveBeenCalledWith({
+          message: "failure: Schema is not compatible",
+          success: false,
+        });
+      });
+
+      it("shows an error if promotion with force register did fail", async () => {
+        // The first response to the test should be the compatibility error
+        // second response will be the success
+        mockPromoteSchemaRequest
+          .mockRejectedValueOnce({
+            success: false,
+            message: "failure: Schema is not compatible",
+          })
+          .mockRejectedValue({
+            success: false,
+            message: "Oh no",
+          });
+
+        const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+        await user.click(buttonPromote);
+
+        const modal = screen.getByRole("dialog");
+        const buttonRequest = within(modal).getByRole("button", {
+          name: "Request schema promotion",
+        });
+
+        await user.click(buttonRequest);
+
+        const checkboxToForceRegister = screen.getByRole("checkbox", {
+          name: "Force register Overrides standard validation processes of the schema registry.",
+        });
+
+        await user.click(checkboxToForceRegister);
+        await user.click(buttonRequest);
+
+        const alert = screen.getByRole("alert");
+        const errorMessage = within(alert).getByText("Oh no");
+
+        expect(alert).toBeVisible();
+        expect(errorMessage).toBeVisible();
+        expect(console.error).toHaveBeenNthCalledWith(2, {
+          success: false,
+          message: "Oh no",
+        });
+      });
+    });
   });
 
   describe("renders right view for user that is not topic owner", () => {
