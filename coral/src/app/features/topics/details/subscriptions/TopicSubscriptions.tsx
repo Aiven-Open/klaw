@@ -227,8 +227,10 @@ const TopicSubscriptions = () => {
           <AclTypeFilter key="aclType" />,
           <SearchFilter
             key="search"
-            placeholder="Search principal or IP"
-            description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+            label={"Search prinicipal or IP"}
+            placeholder="Alice, 192.158.1.38."
+            description={"Search for a partial match principals or IPs."}
+            ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
           />,
           <SegmentedControlGroup
             name="Subscription options"

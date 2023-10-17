@@ -49,8 +49,12 @@ const SchemaRegistryEnvironments = () => {
       filters={[
         <SearchFilter
           key="search"
-          placeholder={"Search Schema Registry Environment"}
-          description={`Search for a partial match for an environment name, a cluster name, a tenant name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+          label={"Search Schema Registry Environment"}
+          placeholder={"DEV_CLS, TST_SCH, ..."}
+          description={
+            "Search for a partial match for an environment name, a cluster name, a tenant name."
+          }
+          ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
       ]}
       table={table}

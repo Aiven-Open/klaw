@@ -4,8 +4,10 @@ function SearchConnectorFilter() {
   return (
     <SearchFilter
       key="search"
-      placeholder={"Search Connector name"}
-      description={`Search for a partial match for connector name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+      label="Search Connector"
+      placeholder={"local-file-source"}
+      description={"A partial match for connector name."}
+      ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
     />
   );
 }
