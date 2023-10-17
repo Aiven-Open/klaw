@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  Grid,
-  Grid.Item,
-  Typography,
-} from "@aivenio/aquarium";
+import { Alert, Box, Button, Card, Grid, Typography } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
