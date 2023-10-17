@@ -56,7 +56,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
         <dd>{topicname}</dd>
       </Box.Flex>
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Principals/Usernames</Label>
           <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
             {acl_ssl.map((principal) => (
@@ -72,7 +72,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
       {acl_ip.length > 0 && (
         <Grid.Item xs={2}>
-          <Box.Flex direction={"column"}>
+          <Box.Flex flexDirection={"column"}>
             <Label>IP addresses</Label>
             <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
               {acl_ip.map((ip) => (
@@ -88,7 +88,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
       )}
 
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Consumer group</Label>
           <dd>
             {
@@ -106,7 +106,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
       </Grid.Item>
 
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>

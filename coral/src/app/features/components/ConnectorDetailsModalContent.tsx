@@ -34,7 +34,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
       </Grid.Item>
       
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Connector configuration</Label>
           <dd>
             <MonacoEditor
@@ -60,7 +60,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
       </Grid.Item>
 
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
         </Box.Flex>

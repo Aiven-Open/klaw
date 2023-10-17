@@ -33,7 +33,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
       </Grid.Item>
 
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -59,7 +59,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
       </Grid.Item>
 
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
         </Box.Flex>

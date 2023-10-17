@@ -68,18 +68,18 @@ const TopicDetailsModalContent = ({
         </dd>
       </Box.Flex>
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
         </Box.Flex>
       </Grid.Item>
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Topic description</Label>
           <dd>{description}</dd>
         </Box.Flex>
       </Grid.Item>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
       </Box.Flex>
@@ -89,7 +89,7 @@ const TopicDetailsModalContent = ({
       </Box.Flex>
       {hasAdvancedConfig && (
         <Grid.Item xs={2}>
-          <Box.Flex direction={"column"}>
+          <Box.Flex flexDirection={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
               <MonacoEditor
@@ -114,12 +114,12 @@ const TopicDetailsModalContent = ({
         </Grid.Item>
       )}
       <Grid.Item xs={2}>
-        <Box.Flex direction={"column"}>
+        <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>
       </Grid.Item>
-      <Box.Flex direction={"column"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
