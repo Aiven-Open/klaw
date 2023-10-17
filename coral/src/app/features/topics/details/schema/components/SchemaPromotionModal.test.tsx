@@ -35,6 +35,14 @@ describe("SchemaPromotionModal", () => {
       expect(dialog).toBeVisible();
     });
 
+    it("shows no warning or option to force register", () => {
+      const warning = screen.queryByRole("alert");
+      const checkbox = screen.queryByRole("checkbox");
+
+      expect(warning).not.toBeInTheDocument();
+      expect(checkbox).not.toBeInTheDocument();
+    });
+
     it("shows more information to delete the topic", () => {
       const dialog = screen.getByRole("dialog");
       const headline = within(dialog).getByRole("heading", {
@@ -50,7 +58,7 @@ describe("SchemaPromotionModal", () => {
 
     it("does not show a switch to  force register", () => {
       const forceRegisterSwitch = screen.queryByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
       expect(forceRegisterSwitch).not.toBeInTheDocument();
     });
@@ -100,13 +108,6 @@ describe("SchemaPromotionModal", () => {
     afterAll(() => {
       cleanup();
       jest.clearAllMocks();
-    });
-
-    it("disables Force register switch", () => {
-      const forceRegisterSwitch = screen.getByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
-      });
-      expect(forceRegisterSwitch).toBeDisabled();
     });
 
     it("disables textarea where user can add a comment why they promote the schema", () => {
@@ -191,6 +192,15 @@ describe("SchemaPromotionModal", () => {
       jest.clearAllMocks();
     });
 
+    it("shows a warning about force register", async () => {
+      const warning = screen.getByRole("alert");
+
+      expect(warning).toBeVisible();
+      expect(warning).toHaveTextContent(
+        "Uploaded schema appears invalid. Are you sure you want to force register it?"
+      );
+    });
+
     it("triggers a given submit function with correct payload when user does not switch Force register or adds a reason", async () => {
       const dialog = screen.getByRole("dialog");
 
@@ -211,7 +221,7 @@ describe("SchemaPromotionModal", () => {
       const dialog = screen.getByRole("dialog");
 
       const forceRegisterSwitch = screen.getByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
 
       const confirmationButton = within(dialog).getByRole("button", {
@@ -232,7 +242,7 @@ describe("SchemaPromotionModal", () => {
       const dialog = screen.getByRole("dialog");
 
       const forceRegisterSwitch = screen.getByRole("checkbox", {
-        name: "Force register Overrides some validation that the schema registry would normally do.",
+        name: "Force register Overrides standard validation processes of the schema registry.",
       });
 
       const textarea = within(dialog).getByRole("textbox", {

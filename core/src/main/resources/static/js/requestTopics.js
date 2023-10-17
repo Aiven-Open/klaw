@@ -52,6 +52,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 $scope.topicSuffix = null;
                 $scope.topicRegex = null;
                 $scope.applyRegex = null;
+
              	    $http({
                             method: "GET",
                             url: "getEnvParams",
@@ -70,9 +71,12 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                                 $scope.addTopic.description = "Topic Update";
                             }else if(reqType != null && reqType === 'promote'){
                                 $scope.requestType = 'PromoteTopic';
-                                $scope.requestTitle = "Topic Promotion Request"
+                                $scope.requestTitle = "Topic Promotion Request";
                                 $scope.addTopic.envNameToDisplay = envName;
                                 $scope.addTopic.description = "Topic Promotion";
+                            }else if(reqType != null && reqType === 'CreateTopic'){
+                            $scope.addTopic.topicpartitions = $scope.envTopicMap.defaultPartitions  + " (default)";
+                            $scope.addTopic.replicationfactor = $scope.envTopicMap.defaultRepFactor + " (default)";
                             }
 
                             }

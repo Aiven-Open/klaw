@@ -53,6 +53,7 @@ const getPaginatedEnvironments = ({
           pageNo: String(currentPage),
           searchEnvParam: search.length === 0 ? undefined : search,
         }),
+      keepPreviousData: true,
     }
   );
   return {
