@@ -13,27 +13,38 @@ describe("SearchConnectorFilter.tsx", () => {
 
   it("renders a search input", () => {
     const searchInput = screen.getByRole("search", {
-      name: "Search Connector name",
+      name: "Search Connector",
     });
 
     expect(searchInput).toBeEnabled();
   });
 
-  it("shows a placeholder informing user about scope of search", () => {
+  it("shows a placeholder with an example search value", () => {
     const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Connector name",
+      name: "Search Connector",
     });
 
-    expect(searchInput.placeholder).toEqual("Search Connector name");
+    expect(searchInput.placeholder).toEqual("local-file-source");
+  });
+
+  it("shows a description", () => {
+    const searchInput = screen.getByRole<HTMLInputElement>("search", {
+      name: "Search Connector",
+    });
+
+    expect(searchInput).toHaveAccessibleDescription(
+      `A partial match for connector name.`
+    );
   });
 
   it("shows a description for assistive technology", () => {
     const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Connector name",
+      name: "Search Connector",
     });
 
-    expect(searchInput).toHaveAccessibleDescription(
-      `Search for a partial match for connector name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
+    expect(searchInput).toHaveAttribute(
+      "aria-description",
+      `Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
     );
   });
 });
