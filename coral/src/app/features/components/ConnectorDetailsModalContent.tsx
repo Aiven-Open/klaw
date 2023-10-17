@@ -32,7 +32,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
         <Label>Connector description</Label>
         <dd>{request.description}</dd>
       </Grid.Item>
-      
+
       <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Connector configuration</Label>
