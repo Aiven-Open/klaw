@@ -1,23 +1,38 @@
-import { SearchInput } from "@aivenio/aquarium";
+import { Box, Label, SearchInput, Typography } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import type { ChangeEvent } from "react";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 
 type SearchFilterProps = {
+  label: string;
   placeholder: string;
   description: string;
+  ariaDescription: string;
 };
 
-function SearchFilter({ placeholder, description }: SearchFilterProps) {
+function SearchFilter({
+  label,
+  placeholder,
+  description,
+  ariaDescription,
+}: SearchFilterProps) {
   const { search, setFilterValue } = useFiltersContext();
   return (
-    <>
+    <Box maxWidth={"md"}>
+      <Label id={"search-field-label"}>
+        <Typography.SmallStrong color={"grey-60"}>
+          {label}
+        </Typography.SmallStrong>
+      </Label>
+
       <SearchInput
         type={"search"}
         aria-label={placeholder}
+        aria-labelledby={"search-field-label"}
         aria-describedby={"search-field-description"}
         role="search"
         placeholder={placeholder}
+        aria-description={ariaDescription}
         defaultValue={search.toString()}
         onChange={debounce(
           (event: ChangeEvent<HTMLInputElement>) =>
@@ -28,10 +43,13 @@ function SearchFilter({ placeholder, description }: SearchFilterProps) {
           500
         )}
       />
-      <div id={"search-field-description"} className={"visually-hidden"}>
-        {description}
-      </div>
-    </>
+
+      <Box marginTop={"1"} marginBottom={"3"}>
+        <Typography.Caption id={"search-field-description"}>
+          {description}
+        </Typography.Caption>
+      </Box>
+    </Box>
   );
 }
 
