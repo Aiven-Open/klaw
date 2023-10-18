@@ -468,7 +468,9 @@ public class SchemaRegistryControllerService {
         return ApiResponse.notOk(SCHEMA_ERR_109);
       }
       String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
-      if (!Arrays.stream(reqSchemaEnvs).toList().contains(schemaEnv.get().getId())) {
+      if (!Arrays.stream(reqSchemaEnvs)
+          .collect(Collectors.toSet())
+          .contains(schemaEnv.get().getId())) {
         return ApiResponse.notOk(SCHEMA_ERR_109);
       }
     } else {

@@ -88,14 +88,14 @@ class AnalyticsControllerServiceTest {
     Mockito.when(commonUtilsService.getTenantId(any())).thenReturn(TestConstants.TENANT_ID);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getAclsCountByEnv(null, TestConstants.TENANT_ID))
-        .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID);
+        .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID_INTEGERE);
     Mockito.when(manageDatabase.getEnvsOfTenantsMap())
         .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
 
     AclsCountPerEnv actual = analyticsControllerService.getAclsCountPerEnv(TestConstants.ENV_ID);
 
     Assertions.assertEquals(ApiResultStatus.SUCCESS.value, actual.getStatus());
-    Assertions.assertEquals(TestConstants.ACLS_COUNT, actual.getAclsCount());
+    Assertions.assertEquals("123", actual.getAclsCount());
   }
 
   @Test
@@ -103,7 +103,7 @@ class AnalyticsControllerServiceTest {
     Mockito.when(commonUtilsService.getTenantId(any())).thenReturn(TestConstants.TENANT_ID);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getTopicsCountByEnv(TestConstants.TENANT_ID))
-        .thenReturn(TestConstants.TOPICS_COUNT_BY_ENV_ID);
+        .thenReturn(TestConstants.TOPICS_COUNT_STRING_BY_ENV_ID_INT);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
         .thenReturn(Set.of(TestConstants.ENV_ID));
 
@@ -111,7 +111,7 @@ class AnalyticsControllerServiceTest {
         analyticsControllerService.getTopicsCountPerEnv(TestConstants.ENV_ID);
 
     Assertions.assertEquals(ApiResultStatus.SUCCESS.value, actual.getStatus());
-    Assertions.assertEquals(TestConstants.TOPICS_COUNT, actual.getTopicsCount());
+    Assertions.assertEquals("123", actual.getTopicsCount());
   }
 
   @Test
@@ -129,7 +129,6 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 eq(Collections.emptyList()),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -156,7 +155,6 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 eq(Collections.emptyList()),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -189,7 +187,6 @@ class AnalyticsControllerServiceTest {
                 anyString(),
                 anyString(),
                 anyString(),
-                anyString(),
                 eq(TestConstants.TENANT_ID)))
         .thenReturn(expected);
 
@@ -212,7 +209,6 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 eq(Collections.emptyList()),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -245,7 +241,6 @@ class AnalyticsControllerServiceTest {
                 anyString(),
                 anyString(),
                 anyString(),
-                anyString(),
                 eq(TestConstants.TENANT_ID)))
         .thenReturn(expected);
 
@@ -270,7 +265,6 @@ class AnalyticsControllerServiceTest {
                 anyString(),
                 anyString(),
                 anyString(),
-                anyString(),
                 eq(TestConstants.TENANT_ID)))
         .thenReturn(expected);
 
@@ -286,15 +280,12 @@ class AnalyticsControllerServiceTest {
 
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getTopicsCountByEnv(TestConstants.TENANT_ID))
-        .thenReturn(UtilMethods.convertImmutableToMutable(TestConstants.TOPICS_COUNT_BY_ENV_ID));
+        .thenReturn(TestConstants.TOPICS_COUNT_STRING_BY_ENV_ID_INT);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
         .thenReturn(Set.of(TestConstants.ENV_ID));
-    Mockito.when(analyticsControllerService.getEnvName(TestConstants.ENV_ID))
-        .thenReturn(TestConstants.ENV_NAME);
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -320,11 +311,10 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             handleDbRequestsJdbc.getAllTopicsForTeamGroupByEnv(
                 TestConstants.TEAM_ID, TestConstants.TENANT_ID))
-        .thenReturn(TestConstants.TOPICS_COUNT_BY_ENV_ID);
+        .thenReturn(TestConstants.TOPICS_COUNT_STRING_BY_ENV_ID_INT);
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -346,7 +336,7 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             handleDbRequestsJdbc.getPartitionsCountByEnv(
                 TestConstants.TEAM_ID, TestConstants.TENANT_ID))
-        .thenReturn(UtilMethods.convertImmutableToMutable(TestConstants.TOPICS_COUNT_BY_ENV_ID));
+        .thenReturn(TestConstants.TOPICS_COUNT_STRING_BY_ENV_ID_INT);
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
         .thenReturn(TestConstants.TEAM_NAME);
@@ -355,7 +345,6 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -377,7 +366,7 @@ class AnalyticsControllerServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(
             handleDbRequestsJdbc.getAclsCountByEnv(TestConstants.TEAM_ID, TestConstants.TENANT_ID))
-        .thenReturn(UtilMethods.convertImmutableToMutable(TestConstants.ACLS_COUNT_BY_ENV_ID));
+        .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID_INTEGERE);
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
         .thenReturn(TestConstants.TEAM_NAME);
@@ -386,7 +375,6 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -411,11 +399,10 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             handleDbRequestsJdbc.getActivityLogForLastDays(
                 eq(30), any(), eq(TestConstants.TENANT_ID)))
-        .thenReturn(List.of(Map.of()));
+        .thenReturn(List.of());
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
@@ -437,14 +424,13 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             handleDbRequestsJdbc.getActivityLogByTeam(
                 TestConstants.TEAM_ID, 30, TestConstants.TENANT_ID))
-        .thenReturn(UtilMethods.convertImmutableToMutable(TestConstants.ACLS_COUNT_BY_ENV_ID));
+        .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID_INTEGERE);
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
         .thenReturn(TestConstants.TEAM_NAME);
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
-                anyString(),
                 anyString(),
                 anyString(),
                 anyString(),
