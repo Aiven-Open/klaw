@@ -112,4 +112,32 @@ describe("SchemaRequestDetails", () => {
       expect(definition).toHaveTextContent(testRequest.requesttimestring);
     });
   });
+
+  describe("renders an optional field when for force register", () => {
+    afterEach(cleanup);
+
+    it("shows no field when forceRegister is false", () => {
+      render(<SchemaRequestDetails request={testRequest} />);
+
+      const term = screen.queryByText("Force register");
+
+      expect(term).not.toBeInTheDocument();
+    });
+
+    it("shows a field when forceRegister is true", () => {
+      render(
+        <SchemaRequestDetails
+          request={{ ...testRequest, forceRegister: true }}
+        />
+      );
+
+      const term = findTerm("Force register");
+      const definition = findDefinition(term);
+
+      expect(term).toBeVisible();
+      expect(definition).toHaveTextContent(
+        "Warning: This schema is being force registered. This will override standard validation process of the schema registry."
+      );
+    });
+  });
 });

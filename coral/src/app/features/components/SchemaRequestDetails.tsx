@@ -1,16 +1,19 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import { Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Box, Grid, GridItem, StatusChip, Typography } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
   request?: SchemaRequest;
 };
 
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <dt className="inline-block mb-2 typography-small-strong text-grey-60">
-    {children}
-  </dt>
-);
+const Label = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <dt className="inline-block mb-2 typography-small-strong text-grey-60">
+      {children}
+    </dt>
+  );
+};
+
 function SchemaRequestDetails(props: DetailsModalContentProps) {
   const { request } = props;
   if (!request) return null;
@@ -27,10 +30,23 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.topicname}</dd>
       </Box.Flex>
 
-      <GridItem colSpan={"span-2"}>
+      <Box.Flex flexDirection={"column"}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
-      </GridItem>
+      </Box.Flex>
+      {request.forceRegister && (
+        <Box.Flex flexDirection={"column"}>
+          <Label>Force register</Label>
+          <dd>
+            {" "}
+            <Typography.Small>
+              Warning: This schema is being force registered. This will override
+              standard validation process of the schema registry.
+            </Typography.Small>
+          </dd>
+        </Box.Flex>
+      )}
+
       <GridItem colSpan={"span-2"}>
         <Box.Flex flexDirection={"column"}>
           <Label>Schema preview</Label>
