@@ -9,6 +9,7 @@ import {
   SubmitButton,
   Textarea,
   useForm,
+  Checkbox,
 } from "src/app/components/Form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import {
@@ -17,11 +18,12 @@ import {
 } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import {
   Environment,
-  getEnvironmentsForSchemaRequest,
+  getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { KlawApiError } from "src/services/api";
 
 type TopicSchemaRequestProps = {
   topicName?: string;
@@ -42,6 +44,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+  const [isValidationError, setIsValidationError] = useState(false);
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -86,8 +89,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     Environment[],
     Error
   >({
-    queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getEnvironmentsForSchemaRequest(),
+    queryKey: ["getEnvs"],
+    queryFn: () => getAllEnvironmentsForTopicAndAcl(),
+    // not every Kafka Environment has an associated env for schemas,
+    // so we only want to show those who do.
+    // We use name and ID related to the Kafka Environment in form and mutation.
+    select: (kafkaEnvironments) =>
+      kafkaEnvironments.filter((env) => env.associatedEnv),
     onSuccess: (environments) => {
       if (presetEnvironment) {
         const validEnv = environments.find(
@@ -110,12 +118,27 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {
+      setIsValidationError(false);
       navigate("/requests/schemas?status=CREATED");
       toast({
         message: "Schema request successfully created",
         position: "bottom-left",
         variant: "default",
       });
+    },
+    onError: (error: KlawApiError | Error) => {
+      const validationErrorMessages = [
+        "schema is not compatible",
+        "unable to validate schema compatibility",
+      ];
+
+      const matchedError = validationErrorMessages.some((errorMessage) => {
+        return error?.message
+          .toLowerCase()
+          .includes(errorMessage.toLowerCase());
+      });
+
+      setIsValidationError(matchedError);
     },
   });
 
@@ -142,10 +165,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         </Box>
       )}
       <Box>
-        {schemaRequestMutation.isError && (
+        {schemaRequestMutation.isError && !isValidationError && (
           <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(schemaRequestMutation.error)}
+            </Alert>
+          </Box>
+        )}
+        {isValidationError && (
+          <Box marginBottom={"l1"}>
+            <Alert type={"warning"}>
+              Uploaded schema appears invalid. Are you sure you want to force
+              register it?
             </Alert>
           </Box>
         )}
@@ -166,6 +197,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               }
               required={!hasPresetTopicName}
               readOnly={hasPresetTopicName}
+              placeholder={"-- Please select --"}
             >
               {topicNames.map((topic) => {
                 return (
@@ -208,6 +240,20 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             labelText={"Message for approval"}
             placeholder="Comments about this request for the approver."
           />
+          {isValidationError && (
+            <Box marginBottom={"l2"}>
+              {/*We only allow users to use the forceRegister option when the promotion request failed*/}
+              {/*And the failure is because of a schema compatibility issue*/}
+              <Checkbox<TopicRequestFormSchema>
+                name={"forceRegister"}
+                caption={
+                  "Overrides standard validation processes of the schema registry."
+                }
+              >
+                Force register
+              </Checkbox>
+            </Box>
+          )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton>Submit request</SubmitButton>
             <Button

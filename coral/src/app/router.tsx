@@ -53,8 +53,6 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -212,10 +210,8 @@ const routes: Array<RouteObject> = [
       {
         path: Routes.CONFIGURATION,
         children: [
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.ENVIRONMENTS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_CONFIGURATIONS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <EnvironmentsPage />,
             children: [
               {
@@ -238,7 +234,7 @@ const routes: Array<RouteObject> = [
                 id: EnvironmentsTabEnum.KAFKA_CONNECT,
               },
             ],
-          }),
+          },
         ],
       },
     ],

@@ -455,7 +455,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
              }
 
              if($scope.schema.forceRegister === true) {
-             remarks += " Force Register Schema option overriding schema compatibility has been selected."
+             remarks += " Force register for schema selected. This overrides standard schema compatibility."
              }
 
             var promoteSchemaReq = {};

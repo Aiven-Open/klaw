@@ -11,14 +11,9 @@ import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const configurationLinksEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_CONFIGURATIONS
-  );
 
   return (
     <Box
@@ -100,7 +95,7 @@ function MainNavigation() {
             <MainNavigationLink to={`/users`} linkText={"Users"} />
             <MainNavigationLink to={`/teams`} linkText={"Teams"} />
             <MainNavigationLink
-              to={configurationLinksEnabled ? Routes.ENVIRONMENTS : `/envs`}
+              to={Routes.ENVIRONMENTS}
               linkText={"Environments"}
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />

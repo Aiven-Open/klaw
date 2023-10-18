@@ -51,6 +51,7 @@ function TopicDetailsSchema() {
   const [showSchemaPromotionModal, setShowSchemaPromotionModal] =
     useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isValidationError, setIsValidationError] = useState(false);
 
   const toast = useToast();
 
@@ -88,10 +89,17 @@ function TopicDetailsSchema() {
       },
       {
         onError: (error: HTTPError) => {
-          setErrorMessage(parseErrorMsg(error));
-          setShowSchemaPromotionModal(false);
+          const message = parseErrorMsg(error);
+          if (message.includes("Schema is not compatible")) {
+            setIsValidationError(true);
+          } else {
+            setErrorMessage(message);
+            setShowSchemaPromotionModal(false);
+            setIsValidationError(false);
+          }
         },
         onSuccess: () => {
+          setIsValidationError(false);
           setErrorMessage("");
           queryClient.refetchQueries(["schema-overview"]).then(() => {
             setShowSchemaPromotionModal(false);
@@ -132,10 +140,7 @@ function TopicDetailsSchema() {
             version={schemaDetailsPerEnv.version}
             // We only allow users to use the forceRegister option when the promotion request failed
             // And the failure is because of a schema compatibility issue
-            showForceRegister={
-              errorMessage.length > 0 &&
-              errorMessage.includes("Schema is not compatible")
-            }
+            showForceRegister={isValidationError}
           />
         )}
       <PageHeader title="Schema" />

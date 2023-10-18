@@ -7,6 +7,9 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -439,8 +442,7 @@ public class SchemaRegistryControllerService {
     schemaRequest.setSchemaversion(schemaPromotion.getSchemaVersion());
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
     schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
-    Optional<Env> env = getSchemaEnvFromKafkaEnvId(schemaPromotion.getTargetEnvironment());
-    schemaRequest.setEnvironment(env.isPresent() ? env.get().getId() : null);
+    schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
     return schemaRequest;
   }
 
@@ -453,6 +455,26 @@ public class SchemaRegistryControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    Optional<Env> schemaEnv = getSchemaEnvFromKafkaEnvId(schemaRequest.getEnvironment());
+    if (schemaEnv.isPresent()) {
+      schemaRequest.setEnvironment(schemaEnv.get().getId());
+
+      String requestSchemasEnvs =
+          commonUtilsService.getEnvProperty(tenantId, REQUEST_SCHEMA_OF_ENVS);
+      if (requestSchemasEnvs == null) {
+        return ApiResponse.notOk(SCHEMA_ERR_109);
+      }
+      String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
+      if (!Arrays.stream(reqSchemaEnvs)
+          .collect(Collectors.toSet())
+          .contains(schemaEnv.get().getId())) {
+        return ApiResponse.notOk(SCHEMA_ERR_109);
+      }
+    } else {
+      return ApiResponse.notOk(SCHEMA_ERR_108);
     }
 
     // If force register is not set validate the schema
@@ -475,7 +497,7 @@ public class SchemaRegistryControllerService {
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     schemaRequest.setTeamId(userTeamId);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
       return ApiResponse.notOk(SCHEMA_ERR_106);
     }

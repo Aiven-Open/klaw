@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { requestSchemaCreation } from "src/domain/schema-request";
@@ -19,9 +19,9 @@ jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
+const mockGetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 const mockCreateSchemaRequest = requestSchemaCreation as jest.MockedFunction<
   typeof requestSchemaCreation
@@ -47,15 +47,17 @@ const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
 const testTopicName = "my-awesome-topic";
 
 const mockedEnvironments = [
-  { name: "DEV", id: "1" },
-  { name: "TST", id: "2" },
-  { name: "INFRA", id: "3" },
+  { name: "DEV", id: "1", associatedEnv: { id: "3", name: "DEV_SCH" } },
+  { name: "TST", id: "2", associatedEnv: { id: "9", name: "TST_SCH" } },
+  { name: "INFRA", id: "3", associatedEnv: { id: "9", name: "INFRA_SCH" } },
+  { name: "SOME", id: "3", associatedEnv: undefined },
 ];
-const mockedGetSchemaRegistryEnvironments = transformEnvironmentApiResponse(
-  mockedEnvironments.map((entry) => {
-    return createMockEnvironmentDTO(entry);
-  })
-);
+const mockedGetAllEnvironmentsForTopicAndAclResponse =
+  transformEnvironmentApiResponse(
+    mockedEnvironments.map((entry) => {
+      return createMockEnvironmentDTO(entry);
+    })
+  );
 
 const fileName = "my-awesome-schema.avsc";
 const testFile: File = new File(["{}"], fileName, {
@@ -75,8 +77,8 @@ describe("TopicSchemaRequest", () => {
 
   describe("checks if topicName passed from url is part of topics user can request schemas for", () => {
     beforeEach(() => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
     });
@@ -145,8 +147,8 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("does not redirect user if env ID query is part of list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
-        ...mockedGetSchemaRegistryEnvironments,
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
       customRender(
@@ -184,8 +186,8 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("does not redirect user if env name query is part of list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
-        ...mockedGetSchemaRegistryEnvironments,
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
       customRender(
@@ -223,8 +225,8 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("redirects user if env id query does not exist in list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
-        ...mockedGetSchemaRegistryEnvironments,
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
       customRender(
@@ -244,8 +246,8 @@ describe("TopicSchemaRequest", () => {
     });
 
     it("redirects user if env name query does not exist in list of environments", async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([
-        ...mockedGetSchemaRegistryEnvironments,
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
       customRender(
@@ -270,7 +272,7 @@ describe("TopicSchemaRequest", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       useQuerySpy.mockReturnValue({ data: [], isLoading: true });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
@@ -308,8 +310,8 @@ describe("TopicSchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
@@ -348,27 +350,34 @@ describe("TopicSchemaRequest", () => {
       expect(select).toBeRequired();
     });
 
-    it("renders all options for Environment based on api data", () => {
+    it("renders all options for Environment with associated env based on api data", () => {
+      const environmentsWithAssociatedEnvs = mockedEnvironments.filter(
+        (env) => env.associatedEnv
+      );
+
       const form = getForm();
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,
       });
       const options = within(select).getAllByRole("option");
 
-      expect(options).toHaveLength(mockedEnvironments.length + 1);
+      expect(options).toHaveLength(environmentsWithAssociatedEnvs.length + 1);
     });
 
     test.each(mockedEnvironments)(
-      `renders a option $name with the Environments id set as value $id`,
-      ({ name, id }) => {
-        const form = getForm();
-        const select = within(form).getByRole("combobox", {
-          name: /Environment/i,
-        });
-        const option = within(select).getByRole("option", { name: name });
+      `renders a option $name with the Environments id set as value $id when Environment has an associated env`,
+      (environment) => {
+        if (environment.associatedEnv) {
+          const { name, id } = environment;
+          const form = getForm();
+          const select = within(form).getByRole("combobox", {
+            name: /Environment/i,
+          });
+          const option = within(select).getByRole("option", { name: name });
 
-        expect(option).toBeVisible();
-        expect(option).toHaveValue(id);
+          expect(option).toBeVisible();
+          expect(option).toHaveValue(id);
+        }
       }
     );
 
@@ -441,8 +450,8 @@ describe("TopicSchemaRequest", () => {
 
   describe("shows errors when user does not fill out correctly", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
@@ -519,8 +528,8 @@ describe("TopicSchemaRequest", () => {
 
   describe("enables user to cancel the form input", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
@@ -635,8 +644,8 @@ describe("TopicSchemaRequest", () => {
 
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockRejectedValue({
         status: "400 BAD_REQUEST",
@@ -740,8 +749,8 @@ describe("TopicSchemaRequest", () => {
 
   describe("enables user to send a schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedGetSchemaRegistryEnvironments
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
       );
       mockCreateSchemaRequest.mockResolvedValue({
         success: true,
@@ -908,6 +917,143 @@ describe("TopicSchemaRequest", () => {
       await userEvent.click(button);
 
       expect(mockCreateSchemaRequest).toHaveBeenCalled();
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "Schema request successfully created",
+          position: "bottom-left",
+          variant: "default",
+        })
+      );
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(
+        "/requests/schemas?status=CREATED"
+      );
+    });
+  });
+
+  describe("enables user to send a schema request even if it's not compatible", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
+      );
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
+      // The first response to the test should be the compatibility error
+      // second response will be the success
+      mockCreateSchemaRequest
+        .mockRejectedValueOnce({
+          success: false,
+          message: "failure: Schema is not compatible",
+        })
+        .mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      mockedUseToast.mockReset();
+      cleanup();
+    });
+
+    it("gives user the option to force register", async () => {
+      const form = getForm();
+
+      const checkBoxBefore = within(form).queryByRole("checkbox", {
+        name: "Force register Overrides standard validation processes of the schema registry.",
+      });
+
+      const warningBefore = screen.queryByText("alertdialog");
+      expect(checkBoxBefore).not.toBeInTheDocument();
+      expect(warningBefore).not.toBeInTheDocument();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      const warningForceRegister = screen.getByRole("alert");
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register Overrides standard validation processes of the schema registry.",
+      });
+      expect(warningForceRegister).toBeVisible();
+      expect(warningForceRegister).toHaveTextContent(
+        "Uploaded schema appears invalid. Are you sure you want to" +
+          " force register it?"
+      );
+
+      expect(checkboxForceRegister).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({
+        message: "failure: Schema is not compatible",
+        success: false,
+      });
+    });
+
+    it("shows a notification informing user that force register for schema request was successful and redirects them", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(submitButton);
+
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register Overrides standard validation processes of the schema registry.",
+      });
+
+      await userEvent.click(checkboxForceRegister);
+      await userEvent.click(submitButton);
+
+      expect(mockCreateSchemaRequest).toHaveBeenNthCalledWith(2, {
+        forceRegister: true,
+        environment: "1",
+        remarks: "",
+        schemafull: "{}",
+        topicname: "my-awesome-topic",
+      });
+
       await waitFor(() =>
         expect(mockedUseToast).toHaveBeenCalledWith({
           message: "Schema request successfully created",

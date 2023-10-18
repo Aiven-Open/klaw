@@ -281,6 +281,11 @@ public class KlawErrorMessages {
 
   public static final String SCHEMA_ERR_107 = "Failure. A request already exists for this topic.";
 
+  public static final String SCHEMA_ERR_108 = "Failure. There is no associated schema environment.";
+
+  public static final String SCHEMA_ERR_109 =
+      "Failure. Request Schema environments not configured Settings - tenant config";
+
   public static final String SERVER_CONFIG_ERR_101 =
       "Failure. Invalid json / incorrect name values. Check tenant and env details.";
 
@@ -393,6 +398,9 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_VLD_ERR_123 =
       "Failure. This topic request cannot be edited, as it's not in CREATED state.";
+
+  public static final String TOPICS_VLD_ERR_124 =
+      "Failure. This topic does not exist in the cluster.";
 
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";

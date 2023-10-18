@@ -11,7 +11,7 @@ With several downloads every week, many more companies which did not adopt a sol
 - Bootstrap UI, Angular, Javascript, HTML, CSS
 - [Maven](https://maven.apache.org/) - Dependency Management
   - A maven wrapper, mvnw is included in the Klaw Git Repo
-- Java (Jdk 17), Spring boot 3, Spring security, SQL, Apache Kafka Admin client
+- Java (Jdk 17, 21), Spring boot 3, Spring security, SQL, Apache Kafka Admin client
 
 ## Versioning
 

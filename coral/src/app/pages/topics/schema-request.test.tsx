@@ -5,7 +5,7 @@ import { getQueryClientForTests } from "src/services/test-utils/query-client-tes
 import { render } from "@testing-library/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 
@@ -13,9 +13,9 @@ jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
+const mockGetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 const mockCreateSchemaRequest = requestSchemaCreation as jest.MockedFunction<
   typeof requestSchemaCreation
@@ -29,7 +29,7 @@ describe("SchemaRequest", () => {
     const topicName = "my-awesome-topic";
 
     beforeAll(() => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([topicName]);
       // @TODO if we decide to go with this kind of dynamic routes,
