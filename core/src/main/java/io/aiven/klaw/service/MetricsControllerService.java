@@ -79,7 +79,7 @@ public class MetricsControllerService {
 
   private ChartsJsOverview getBrokerTopMetricsOverview() {
     int numberOfDays = 30;
-    List<Map<String, String>> metricsCountList;
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> metricsCountList;
     String title = "Messages Per Sec";
 
     //        if(teamName != null) {
@@ -104,7 +104,6 @@ public class MetricsControllerService {
     return commonUtilsService.getChartsJsOverview(
         metricsCountList,
         title,
-        "messagescount",
         "datetime",
         "DateTime",
         "Messages",
