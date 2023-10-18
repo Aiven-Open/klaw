@@ -61,7 +61,7 @@ const mockedRequests: SchemaRequest[] = [
     currentPage: "1",
     deletable: false,
     editable: false,
-    forceRegister: false,
+    forceRegister: true,
   },
 ];
 
@@ -79,6 +79,7 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
+    { columnHeader: "Force register", relatedField: "forceRegister" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -277,6 +278,10 @@ describe("SchemaApprovalsTable", () => {
 
             if (column.columnHeader === "Request type") {
               text = requestOperationTypeNameMap[field as RequestOperationType];
+            }
+
+            if (column.columnHeader === "Force register") {
+              text = field ? "Yes" : "";
             }
 
             const cell = within(table).getByRole("cell", { name: text });
