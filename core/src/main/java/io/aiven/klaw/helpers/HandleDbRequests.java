@@ -9,6 +9,7 @@ import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
+import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -337,24 +338,32 @@ public interface HandleDbRequests {
 
   List<Topic> getAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
 
-  List<Map<String, String>> getActivityLogForLastDays(
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId);
 
-  List<Map<String, String>> getActivityLogByTeam(Integer teamId, int numberOfDays, int tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getActivityLogByTeam(
+      Integer teamId, int numberOfDays, int tenantId);
 
-  List<Map<String, String>> getTopicsCountByTeams(Integer teamId, int tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> getTopicsCountByTeams(
+      Integer teamId, int tenantId);
 
-  List<Map<String, String>> getTopicsCountByEnv(Integer tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getTopicsCountByEnv(
+      Integer tenantId);
 
-  List<Map<String, String>> getPartitionsCountByEnv(Integer teamId, Integer tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getPartitionsCountByEnv(
+      Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> getAclsCountByEnv(Integer teamId, Integer tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAclsCountByEnv(
+      Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> getAclsCountByTeams(String aclType, Integer teamId, Integer tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> getAclsCountByTeams(
+      String aclType, Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> getAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAllTopicsForTeamGroupByEnv(
+      Integer teamId, int tenantId);
 
-  List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
+  List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAllMetrics(
+      String metricsType, String metricsName, String env);
 
   Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion);
