@@ -153,10 +153,10 @@ public class ConnectControllerIT {
 
     return Jwts.builder()
         .claim("name", clusterApiUser)
-        .setSubject(clusterApiUser)
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(Date.from(now))
-        .setExpiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
+        .subject(clusterApiUser)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
         .signWith(hmacKey)
         .compact();
   }
