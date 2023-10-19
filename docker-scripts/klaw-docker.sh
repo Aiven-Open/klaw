@@ -39,7 +39,7 @@ deploy () {
 	echo `pwd`
 	echo "Deploy Klaw"
 	docker-compose -f docker-scripts/docker-compose-klaw.yaml up -d
-}	
+}
 
 testEnv () {
 	echo "Deploy Kafka"
@@ -50,26 +50,26 @@ destroy() {
   echo "Tear down container"
 	docker-compose -f docker-scripts/docker-compose-klaw.yaml down
   docker-compose -f docker-scripts/docker-compose-testEnv.yaml down
-  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml down
-  docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml down
+  docker-compose -f docker-scripts/docker-compose-klaw.yaml down
+  docker-compose -f docker-scripts/docker-compose-testEnv.yaml down
 }
 
 stop() {
   echo "Stop container"
   docker-compose -f docker-scripts/docker-compose-klaw.yaml stop
   docker-compose -f docker-scripts/docker-compose-testEnv.yaml stop
-  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml stop
-  docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml stop
+  docker-compose -f docker-scripts/docker-compose-klaw.yaml stop
+  docker-compose -f docker-scripts/docker-compose-testEnv.yaml stop
 }
 
 deployDeveloperEnv() {
   echo `pwd`
   echo "Deploy developer Klaw"
-  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
+  docker-compose -f docker-scripts/docker-compose-klaw.yaml up -d
 
 
   # Use 'docker-compose ps' to get information about running containers
-  container_info=$(docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml ps -q klaw-core)
+  container_info=$(docker-compose -f docker-scripts/docker-compose-klaw.yaml ps -q klaw-core)
 
   if [ -n "$container_info" ]; then
     container_address=$(docker port "$container_info" 9097)
@@ -103,7 +103,7 @@ then
 fi
 
 
-case $COMMAND in 
+case $COMMAND in
 	--all)
 		build
 		deploy
