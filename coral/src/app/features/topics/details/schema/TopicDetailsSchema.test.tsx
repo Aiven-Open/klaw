@@ -323,6 +323,63 @@ describe("TopicDetailsSchema", () => {
       });
     });
 
+    describe("when topic has (multiple) schema(s) and a promotion request is pending", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: {
+            ...testTopicSchemas,
+            schemaPromotionDetails: {
+              ...testTopicSchemas.schemaPromotionDetails,
+              status: "REQUEST_OPEN",
+            },
+          },
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: {
+            topicInfo: { topicOwner: true, hasOpenSchemaRequest: false },
+          },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows a disabled link to request a new version", () => {
+        const link = screen.getByRole("link", {
+          name: "Request a new version",
+        });
+
+        expect(link).toBeDisabled();
+        expect(link).not.toHaveAttribute("href");
+      });
+
+      it("shows information that there is a pending request", () => {
+        const info = screen.getByText(
+          `You cannot promote the schema at this time. A promotion request for ${testTopicName} is already in progress.`
+        );
+
+        expect(info).toBeVisible();
+      });
+    });
+
     describe("when topic has no schema yet and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
