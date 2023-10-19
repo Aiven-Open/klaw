@@ -14,6 +14,7 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { KlawApiError } from "src/services/api";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -928,6 +929,78 @@ describe("TopicSchemaRequest", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith(
         "/requests/schemas?status=CREATED"
       );
+    });
+  });
+
+  describe("handles errors when creating the schema request fails", () => {
+    const testError: KlawApiError = {
+      success: false,
+      message: "Oh no 😢",
+    };
+
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
+      );
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+      mockCreateSchemaRequest.mockRejectedValue(testError);
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      mockedUseToast.mockReset();
+      cleanup();
+    });
+
+    it("shows a error message informing user that schema request failed", async () => {
+      const form = getForm();
+      const alertBefore = screen.queryByRole("alert");
+      expect(alertBefore).not.toBeInTheDocument();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeEnabled();
+
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(testError);
+
+      const errorAlert = screen.getByRole("alert");
+      expect(errorAlert).toBeVisible();
+      expect(errorAlert).toHaveTextContent(testError.message);
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+      expect(mockedUseToast).not.toHaveBeenCalled();
     });
   });
 
