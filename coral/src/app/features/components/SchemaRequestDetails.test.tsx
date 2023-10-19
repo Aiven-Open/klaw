@@ -137,7 +137,7 @@ describe("SchemaRequestDetails", () => {
       expect(term).toBeVisible();
       expect(definition).toHaveTextContent(
         "Warning: This schema is being force registered. This will override standard validation process of the" +
-        " schema registry. Learn more"
+          " schema registry. Learn more"
       );
     });
   });
