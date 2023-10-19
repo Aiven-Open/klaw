@@ -1093,14 +1093,12 @@ public class SelectDataJdbc {
       Integer teamId, int numberOfDays, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Map<String, String>> fromDb =
+      List<Integer> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
-      for (Map<String, String> elem : fromDb) {
-        Map.Entry<String, String> next = elem.entrySet().iterator().next();
-        res.add(
-            CommonUtilsService.ChartsOverviewItem.of(
-                next.getKey(), Integer.parseInt(next.getValue())));
+      for (int elem : fromDb) {
+
+        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
       }
       return res;
     } catch (Exception e) {
@@ -1113,14 +1111,11 @@ public class SelectDataJdbc {
       int numberOfDays, String[] envIdList, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Map<String, String>> fromDb =
+      List<Integer> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
-      for (Map<String, String> elem : fromDb) {
-        Map.Entry<String, String> next = elem.entrySet().iterator().next();
-        res.add(
-            CommonUtilsService.ChartsOverviewItem.of(
-                next.getKey(), Integer.parseInt(next.getValue())));
+      for (int elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
       }
       return res;
     } catch (Exception e) {
@@ -1129,16 +1124,26 @@ public class SelectDataJdbc {
     return Collections.emptyList();
   }
 
-  private List<Map<String, String>> gatherActivityList(List<Object[]> activityCount) {
-    final List<Map<String, String>> totalActivityLogCount = new ArrayList<>(activityCount.size());
-    Map<String, String> hashMap;
-    for (Object[] activity : activityCount) {
-      hashMap = new HashMap<>(activity.length);
-      hashMap.put("dateofactivity", "" + activity[0]);
-      hashMap.put("activitycount", "" + ((Long) activity[1]).intValue());
-      totalActivityLogCount.add(hashMap);
+  static class ActivityCountItem {
+    private String dateOfActivity;
+    private int activityCount;
+
+    private ActivityCountItem(String dateOfActivity, int activityCount) {
+      this.dateOfActivity = dateOfActivity;
+      this.activityCount = activityCount;
     }
-    return totalActivityLogCount;
+
+    public static ActivityCountItem of(String dateOfActivity, int activityCount) {
+      return new ActivityCountItem(dateOfActivity, activityCount);
+    }
+  }
+
+  private List<Integer> gatherActivityList(List<Object[]> activityCount) {
+    List<Integer> res = new ArrayList<>(activityCount.size());
+    for (Object[] activity : activityCount) {
+      res.add((((Long) activity[1]).intValue()));
+    }
+    return res;
   }
 
   public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectTopicsCountByEnv(
