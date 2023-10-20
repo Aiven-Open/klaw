@@ -52,7 +52,7 @@ const SchemaRegistryEnvironments = () => {
           label={"Search Schema Registry Environment"}
           placeholder={"DEV_CLS, TST_SCH, ..."}
           description={
-            "Search for a partial match for an environment name, a cluster name, a tenant name."
+            "A partial match for an environment name, a cluster name, a tenant name."
           }
           ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,

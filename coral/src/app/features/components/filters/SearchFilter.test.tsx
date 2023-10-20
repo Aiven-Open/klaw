@@ -48,13 +48,15 @@ describe("SearchFilter.tsx", () => {
       expect(searchInput).toHaveAttribute("placeholder", placeholder);
     });
 
-    it("shows a description dependent on prop", () => {
+    it("shows a description dependent on description and ariaDescriptionprops", () => {
       const searchInput = screen.getByRole("search", { name: label });
 
-      expect(searchInput).toHaveAccessibleDescription(description);
+      expect(searchInput).toHaveAccessibleDescription(
+        `${description} ${ariaDescription}`
+      );
     });
 
-    it("has an aria-description dependent on prop", () => {
+    it("has an aria-description dependent on ariaDescription prop", () => {
       const searchInput = screen.getByRole("search", { name: label });
 
       expect(searchInput).toHaveAttribute("aria-description", ariaDescription);

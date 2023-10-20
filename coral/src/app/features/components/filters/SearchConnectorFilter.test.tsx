@@ -33,7 +33,7 @@ describe("SearchConnectorFilter.tsx", () => {
     });
 
     expect(searchInput).toHaveAccessibleDescription(
-      `A partial match for connector name.`
+      `A partial match for connector name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
     );
   });
 

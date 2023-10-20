@@ -6,7 +6,7 @@ function SearchTopicFilter() {
       label={"Search Topic"}
       placeholder={"my-topic-billings"}
       description={`Partial match for topic name.`}
-      ariaDescription={`Searching starts automatically with a little delay while typing`}
+      ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
     />
   );
 }

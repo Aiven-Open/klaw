@@ -229,7 +229,7 @@ const TopicSubscriptions = () => {
             key="search"
             label={"Search prinicipal or IP"}
             placeholder="Alice, 192.158.1.38."
-            description={"Search for a partial match principals or IPs."}
+            description={"A partial match principals or IPs."}
             ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
           />,
           <SegmentedControlGroup

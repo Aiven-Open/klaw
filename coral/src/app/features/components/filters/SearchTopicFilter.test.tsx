@@ -33,7 +33,7 @@ describe("SearchTopicFilter.tsx", () => {
     });
 
     expect(searchInput).toHaveAccessibleDescription(
-      `Partial match for topic name.`
+      `Partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
     );
   });
 

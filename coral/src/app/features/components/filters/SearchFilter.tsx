@@ -47,6 +47,7 @@ function SearchFilter({
       <Box marginTop={"1"} marginBottom={"3"}>
         <Typography.Caption id={"search-field-description"}>
           {description}
+          <div className={"visually-hidden"}>{ariaDescription}</div>
         </Typography.Caption>
       </Box>
     </Box>

@@ -53,7 +53,7 @@ const KafkaConnectEnvironments = () => {
           label={"Search Kafka Connect Environment"}
           placeholder={"DEV, TST, ..."}
           description={
-            "Search for a partial match for an environment name, a cluster name, a tenant name."
+            "A partial match for an environment name, a cluster name, a tenant name."
           }
           ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
