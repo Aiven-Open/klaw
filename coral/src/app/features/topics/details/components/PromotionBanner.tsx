@@ -64,7 +64,7 @@ function createText({
   const defaultText = `You cannot promote the ${type} at this time.`;
 
   if (requestType === "PROMOTE") {
-    return `${defaultText} An promotion request for ${entityName} is already in progress.`;
+    return `${defaultText} A promotion request for ${entityName} is already in progress.`;
   }
   if (requestType === "CLAIM") {
     return `${defaultText} A claim request for ${entityName} is in progress.`;
