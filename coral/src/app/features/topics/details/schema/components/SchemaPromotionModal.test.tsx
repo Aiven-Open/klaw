@@ -10,7 +10,7 @@ const testVersion = 1;
 describe("SchemaPromotionModal", () => {
   const user = userEvent.setup();
 
-  describe("renders all necessary elements (isLoading={false},  showForceRegister={false})", () => {
+  describe("renders all necessary elements for default promotion", () => {
     beforeAll(() => {
       render(
         <SchemaPromotionModal
@@ -91,7 +91,7 @@ describe("SchemaPromotionModal", () => {
     });
   });
 
-  describe("shows disabled UI (isLoading={true}, showForceRegister={true})", () => {
+  describe("shows disabled UI while loading is true for default promotion", () => {
     beforeAll(() => {
       render(
         <SchemaPromotionModal
@@ -100,7 +100,7 @@ describe("SchemaPromotionModal", () => {
           isLoading={true}
           version={testVersion}
           targetEnvironment={testTargetEnv}
-          showForceRegister={true}
+          showForceRegister={false}
         />
       );
     });
@@ -141,7 +141,7 @@ describe("SchemaPromotionModal", () => {
     });
   });
 
-  describe("enables user to cancel process ", () => {
+  describe("enables user to cancel process for default promotion", () => {
     beforeEach(() => {
       render(
         <SchemaPromotionModal
@@ -173,7 +173,64 @@ describe("SchemaPromotionModal", () => {
     });
   });
 
-  describe("enables user to start the promotion process (showForceRegister={true})", () => {
+  describe("enables user to start the promotion process", () => {
+    beforeEach(() => {
+      render(
+        <SchemaPromotionModal
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+          isLoading={false}
+          version={testVersion}
+          targetEnvironment={testTargetEnv}
+          showForceRegister={false}
+        />
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("triggers a given submit function with correct payload when user does not adds a reason", async () => {
+      const dialog = screen.getByRole("dialog");
+
+      const confirmationButton = within(dialog).getByRole("button", {
+        name: "Request schema promotion",
+      });
+
+      await user.click(confirmationButton);
+
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        forceRegister: false,
+        remarks: "",
+      });
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+
+    it("triggers a given submit function with correct date when adds a reason", async () => {
+      const dialog = screen.getByRole("dialog");
+
+      const textarea = within(dialog).getByRole("textbox", {
+        name: "You can add the reason to promote the schema (optional)",
+      });
+
+      const confirmationButton = within(dialog).getByRole("button", {
+        name: "Request schema promotion",
+      });
+
+      await user.type(textarea, "This is my reason");
+      await user.click(confirmationButton);
+
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        forceRegister: false,
+        remarks: "This is my reason",
+      });
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("optional enables user to start the promotion process (showForceRegister={true})", () => {
     beforeEach(() => {
       render(
         <SchemaPromotionModal
@@ -196,61 +253,45 @@ describe("SchemaPromotionModal", () => {
       const warning = screen.getByRole("alert");
 
       expect(warning).toBeVisible();
-      expect(warning).toHaveTextContent(
-        "Uploaded schema appears invalid. Are you sure you want to force register it?"
+      expect(warning).toHaveTextContent("Uploaded schema appears invalid.");
+    });
+
+    it("shows a checkbox to confirm force register", async () => {
+      const dialog = screen.getByRole("dialog");
+
+      const forceRegisterSwitch = within(dialog).getByRole("checkbox");
+      expect(forceRegisterSwitch).toHaveAccessibleName(
+        /Force register schema promotion Warning: This will override standard validation process of the schema registry. Learn more/
       );
+      expect(forceRegisterSwitch).toBeEnabled();
     });
 
-    it("triggers a given submit function with correct payload when user does not switch Force register or adds a reason", async () => {
+    it("changes the submit button text and disables button until checkbox is checked", async () => {
       const dialog = screen.getByRole("dialog");
 
       const confirmationButton = within(dialog).getByRole("button", {
-        name: "Request schema promotion",
+        name: "Force register",
       });
+      const forceRegisterSwitch = within(dialog).getByRole("checkbox");
 
-      await user.click(confirmationButton);
-
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        forceRegister: false,
-        remarks: "",
-      });
-      expect(mockOnClose).not.toHaveBeenCalled();
-    });
-
-    it("triggers a given submit function with correct date when user does switch Force register and not adds a reason", async () => {
-      const dialog = screen.getByRole("dialog");
-
-      const forceRegisterSwitch = screen.getByRole("checkbox", {
-        name: "Force register Overrides standard validation processes of the schema registry.",
-      });
-
-      const confirmationButton = within(dialog).getByRole("button", {
-        name: "Request schema promotion",
-      });
+      expect(confirmationButton).toBeDisabled();
 
       await user.click(forceRegisterSwitch);
-      await user.click(confirmationButton);
 
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        forceRegister: true,
-        remarks: "",
-      });
-      expect(mockOnClose).not.toHaveBeenCalled();
+      expect(confirmationButton).toBeEnabled();
     });
 
-    it("triggers a given submit function with correct date when user does check checkbox and adds a reason", async () => {
+    it("triggers a given submit function with correct data", async () => {
       const dialog = screen.getByRole("dialog");
 
-      const forceRegisterSwitch = screen.getByRole("checkbox", {
-        name: "Force register Overrides standard validation processes of the schema registry.",
-      });
+      const forceRegisterSwitch = within(dialog).getByRole("checkbox");
 
       const textarea = within(dialog).getByRole("textbox", {
         name: "You can add the reason to promote the schema (optional)",
       });
 
       const confirmationButton = within(dialog).getByRole("button", {
-        name: "Request schema promotion",
+        name: "Force register",
       });
 
       await user.click(forceRegisterSwitch);
