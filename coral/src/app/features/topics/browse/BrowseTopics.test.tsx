@@ -340,7 +340,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toHaveValue("");
 
       await userEvent.type(search, testSearchInput);
@@ -356,7 +356,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("can navigate to search input with keyboard", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toHaveValue("");
 
