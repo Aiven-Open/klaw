@@ -310,7 +310,7 @@ describe("AclApprovals", () => {
     });
 
     it("renders a search field for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -377,7 +377,7 @@ describe("AclApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeEnabled();
 
@@ -423,7 +423,7 @@ describe("AclApprovals", () => {
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("PRODUCER");
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");

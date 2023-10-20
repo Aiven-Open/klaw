@@ -356,7 +356,7 @@ describe("ConnectorRequests", () => {
       });
 
       const search = screen.getByRole("search", {
-        name: "Search Connector name",
+        name: "Search Connector",
       });
       expect(search).toBeVisible();
 

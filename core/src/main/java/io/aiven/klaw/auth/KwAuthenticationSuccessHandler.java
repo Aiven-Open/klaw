@@ -3,6 +3,7 @@ package io.aiven.klaw.auth;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.service.UtilControllerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,6 +24,9 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 
   @Value("${klaw.quickstart.enabled:false}")
   private boolean quickStartEnabled;
+
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
 
   @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsernameAttribute;
@@ -52,6 +56,16 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 UtilMethods.getUserName(authentication.getPrincipal(), preferredUsernameAttribute))
             .getRole()
             .equals(KwConstants.USER_ROLE)) {
+      return coralTopicsUri;
+    }
+
+    if (coralEnabled
+        && UtilControllerService.isCoralBuilt
+        && !handleDbRequests
+            .getUsersInfo(
+                UtilMethods.getUserName(authentication.getPrincipal(), preferredUsernameAttribute))
+            .getRole()
+            .equals(KwConstants.SUPERADMIN_ROLE)) {
       return coralTopicsUri;
     }
 

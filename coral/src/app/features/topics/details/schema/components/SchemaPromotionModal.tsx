@@ -33,13 +33,14 @@ const SchemaPromotionModal = ({
       title={`Promote schema to ${targetEnvironment}`}
       close={onClose}
       primaryAction={{
-        text: "Request schema promotion",
+        text: showForceRegister ? "Force register" : "Request schema promotion",
         onClick: () =>
           onSubmit({
             remarks,
             forceRegister,
           }),
         loading: isLoading,
+        disabled: showForceRegister && !forceRegister,
       }}
       secondaryAction={{
         text: "Cancel",
@@ -51,14 +52,6 @@ const SchemaPromotionModal = ({
         <p>
           {`Promote the Version ${version} of the schema to ${targetEnvironment}?`}
         </p>
-        {showForceRegister && (
-          <Box marginBottom={"l1"}>
-            <Alert type={"warning"}>
-              Uploaded schema appears invalid. Are you sure you want to force
-              register it?
-            </Alert>
-          </Box>
-        )}
         <Textarea
           labelText="You can add the reason to promote the schema (optional)"
           placeholder="Write a message..."
@@ -70,16 +63,34 @@ const SchemaPromotionModal = ({
           disabled={isLoading}
         />
         {showForceRegister && (
-          <Checkbox
-            disabled={isLoading}
-            checked={forceRegister}
-            caption={
-              "Overrides standard validation processes of the schema registry."
-            }
-            onChange={(e) => setForceRegister(e.target.checked)}
-          >
-            Force register
-          </Checkbox>
+          <>
+            <Box>
+              <Alert type={"warning"}>Uploaded schema appears invalid.</Alert>
+            </Box>
+
+            <Checkbox
+              disabled={isLoading}
+              checked={forceRegister}
+              caption={
+                <>
+                  Warning: This will override standard validation process of the
+                  schema registry.{" "}
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={
+                      "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
+                    }
+                  >
+                    Learn more
+                  </a>
+                </>
+              }
+              onChange={(e) => setForceRegister(e.target.checked)}
+            >
+              Force register schema promotion
+            </Checkbox>
+          </>
         )}
       </Box>
     </Modal>

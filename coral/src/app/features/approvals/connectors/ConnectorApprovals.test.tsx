@@ -222,7 +222,7 @@ describe("ConnectorApprovals", () => {
 
     it("shows a search input to search for topic names", () => {
       const search = screen.getByRole("search", {
-        name: "Search Connector name",
+        name: "Search Connector",
       });
 
       expect(search).toBeVisible();
