@@ -55,12 +55,6 @@ describe("SearchFilter.tsx", () => {
         `${description} ${ariaDescription}`
       );
     });
-
-    it("has an aria-description dependent on ariaDescription prop", () => {
-      const searchInput = screen.getByRole("search", { name: label });
-
-      expect(searchInput).toHaveAttribute("aria-description", ariaDescription);
-    });
   });
 
   describe("sets the field value on a query param", () => {

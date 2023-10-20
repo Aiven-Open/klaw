@@ -36,7 +36,6 @@ function SearchFilter({
         aria-describedby={descriptionId}
         role="search"
         placeholder={placeholder}
-        aria-description={ariaDescription}
         defaultValue={search.toString()}
         onChange={debounce(
           (event: ChangeEvent<HTMLInputElement>) =>

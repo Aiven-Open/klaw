@@ -36,12 +36,4 @@ describe("SearchTopicFilter.tsx", () => {
       `Partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
     );
   });
-
-  it("shows a description for assistive technology", () => {
-    const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Topic",
-    });
-
-    expect(searchInput).toHaveAttribute(`aria-description`);
-  });
 });

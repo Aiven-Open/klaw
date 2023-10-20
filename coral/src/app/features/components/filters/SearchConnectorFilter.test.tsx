@@ -36,15 +36,4 @@ describe("SearchConnectorFilter.tsx", () => {
       `A partial match for connector name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
     );
   });
-
-  it("shows a description for assistive technology", () => {
-    const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Connector",
-    });
-
-    expect(searchInput).toHaveAttribute(
-      "aria-description",
-      `Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`
-    );
-  });
 });
