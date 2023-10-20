@@ -1,14 +1,11 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -16,10 +13,8 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
-import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,8 +45,6 @@ public class UiConfigControllerServiceTest {
 
   @Mock private UserInfo userInfo;
 
-  @Mock private UserInfoModel userInfoModel;
-
   @Mock private UserDetails userDetails;
 
   @Mock private ManageDatabase manageDatabase;
@@ -71,8 +64,6 @@ public class UiConfigControllerServiceTest {
   private EnvsClustersTenantsControllerService envsClustersTenantsControllerService;
 
   private UsersTeamsControllerService usersTeamsControllerService;
-
-  private UiConfigControllerService uiConfigControllerService;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -130,112 +121,6 @@ public class UiConfigControllerServiceTest {
     List<EnvModelResponse> envsList = envsClustersTenantsControllerService.getSchemaRegEnvs();
 
     assertThat(envsList).isEmpty();
-  }
-
-  @Test
-  @Order(5)
-  public void getRequestSchemaEnvs_IsEmpty() {
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
-    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    List<EnvModelResponse> envsList =
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests();
-
-    assertThat(envsList).isEmpty();
-  }
-
-  @Test
-  @Order(6)
-  public void getRequestSchemaEnvs_ReturnDevEnv() {
-
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
-        .thenReturn("DEV");
-    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
-        .thenReturn(getSchemaRegistryClusters());
-    List<EnvModelResponse> envsList =
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests();
-
-    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
-    assertThat(envsList.size()).isEqualTo(1);
-  }
-
-  @Test
-  @Order(7)
-  public void getRequestSchemaEnvs_GivenWrongSchemaEnvNameReturnDevEnvOnly() {
-    // sTT is a misspelt env one tht does not exist and so should not be returned.
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
-        .thenReturn("DEV,sTT");
-    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
-        .thenReturn(getSchemaRegistryClusters());
-    List<EnvModelResponse> envsList =
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests();
-
-    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
-    assertThat(envsList.size()).isEqualTo(1);
-  }
-
-  @Test
-  @Order(8)
-  public void getRequestSchemaEnvs_GivenTwoSchemaEnvsReturnBoth() {
-    // DEV and TSTS are both spelt correctly and configured so both should be returned.
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
-        .thenReturn("DEV,TST");
-    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
-        .thenReturn(getSchemaRegistryClusters());
-    List<EnvModelResponse> envsList =
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests();
-
-    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
-    assertThat(envsList.get(1).getName()).isEqualTo("TST");
-    assertThat(envsList.size()).isEqualTo(2);
-  }
-
-  @Test
-  @Order(9)
-  public void getRequestSchemaEnvs_GivenThreeSchemaEnvsReturnOnlyTheTwoConfigured() {
-    // only two kWclusters are configured DEV and TST so UAT should not return.
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS)))
-        .thenReturn("DEV,TST,UAT");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
-        .thenReturn("DEV,TST,UAT");
-    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
-        .thenReturn(getSchemaRegistryClusters());
-    List<EnvModelResponse> envsList =
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests();
-
-    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
-    assertThat(envsList.get(1).getName()).isEqualTo("TST");
-    assertThat(envsList.size()).isEqualTo(2);
-  }
-
-  private Map<Integer, KwClusters> getSchemaRegistryClusters() {
-    Map<Integer, KwClusters> map = new HashMap<>();
-    UtilMethods util = new UtilMethods();
-    map.put(1, util.getKwClusters());
-    map.put(4, util.getKwClusters());
-    return map;
   }
 
   private List<Env> getAllSchemaEnvs() {

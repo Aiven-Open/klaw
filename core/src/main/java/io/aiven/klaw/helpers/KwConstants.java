@@ -89,8 +89,7 @@ public class KwConstants {
           + "    \"tenantName\" : \"default\",\n"
           + "    \"baseSyncEnvironment\" : \"1\",\n"
           + "    \"orderOfTopicPromotionEnvsList\" : [ \"1\" ],\n"
-          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ],\n"
-          + "    \"requestSchemaEnvironmentsList\" : [ \"2\" ]\n"
+          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ]\n"
           + "  }\n"
           + "}";
   public static final String ADDUSER_ROLES = "USER";
@@ -108,8 +107,6 @@ public class KwConstants {
   public static final String REQUEST_TOPICS_OF_ENVS = "REQUEST_TOPICS_OF_ENVS";
 
   public static final String ORDER_OF_TOPIC_ENVS = "ORDER_OF_ENVS";
-
-  public static final String REQUEST_SCHEMA_OF_ENVS = "REQUEST_SCHEMA_OF_ENVS";
 
   public static final String ORDER_OF_KAFKA_CONNECT_ENVS = "ORDER_OF_KAFKA_CONNECT_ENVS";
 
