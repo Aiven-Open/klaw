@@ -1,11 +1,5 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import {
-  Grid,
-  GridItem,
-  InlineIcon,
-  StatusChip,
-  Typography,
-} from "@aivenio/aquarium";
+import { Grid, GridItem, StatusChip, Typography } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
@@ -42,7 +36,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
       </GridItem>
       {request.forceRegister && (
         <GridItem>
-          <Label>Force register</Label>
+          <Label>Force register applied</Label>
           <dd>
             {" "}
             <Typography.Small>

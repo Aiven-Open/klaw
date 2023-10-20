@@ -119,7 +119,7 @@ describe("SchemaRequestDetails", () => {
     it("shows no field when forceRegister is false", () => {
       render(<SchemaRequestDetails request={testRequest} />);
 
-      const term = screen.queryByText("Force register");
+      const term = screen.queryByText("Force register applied");
 
       expect(term).not.toBeInTheDocument();
     });
@@ -131,7 +131,7 @@ describe("SchemaRequestDetails", () => {
         />
       );
 
-      const term = findTerm("Force register");
+      const term = findTerm("Force register applied");
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();
