@@ -1,5 +1,11 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import { Box, Grid, GridItem, StatusChip, Typography } from "@aivenio/aquarium";
+import {
+  Grid,
+  GridItem,
+  InlineIcon,
+  StatusChip,
+  Typography,
+} from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
@@ -19,23 +25,23 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Box.Flex flexDirection={"column"}>
+      <GridItem>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </Box.Flex>
-      <Box.Flex flexDirection={"column"}>
+      </GridItem>
+      <GridItem>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
-      </Box.Flex>
+      </GridItem>
 
-      <Box.Flex flexDirection={"column"}>
+      <GridItem>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
-      </Box.Flex>
+      </GridItem>
       {request.forceRegister && (
-        <Box.Flex flexDirection={"column"}>
+        <GridItem>
           <Label>Force register</Label>
           <dd>
             {" "}
@@ -53,11 +59,11 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               </a>
             </Typography.Small>
           </dd>
-        </Box.Flex>
+        </GridItem>
       )}
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex flexDirection={"column"}>
+        <GridItem>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -79,24 +85,24 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </Box.Flex>
+        </GridItem>
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Box.Flex flexDirection={"column"}>
+        <GridItem>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </Box.Flex>
+        </GridItem>
       </GridItem>
 
-      <Box.Flex flexDirection={"column"}>
+      <GridItem>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </Box.Flex>
-      <Box.Flex flexDirection={"column"}>
+      </GridItem>
+      <GridItem>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </Box.Flex>
+      </GridItem>
     </Grid>
   );
 }
