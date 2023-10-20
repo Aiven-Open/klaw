@@ -89,8 +89,7 @@ public class KwConstants {
           + "    \"tenantName\" : \"default\",\n"
           + "    \"baseSyncEnvironment\" : \"1\",\n"
           + "    \"orderOfTopicPromotionEnvsList\" : [ \"1\" ],\n"
-          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ],\n"
-          + "    \"requestSchemaEnvironmentsList\" : [ \"2\" ]\n"
+          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ]\n"
           + "  }\n"
           + "}";
   public static final String ADDUSER_ROLES = "USER";
