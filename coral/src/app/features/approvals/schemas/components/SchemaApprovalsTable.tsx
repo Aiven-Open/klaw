@@ -82,17 +82,6 @@ function SchemaApprovalsTable({
         };
       },
     },
-    {
-      type: "custom",
-      field: "forceRegister",
-      headerName: "Force register",
-      UNSAFE_render: ({ forceRegister }: { forceRegister: boolean }) => {
-        if (forceRegister) {
-          return <StatusChip text={"Yes"} status={"danger"} dense={true} />;
-        }
-      },
-    },
-
     { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",
@@ -100,6 +89,22 @@ function SchemaApprovalsTable({
       headerName: "Requested on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
+      },
+    },
+    {
+      type: "custom",
+      field: "forceRegister",
+      headerName: "Additional notes",
+      UNSAFE_render: ({ forceRegister }: { forceRegister: boolean }) => {
+        if (forceRegister) {
+          return (
+            <StatusChip
+              text={"Force register applied"}
+              status={"danger"}
+              dense={true}
+            />
+          );
+        }
       },
     },
     {

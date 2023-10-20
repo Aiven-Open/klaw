@@ -79,7 +79,7 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
-    { columnHeader: "Force register", relatedField: "forceRegister" },
+    { columnHeader: "Additional notes", relatedField: "forceRegister" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -280,8 +280,8 @@ describe("SchemaApprovalsTable", () => {
               text = requestOperationTypeNameMap[field as RequestOperationType];
             }
 
-            if (column.columnHeader === "Force register") {
-              text = field ? "Yes" : "";
+            if (column.columnHeader === "Additional notes") {
+              text = field ? "Force register applied" : "";
             }
 
             const cell = within(table).getByRole("cell", { name: text });
