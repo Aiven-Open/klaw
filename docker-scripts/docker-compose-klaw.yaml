@@ -1,5 +1,4 @@
 ---
-version: '4'
 services:
   klaw-core:
     image: klaw-core:latest
