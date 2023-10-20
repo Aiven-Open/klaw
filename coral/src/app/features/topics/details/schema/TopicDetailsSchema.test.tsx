@@ -1052,11 +1052,11 @@ describe("TopicDetailsSchema", () => {
           topicName: "topic-name",
         });
 
-        const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides standard validation processes of the schema registry.",
-        });
-
-        expect(checkboxToForceRegister).toBeVisible();
+        const checkboxToForceRegister = screen.getByRole("checkbox");
+        expect(checkboxToForceRegister).toHaveAccessibleName(
+          /Force register schema promotion Warning: This will override standard validation process of the schema registry. Learn more/
+        );
+        expect(checkboxToForceRegister).toBeEnabled();
 
         expect(console.error).toHaveBeenCalledWith({
           message: "failure: Schema is not compatible",
@@ -1088,9 +1088,7 @@ describe("TopicDetailsSchema", () => {
 
         await user.click(buttonRequest);
 
-        const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides standard validation processes of the schema registry.",
-        });
+        const checkboxToForceRegister = screen.getByRole("checkbox");
 
         await user.click(checkboxToForceRegister);
         await user.click(buttonRequest);
@@ -1134,9 +1132,7 @@ describe("TopicDetailsSchema", () => {
 
         await user.click(buttonRequest);
 
-        const checkboxToForceRegister = screen.getByRole("checkbox", {
-          name: "Force register Overrides standard validation processes of the schema registry.",
-        });
+        const checkboxToForceRegister = screen.getByRole("checkbox");
 
         await user.click(checkboxToForceRegister);
         await user.click(buttonRequest);
