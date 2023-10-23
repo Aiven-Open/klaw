@@ -50,8 +50,10 @@ const KafkaEnvironments = () => {
       filters={[
         <SearchFilter
           key="search"
-          placeholder={"Search Kafka Environment"}
-          description={`Search for a partial match for an environment name, a cluster name, a tenant name, a partition or replication parameter. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+          label="Search Kafka Environment"
+          placeholder={"DEV, TST, ..."}
+          description={`Partial match for an environment name, a cluster name, a tenant name...`}
+          ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
       ]}
       table={table}

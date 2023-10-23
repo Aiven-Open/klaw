@@ -181,7 +181,14 @@ function TopicDetailsSchema() {
           <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
-              disabled={!createSchemaAllowed || hasOpenSchemaRequest}
+              // user can not promote a schema when it it's forbidden, when there is an open request
+              // or an open promotion request
+
+              disabled={
+                !createSchemaAllowed ||
+                hasOpenSchemaRequest ||
+                schemaPromotionDetails.status === "REQUEST_OPEN"
+              }
             >
               <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
                 <InlineIcon

@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
-import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
@@ -576,12 +575,6 @@ public class CommonUtilsService {
             requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           }
         }
-        case REQUEST_SCHEMA_OF_ENVS -> {
-          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
-          if (requestSchema != null && !requestSchema.isEmpty()) {
-            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-        }
       }
 
       return intOrderEnvsList.stream().map(String::valueOf).collect(Collectors.joining(","));
@@ -754,10 +747,19 @@ public class CommonUtilsService {
 
   public boolean isCreateNewSchemaAllowed(String schemaEnvId, int tenantId) {
     KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
-    List<String> reqSchemaEnvs =
-        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
+    List<String> topicReqsEnvList =
+        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestTopicsEnvironmentsList();
 
-    return reqSchemaEnvs != null ? reqSchemaEnvs.contains(schemaEnvId) : false;
+    for (String id : topicReqsEnvList) {
+      Optional<Env> kafkaEnv = manageDatabase.getEnv(tenantId, Integer.valueOf(id));
+      if (kafkaEnv.isPresent()
+          && kafkaEnv.get().getAssociatedEnv() != null
+          && kafkaEnv.get().getAssociatedEnv().getId().equals(schemaEnvId)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public Env getEnvDetails(String envId, int tenantId) {

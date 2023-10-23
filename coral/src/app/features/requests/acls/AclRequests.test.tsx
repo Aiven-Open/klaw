@@ -319,7 +319,7 @@ describe("AclRequests", () => {
         queryClient: true,
         memoryRouter: true,
       });
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
 
       await userEvent.type(search, "abc");

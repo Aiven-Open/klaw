@@ -16,7 +16,6 @@ import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
-import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
@@ -493,27 +492,6 @@ public class EnvsClustersTenantsControllerService {
           });
     }
 
-    return envModelList;
-  }
-
-  public List<EnvModelResponse> getEnvsForSchemaRequests() {
-    int tenantId = getUserDetails(getUserName()).getTenantId();
-
-    String requestSchemasEnvs = commonUtilsService.getEnvProperty(tenantId, REQUEST_SCHEMA_OF_ENVS);
-    if (requestSchemasEnvs == null) {
-      return new ArrayList<>();
-    }
-    String orderOfEnvs = commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId);
-    String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
-    List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
-    List<EnvModelResponse> envModelList =
-        getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
-    log.debug("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
-    envModelList = filterEnvironmentModelList(reqSchemaEnvs, envModelList);
-    if (orderOfEnvs == null) {
-      return envModelList;
-    }
-    envModelList.sort(Comparator.comparingInt(schemaEnv -> orderOfEnvs.indexOf(schemaEnv.getId())));
     return envModelList;
   }
 
