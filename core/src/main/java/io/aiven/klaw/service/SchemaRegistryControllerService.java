@@ -9,7 +9,6 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
-import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -449,7 +448,7 @@ public class SchemaRegistryControllerService {
   public ApiResponse uploadSchema(
       SchemaRequestModel schemaRequest, RequestOperationType requestOperationType)
       throws KlawException {
-    log.info("uploadSchema {}", schemaRequest);
+    log.info("uploadSchema {}, requestOperationType {}", schemaRequest, requestOperationType);
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
@@ -461,18 +460,14 @@ public class SchemaRegistryControllerService {
     Optional<Env> schemaEnv = getSchemaEnvFromKafkaEnvId(schemaRequest.getEnvironment());
     if (schemaEnv.isPresent()) {
       schemaRequest.setEnvironment(schemaEnv.get().getId());
+      // Check to see if the schema Registry exists
+      Optional<Env> schemaReg =
+          manageDatabase.getEnv(
+              schemaEnv.get().getTenantId(), Integer.valueOf(schemaEnv.get().getId()));
+      if (schemaReg.isEmpty()) {
+        return ApiResponse.notOk(SCHEMA_ERR_109);
+      }
 
-      String requestSchemasEnvs =
-          commonUtilsService.getEnvProperty(tenantId, REQUEST_SCHEMA_OF_ENVS);
-      if (requestSchemasEnvs == null) {
-        return ApiResponse.notOk(SCHEMA_ERR_109);
-      }
-      String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
-      if (!Arrays.stream(reqSchemaEnvs)
-          .collect(Collectors.toSet())
-          .contains(schemaEnv.get().getId())) {
-        return ApiResponse.notOk(SCHEMA_ERR_109);
-      }
     } else {
       return ApiResponse.notOk(SCHEMA_ERR_108);
     }
