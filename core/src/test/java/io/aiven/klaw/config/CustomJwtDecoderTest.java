@@ -43,10 +43,10 @@ public class CustomJwtDecoderTest {
     return Jwts.builder()
         .claim("name", "Jane Doe")
         .claim("email", "jane@example.com")
-        .setSubject("jane")
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(new Date())
-        .setExpiration(Date.from(new Date().toInstant().plus(5, ChronoUnit.DAYS)))
+        .subject("jane")
+        .id(UUID.randomUUID().toString())
+        .issuedAt(new Date())
+        .expiration(Date.from(new Date().toInstant().plus(5, ChronoUnit.DAYS)))
         .compact();
   }
 
