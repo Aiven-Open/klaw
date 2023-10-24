@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Box, Grid, StatusChip } from "@aivenio/aquarium";
 import { AclRequest } from "src/domain/acl/acl-types";
 
 interface DetailsModalContentProps {
@@ -55,8 +55,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
         <Label>Topic</Label>
         <dd>{topicname}</dd>
       </Box.Flex>
-
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Principals/Usernames</Label>
           <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
@@ -69,10 +68,10 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
             ))}
           </Box.Flex>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
 
       {acl_ip.length > 0 && (
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <Box.Flex flexDirection={"column"}>
             <Label>IP addresses</Label>
             <Box.Flex flexDirection={"row"} gap={"2"} component={"ul"}>
@@ -85,10 +84,10 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
               ))}
             </Box.Flex>
           </Box.Flex>
-        </GridItem>
+        </Grid.Item>
       )}
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Consumer group</Label>
           <dd>
@@ -104,14 +103,14 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
             }
           </dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
 
       <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>

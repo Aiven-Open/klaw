@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@aivenio/aquarium':
-    specifier: ^1.39.0
+    specifier: ^1.43.0
     version: 1.43.0(@types/react-dom@18.2.7)(@types/react@18.2.21)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)(webpack@5.89.0)
   '@hookform/resolvers':
     specifier: ^2.9.10
