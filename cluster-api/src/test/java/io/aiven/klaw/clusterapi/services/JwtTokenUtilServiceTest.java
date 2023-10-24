@@ -32,7 +32,7 @@ class JwtTokenUtilServiceTest {
     String username = "user123";
     String token =
         Jwts.builder()
-            .setSubject(username)
+            .subject(username)
             .claim("name", "John Doe")
             .claim("role", "admin")
             .signWith(hmacKey)
@@ -49,8 +49,8 @@ class JwtTokenUtilServiceTest {
     String username = "user123";
     String token =
         Jwts.builder()
-            .setSubject(username)
-            .setExpiration(new DateTime().plusDays(1).toDate())
+            .subject(username)
+            .expiration(new DateTime().plusDays(1).toDate())
             .claim("name", "John Doe")
             .claim("role", "admin")
             .signWith(hmacKey)

@@ -1249,10 +1249,10 @@ public class ClusterApiService {
 
     return Jwts.builder()
         .claim("name", username)
-        .setSubject(username)
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(Date.from(now))
-        .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .subject(username)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
         .signWith(hmacKey)
         .compact();
   }
