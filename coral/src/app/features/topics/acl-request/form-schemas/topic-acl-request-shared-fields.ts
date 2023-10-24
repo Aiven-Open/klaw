@@ -51,7 +51,7 @@ const acl_ssl = z
     (values) => {
       const allowedCharactersRegex = /^[a-zA-Z0-9_.,=-]+$/;
       return (
-        values.find((value) => allowedCharactersRegex.test(value)) === undefined
+        values.find((value) => allowedCharactersRegex.test(value)) !== undefined
       );
     },
     {
