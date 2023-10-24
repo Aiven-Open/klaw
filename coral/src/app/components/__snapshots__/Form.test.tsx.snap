@@ -16,7 +16,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
           class="block mb-2"
         >
           <span
-            class="inline-flex items-center typography-small-strong text-grey-60"
+            class="inline-flex items-center typography-small-strong text-grey-70"
           >
             PasswordInput
           </span>
@@ -25,6 +25,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
           class="Aquarium-InputBase relative block"
         >
           <input
+            aria-required="false"
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
             id="input-1226"
             name="password"
@@ -63,7 +64,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
           class="block mb-2"
         >
           <span
-            class="inline-flex items-center typography-small-strong text-grey-60"
+            class="inline-flex items-center typography-small-strong text-grey-70"
           >
             TextInput
           </span>
@@ -72,6 +73,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
           class="Aquarium-InputBase relative block"
         >
           <input
+            aria-required="false"
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
             id="input-55"
             name="formFieldsCustomName"
