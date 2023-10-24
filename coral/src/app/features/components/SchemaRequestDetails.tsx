@@ -1,5 +1,5 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import { Grid, GridItem, StatusChip, Typography } from "@aivenio/aquarium";
+import { Grid, StatusChip, Typography } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
@@ -19,23 +19,23 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <GridItem>
+      <Grid.Item>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </GridItem>
-      <GridItem>
+      </Grid.Item>
+      <Grid.Item>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
-      </GridItem>
+      </Grid.Item>
 
-      <GridItem>
+      <Grid.Item xs={2}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
-      </GridItem>
+      </Grid.Item>
       {request.forceRegister && (
-        <GridItem>
+        <Grid.Item xs={2}>
           <Label>Force register applied</Label>
           <dd>
             {" "}
@@ -53,11 +53,11 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               </a>
             </Typography.Small>
           </dd>
-        </GridItem>
+        </Grid.Item>
       )}
 
-      <GridItem colSpan={"span-2"}>
-        <GridItem>
+      <Grid.Item xs={2}>
+        <Grid.Item>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -79,24 +79,24 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </GridItem>
-      </GridItem>
+        </Grid.Item>
+      </Grid.Item>
 
-      <GridItem colSpan={"span-2"}>
-        <GridItem>
+      <Grid.Item xs={2}>
+        <Grid.Item>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </GridItem>
-      </GridItem>
+        </Grid.Item>
+      </Grid.Item>
 
-      <GridItem>
+      <Grid.Item>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </GridItem>
-      <GridItem>
+      </Grid.Item>
+      <Grid.Item>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </GridItem>
+      </Grid.Item>
     </Grid>
   );
 }
