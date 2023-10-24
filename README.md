@@ -116,6 +116,8 @@ For the versions available, see the [tags on this repository](https://github.com
 
 - Help Wizard to setup Klaw
 
+[See Features of Klaw in docs](https://www.klaw-project.io/docs/features)
+
 ## Documentation
 
 - User documentation : https://klaw-project.io/docs
@@ -154,6 +156,8 @@ and follow steps defined at https://klaw-project.io/docs or run the binaries lik
 java -jar core/target/klaw-<version>.jar
 
 java -jar cluster-api/target/cluster-api-<version>.jar --spring.config.location=cluster-api/target/classes/application.properties
+
+Or run bin/run-klaw.sh for Mac/Linux
 
 ### With `make`
 

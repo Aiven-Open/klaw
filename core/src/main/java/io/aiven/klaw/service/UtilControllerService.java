@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.APPROVER_SUBSCRIPTIONS;
+import static io.aiven.klaw.helpers.KwConstants.CORAL_INDEX_FILE_PATH;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
@@ -56,7 +57,6 @@ public class UtilControllerService implements InitializingBean {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String ANONYMOUS_USER = "anonymousUser";
   public static final String IMAGE_URI = ".imageURI";
-  public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -88,7 +88,7 @@ public class UtilControllerService implements InitializingBean {
 
   @Autowired private ConfigurableApplicationContext context;
 
-  private Boolean isCoralBuilt;
+  public static Boolean isCoralBuilt;
 
   @Override
   public void afterPropertiesSet() throws Exception {

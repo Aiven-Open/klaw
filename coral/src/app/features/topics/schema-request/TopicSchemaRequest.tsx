@@ -172,14 +172,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             </Alert>
           </Box>
         )}
-        {isValidationError && (
-          <Box marginBottom={"l1"}>
-            <Alert type={"warning"}>
-              Uploaded schema appears invalid. Are you sure you want to force
-              register it?
-            </Alert>
-          </Box>
-        )}
         <Form
           {...form}
           ariaLabel={"Request a new schema"}
@@ -241,21 +233,45 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             placeholder="Comments about this request for the approver."
           />
           {isValidationError && (
-            <Box marginBottom={"l2"}>
-              {/*We only allow users to use the forceRegister option when the promotion request failed*/}
-              {/*And the failure is because of a schema compatibility issue*/}
-              <Checkbox<TopicRequestFormSchema>
-                name={"forceRegister"}
-                caption={
-                  "Overrides standard validation processes of the schema registry."
-                }
-              >
-                Force register
-              </Checkbox>
-            </Box>
+            <>
+              <Box marginBottom={"l1"}>
+                <Alert type={"warning"}>Uploaded schema appears invalid.</Alert>
+              </Box>
+
+              <Box marginBottom={"l2"}>
+                {/*We only allow users to use the forceRegister option when the promotion request failed*/}
+                {/*And the failure is because of a schema compatibility issue*/}
+                <Checkbox<TopicRequestFormSchema>
+                  name={"forceRegister"}
+                  caption={
+                    <>
+                      Warning: This will override standard validation process of
+                      the schema registry.{" "}
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href={
+                          "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
+                        }
+                      >
+                        Learn more
+                      </a>
+                    </>
+                  }
+                >
+                  Force register schema creation/changes
+                </Checkbox>
+              </Box>
+            </>
           )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-            <SubmitButton>Submit request</SubmitButton>
+            <SubmitButton
+              disabled={isValidationError && !form.watch("forceRegister")}
+            >
+              {isValidationError
+                ? "Submit request to force register"
+                : "Submit request"}
+            </SubmitButton>
             <Button
               type="button"
               kind={"secondary"}

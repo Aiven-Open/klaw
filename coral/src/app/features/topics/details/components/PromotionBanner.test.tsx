@@ -373,7 +373,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `You cannot promote the schema at this time. An promotion request for ${testTopicName} is already in progress.`
+        `You cannot promote the schema at this time. A promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
@@ -411,7 +411,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `You cannot promote the topic at this time. An promotion request for ${testTopicName} is already in progress.`
+        `You cannot promote the topic at this time. A promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
@@ -451,7 +451,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `You cannot promote the connector at this time. An promotion request for ${testConnectorName} is already in progress.`
+        `You cannot promote the connector at this time. A promotion request for ${testConnectorName} is already in progress.`
       );
 
       expect(information).toBeVisible();
