@@ -23,7 +23,7 @@ const readmeDescription = (connectorOwner: boolean) => {
   const fixedText = `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage.`;
   const additionalTextConnectorOwner = `Edit the readme to update the information as the connector evolves.`;
   return (
-    <Box component={Typography.SmallText} marginBottom={"l2"}>
+    <Box component={Typography.Small} marginBottom={"l2"}>
       {fixedText} {connectorOwner ? additionalTextConnectorOwner : ""}
     </Box>
   );
