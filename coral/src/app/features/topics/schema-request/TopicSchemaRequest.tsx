@@ -9,6 +9,7 @@ import {
   SubmitButton,
   Textarea,
   useForm,
+  Checkbox,
 } from "src/app/components/Form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import {
@@ -22,6 +23,7 @@ import {
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { KlawApiError } from "src/services/api";
 
 type TopicSchemaRequestProps = {
   topicName?: string;
@@ -42,6 +44,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+  const [isValidationError, setIsValidationError] = useState(false);
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -115,12 +118,27 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {
+      setIsValidationError(false);
       navigate("/requests/schemas?status=CREATED");
       toast({
         message: "Schema request successfully created",
         position: "bottom-left",
         variant: "default",
       });
+    },
+    onError: (error: KlawApiError | Error) => {
+      const validationErrorMessages = [
+        "schema is not compatible",
+        "unable to validate schema compatibility",
+      ];
+
+      const matchedError = validationErrorMessages.some((errorMessage) => {
+        return error?.message
+          .toLowerCase()
+          .includes(errorMessage.toLowerCase());
+      });
+
+      setIsValidationError(matchedError);
     },
   });
 
@@ -147,7 +165,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         </Box>
       )}
       <Box>
-        {schemaRequestMutation.isError && (
+        {schemaRequestMutation.isError && !isValidationError && (
           <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(schemaRequestMutation.error)}
@@ -171,6 +189,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               }
               required={!hasPresetTopicName}
               readOnly={hasPresetTopicName}
+              placeholder={"-- Please select --"}
             >
               {topicNames.map((topic) => {
                 return (
@@ -213,8 +232,46 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             labelText={"Message for approval"}
             placeholder="Comments about this request for the approver."
           />
+          {isValidationError && (
+            <>
+              <Box marginBottom={"l1"}>
+                <Alert type={"warning"}>Uploaded schema appears invalid.</Alert>
+              </Box>
+
+              <Box marginBottom={"l2"}>
+                {/*We only allow users to use the forceRegister option when the promotion request failed*/}
+                {/*And the failure is because of a schema compatibility issue*/}
+                <Checkbox<TopicRequestFormSchema>
+                  name={"forceRegister"}
+                  caption={
+                    <>
+                      Warning: This will override standard validation process of
+                      the schema registry.{" "}
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href={
+                          "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
+                        }
+                      >
+                        Learn more
+                      </a>
+                    </>
+                  }
+                >
+                  Force register schema creation/changes
+                </Checkbox>
+              </Box>
+            </>
+          )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-            <SubmitButton>Submit request</SubmitButton>
+            <SubmitButton
+              disabled={isValidationError && !form.watch("forceRegister")}
+            >
+              {isValidationError
+                ? "Submit request to force register"
+                : "Submit request"}
+            </SubmitButton>
             <Button
               type="button"
               kind={"secondary"}

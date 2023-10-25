@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
-import static io.aiven.klaw.helpers.KwConstants.REQUEST_SCHEMA_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
@@ -47,6 +46,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
@@ -191,18 +191,44 @@ public class CommonUtilsService {
     }
   }
 
-  public ChartsJsOverview getChartsJsOverview(
-      List<Map<String, String>> activityCountList,
+  public static class ChartsOverviewItem<X, Y> {
+    private final X xValue;
+    private final Y yValue;
+
+    private ChartsOverviewItem(X xValue, Y yValue) {
+      this.xValue = xValue;
+      this.yValue = yValue;
+    }
+
+    public X getxValue() {
+      return xValue;
+    }
+
+    public Y getyValue() {
+      return yValue;
+    }
+
+    public ChartsOverviewItem<X, Y> transformX(Function<X, X> function) {
+      return new ChartsOverviewItem<>(function.apply(this.xValue), yValue);
+    }
+
+    public static <X, Y> ChartsOverviewItem<X, Y> of(X xValue, Y yValue) {
+      return new ChartsOverviewItem<X, Y>(xValue, yValue);
+    }
+  }
+
+  public <X> ChartsJsOverview getChartsJsOverview(
+      List<ChartsOverviewItem<X, Integer>> activityCountList,
       String title,
-      String yaxisCount,
       String xaxisLabel,
       String xAxisLabelConstant,
       String yAxisLabelConstant,
       int tenantId) {
     ChartsJsOverview chartsJsOverview = new ChartsJsOverview();
-    List<Integer> data = new ArrayList<>();
-    List<String> labels = new ArrayList<>();
-    List<String> colors = new ArrayList<>();
+    final int size = activityCountList == null ? 0 : activityCountList.size();
+    List<Integer> data = new ArrayList<>(size);
+    List<String> labels = new ArrayList<>(size);
+    List<String> colors = new ArrayList<>(size);
 
     data.add(0);
     labels.add("");
@@ -210,18 +236,17 @@ public class CommonUtilsService {
     int totalCount = 0;
 
     if (activityCountList != null) {
-      for (Map<String, String> hashMap : activityCountList) {
-        totalCount += Integer.parseInt(hashMap.get(yaxisCount));
-        data.add(Integer.parseInt(hashMap.get(yaxisCount)));
-
-        if ("teamid".equals(xaxisLabel)) {
+      final boolean isTeamId = "teamid".equals(xaxisLabel);
+      for (ChartsOverviewItem<X, Integer> item : activityCountList) {
+        totalCount += item.yValue;
+        data.add(item.yValue);
+        if (isTeamId) {
           labels.add(
               manageDatabase.getTeamNameFromTeamId(
-                  tenantId, Integer.parseInt(hashMap.get(xaxisLabel))));
+                  tenantId, Integer.parseInt(item.xValue.toString())));
         } else {
-          labels.add(hashMap.get(xaxisLabel));
+          labels.add(item.xValue.toString());
         }
-
         colors.add("Green");
       }
     }
@@ -550,12 +575,6 @@ public class CommonUtilsService {
             requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           }
         }
-        case REQUEST_SCHEMA_OF_ENVS -> {
-          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
-          if (requestSchema != null && !requestSchema.isEmpty()) {
-            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-        }
       }
 
       return intOrderEnvsList.stream().map(String::valueOf).collect(Collectors.joining(","));
@@ -728,10 +747,19 @@ public class CommonUtilsService {
 
   public boolean isCreateNewSchemaAllowed(String schemaEnvId, int tenantId) {
     KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
-    List<String> reqSchemaEnvs =
-        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
+    List<String> topicReqsEnvList =
+        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestTopicsEnvironmentsList();
 
-    return reqSchemaEnvs != null ? reqSchemaEnvs.contains(schemaEnvId) : false;
+    for (String id : topicReqsEnvList) {
+      Optional<Env> kafkaEnv = manageDatabase.getEnv(tenantId, Integer.valueOf(id));
+      if (kafkaEnv.isPresent()
+          && kafkaEnv.get().getAssociatedEnv() != null
+          && kafkaEnv.get().getAssociatedEnv().getId().equals(schemaEnvId)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public Env getEnvDetails(String envId, int tenantId) {

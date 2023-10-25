@@ -1,4 +1,4 @@
-import { Icon, Box, Typography, Grid, GridItem } from "@aivenio/aquarium";
+import { Icon, Box, Typography, Grid } from "@aivenio/aquarium";
 import omit from "lodash/omit";
 import uniqueId from "lodash/uniqueId";
 import { InputHTMLAttributes, useRef } from "react";
@@ -61,7 +61,7 @@ function FileInput(props: FileInputProps) {
           gridTemplateColumns: "max-content auto",
         }}
       >
-        <GridItem colStart={"1"} colEnd={"1"} rowStart={"1"} rowEnd={"1"}>
+        <Grid.Item colStart={"1"} colEnd={"1"} rowStart={"1"} rowEnd={"1"}>
           <Box
             aria-hidden={true}
             display={"flex"}
@@ -88,9 +88,9 @@ function FileInput(props: FileInputProps) {
               <span>{buttonText}</span>
             </Box>
           </Box>
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem colStart={"2"} colEnd={"2"} rowStart={"1"} rowEnd={"1"}>
+        <Grid.Item colStart={"2"} colEnd={"2"} rowStart={"1"} rowEnd={"1"}>
           <Box
             grow={"1"}
             borderWidth={"1px"}
@@ -104,9 +104,9 @@ function FileInput(props: FileInputProps) {
           >
             {currentFileName || noFileText}
           </Box>
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem
+        <Grid.Item
           className={classes.fileInputWrapper}
           colStart={"1"}
           colEnd={"1"}
@@ -130,7 +130,7 @@ function FileInput(props: FileInputProps) {
               {...(!valid && { "aria-describedby": errorMessageId })}
             />
           </label>
-        </GridItem>
+        </Grid.Item>
         <Box
           component={"p"}
           id={errorMessageId}

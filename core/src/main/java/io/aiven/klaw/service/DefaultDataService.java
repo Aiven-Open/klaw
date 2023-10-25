@@ -31,6 +31,9 @@ public class DefaultDataService {
   @Value("${klaw.docker.kafka.cluster:host.docker.internal:9092}")
   private String dockerKafkaHost;
 
+  @Value("${klaw.docker.kafka.cluster.security-protocol:PLAINTEXT}")
+  private String dockerKafkaSecurityProtocol;
+
   @Value("${klaw.docker.sr.cluster:host.docker.internal:8081}")
   private String dockerSRHost;
 
@@ -518,7 +521,7 @@ public class DefaultDataService {
       kwClusterKafka.setClusterName("STG");
       kwClusterKafka.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       kwClusterKafka.setBootstrapServers(dockerKafkaHost);
-      kwClusterKafka.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      kwClusterKafka.setProtocol(KafkaSupportedProtocol.valueOf(dockerKafkaSecurityProtocol));
       kwClusterKafka.setClusterType(KafkaClustersType.KAFKA.value);
       kwClusterKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
       handleDbRequests.addNewCluster(kwClusterKafka);

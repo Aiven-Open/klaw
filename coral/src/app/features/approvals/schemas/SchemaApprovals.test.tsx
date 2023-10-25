@@ -215,7 +215,7 @@ describe("SchemaApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -600,7 +600,7 @@ describe("SchemaApprovals", () => {
         defaultApiParams
       );
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       await userEvent.type(search, "myTopic");
 

@@ -14,6 +14,7 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { KlawApiError } from "src/services/api";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -65,6 +66,7 @@ const testFile: File = new File(["{}"], fileName, {
 });
 
 describe("TopicSchemaRequest", () => {
+  const user = userEvent.setup();
   const getForm = () => {
     return screen.getByRole("form", {
       name: `Request a new schema`,
@@ -481,9 +483,9 @@ describe("TopicSchemaRequest", () => {
       });
 
       select.focus();
-      await userEvent.keyboard("{ArrowDown}");
-      await userEvent.keyboard("{ESC}");
-      await userEvent.tab();
+      await user.keyboard("{ArrowDown}");
+      await user.keyboard("{ESC}");
+      await user.tab();
 
       const error = await screen.findByText(
         "Selection Error: Please select an environment"
@@ -498,7 +500,7 @@ describe("TopicSchemaRequest", () => {
         within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
 
       fileInput.focus();
-      await userEvent.tab();
+      await user.tab();
 
       const fileRequiredError = screen.getAllByText(
         "File missing: Upload the AVRO schema file."
@@ -519,8 +521,8 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
+      await user.selectOptions(select, option);
+      await user.tab();
 
       expect(button).toBeEnabled();
     });
@@ -560,7 +562,7 @@ describe("TopicSchemaRequest", () => {
         name: "Cancel",
       });
 
-      await userEvent.click(button);
+      await user.click(button);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
@@ -571,13 +573,13 @@ describe("TopicSchemaRequest", () => {
       const remarkInput = screen.getByRole("textbox", {
         name: "Message for approval",
       });
-      await userEvent.type(remarkInput, "Important information");
+      await user.type(remarkInput, "Important information");
 
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
 
-      await userEvent.click(button);
+      await user.click(button);
       const dialog = screen.getByRole("dialog");
 
       expect(dialog).toBeVisible();
@@ -595,20 +597,20 @@ describe("TopicSchemaRequest", () => {
       const remarkInput = screen.getByRole("textbox", {
         name: "Message for approval",
       });
-      await userEvent.type(remarkInput, "Important information");
+      await user.type(remarkInput, "Important information");
 
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
 
-      await userEvent.click(button);
+      await user.click(button);
       const dialog = screen.getByRole("dialog");
 
       const returnButton = screen.getByRole("button", {
         name: "Continue with request",
       });
 
-      await userEvent.click(returnButton);
+      await user.click(returnButton);
 
       expect(mockedUsedNavigate).not.toHaveBeenCalled();
 
@@ -621,19 +623,19 @@ describe("TopicSchemaRequest", () => {
       const remarkInput = screen.getByRole("textbox", {
         name: "Message for approval",
       });
-      await userEvent.type(remarkInput, "Important information");
+      await user.type(remarkInput, "Important information");
 
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
 
-      await userEvent.click(button);
+      await user.click(button);
 
       const returnButton = screen.getByRole("button", {
         name: "Cancel request",
       });
 
-      await userEvent.click(returnButton);
+      await user.click(returnButton);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
@@ -690,10 +692,10 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
-      await userEvent.click(button);
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
 
       expect(mockCreateSchemaRequest).toHaveBeenCalled();
 
@@ -729,10 +731,10 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
-      await userEvent.click(button);
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
 
       await waitFor(() =>
         expect(screen.getByText("Error in request")).toBeVisible()
@@ -789,7 +791,7 @@ describe("TopicSchemaRequest", () => {
 
       expect(select).toHaveDisplayValue("-- Please select --");
 
-      await userEvent.selectOptions(select, option);
+      await user.selectOptions(select, option);
 
       expect(select).toHaveValue(mockedEnvironments[1].id);
       expect(select).toHaveDisplayValue(mockedEnvironments[1].name);
@@ -802,7 +804,7 @@ describe("TopicSchemaRequest", () => {
 
       expect(fileInput.files?.[0]).toBeUndefined();
 
-      await userEvent.upload(fileInput, testFile);
+      await user.upload(fileInput, testFile);
 
       expect(fileInput.files?.[0]).toBe(testFile);
     });
@@ -812,7 +814,7 @@ describe("TopicSchemaRequest", () => {
       const fileInput =
         within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
 
-      await userEvent.upload(fileInput, testFile);
+      await user.upload(fileInput, testFile);
       const editor = await screen.findByTestId("topic-schema");
 
       await waitFor(() => expect(editor).toHaveDisplayValue("{}"));
@@ -835,9 +837,9 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
 
       expect(button).toBeEnabled();
     });
@@ -859,10 +861,10 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
-      await userEvent.click(button);
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
 
       expect(mockCreateSchemaRequest).toHaveBeenCalledWith({
         environment: "1",
@@ -884,11 +886,11 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.upload(fileInput, testFile);
+      await user.upload(fileInput, testFile);
 
       expect(button).toBeEnabled();
-      await userEvent.click(button);
-      await userEvent.tab();
+      await user.click(button);
+      await user.tab();
 
       expect(mockCreateSchemaRequest).not.toHaveBeenCalled();
       expect(mockedUseToast).not.toHaveBeenCalled();
@@ -911,12 +913,257 @@ describe("TopicSchemaRequest", () => {
       });
       expect(button).toBeEnabled();
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
-      await userEvent.click(button);
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
 
       expect(mockCreateSchemaRequest).toHaveBeenCalled();
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "Schema request successfully created",
+          position: "bottom-left",
+          variant: "default",
+        })
+      );
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(
+        "/requests/schemas?status=CREATED"
+      );
+    });
+  });
+
+  describe("handles errors when creating the schema request fails", () => {
+    const testError: KlawApiError = {
+      success: false,
+      message: "Oh no 😢",
+    };
+
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
+      );
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+      mockCreateSchemaRequest.mockRejectedValue(testError);
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      mockedUseToast.mockReset();
+      cleanup();
+    });
+
+    it("shows a error message informing user that schema request failed", async () => {
+      const form = getForm();
+      const alertBefore = screen.queryByRole("alert");
+      expect(alertBefore).not.toBeInTheDocument();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeEnabled();
+
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(button);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(testError);
+
+      const errorAlert = screen.getByRole("alert");
+      expect(errorAlert).toBeVisible();
+      expect(errorAlert).toHaveTextContent(testError.message);
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+      expect(mockedUseToast).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("enables user to send a schema request even if it's not compatible", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedGetAllEnvironmentsForTopicAndAclResponse
+      );
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
+      // The first response to the test should be the compatibility error
+      // second response will be the success
+      mockCreateSchemaRequest
+        .mockRejectedValueOnce({
+          success: false,
+          message: "failure: Schema is not compatible",
+        })
+        .mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      mockedUseToast.mockReset();
+      cleanup();
+    });
+
+    it("gives user the option to force register with a warning information", async () => {
+      const form = getForm();
+
+      const checkBoxBefore = within(form).queryByRole("checkbox", {
+        name: "Force register Overrides standard validation processes of the schema registry.",
+      });
+
+      const warningBefore = screen.queryByText("alertdialog");
+      expect(checkBoxBefore).not.toBeInTheDocument();
+      expect(warningBefore).not.toBeInTheDocument();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(submitButton);
+
+      const warningForceRegister = screen.getByRole("alert");
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register schema creation/changes Warning: This will override standard validation process of the schema registry. Learn more",
+      });
+
+      expect(warningForceRegister).toBeVisible();
+      expect(warningForceRegister).toHaveTextContent(
+        "Uploaded schema appears invalid."
+      );
+      expect(checkboxForceRegister).toBeEnabled();
+      expect(console.error).toHaveBeenCalledWith({
+        message: "failure: Schema is not compatible",
+        success: false,
+      });
+    });
+
+    it("enables user to only send the request if they confirm force register", async () => {
+      const form = getForm();
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(submitButton).toBeEnabled();
+
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(submitButton);
+
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register schema creation/changes Warning: This will override standard validation process of the schema registry. Learn more",
+      });
+
+      expect(submitButton).toHaveAccessibleName(
+        "Submit request to force register"
+      );
+      expect(submitButton).toBeDisabled();
+
+      await user.click(checkboxForceRegister);
+      expect(submitButton).toBeEnabled();
+    });
+
+    it("shows a notification informing user that force register for schema request was successful and redirects them", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+
+      await user.selectOptions(select, option);
+      await user.tab();
+      await user.upload(fileInput, testFile);
+      await user.click(submitButton);
+
+      const checkboxForceRegister = within(form).getByRole("checkbox", {
+        name: "Force register schema creation/changes Warning: This will override standard validation process of the schema registry. Learn more",
+      });
+
+      expect(submitButton).toBeDisabled();
+      await user.click(checkboxForceRegister);
+
+      expect(submitButton).toBeEnabled();
+      await user.click(submitButton);
+
+      expect(mockCreateSchemaRequest).toHaveBeenNthCalledWith(2, {
+        forceRegister: true,
+        environment: "1",
+        remarks: "",
+        schemafull: "{}",
+        topicname: "my-awesome-topic",
+      });
+
       await waitFor(() =>
         expect(mockedUseToast).toHaveBeenCalledWith({
           message: "Schema request successfully created",
