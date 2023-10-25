@@ -6,6 +6,8 @@ services:
     environment:
       KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
       SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
+      KLAW_UIAPI_SERVERS: "http://klaw-core:9097"
+      KLAW_CLUSTERAPI_URL: "http://klaw-cluster-api:9343"
     volumes:
       - "klaw_data:/klaw"
     extra_hosts:
