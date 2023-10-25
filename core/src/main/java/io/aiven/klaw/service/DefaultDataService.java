@@ -327,8 +327,7 @@ public class DefaultDataService {
               "Base sync cluster, order of topic promotion environments, topic request envs");
     } else {
       kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, clusterApiUrl, "Cluster Api URL");
+          new KwProperties("klaw.clusterapi.url", tenantId, clusterApiUrl, "Cluster Api URL");
       kwProperties22 =
           new KwProperties(
               "klaw.tenant.config",
