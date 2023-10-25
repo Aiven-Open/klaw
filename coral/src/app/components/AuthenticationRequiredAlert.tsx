@@ -18,11 +18,11 @@ function AuthenticationRequiredAlert() {
         </span>
       </Typography.Heading>
 
-      <Typography.DefaultStrong>
+      <Typography.LargeStrong>
         <span id={"authentication-required-text"}>
           Redirecting to login page.
         </span>
-      </Typography.DefaultStrong>
+      </Typography.LargeStrong>
     </Box>
   );
 }
