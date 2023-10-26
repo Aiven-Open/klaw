@@ -68,48 +68,35 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                 }
 
-	 $scope.getSchemaEnvs = function() {
-
-        $http({
-            method: "GET",
-            url: "getEnvsForSchemaRequests",
-            headers : { 'Content-Type' : 'application/json' }
-        }).success(function(output) {
-            $scope.allschemaenvs = output;
-        }).error(
-            function(error)
-            {
-                $scope.alert = error;
-            }
-        );
-    }
 
     $scope.loadParams = function() {
-            var topicSelected;
-
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == "topicname")
+                if (sParameterName[0] === "topicname")
                 {
                     $scope.topicSelectedFromUrl = sParameterName[1];
                     $scope.addSchema.topicname = $scope.topicSelectedFromUrl;
                     $scope.validatedSchema=false;
-                    $scope.getAllTopics();
+                }
+                if (sParameterName[0] === "envId")
+                {
+                    $scope.addSchema.envId = sParameterName[1];
+                    $scope.getEnvDetails($scope.addSchema.envId);
                 }
             }
         }
 
-    $scope.getEnvs = function() {
-
+    $scope.getEnvDetails = function(envSelected) {
             $http({
                 method: "GET",
-                url: "getEnvs",
-                headers : { 'Content-Type' : 'application/json' }
+                url: "getEnvDetails",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'envSelected' : envSelected, 'envType' : 'kafka' },
             }).success(function(output) {
-                $scope.allenvs = output;
+                $scope.environmentDetails = output;
             }).error(
                 function(error)
                 {
@@ -117,24 +104,6 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 }
             );
         }
-
-        $scope.getAllTopics = function() {
-
-            $scope.alltopics = null;
-                    $http({
-                        method: "GET",
-                        url: "getTopicsOnly",
-                        headers : { 'Content-Type' : 'application/json' },
-                        params: {'isMyTeamTopics' : 'true' },
-                    }).success(function(output) {
-                        $scope.alltopics = output;
-                    }).error(
-                        function(error)
-                        {
-                            $scope.alert = error;
-                        }
-                    );
-                }
 
         $scope.cancelRequest = function() {
                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
@@ -146,9 +115,9 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
         $scope.addSchema = function() {
 
-                    if(!$scope.addSchema.envName)
+                    if(!$scope.addSchema.envId)
                     {
-                        $scope.alertnote = "Please select an environment";
+                        $scope.alertnote = "Please select a valid environment";
                         $scope.showAlertToast();
                         return;
                     }
@@ -161,7 +130,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     }else
                     {
                         $scope.addSchema.topicname = $scope.addSchema.topicname.trim();
-                        if($scope.addSchema.topicname.length==0){
+                        if($scope.addSchema.topicname.length === 0){
                             $scope.alertnote = "Please fill in topic name.";
                             $scope.showAlertToast();
                             return;
@@ -175,23 +144,32 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                         return;
                     }
 
+                    if($scope.addSchema.forceRegister === true) {
+                    var forceRegisterString = " Force register for schema selected. This overrides standard schema compatibility.";
+                        if($scope.addSchema.remarks == null) {
+                         $scope.addSchema.remarks = forceRegisterString;
+                        } else {
+                         $scope.addSchema.remarks += forceRegisterString;
+                        }
+                    }
+
                     var serviceInput = {};
                     $scope.alert = null;
                      $scope.alertnote = null;
 
-                    serviceInput['environment'] = $scope.addSchema.envName;
+                    serviceInput['environment'] = $scope.addSchema.envId;
                     serviceInput['topicname'] = $scope.addSchema.topicname;
                     serviceInput['appname'] = "App";
                     serviceInput['remarks'] = $scope.addSchema.remarks;
                     serviceInput['schemafull'] = $scope.addSchema.schemafull;
                     serviceInput['schemaversion'] = "1.0";
                     serviceInput['requestOperationType'] = 'CREATE';
+                    serviceInput['forceRegister'] = $scope.addSchema.forceRegister;
 
                     $http({
                         method: "POST",
                         url: "uploadSchema",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'addSchemaRequest' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "Schema Upload Request : "+output.message;

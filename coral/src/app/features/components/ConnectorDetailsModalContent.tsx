@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Box, Grid, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import { ConnectorRequest } from "src/domain/connector";
 
@@ -28,11 +28,12 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.connectorName}</dd>
       </Box.Flex>
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Label>Connector description</Label>
         <dd>{request.description}</dd>
-      </GridItem>
-      <GridItem colSpan={"span-2"}>
+      </Grid.Item>
+
+      <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Connector configuration</Label>
           <dd>
@@ -56,14 +57,14 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
             />
           </dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Box.Flex flexDirection={"column"}>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
         </Box.Flex>
-      </GridItem>
+      </Grid.Item>
 
       <Box.Flex flexDirection={"column"}>
         <Label>Requested by</Label>

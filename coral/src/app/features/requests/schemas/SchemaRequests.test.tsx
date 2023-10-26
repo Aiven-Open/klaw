@@ -17,16 +17,16 @@ import {
   mockedEnvironmentResponse,
 } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
-import { getAllEnvironmentsForSchema } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as jest.MockedFunction<
-    typeof getAllEnvironmentsForSchema
+const mockgetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
@@ -60,7 +60,7 @@ describe("SchemaRequest", () => {
       // while making sure to not swallow other console.errors
       console.error = jest.fn();
 
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue({
@@ -111,7 +111,7 @@ describe("SchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -155,7 +155,7 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -184,7 +184,7 @@ describe("SchemaRequest", () => {
 
   describe("renders pagination dependent on response", () => {
     beforeEach(() => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue({
@@ -290,7 +290,7 @@ describe("SchemaRequest", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue({
@@ -338,7 +338,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'environment'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -371,20 +371,26 @@ describe("SchemaRequest", () => {
       });
 
       const environmentOption = screen.getByRole("option", {
-        name: mockedEnvironmentResponse[0].name,
+        // we created test data, so it is not undefined
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        name: mockedEnvironmentResponse[0].associatedEnv.name,
       });
       await userEvent.selectOptions(environmentFilter, environmentOption);
 
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
-        env: mockedEnvironmentResponse[0].id,
+        // we created test data, so it is not undefined
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        env: mockedEnvironmentResponse[0].associatedEnv.id,
       });
     });
   });
 
   describe("user can filter schema requests by 'Request type'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -431,7 +437,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'status'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -478,7 +484,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'topic' they searched for", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -505,7 +511,7 @@ describe("SchemaRequest", () => {
     });
 
     it("enables user to search for topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       // since the search term is persisted, it's the current
       // value of the search element.
@@ -523,7 +529,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by only showing their own requests", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -568,7 +574,7 @@ describe("SchemaRequest", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
@@ -664,7 +670,7 @@ describe("SchemaRequest", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);

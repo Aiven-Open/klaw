@@ -335,19 +335,8 @@ public class ServerConfigService {
                 });
         tenant.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
-      // Schema
-      if (tenant.getRequestSchemaEnvironmentsList() != null) {
-        List<String> tmpSchemaReqList = new ArrayList<>();
-        tenant
-            .getRequestSchemaEnvironmentsList()
-            .forEach(
-                a -> {
-                  if (getSchemaEnvDetails(a, tenantId) != null) {
-                    tmpSchemaReqList.add(getSchemaEnvDetails(a, tenantId).getName());
-                  }
-                });
-        tenant.setRequestSchemaEnvironmentsList(tmpSchemaReqList);
-      }
+      // Schema tenant Config deprecated
+
     }
   }
 
@@ -411,14 +400,8 @@ public class ServerConfigService {
         tenantModel.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
 
-      // kafka
-      if (tenantModel.getRequestSchemaEnvironmentsList() != null) {
-        List<String> tmpSchemaReqList = new ArrayList<>();
-        tenantModel
-            .getRequestSchemaEnvironmentsList()
-            .forEach(a -> tmpSchemaReqList.add(getSchemaEnvDetailsFromName(a, tenantId).getId()));
-        tenantModel.setRequestSchemaEnvironmentsList(tmpSchemaReqList);
-      }
+      // Schema TenantConfig deprecated
+
     }
   }
 

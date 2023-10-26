@@ -1,8 +1,8 @@
 package io.aiven.klaw.constants;
 
+import io.aiven.klaw.service.CommonUtilsService;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public class TestConstants {
   public static final String ENV_ID = "ENV_ID";
@@ -26,14 +26,28 @@ public class TestConstants {
   public static final String ROLE = "ROLE";
   public static final String PERMISSION = "PERMISSION";
   public static final String REGISTRATION_ID = "REGISTRATION_ID";
-  public static final List<Map<String, String>> TOPICS_COUNT_BY_ENV_ID =
-      List.of(
-          Map.of(
-              MapConstants.CLUSTER_KEY, ENV_ID,
-              MapConstants.TOPICS_COUNT_KEY, TOPICS_COUNT));
-  public static final List<Map<String, String>> ACLS_COUNT_BY_ENV_ID =
-      List.of(
-          Map.of(
-              MapConstants.CLUSTER_KEY, ENV_ID,
-              MapConstants.ACLS_COUNT_KEY, ACLS_COUNT));
+  public static final List<CommonUtilsService.ChartsOverviewItem<String, String>>
+      TOPICS_COUNT_BY_ENV_ID =
+          List.of(
+              CommonUtilsService.ChartsOverviewItem.of(MapConstants.CLUSTER_KEY, ENV_ID),
+              CommonUtilsService.ChartsOverviewItem.of(
+                  MapConstants.TOPICS_COUNT_KEY, TOPICS_COUNT));
+
+  public static final List<CommonUtilsService.ChartsOverviewItem<String, Integer>>
+      TOPICS_COUNT_STRING_BY_ENV_ID_INT =
+          List.of(
+              CommonUtilsService.ChartsOverviewItem.of(MapConstants.CLUSTER_KEY, 1),
+              CommonUtilsService.ChartsOverviewItem.of(ENV_ID, 123));
+
+  public static final List<CommonUtilsService.ChartsOverviewItem<String, Integer>>
+      ACLS_COUNT_BY_ENV_ID_INTEGERE =
+          List.of(
+              CommonUtilsService.ChartsOverviewItem.of(ENV_ID, 123),
+              CommonUtilsService.ChartsOverviewItem.of(MapConstants.ACLS_COUNT_KEY, 2));
+
+  public static final List<CommonUtilsService.ChartsOverviewItem<String, String>>
+      ACLS_COUNT_BY_ENV_ID =
+          List.of(
+              CommonUtilsService.ChartsOverviewItem.of(MapConstants.CLUSTER_KEY, ENV_ID),
+              CommonUtilsService.ChartsOverviewItem.of(MapConstants.ACLS_COUNT_KEY, ACLS_COUNT));
 }

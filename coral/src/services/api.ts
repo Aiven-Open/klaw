@@ -160,7 +160,6 @@ const API_PATHS = {
   getExtensionPeriods: "/getExtensionPeriods",
   getEnvs: "/getEnvs",
   getEnvsPaginated: "/getEnvsPaginated",
-  getEnvsForSchemaRequests: "/getEnvsForSchemaRequests",
   getEnvsBaseCluster: "/getEnvsBaseCluster",
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
   getSchemaRegEnvsPaginated: "/environments/schemaRegistry",

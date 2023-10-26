@@ -24,8 +24,7 @@ function TableLayout(props: TableLayoutProps) {
 
   return (
     <>
-      <Box
-        display={"flex"}
+      <Box.Flex
         flexDirection={"row"}
         flexWrap={"wrap"}
         alignItems={"center"}
@@ -35,12 +34,12 @@ function TableLayout(props: TableLayoutProps) {
       >
         {filters.map((element) => {
           return (
-            <Box key={element.key} display={"flex"} flexDirection={"column"}>
+            <Box.Flex key={element.key} flexDirection={"column"}>
               {element}
-            </Box>
+            </Box.Flex>
           );
         })}
-      </Box>
+      </Box.Flex>
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
         <Alert type={"error"}>

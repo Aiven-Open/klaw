@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.5.0"
+    "version" : "2.6.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -4252,27 +4252,6 @@
         }
       }
     },
-    "/getEnvsForSchemaRequests" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getEnvsForSchemaRequests",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/EnvModelResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/getEnvsBaseCluster" : {
       "get" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
@@ -7937,10 +7916,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
