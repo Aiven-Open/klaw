@@ -46,6 +46,9 @@ public class DefaultDataService {
   @Value("${klaw.quickstart.default.pwd:welcome}")
   private String quickStartUserPwd;
 
+  @Value("${klaw.clusterapi.url:http://localhost:9343}")
+  private String clusterApiUrl;
+
   public UserInfo getUser(
       int tenantId,
       String password,
@@ -324,8 +327,7 @@ public class DefaultDataService {
               "Base sync cluster, order of topic promotion environments, topic request envs");
     } else {
       kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+          new KwProperties("klaw.clusterapi.url", tenantId, clusterApiUrl, "Cluster Api URL");
       kwProperties22 =
           new KwProperties(
               "klaw.tenant.config",
