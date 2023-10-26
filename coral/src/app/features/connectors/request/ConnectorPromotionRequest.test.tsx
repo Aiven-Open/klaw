@@ -7,7 +7,7 @@ import {
   Environment,
   getAllEnvironmentsForConnector,
 } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import {
   ConnectorDetailsForEnv,
   getConnectorDetailsPerEnv,
@@ -37,8 +37,8 @@ const testConnectorName = "test-connector-name";
 const defaultSourceEnv = "111";
 const defaultTargetEnv = "999";
 const defaultEnvironments: Environment[] = [
-  createEnvironment({ name: "DEV", id: defaultSourceEnv }),
-  createEnvironment({ name: "TST", id: defaultTargetEnv }),
+  createMockEnvironmentDTO({ name: "DEV", id: defaultSourceEnv }),
+  createMockEnvironmentDTO({ name: "TST", id: defaultTargetEnv }),
 ];
 
 const testConnectorConfig =
@@ -159,7 +159,7 @@ describe("ConnectorPromotionRequest", () => {
 
     it("informs and redirects user when sourceEnv does not exist", async () => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ name: "TST", id: defaultTargetEnv }),
+        createMockEnvironmentDTO({ name: "TST", id: defaultTargetEnv }),
       ]);
 
       renderConnectorPromotionRequest({});
@@ -183,7 +183,7 @@ describe("ConnectorPromotionRequest", () => {
 
     it("informs and redirects user when targetEnv does not exist", async () => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ name: "DEV", id: defaultSourceEnv }),
+        createMockEnvironmentDTO({ name: "DEV", id: defaultSourceEnv }),
       ]);
 
       renderConnectorPromotionRequest({});

@@ -1,7 +1,4 @@
-import {
-  transformEnvironmentApiResponse,
-  transformPaginatedEnvironmentApiResponse,
-} from "src/domain/environment/environment-transformer";
+import { transformPaginatedEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import {
   Environment,
   EnvironmentPaginatedApiResponse,
@@ -10,21 +7,12 @@ import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 
-//  For each entity, there should be two GET endpoints for environments:
-// - one gets *all* environments for that entity: used for browsing (list tables, Approval tables and My requests tables)
-// - one gets environments *filtered according to the admins rules*: used for creating requests (forms)
-
-// Exceptions to this rule:
-// - ACL and Topic share the same environments
-// - ACL requests cannot be promoted, so they have access to all environments in their creation form
-// - @TODO: connector currently do not have a filtered endpoint, but it is a mistake to be corrected
-
 const getAllEnvironmentsForTopicAndAcl = async (): Promise<Environment[]> => {
   const apiResponse = await api.get<KlawApiResponse<"getEnvs">>(
     API_PATHS.getEnvs
   );
 
-  return transformEnvironmentApiResponse(apiResponse);
+  return apiResponse;
 };
 
 const getPaginatedEnvironmentsForTopicAndAcl = async (
@@ -48,7 +36,7 @@ const getEnvironmentsForTopicRequest = async (): Promise<Environment[]> => {
     API_PATHS.getEnvsBaseCluster
   );
 
-  return transformEnvironmentApiResponse(apiResponse);
+  return apiResponse;
 };
 
 const getPaginatedEnvironmentsForSchema = async (
@@ -71,7 +59,7 @@ const getAllEnvironmentsForConnector = async (): Promise<Environment[]> => {
     API_PATHS.getSyncConnectorsEnv
   );
 
-  return transformEnvironmentApiResponse(apiResponse);
+  return apiResponse;
 };
 
 const getPaginatedEnvironmentsForConnector = async (

@@ -225,11 +225,11 @@ function TopicPromotionRequest() {
         />
         <Box.Flex gap={"l1"}>
           <Box width={"1/2"}>
-            {targetEnvironment !== undefined ? (
+            {targetEnvironment?.params.maxPartitions !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
                 label={"Topic partitions"}
-                max={targetEnvironment.params?.maxPartitions}
+                max={Number(targetEnvironment.params.maxPartitions)}
                 required={true}
               />
             ) : (
@@ -237,11 +237,11 @@ function TopicPromotionRequest() {
             )}
           </Box>
           <Box width={"1/2"}>
-            {targetEnvironment !== undefined ? (
+            {targetEnvironment?.params.maxRepFactor !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
                 label={"Replication factor"}
-                max={targetEnvironment.params?.maxRepFactor}
+                max={Number(targetEnvironment.params?.maxRepFactor)}
                 required={true}
               />
             ) : (

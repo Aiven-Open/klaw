@@ -11,6 +11,7 @@ import {
 import { KlawApiRequestQueryParameters } from "types/utils";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 
 jest.mock("src/domain/helper/documentation-helper.ts");
 
@@ -35,7 +36,7 @@ describe("topic-api", () => {
     });
     it("calls api.post with correct payload", () => {
       const postSpy = jest.spyOn(api, "post");
-      const env: Environment = {
+      const env: Environment = createMockEnvironmentDTO({
         name: "DEV",
         id: "1",
         type: "kafka",
@@ -44,7 +45,7 @@ describe("topic-api", () => {
         tenantName: "default",
         envStatus: "ONLINE",
         envStatusTimeString: "21-Sep-2023 11:46:15",
-      };
+      });
 
       const parameters: Schema = {
         description: "this-is-description",
