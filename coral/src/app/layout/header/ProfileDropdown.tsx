@@ -34,13 +34,13 @@ const menuItems: MenuItem[] = [
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
   const authUser = useAuthContext();
+  const [toast, dismiss] = useToastContext();
 
   function navigateToAngular(path: string) {
     window.location.assign(`${window.origin}${path}`);
   }
 
   function onDropdownClick(actionKey: string | number) {
-    const [toast, dismiss] = useToastContext();
     if (actionKey === LOGOUT_KEY) {
       toast({
         id: "logout",
