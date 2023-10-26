@@ -480,7 +480,6 @@ public class SchemaOverviewServiceTest {
     schemaEnv2.setClusterId(1);
     schemaEnv2.setAssociatedEnv(new EnvTag("2", "TST"));
     KwTenantConfigModel model = new KwTenantConfigModel();
-    model.setRequestSchemaEnvironmentsList(List.of("3"));
     model.setRequestTopicsEnvironmentsList(List.of("1"));
 
     when(handleDbRequests.getEnvDetails("1", 101)).thenReturn(kafkaEnv1);

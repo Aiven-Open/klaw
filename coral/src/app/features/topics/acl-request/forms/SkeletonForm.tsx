@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, GridItem, RadioButton } from "@aivenio/aquarium";
+import { Box, Divider, Grid, RadioButton } from "@aivenio/aquarium";
 import {
   MultiInput,
   NativeSelect,
@@ -10,46 +10,46 @@ const SkeletonForm = () => {
   return (
     <Box data-testid={"skeleton"}>
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-        <GridItem>
+        <Grid.Item>
           <Box.Flex gap={"4"}>
             <RadioButton.Skeleton data-testid="skeleton" />
             <RadioButton.Skeleton />
           </Box.Flex>
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <NativeSelect.Skeleton />
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+        <Grid.Item xs={2} paddingBottom={"l2"}>
           <Divider />
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem>
+        <Grid.Item>
           <Box.Flex gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
           </Box.Flex>{" "}
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <TextInput.Skeleton />
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem colSpan={"span-2"}>
+        <Grid.Item xs={2}>
           <TextInput.Skeleton />
-        </GridItem>
+        </Grid.Item>
 
-        <GridItem>
+        <Grid.Item>
           <Box.Flex gap={"4"}>
             <RadioButton.Skeleton />
             <RadioButton.Skeleton />
           </Box.Flex>
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <MultiInput.Skeleton />
-        </GridItem>
-        <GridItem colSpan={"span-2"} minWidth={"full"}>
+        </Grid.Item>
+        <Grid.Item xs={2} minWidth={"full"}>
           <Textarea.Skeleton />
-        </GridItem>
+        </Grid.Item>
       </Grid>
     </Box>
   );

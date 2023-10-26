@@ -1,6 +1,4 @@
 ---
-version: "3"
-
 services:
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8

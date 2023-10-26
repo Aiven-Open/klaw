@@ -17,7 +17,8 @@ public class KwConstants {
   public static final int DEFAULT_TENANT_ID = 101;
   public static final String TENANT_CONFIG_PROPERTY = "klaw.tenant.config";
   public static final String broadCastTextProperty = "klaw.broadcast.text";
-  public static final String RETRIEVE_SCHEMAS_KEY = "klaw.getschemas.enable";
+
+  public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   public static final String KW_REPORTS_TMP_LOCATION_KEY = "klaw.reports.location";
   public static final String CLUSTER_CONN_URL_KEY = "klaw.clusterapi.url";
   public static final String EMAIL_NOTIFICATIONS_ENABLED_KEY = "klaw.mail.notifications.enable";
@@ -79,7 +80,6 @@ public class KwConstants {
   public static final String REPORTS_LOCATION = "/tmp/";
   public static final String MAIL_NOTIFICATIONS_ENABLE = "true";
   public static final String GETSCHEMAS_ENABLE = "false";
-  public static final String CLUSTERAPI_URL = "http://localhost:9343"; //
   public static final String TENANT_CONFIG = "{}";
 
   public static final String TENANT_CONFIG_QUICK_START =
@@ -88,8 +88,7 @@ public class KwConstants {
           + "    \"tenantName\" : \"default\",\n"
           + "    \"baseSyncEnvironment\" : \"1\",\n"
           + "    \"orderOfTopicPromotionEnvsList\" : [ \"1\" ],\n"
-          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ],\n"
-          + "    \"requestSchemaEnvironmentsList\" : [ \"2\" ]\n"
+          + "    \"requestTopicsEnvironmentsList\" : [ \"1\" ]\n"
           + "  }\n"
           + "}";
   public static final String ADDUSER_ROLES = "USER";

@@ -31,6 +31,9 @@ public class DefaultDataService {
   @Value("${klaw.docker.kafka.cluster:host.docker.internal:9092}")
   private String dockerKafkaHost;
 
+  @Value("${klaw.docker.kafka.cluster.security-protocol:PLAINTEXT}")
+  private String dockerKafkaSecurityProtocol;
+
   @Value("${klaw.docker.sr.cluster:host.docker.internal:8081}")
   private String dockerSRHost;
 
@@ -42,6 +45,9 @@ public class DefaultDataService {
 
   @Value("${klaw.quickstart.default.pwd:welcome}")
   private String quickStartUserPwd;
+
+  @Value("${klaw.clusterapi.url:http://localhost:9343}")
+  private String clusterApiUrl;
 
   public UserInfo getUser(
       int tenantId,
@@ -321,8 +327,7 @@ public class DefaultDataService {
               "Base sync cluster, order of topic promotion environments, topic request envs");
     } else {
       kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+          new KwProperties("klaw.clusterapi.url", tenantId, clusterApiUrl, "Cluster Api URL");
       kwProperties22 =
           new KwProperties(
               "klaw.tenant.config",
@@ -518,7 +523,7 @@ public class DefaultDataService {
       kwClusterKafka.setClusterName("STG");
       kwClusterKafka.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       kwClusterKafka.setBootstrapServers(dockerKafkaHost);
-      kwClusterKafka.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      kwClusterKafka.setProtocol(KafkaSupportedProtocol.valueOf(dockerKafkaSecurityProtocol));
       kwClusterKafka.setClusterType(KafkaClustersType.KAFKA.value);
       kwClusterKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
       handleDbRequests.addNewCluster(kwClusterKafka);

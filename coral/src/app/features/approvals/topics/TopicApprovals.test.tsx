@@ -256,7 +256,7 @@ describe("TopicApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -547,7 +547,7 @@ describe("TopicApprovals", () => {
       expect(screen.getByLabelText("Filter by status")).toBeVisible();
       expect(screen.getByLabelText("Filter by team")).toBeVisible();
       expect(
-        screen.getByRole("search", { name: "Search Topic name" })
+        screen.getByRole("search", { name: "Search Topic" })
       ).toBeVisible();
     });
 
@@ -634,7 +634,7 @@ describe("TopicApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeEnabled();
 
@@ -659,7 +659,7 @@ describe("TopicApprovals", () => {
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("Ospo");
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");

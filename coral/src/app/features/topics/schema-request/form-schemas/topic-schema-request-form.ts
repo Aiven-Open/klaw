@@ -9,6 +9,7 @@ const topicRequestFormSchema = z.object({
   topicname: z.string(),
   schemafull: z.string(),
   remarks: z.string().optional(),
+  forceRegister: z.boolean().optional(),
 });
 
 type TopicRequestFormSchema = z.infer<typeof topicRequestFormSchema>;

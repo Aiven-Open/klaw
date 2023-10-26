@@ -89,7 +89,7 @@ public class TopicAclControllerIT {
   @MockBean private static ClusterApiService clusterApiService;
 
   private static final String superAdmin = "superadmin";
-  private static final String superAdminPwd = "kwsuperadmin123$$";
+  private static final String superAdminPwd = "welcometoklaw";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
   private static final int topicId1 = 1001, topicId3 = 1004, topicId4 = 1006, topicId5 = 1008;
@@ -1233,6 +1233,33 @@ public class TopicAclControllerIT {
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
 
+    KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
+    kwPropertiesModel.setKwKey(TENANT_CONFIG_PROPERTY);
+    kwPropertiesModel.setKwValue(
+        """
+                        {
+                          "tenantModel":
+                            {
+                              "tenantName": "default",
+                              "baseSyncEnvironment": "DEV",
+                              "orderOfTopicPromotionEnvsList": ["DEV"],
+                              "requestTopicsEnvironmentsList": ["DEV"],
+                              "requestSchemaEnvironmentsList": ["DEVSCH"]
+                            }
+                        }""");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwPropertiesModel);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/updateKwCustomProperty")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
     // get SR envs
     response =
         mvc.perform(
@@ -1256,7 +1283,7 @@ public class TopicAclControllerIT {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     schemaRequest.setTopicname(topicName + topicId1);
     schemaRequest.setRequestor(user1);
-    schemaRequest.setEnvironment("3"); // Schema reg env
+    schemaRequest.setEnvironment("1"); // Schema reg env
     schemaRequest.setSchemafull(
         "{\n"
             + "   \"type\" : \"record\",\n"

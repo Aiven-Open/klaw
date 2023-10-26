@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
-import { getAllEnvironmentsForSchema } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import {
@@ -19,9 +19,9 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as jest.MockedFunction<
-    typeof getAllEnvironmentsForSchema
+const mockGetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetSchemaRequestsForApprover =
@@ -37,8 +37,9 @@ const mockApproveSchemaRequest = approveSchemaRequest as jest.MockedFunction<
 >;
 
 const mockedEnvironments = [
-  { name: "DEV", id: "1" },
-  { name: "TST", id: "2" },
+  { name: "DEV", id: "1", associatedEnv: { name: "DEV_SCH", id: "111" } },
+  { name: "TST", id: "2", associatedEnv: { name: "TST_SCH", id: "222" } },
+  { name: "RANDOM", id: "3" },
 ];
 
 const mockedEnvironmentResponse = transformEnvironmentApiResponse([
@@ -133,7 +134,7 @@ describe("SchemaApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -177,7 +178,7 @@ describe("SchemaApprovals", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
@@ -214,7 +215,7 @@ describe("SchemaApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -239,7 +240,7 @@ describe("SchemaApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -345,7 +346,7 @@ describe("SchemaApprovals", () => {
         entries: [],
       });
 
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -386,7 +387,7 @@ describe("SchemaApprovals", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
@@ -506,7 +507,7 @@ describe("SchemaApprovals", () => {
 
   describe("handles filtering entries in the table", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue({
@@ -577,13 +578,19 @@ describe("SchemaApprovals", () => {
         name: "Filter by Environment",
       });
       const environmentOption = screen.getByRole("option", {
-        name: mockedEnvironments[0].name,
+        // we're defining the test data, so it is not undefined
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        name: mockedEnvironments[0].associatedEnv.name,
       });
       await userEvent.selectOptions(environmentFilter, environmentOption);
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
-        env: mockedEnvironments[0].id,
+        // we're defining the test data, so it is not undefined
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        env: mockedEnvironments[0].associatedEnv.id,
       });
     });
 
@@ -593,7 +600,7 @@ describe("SchemaApprovals", () => {
         defaultApiParams
       );
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       await userEvent.type(search, "myTopic");
 
@@ -614,7 +621,7 @@ describe("SchemaApprovals", () => {
       console.error = jest.fn();
 
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
@@ -712,7 +719,7 @@ describe("SchemaApprovals", () => {
       console.error = jest.fn();
 
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
@@ -837,7 +844,7 @@ describe("SchemaApprovals", () => {
       console.error = jest.fn();
 
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
@@ -1007,7 +1014,7 @@ describe("SchemaApprovals", () => {
       console.error = jest.fn();
 
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
       mockGetSchemaRequestsForApprover.mockResolvedValue(

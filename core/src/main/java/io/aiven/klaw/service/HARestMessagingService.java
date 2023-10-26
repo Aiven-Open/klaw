@@ -138,10 +138,10 @@ public class HARestMessagingService implements HAMessagingServiceI {
     return Jwts.builder()
         .claim(NAME, username)
         .claim(ROLES, List.of(CACHE_ADMIN, APP_2_APP))
-        .setSubject(username)
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(Date.from(now))
-        .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .subject(username)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
         .signWith(hmacKey)
         .compact();
   }

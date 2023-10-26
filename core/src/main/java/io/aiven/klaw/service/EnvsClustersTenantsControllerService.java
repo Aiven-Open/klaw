@@ -495,28 +495,6 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModelResponse> getEnvsForSchemaRequests() {
-    int tenantId = getUserDetails(getUserName()).getTenantId();
-
-    String requestSchemasEnvs =
-        commonUtilsService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
-    if (requestSchemasEnvs == null) {
-      return new ArrayList<>();
-    }
-    String orderOfEnvs = commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId);
-    String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
-    List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
-    List<EnvModelResponse> envModelList =
-        getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
-    log.debug("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
-    envModelList = filterEnvironmentModelList(reqSchemaEnvs, envModelList);
-    if (orderOfEnvs == null) {
-      return envModelList;
-    }
-    envModelList.sort(Comparator.comparingInt(schemaEnv -> orderOfEnvs.indexOf(schemaEnv.getId())));
-    return envModelList;
-  }
-
   private List<EnvModelResponse> filterEnvironmentModelList(
       String[] reqEnvs, List<EnvModelResponse> envModelList) {
     envModelList =

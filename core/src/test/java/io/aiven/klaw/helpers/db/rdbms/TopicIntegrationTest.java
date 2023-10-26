@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.repository.EnvRepo;
 import io.aiven.klaw.repository.TopicRepo;
+import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -86,7 +87,8 @@ public class TopicIntegrationTest {
   @Order(1)
   public void selectTopicsCountByEnv() {
 
-    List<Map<String, String>> results = selectDataJdbc.selectTopicsCountByEnv(101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> results =
+        selectDataJdbc.selectTopicsCountByEnv(101);
     assertThat(results.size()).isEqualTo(2);
   }
 
@@ -94,8 +96,10 @@ public class TopicIntegrationTest {
   @Order(2)
   public void selectTopicsCountByEnv_MultiTenant() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectTopicsCountByEnv(101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectTopicsCountByEnv(103);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res1 =
+        selectDataJdbc.selectTopicsCountByEnv(101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res2 =
+        selectDataJdbc.selectTopicsCountByEnv(103);
 
     assertThat(res1.size()).isEqualTo(2);
     assertThat(res2.size()).isEqualTo(1);
@@ -105,8 +109,10 @@ public class TopicIntegrationTest {
   @Order(3)
   public void selectPartitionsCountByEnv() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectPartitionsCountByEnv(101, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectPartitionsCountByEnv(103, 103);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res1 =
+        selectDataJdbc.selectPartitionsCountByEnv(101, 101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res2 =
+        selectDataJdbc.selectPartitionsCountByEnv(103, 103);
 
     assertThat(res1.size()).isEqualTo(2);
     assertThat(res2.size()).isEqualTo(1);
@@ -116,8 +122,10 @@ public class TopicIntegrationTest {
   @Order(4)
   public void selectPartitionsCountByEnv_TeamIdNull() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectPartitionsCountByEnv(null, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectPartitionsCountByEnv(null, 103);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res1 =
+        selectDataJdbc.selectPartitionsCountByEnv(null, 101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res2 =
+        selectDataJdbc.selectPartitionsCountByEnv(null, 103);
 
     assertThat(res1.size()).isEqualTo(2);
     assertThat(res2.size()).isEqualTo(1);
@@ -127,8 +135,10 @@ public class TopicIntegrationTest {
   @Order(5)
   public void selectTopicsCountByTeams_TeamIdNull() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectTopicsCountByTeams(null, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectTopicsCountByTeams(null, 103);
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> res1 =
+        selectDataJdbc.selectTopicsCountByTeams(null, 101);
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> res2 =
+        selectDataJdbc.selectTopicsCountByTeams(null, 103);
 
     assertThat(res1.size()).isEqualTo(1);
     assertThat(res1.size()).isEqualTo(1);
@@ -138,8 +148,10 @@ public class TopicIntegrationTest {
   @Order(6)
   public void selectTopicsCountByTeams() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectTopicsCountByTeams(101, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectTopicsCountByTeams(103, 103);
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> res1 =
+        selectDataJdbc.selectTopicsCountByTeams(101, 101);
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> res2 =
+        selectDataJdbc.selectTopicsCountByTeams(103, 103);
 
     assertThat(res1.size()).isEqualTo(1);
     assertThat(res2.size()).isEqualTo(1);
@@ -149,8 +161,10 @@ public class TopicIntegrationTest {
   @Order(7)
   public void selectAllTopicsForTeamGroupByEnv() {
 
-    List<Map<String, String>> res1 = selectDataJdbc.selectAllTopicsForTeamGroupByEnv(101, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectAllTopicsForTeamGroupByEnv(103, 103);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res1 =
+        selectDataJdbc.selectAllTopicsForTeamGroupByEnv(101, 101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res2 =
+        selectDataJdbc.selectAllTopicsForTeamGroupByEnv(103, 103);
 
     assertThat(res1.size()).isEqualTo(2);
     assertThat(res2.size()).isEqualTo(1);
@@ -159,8 +173,10 @@ public class TopicIntegrationTest {
   @Test
   @Order(8)
   public void selectAllTopicsForTeamGroupByEnv_TeamIdNull() {
-    List<Map<String, String>> res1 = selectDataJdbc.selectAllTopicsForTeamGroupByEnv(null, 101);
-    List<Map<String, String>> res2 = selectDataJdbc.selectAllTopicsForTeamGroupByEnv(null, 103);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res1 =
+        selectDataJdbc.selectAllTopicsForTeamGroupByEnv(null, 101);
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res2 =
+        selectDataJdbc.selectAllTopicsForTeamGroupByEnv(null, 103);
 
     assertThat(res1.size()).isEqualTo(0);
     assertThat(res2.size()).isEqualTo(0);
