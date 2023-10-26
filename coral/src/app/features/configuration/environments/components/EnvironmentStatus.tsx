@@ -1,7 +1,6 @@
 import {
   Button,
   Grid,
-  GridItem,
   Skeleton,
   StatusChip,
   Typography,
@@ -68,12 +67,12 @@ const EnvironmentStatus = ({
         colGap="3"
         style={{ gridTemplateColumns: "100px 280px 20px" }}
       >
-        <GridItem>
+        <Grid.Item>
           <StatusChip dense status="neutral" text="Refreshing..." />
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <Skeleton width={275} height={20} />
-        </GridItem>
+        </Grid.Item>
         <Button.Icon
           icon={loading}
           onClick={() => setShouldUpdateStatus(true)}
@@ -93,15 +92,15 @@ const EnvironmentStatus = ({
         colGap="3"
         style={{ gridTemplateColumns: "100px 280px 20px" }}
       >
-        <GridItem>
+        <Grid.Item>
           <StatusChip dense status="danger" text="Not working" />
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <Typography.Small>
             Last update:{" "}
             {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
           </Typography.Small>
-        </GridItem>
+        </Grid.Item>
         <Button.Icon
           icon={refresh}
           onClick={() => setShouldUpdateStatus(true)}
@@ -119,15 +118,15 @@ const EnvironmentStatus = ({
         colGap="3"
         style={{ gridTemplateColumns: "100px 280px 20px" }}
       >
-        <GridItem>
+        <Grid.Item>
           <StatusChip dense status="success" text="Working" />
-        </GridItem>
-        <GridItem>
+        </Grid.Item>
+        <Grid.Item>
           <Typography.Small>
             Last update:{" "}
             {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
           </Typography.Small>
-        </GridItem>
+        </Grid.Item>
         <Button.Icon
           icon={refresh}
           onClick={() => setShouldUpdateStatus(true)}
@@ -145,15 +144,15 @@ const EnvironmentStatus = ({
       colGap="3"
       style={{ gridTemplateColumns: "100px 280px 20px" }}
     >
-      <GridItem>
+      <Grid.Item>
         <StatusChip dense status="neutral" text="Unknown" />
-      </GridItem>
-      <GridItem>
+      </Grid.Item>
+      <Grid.Item>
         <Typography.Small>
           Last update:{" "}
           {updateTime === "Unknown" ? updateTime : `${updateTime} UTC`}
         </Typography.Small>
-      </GridItem>
+      </Grid.Item>
       <Button.Icon
         icon={refresh}
         onClick={() => setShouldUpdateStatus(true)}

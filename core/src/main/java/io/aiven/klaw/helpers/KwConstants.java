@@ -80,7 +80,6 @@ public class KwConstants {
   public static final String REPORTS_LOCATION = "/tmp/";
   public static final String MAIL_NOTIFICATIONS_ENABLE = "true";
   public static final String GETSCHEMAS_ENABLE = "false";
-  public static final String CLUSTERAPI_URL = "http://localhost:9343"; //
   public static final String TENANT_CONFIG = "{}";
 
   public static final String TENANT_CONFIG_QUICK_START =
