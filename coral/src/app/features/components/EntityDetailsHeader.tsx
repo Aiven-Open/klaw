@@ -12,10 +12,10 @@ import { BreadCrumbsWithLinks } from "src/app/pages/BreadCrumbsWithLinks";
 import { EnvironmentInfo } from "src/domain/environment";
 
 type TopicOverviewHeaderProps = {
+  breadcrumbs: { path: string; name: string }[];
   entity: {
     name: string;
     type: "connector" | "topic";
-    breadcrumbsPaths: string[];
   };
   entityEditLink: string;
   showEditButton: boolean;
@@ -29,6 +29,7 @@ type TopicOverviewHeaderProps = {
 
 function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const {
+    breadcrumbs,
     entity,
     showEditButton,
     hasPendingRequest,
@@ -42,7 +43,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
 
   return (
     <Box.Flex flexDirection={"column"} gap={"l2"}>
-      <BreadCrumbsWithLinks paths={entity.breadcrumbsPaths} />
+      <BreadCrumbsWithLinks breadcrumbs={breadcrumbs} />
       <Box
         display={"flex"}
         flexDirection={"row"}

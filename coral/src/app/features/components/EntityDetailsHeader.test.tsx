@@ -8,12 +8,10 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const testTopic = {
   name: "my-nice-topic",
   type: "topic" as "topic" | "connector",
-  breadcrumbsPaths: ["Topics", "my-nice-topic"],
 };
 const testConnector = {
   name: "my-nice-connector",
   type: "connector" as "topic" | "connector",
-  breadcrumbsPaths: ["Connectors", "my-nice-connector"],
 };
 const testEnvironments: EnvironmentInfo[] = [
   { id: "1", name: "DEV" },
@@ -22,6 +20,10 @@ const testEnvironments: EnvironmentInfo[] = [
 const mockSetEnvironmentId = jest.fn();
 
 const defaultTopicProps = {
+  breadcrumbs: [
+    { path: "topics", name: "Topics" },
+    { path: "my-nice-topic", name: "my-nice-topic" },
+  ],
   entity: testTopic,
   entityEditLink: "/hello/topic",
   showEditButton: true,
@@ -34,6 +36,10 @@ const defaultTopicProps = {
 };
 
 const defaultConnectorProps = {
+  breadcrumbs: [
+    { path: "connectors", name: "Connectors" },
+    { path: "my-nice-connector", name: "my-nice-connector" },
+  ],
   entity: testConnector,
   entityEditLink: "/hello/connector",
   showEditButton: true,

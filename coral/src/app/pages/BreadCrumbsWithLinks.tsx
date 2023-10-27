@@ -10,11 +10,15 @@ const LinkCrumb = asCrumb<HTMLAnchorElement, LinkProps>(
   "LinkCrumb"
 );
 
-export const BreadCrumbsWithLinks = ({ paths }: { paths: string[] }) => {
-  const crumbs = paths.map((item) => {
+export const BreadCrumbsWithLinks = ({
+  breadcrumbs,
+}: {
+  breadcrumbs: { path: string; name: string }[];
+}) => {
+  const crumbs = breadcrumbs.map(({ path, name }) => {
     return (
-      <LinkCrumb key={item} to={`/${item.toLowerCase()}`}>
-        {item}
+      <LinkCrumb key={`${path}-${name}`} to={`/${path}`}>
+        {name}
       </LinkCrumb>
     );
   });

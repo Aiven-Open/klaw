@@ -163,10 +163,13 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         />
       )}
       <EntityDetailsHeader
+        breadcrumbs={[
+          { name: "Connectors", path: "connectors" },
+          { name: connectorName, path: connectorName },
+        ]}
         entity={{
           name: connectorName,
           type: "connector",
-          breadcrumbsPaths: ["Connectors", connectorName],
         }}
         entityExists={Boolean(connectorData?.connectorExists)}
         entityUpdating={connectorIsRefetching}

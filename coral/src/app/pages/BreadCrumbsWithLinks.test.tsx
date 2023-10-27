@@ -5,9 +5,17 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("BreadCrumbsWithLinks", () => {
   beforeEach(() =>
-    customRender(<BreadCrumbsWithLinks paths={["hello", "there"]} />, {
-      browserRouter: true,
-    })
+    customRender(
+      <BreadCrumbsWithLinks
+        breadcrumbs={[
+          { path: "hello", name: "Hello" },
+          { path: "there", name: "there" },
+        ]}
+      />,
+      {
+        browserRouter: true,
+      }
+    )
   );
 
   afterEach(cleanup);
@@ -17,7 +25,7 @@ describe("BreadCrumbsWithLinks", () => {
       name: "Breadcrumbs",
     });
     const linkBreadcrumb = within(breadcrumbs).getByRole("link", {
-      name: "hello",
+      name: "Hello",
     });
     const inactiveLinkBreadcrumb = within(breadcrumbs).queryByRole("link", {
       name: "there",
@@ -47,7 +55,7 @@ describe("BreadCrumbsWithLinks", () => {
     });
 
     const linkBreadcrumb = within(breadcrumbs).getByRole("link", {
-      name: "hello",
+      name: "Hello",
     });
 
     expect(linkBreadcrumb).toBeEnabled();
