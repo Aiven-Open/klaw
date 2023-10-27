@@ -7,9 +7,10 @@ import static org.mockito.Mockito.mock;
 import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.TopicConfig;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.utils.AdminClientProperties;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -42,6 +43,8 @@ class ApacheKafkaTopicServiceTest {
 
   @Mock private KafkaSupportedProtocol protocol;
   @Mock private AdminClient adminClient;
+
+  @Mock private AdminClientProperties adminClientProperties;
   @Mock private ListTopicsResult listTopicsResult;
   @Mock private DescribeTopicsResult describeTopicsResult;
   @Mock private TopicDescription topicDescription;
@@ -83,7 +86,10 @@ class ApacheKafkaTopicServiceTest {
         assertThatThrownBy(
             () ->
                 apacheKafkaTopicService.loadTopics(
-                    TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION));
+                    TestConstants.ENVIRONMENT,
+                    protocol,
+                    TestConstants.CLUSTER_IDENTIFICATION,
+                    false));
 
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Cannot connect to cluster.");
@@ -103,19 +109,21 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.listTopics(any(ListTopicsOptions.class))).thenReturn(listTopicsResult);
     Mockito.when(listTopicsResult.names()).thenReturn(KafkaFuture.completedFuture(Set.of("name")));
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.all())
+    Mockito.when(describeTopicsResult.allTopicNames())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
-    Set<TopicConfig> topicConfigs =
+    LoadTopicsResponse topicConfigs =
         apacheKafkaTopicService.loadTopics(
-            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION);
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION, false);
 
-    Assertions.assertThat(topicConfigs.size()).isEqualTo(1);
+    Assertions.assertThat(topicConfigs.getTopicConfigSet().size()).isEqualTo(1);
   }
 
   @Test
@@ -156,6 +164,8 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
     Mockito.when(createTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
@@ -186,10 +196,12 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
     Mockito.when(createTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
-    Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
+    Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
     Mockito.when(describeTopicsResult.all())
@@ -222,10 +234,12 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
     Mockito.when(createTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
-    Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
+    Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
     Mockito.when(describeTopicsResult.all())
@@ -257,10 +271,12 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
     Mockito.when(createTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
-    Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
+    Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
         assertThatThrownBy(() -> apacheKafkaTopicService.createTopic(clusterTopicRequest));
@@ -307,6 +323,8 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
     Mockito.when(describeTopicsResult.all())
@@ -361,6 +379,8 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
     Mockito.when(deleteTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
@@ -390,10 +410,12 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
     Mockito.when(deleteTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
-    Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS))
+    Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS))
         .thenThrow(new InterruptedException("UnknownTopicOrPartition"));
 
     ApiResponse response = apacheKafkaTopicService.deleteTopic(clusterTopicRequest);
@@ -421,10 +443,12 @@ class ApacheKafkaTopicServiceTest {
             clusterApiUtils.getAdminClient(
                 TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
     Mockito.when(deleteTopicsResult.values())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
-    Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
+    Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
         assertThatThrownBy(() -> apacheKafkaTopicService.deleteTopic(clusterTopicRequest));
