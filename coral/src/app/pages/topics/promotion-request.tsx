@@ -8,14 +8,11 @@ const RequestTopic = () => {
   const navigate = useNavigate();
   const { topicName } = useParams();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (topicName === undefined) {
       navigate(-1);
-      
     }
-  },[])
-
-  
+  }, []);
 
   return (
     <>
