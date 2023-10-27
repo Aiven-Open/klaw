@@ -1,7 +1,9 @@
 package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
+import io.aiven.klaw.clusterapi.models.ClusterKeyIdentifier;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -31,25 +33,33 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.config.ConfigResource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class ApacheKafkaTopicService {
-
-  private static final long TIME_OUT_SECS_FOR_TOPICS = 5;
-
   private final ClusterApiUtils clusterApiUtils;
 
   private final SchemaService schemaService;
+
+  private static Map<ClusterKeyIdentifier, Set<TopicConfig>> cachedTopics = new HashMap<>();
+
+  private static Set<ClusterKeyIdentifier> topicCacheKeySets = new HashSet<>();
+
+  private static Map<ClusterKeyIdentifier, Boolean> topicsLoadingStatusOfClusters = new HashMap<>();
 
   public ApacheKafkaTopicService(ClusterApiUtils clusterApiUtils, SchemaService schemaService) {
     this.clusterApiUtils = clusterApiUtils;
     this.schemaService = schemaService;
   }
 
-  public synchronized Set<TopicConfig> loadTopics(
-      String environment, KafkaSupportedProtocol protocol, String clusterIdentification)
+  public synchronized LoadTopicsResponse loadTopics(
+      String environment,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      boolean resetCache)
       throws Exception {
     log.info("loadTopics {} {}", environment, protocol);
     AdminClient client =
@@ -59,6 +69,37 @@ public class ApacheKafkaTopicService {
       throw new Exception("Cannot connect to cluster.");
     }
 
+    ClusterKeyIdentifier clusterKeyIdentifier =
+        new ClusterKeyIdentifier(environment, protocol, clusterIdentification);
+
+    boolean topicsLoadingStatus = false;
+    if (topicsLoadingStatusOfClusters.containsKey(clusterKeyIdentifier)) {
+      topicsLoadingStatus = topicsLoadingStatusOfClusters.get(clusterKeyIdentifier);
+    } else {
+      topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, false);
+    }
+
+    if (topicsLoadingStatus) {
+      return LoadTopicsResponse.builder()
+          .loadingInProgress(true)
+          .topicConfigSet(new HashSet<>())
+          .build();
+    } else {
+      topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, true);
+    }
+
+    if (resetCache || !cachedTopics.containsKey(clusterKeyIdentifier)) {
+      loadTopicsForCache(client, topics, clusterKeyIdentifier);
+    } else {
+      topics = cachedTopics.get(clusterKeyIdentifier);
+    }
+
+    topicsLoadingStatusOfClusters.put(clusterKeyIdentifier, false);
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(topics).build();
+  }
+
+  private void loadTopicsForCache(
+      AdminClient client, Set<TopicConfig> topics, ClusterKeyIdentifier clusterKeyIdentifier) {
     try {
       Map<String, TopicDescription> topicDescriptionsPerAdminClient =
           loadTopicDescriptionsMap(client);
@@ -79,11 +120,16 @@ public class ApacheKafkaTopicService {
         topicConfig.setPartitions("" + topicDescription.partitions().size());
         topics.add(topicConfig);
       }
-
+      updateCache(clusterKeyIdentifier, topics);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       log.error("Exception:", e);
     }
-    return topics;
+  }
+
+  private void updateCache(
+      ClusterKeyIdentifier clusterKeyIdentifier, Set<TopicConfig> topicConfigSet) {
+    cachedTopics.put(clusterKeyIdentifier, topicConfigSet);
+    topicCacheKeySets.add(clusterKeyIdentifier);
   }
 
   private Map<String, TopicDescription> loadTopicDescriptionsMap(AdminClient client)
@@ -95,7 +141,9 @@ public class ApacheKafkaTopicService {
     DescribeTopicsResult describeTopicsResult =
         client.describeTopics(new ArrayList<>(topicsResult.names().get()));
 
-    return describeTopicsResult.all().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+    return describeTopicsResult
+        .allTopicNames()
+        .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
   }
 
   public synchronized ApiResponse createTopic(ClusterTopicRequest clusterTopicRequest)
@@ -121,7 +169,7 @@ public class ApacheKafkaTopicService {
       result
           .values()
           .get(clusterTopicRequest.getTopicName())
-          .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+          .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
     } catch (KafkaException e) {
       log.error("Invalid properties: ", e);
       throw e;
@@ -194,7 +242,8 @@ public class ApacheKafkaTopicService {
     TopicDescription result =
         describeTopicsResult
             .all()
-            .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS)
+            .get(
+                clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS)
             .get(clusterTopicRequest.getTopicName());
 
     if (result.partitions().size() > clusterTopicRequest.getPartitions()) {
@@ -252,7 +301,7 @@ public class ApacheKafkaTopicService {
       result
           .values()
           .get(clusterTopicRequest.getTopicName())
-          .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+          .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
 
       // delete associated schema if requested
       String schemaDeletionStatus = "";
@@ -281,5 +330,25 @@ public class ApacheKafkaTopicService {
       log.error("Exception:", e);
       throw e;
     }
+  }
+
+  @Async("resetTopicsCacheTaskExecutor")
+  @Scheduled(
+      cron = "${klaw.topics.cron.expression:0 0 0 * * ?}",
+      zone = "${klaw.topics.cron.expression.timezone:UTC}")
+  public void resetTopicsCacheScheduler() {
+    topicCacheKeySets.forEach(
+        clusterKeyIdentifier -> {
+          try {
+            log.info("Loading topics {}", clusterKeyIdentifier);
+            loadTopics(
+                clusterKeyIdentifier.getBootstrapServers(),
+                clusterKeyIdentifier.getProtocol(),
+                clusterKeyIdentifier.getClusterIdentification(),
+                true);
+          } catch (Exception e) {
+            log.error("Error while loading topics {}", clusterKeyIdentifier);
+          }
+        });
   }
 }
