@@ -7,7 +7,7 @@ type LoadingTableColumn = {
   headerInvisible?: boolean;
 };
 
-type LoadingTableProps = {
+export type LoadingTableProps = {
   rowLength: number;
   columns: LoadingTableColumn[];
 };
