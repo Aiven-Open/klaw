@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
@@ -135,7 +137,7 @@ public class ClusterApiConfluentCloudControllerIT {
     String url =
         "/topics/getTopics/"
             + CONFLUENT_CLOUD_REST_API
-            + "/SSL/DEV2/topicsNativeType/CONFLUENT_CLOUD";
+            + "/SSL/DEV2/topicsNativeType/CONFLUENT_CLOUD/resetCache/false";
     response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
@@ -148,13 +150,18 @@ public class ClusterApiConfluentCloudControllerIT {
             .andReturn()
             .getResponse();
 
-    Set<Map<String, String>> listTopicsSet =
+    LoadTopicsResponse loadTopicsResponse =
         OBJECT_MAPPER.readValue(response.getContentAsString(), new TypeReference<>() {});
-    assertThat(listTopicsSet).hasSize(2); // two topics
-    assertThat(listTopicsSet.stream().toList().get(0))
-        .hasSize(3); // topicName, partitions, replication factor
-    assertThat(listTopicsSet.stream().toList().get(0))
-        .containsKeys("topicName", "partitions", "replicationFactor");
+    assertThat(loadTopicsResponse.getTopicConfigSet()).hasSize(2); // two topics
+    assertThat(loadTopicsResponse.getTopicConfigSet())
+        .extracting(TopicConfig::getTopicName)
+        .containsExactlyInAnyOrder("testtopic1", "testtopic2");
+    assertThat(loadTopicsResponse.getTopicConfigSet())
+        .extracting(TopicConfig::getPartitions)
+        .containsExactlyInAnyOrder("2", "4");
+    assertThat(loadTopicsResponse.getTopicConfigSet())
+        .extracting(TopicConfig::getReplicationFactor)
+        .containsExactlyInAnyOrder("2", "3");
   }
 
   @Test

@@ -22,6 +22,7 @@ import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.charts.Title;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
@@ -780,8 +781,8 @@ public class UtilMethods {
     return aclRequest;
   }
 
-  public List<TopicConfig> getClusterApiTopics(String topicPrefix, int size) {
-    List<TopicConfig> listTopics = new ArrayList<>();
+  public LoadTopicsResponse getClusterApiTopics(String topicPrefix, int size) {
+    Set<TopicConfig> listTopics = new HashSet<>();
     TopicConfig hashMap;
     for (int i = 0; i < size; i++) {
       hashMap = new TopicConfig();
@@ -790,7 +791,7 @@ public class UtilMethods {
       hashMap.setPartitions("2");
       listTopics.add(hashMap);
     }
-    return listTopics;
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(listTopics).build();
   }
 
   public List<SyncTopicUpdates> getSyncTopicUpdates() {

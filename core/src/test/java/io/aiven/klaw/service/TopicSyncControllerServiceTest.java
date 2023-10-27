@@ -25,6 +25,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
@@ -41,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -246,20 +248,21 @@ public class TopicSyncControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), anyInt()))
+            anyString(), any(), anyString(), anyString(), anyInt(), anyBoolean()))
         .thenReturn(utilMethods.getClusterApiTopics("topic", 10));
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
-    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-        .thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, 1)).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
+    when(kwClusters.getClusterId()).thenReturn(1);
+    when(kwClusters.getKafkaFlavor()).thenReturn("");
 
     SyncTopicsList topicRequests =
         topicSyncControllerService.getSyncTopics(
-            envSel, pageNo, "", topicNameSearch, "false", false);
+            envSel, pageNo, "", topicNameSearch, "false", false, false);
     assertThat(topicRequests.getResultSet()).isNotNull();
   }
 
@@ -521,7 +524,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(14));
 
     // from the DB
@@ -530,7 +538,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(0);
@@ -552,7 +560,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(14));
 
     // from the DB
@@ -561,7 +574,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(0);
@@ -579,7 +592,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(15));
 
     // from the DB
@@ -588,7 +606,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
 
     // With 13 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(2);
@@ -611,7 +629,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(19));
 
     // from the DB
@@ -620,7 +643,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(5);
@@ -642,7 +665,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(15));
 
     // from the DB
@@ -651,7 +679,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "true", false);
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "true", false, false);
 
     // With 12 existing in the DB and 15 on the cluster all 15 are returned
     assertThat(syncTopics.getResultSet()).hasSize(15);
@@ -674,7 +702,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(10));
 
     // from the DB
@@ -683,7 +716,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
 
     // 14 in the DB and 10 in the cluster i am expecting the difference to be returned
     assertThat(syncTopics.getResultSet()).hasSize(4);
@@ -705,7 +738,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(15));
 
     // from the DB
@@ -714,7 +752,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(3);
@@ -767,7 +805,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(
             generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
@@ -778,7 +821,7 @@ public class TopicSyncControllerServiceTest {
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "false", false);
+            String.valueOf(environment), "1", "", null, "false", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -840,7 +883,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(
             generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
@@ -851,7 +899,7 @@ public class TopicSyncControllerServiceTest {
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
-            String.valueOf(environment), "1", "", null, "false", false);
+            String.valueOf(environment), "1", "", null, "false", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -913,7 +961,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(
             generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
@@ -924,7 +977,7 @@ public class TopicSyncControllerServiceTest {
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "true", false);
+            String.valueOf(environment), "1", "", null, "true", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -988,7 +1041,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(
             generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
@@ -999,7 +1057,7 @@ public class TopicSyncControllerServiceTest {
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "false", false);
+            String.valueOf(environment), "1", "", null, "false", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -1034,7 +1092,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the cluster
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+            anyString(),
+            any(KafkaSupportedProtocol.class),
+            anyString(),
+            anyString(),
+            eq(101),
+            eq(false)))
         .thenReturn(generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, 4)));
 
     // from the DB
@@ -1043,7 +1106,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(3);
@@ -1065,7 +1128,7 @@ public class TopicSyncControllerServiceTest {
     assertThat(actualStringValidation).isEqualTo(3);
   }
 
-  private List<TopicConfig> generateClusterTopics(int numberOfTopics) {
+  private LoadTopicsResponse generateClusterTopics(int numberOfTopics) {
     String[] topicNames = new String[numberOfTopics];
     for (int i = 0; i < numberOfTopics; i++) {
       topicNames[i] = "Topic" + i;
@@ -1073,18 +1136,17 @@ public class TopicSyncControllerServiceTest {
     return generateClusterTopics(topicNames);
   }
 
-  private List<TopicConfig> generateClusterTopics(String... topicNames) {
+  private LoadTopicsResponse generateClusterTopics(String... topicNames) {
+    Set<TopicConfig> topics = new HashSet<>();
 
-    List<TopicConfig> topics = new ArrayList<>();
-
-    for (int i = 0; i < topicNames.length; i++) {
+    for (String topicName : topicNames) {
       TopicConfig topic = new TopicConfig();
-      topic.setTopicName(topicNames[i]);
+      topic.setTopicName(topicName);
       topic.setPartitions("9");
       topic.setReplicationFactor("3");
       topics.add(topic);
     }
-    return topics;
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(topics).build();
   }
 
   private Map<Integer, KwClusters> getKwClusters(int numberOfClusters) {

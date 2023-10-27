@@ -3,8 +3,8 @@ package io.aiven.klaw.clusterapi.controller;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
-import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -82,22 +82,25 @@ public class ClusterApiController {
 
   @RequestMapping(
       value =
-          "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}",
+          "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}/resetCache/{resetCache}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Set<TopicConfig>> getTopics(
+  public ResponseEntity<LoadTopicsResponse> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
-      @PathVariable String aclsNativeType)
+      @PathVariable String aclsNativeType,
+      @PathVariable boolean resetCache)
       throws Exception {
-    Set<TopicConfig> topics;
+    LoadTopicsResponse loadTopicsResponse;
     if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
-      topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
+      loadTopicsResponse =
+          confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
     } else {
-      topics = apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
+      loadTopicsResponse =
+          apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName, resetCache);
     }
-    return new ResponseEntity<>(topics, HttpStatus.OK);
+    return new ResponseEntity<>(loadTopicsResponse, HttpStatus.OK);
   }
 
   @RequestMapping(

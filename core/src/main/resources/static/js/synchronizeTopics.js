@@ -355,8 +355,14 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
         };
 
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
+
+
+    $scope.resetTopicCacheCheck = function(resetTopicsCache){
+        $scope.resetTopicsCache = resetTopicsCache;
+        if($scope.getTopics.envName){
+            $scope.getTopics(1);
+        }
+    }
 
 	$scope.getTopics = function(pageNoSelected) {
 
@@ -375,17 +381,24 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             params: {'env' : $scope.getTopics.envName,
              'topicnamesearch' : $scope.getTopics.topicnamesearch,
              'showAllTopics' : "" + $scope.showAllTopics,
+                'resetTopicsCache' : $scope.resetTopicsCache,
                 'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected}
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
 			$scope.resultBrowse = output["resultSet"];
-			if($scope.resultBrowse != null && $scope.resultBrowse.length != 0){
+			if($scope.resultBrowse != null && $scope.resultBrowse.length !== 0){
                 $scope.resultPages = $scope.resultBrowse[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
+                $scope.topicsLoadingStatus = output["topicsLoadingStatus"];
                 $scope.currentPageSelected = $scope.resultBrowse[0].currentPage;
             }
-            $scope.alert = "";
+            if($scope.topicsLoadingStatus){
+                $scope.alert = "Topics are being loaded. Please retry after a few minutes.";
+            }else{
+                $scope.alert = "";
+            }
+
 		}).error(
 			function(error) 
 			{
@@ -396,6 +409,13 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 		);
 		
 	};
+
+    $scope.resetBulkTopicCacheCheck = function(resetTopicsCache){
+        $scope.resetTopicsCache = resetTopicsCache;
+        if($scope.getTopicsBulk.envName){
+            $scope.getTopicsBulk(1);
+        }
+    }
 
 	$scope.getTopicsBulk = function(pageNoSelected) {
 
@@ -419,18 +439,23 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 params: {'env' : $scope.getTopicsBulk.envName,
                  'topicnamesearch' : $scope.getTopicsBulk.topicnamesearch,
                  'showAllTopics' : "" + $scope.showAllTopics,
+                 'resetTopicsCache' : $scope.resetTopicsCache,
                  'isBulkOption' : "true",
                     'pageNo' : pageNoSelected,
                     'currentPage' : $scope.currentPageSelectedBulk }
     		}).success(function(output) {
     		    $scope.ShowSpinnerStatusTopicsBulk = false;
     			$scope.resultBrowseBulk = output["resultSet"];
-    			if($scope.resultBrowseBulk != null && $scope.resultBrowseBulk.length != 0){
+    			if($scope.resultBrowseBulk != null && $scope.resultBrowseBulk.length !== 0){
     			    $scope.allTopicsCount = output["allTopicsCount"];
+                    $scope.topicsLoadingStatus = output["topicsLoadingStatus"];
     			    $scope.allTopicWarningsCount = output["allTopicWarningsCount"];
                     $scope.resultPagesBulk = $scope.resultBrowseBulk[0].allPageNos;
                     $scope.resultPageSelectedBulk = pageNoSelected;
                     $scope.currentPageSelectedBulk = $scope.resultBrowseBulk[0].currentPage;
+                }
+                if($scope.topicsLoadingStatus){
+                    $scope.alert = "Topics are being loaded from cluster to cache. Please retry after a few minutes.";
                 }
     		}).error(
     			function(error)

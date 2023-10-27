@@ -70,8 +70,8 @@ public class UtilComponentsService {
       String environment, KafkaSupportedProtocol protocol, String clusterName, String kafkaFlavor) {
     try {
       if (kafkaFlavor != null && kafkaFlavor.equals("Confluent Cloud")) {
-        if (confluentCloudApiService.listTopics(environment, protocol, clusterName).size() >= 0)
-          return ClusterStatus.ONLINE;
+        confluentCloudApiService.listTopics(environment, protocol, clusterName);
+        return ClusterStatus.ONLINE;
       } else {
         AdminClient client = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
         if (client != null) {

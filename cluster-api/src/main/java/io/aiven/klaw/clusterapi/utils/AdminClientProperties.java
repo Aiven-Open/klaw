@@ -25,4 +25,7 @@ public class AdminClientProperties {
 
   @Value("${klaw.retry.backoff.ms:15000}")
   private String retryBackOffMsConfig;
+
+  @Value("${klaw.topics.timeout.secs:10}")
+  private long topicsTimeoutSecs;
 }

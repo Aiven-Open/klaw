@@ -8,4 +8,5 @@ public class SyncTopicsList {
   private List<TopicSyncResponseModel> resultSet;
   private int allTopicsCount;
   private int allTopicWarningsCount;
+  private boolean topicsLoadingStatus;
 }
