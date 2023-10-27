@@ -157,7 +157,11 @@ function TopicDetails(props: TopicOverviewProps) {
         />
       )}
       <EntityDetailsHeader
-        entity={{ name: topicName, type: "topic" }}
+        entity={{
+          name: topicName,
+          type: "topic",
+          breadcrumbsPaths: ["Topics", topicName],
+        }}
         entityExists={Boolean(topicData?.topicExists)}
         entityEditLink={`/topic/${topicName}/request-update?env=${selectedEnvironmentId}`}
         showEditButton={Boolean(topicData?.topicInfo.showEditTopic)}

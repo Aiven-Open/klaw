@@ -1,6 +1,6 @@
 import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { EnvironmentInfo } from "src/domain/environment";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -8,10 +8,12 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const testTopic = {
   name: "my-nice-topic",
   type: "topic" as "topic" | "connector",
+  breadcrumbsPaths: ["Topics", "my-nice-topic"],
 };
 const testConnector = {
   name: "my-nice-connector",
   type: "connector" as "topic" | "connector",
+  breadcrumbsPaths: ["Connectors", "my-nice-connector"],
 };
 const testEnvironments: EnvironmentInfo[] = [
   { id: "1", name: "DEV" },
@@ -127,6 +129,21 @@ describe("EntityDetailsHeader", () => {
         });
 
         expect(name).toBeVisible();
+      });
+
+      it("shows breadcrumbs", () => {
+        const breadcrumbs = screen.getByRole("navigation", {
+          name: "Breadcrumbs",
+        });
+        const topicsLink = within(breadcrumbs).getByRole("link", {
+          name: "Topics",
+        });
+        const topicName = within(breadcrumbs).getByRole("link", {
+          name: testTopic.name,
+        });
+
+        expect(topicsLink).toBeVisible();
+        expect(topicName).toBeVisible();
       });
 
       it("shows a select element for environments", () => {
@@ -311,6 +328,21 @@ describe("EntityDetailsHeader", () => {
         });
 
         expect(name).toBeVisible();
+      });
+
+      it("shows breadcrumbs", () => {
+        const breadcrumbs = screen.getByRole("navigation", {
+          name: "Breadcrumbs",
+        });
+        const connectorsLink = within(breadcrumbs).getByRole("link", {
+          name: "Connectors",
+        });
+        const connectorName = within(breadcrumbs).getByRole("link", {
+          name: testConnector.name,
+        });
+
+        expect(connectorsLink).toBeVisible();
+        expect(connectorName).toBeVisible();
       });
 
       it("shows a select element for environments", () => {
