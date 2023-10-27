@@ -2,7 +2,7 @@ import { Alert, Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
-
+import {LoadingTableProps, LoadingTable} from "./LoadingTable"
 type TableLayoutProps = {
   isLoading?: boolean;
   isErrorLoading?: boolean;
@@ -10,6 +10,7 @@ type TableLayoutProps = {
   filters: ReactElement[];
   table: ReactElement;
   pagination?: ReactElement;
+  loadingState?: LoadingTableProps;
 };
 
 function TableLayout(props: TableLayoutProps) {
@@ -20,6 +21,7 @@ function TableLayout(props: TableLayoutProps) {
     isLoading,
     isErrorLoading,
     errorMessage,
+    loadingState,
   } = props;
 
   return (
@@ -40,13 +42,16 @@ function TableLayout(props: TableLayoutProps) {
           );
         })}
       </Box.Flex>
-      {isLoading && <SkeletonTable />}
-      {isErrorLoading && (
+
+      {loadingState ? ( 
+        <LoadingTable {...loadingState} />
+      ) : isLoading ? (
+        <SkeletonTable />
+      ) : isErrorLoading ? (
         <Alert type={"error"}>
           {parseErrorMsg(errorMessage)}. Please try again later!
         </Alert>
-      )}
-      {!isLoading && !isErrorLoading && (
+      ) : (
         <>
           <Box
             style={{
