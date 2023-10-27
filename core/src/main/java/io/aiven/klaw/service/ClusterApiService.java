@@ -99,6 +99,8 @@ import org.springframework.web.client.RestTemplate;
 public class ClusterApiService {
   private static final String URL_DELIMITER = "/";
   public static final String URI_CONNECTOR_STATUS = "?connectorStatus=";
+  public static final String TOPICS_NATIVE_TYPE = "topicsNativeType";
+  public static final String RESET_CACHE = "resetCache";
 
   @Autowired private ManageDatabase manageDatabase;
 
@@ -382,9 +384,9 @@ public class ClusterApiService {
                   URL_DELIMITER,
                   protocol.getName(),
                   clusterIdentification,
-                  "topicsNativeType",
+                  TOPICS_NATIVE_TYPE,
                   aclsNativeType,
-                  "resetCache",
+                  RESET_CACHE,
                   String.valueOf(resetTopicsCache));
 
       HttpEntity<String> entity = getHttpEntity();

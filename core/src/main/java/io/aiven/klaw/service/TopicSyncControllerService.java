@@ -834,8 +834,8 @@ public class TopicSyncControllerService {
         LoadTopicsResponse loadTopicsResponse =
             getTopicsFromKafkaCluster(
                 syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter(), false);
-        for (TopicConfig hashMap : loadTopicsResponse.getTopicConfigSet()) {
-          invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
+        for (TopicConfig topicConfig : loadTopicsResponse.getTopicConfigSet()) {
+          invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, topicConfig);
         }
       } catch (Exception e) {
         log.error("Could not retrieve topics ", e);

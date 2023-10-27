@@ -43,7 +43,7 @@ public class ClusterApiUtils {
   public static final String KAFKA_SR_CREDENTIALS_PROPERTY_SFX = ".klaw.schemaregistry.credentials";
   public static final String KAFKA_CONFLUENT_CLOUD_CREDENTIALS_PROPERTY_SFX =
       ".klaw.confluentcloud.credentials";
-  private static final long TIME_OUT_SECS_FOR_TOPICS = 5;
+
   private static MessageDigest messageDigest;
 
   static {
@@ -66,6 +66,10 @@ public class ClusterApiUtils {
   @Autowired
   public ClusterApiUtils(Environment env, AdminClientProperties adminClientProperties) {
     this(env, adminClientProperties, new HashMap<>(), new HashMap<>());
+  }
+
+  public AdminClientProperties getAdminClientProperties() {
+    return adminClientProperties;
   }
 
   ClusterApiUtils(
@@ -183,8 +187,10 @@ public class ClusterApiUtils {
     }
 
     try {
-
-      adminClient.listTopics().names().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+      adminClient
+          .listTopics()
+          .names()
+          .get(adminClientProperties.getTopicsTimeoutSecs(), TimeUnit.SECONDS);
       if (!adminClientsMap.containsKey(adminClientKey)) {
         adminClientsMap.put(adminClientKey, adminClient);
       }

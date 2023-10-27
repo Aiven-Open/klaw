@@ -40,9 +40,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class ApacheKafkaTopicService {
-
-  private static final long TIME_OUT_SECS_FOR_TOPICS = 5;
-
   private final ClusterApiUtils clusterApiUtils;
 
   private final SchemaService schemaService;
@@ -144,7 +141,9 @@ public class ApacheKafkaTopicService {
     DescribeTopicsResult describeTopicsResult =
         client.describeTopics(new ArrayList<>(topicsResult.names().get()));
 
-    return describeTopicsResult.allTopicNames().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+    return describeTopicsResult
+        .allTopicNames()
+        .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
   }
 
   public synchronized ApiResponse createTopic(ClusterTopicRequest clusterTopicRequest)
@@ -170,7 +169,7 @@ public class ApacheKafkaTopicService {
       result
           .values()
           .get(clusterTopicRequest.getTopicName())
-          .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+          .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
     } catch (KafkaException e) {
       log.error("Invalid properties: ", e);
       throw e;
@@ -243,7 +242,8 @@ public class ApacheKafkaTopicService {
     TopicDescription result =
         describeTopicsResult
             .all()
-            .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS)
+            .get(
+                clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS)
             .get(clusterTopicRequest.getTopicName());
 
     if (result.partitions().size() > clusterTopicRequest.getPartitions()) {
@@ -301,7 +301,7 @@ public class ApacheKafkaTopicService {
       result
           .values()
           .get(clusterTopicRequest.getTopicName())
-          .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+          .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
 
       // delete associated schema if requested
       String schemaDeletionStatus = "";
