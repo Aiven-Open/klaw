@@ -22,6 +22,7 @@ import {
 } from "src/domain/connector";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function ConnectorApprovals() {
   const queryClient = useQueryClient();
@@ -207,6 +208,19 @@ function ConnectorApprovals() {
       />
     ) : undefined;
 
+    // Calculate rowLength
+const rowLength = connectorRequests?.entries.length || 0;
+
+// Calculate columns
+let columns: LoadingTableColumn[] = [];
+if(connectorRequests && connectorRequests.entries && connectorRequests.entries.length > 0){
+  columns = Object.keys(connectorRequests.entries[0]).map((key) => ({
+            headerName: key,
+       }))
+}
+
+
+    
   return (
     <>
       {detailsModal.isOpen && (
@@ -275,6 +289,10 @@ function ConnectorApprovals() {
         isLoading={connectorRequestsIsLoading}
         isErrorLoading={connectorRequestsIsError}
         errorMessage={connectorRequestsError}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
