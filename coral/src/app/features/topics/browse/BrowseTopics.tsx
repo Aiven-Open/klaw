@@ -11,6 +11,7 @@ import {
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
 import { getTopics } from "src/domain/topic";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +51,17 @@ function BrowseTopics() {
         setActivePage={handleChangePage}
       />
     ) : undefined;
+    // Calculate rowLength
+    const rowLength = topics?.entries.length || 0;
+
+    // Calculate columns
+    let columns: LoadingTableColumn[] = [];
+    if(topics && topics.entries && topics.entries.length > 0){
+      columns = Object.keys(topics.entries[0]).map((key) => ({
+                headerName: key,
+           }));
+    }
+
 
   return (
     <TableLayout
@@ -73,6 +85,10 @@ function BrowseTopics() {
       isLoading={isLoading}
       isErrorLoading={isError}
       errorMessage={error}
+      loadingState={{
+        rowLength: rowLength,
+        columns: columns,
+      }}
     />
   );
 }
