@@ -22,6 +22,7 @@ import { MyRequestsFilter } from "src/app/features/components/filters/MyRequests
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function TopicRequests() {
   const queryClient = useQueryClient();
@@ -103,6 +104,16 @@ function TopicRequests() {
   const selectedRequest = data?.entries.find(
     (request) => request.topicid === modals.req_no
   );
+      // Calculate rowLength
+      const rowLength = data?.entries.length || 0;
+
+      // Calculate columns
+      let columns: LoadingTableColumn[] = [];
+      if(data && data.entries && data.entries.length > 0){
+        columns = Object.keys(data.entries[0]).map((key) => ({
+                  headerName: key,
+             }));
+      }
 
   return (
     <>
@@ -173,6 +184,10 @@ function TopicRequests() {
         isLoading={isLoading}
         isErrorLoading={isError}
         errorMessage={error}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
