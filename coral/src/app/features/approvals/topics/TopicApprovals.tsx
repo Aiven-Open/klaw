@@ -24,6 +24,7 @@ import {
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function TopicApprovals() {
   const queryClient = useQueryClient();
@@ -221,6 +222,17 @@ function TopicApprovals() {
   const selectedTopicRequest = topicRequests?.entries.find(
     (request) => request.topicid === Number(detailsModal.reqNo)
   );
+
+  // Calculate rowLength
+const rowLength = topicRequests?.entries.length || 0;
+
+// Calculate columns
+let columns: LoadingTableColumn[] = [];
+if(topicRequests && topicRequests.entries && topicRequests.entries.length > 0){
+  columns = Object.keys(topicRequests.entries[0]).map((key) => ({
+            headerName: key,
+       }));
+}
   return (
     <>
       {detailsModal.isOpen && (
@@ -296,6 +308,10 @@ function TopicApprovals() {
         isLoading={topicRequestsLoading}
         isErrorLoading={topicRequestsIsError}
         errorMessage={topicRequestsError}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
