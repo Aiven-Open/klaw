@@ -22,6 +22,7 @@ import {
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function SchemaApprovals() {
   const queryClient = useQueryClient();
@@ -206,6 +207,19 @@ function SchemaApprovals() {
       />
     ) : undefined;
 
+        // Calculate rowLength
+const rowLength = schemaRequests?.entries.length || 0;
+
+// Calculate columns
+let columns: LoadingTableColumn[] = [];
+if(schemaRequests && schemaRequests.entries && schemaRequests.entries.length > 0){
+  columns = Object.keys(schemaRequests.entries[0]).map((key) => ({
+            headerName: key,
+       }))
+}
+
+
+
   return (
     <>
       {detailsModal.isOpen && (
@@ -271,6 +285,10 @@ function SchemaApprovals() {
         isLoading={schemaRequestsIsLoading}
         isErrorLoading={schemaRequestsIsError}
         errorMessage={schemaRequestsError}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
