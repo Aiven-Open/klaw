@@ -20,6 +20,7 @@ import {
   Offset,
   useOffsetFilter,
 } from "src/app/features/topics/details/messages/useOffsetFilter";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function isNoContentResult(
   result: TopicMessagesType | NoContent | undefined
@@ -69,6 +70,15 @@ function TopicMessages() {
     }).format(messagesUpdatedAt);
   }
 
+  // Calculate rowLength
+  const rowLength = 0;
+    
+
+  // Calculate columns (if  any)
+  const columns: LoadingTableColumn[] =[]; 
+
+
+
   function getTableContent() {
     if (!consumeResult) {
       return (
@@ -87,6 +97,7 @@ function TopicMessages() {
       return <TopicMessageList messages={consumeResult ?? {}} />;
     }
   }
+  
 
   return (
     <>
@@ -122,6 +133,11 @@ function TopicMessages() {
         isErrorLoading={isError}
         errorMessage={error}
         table={getTableContent()}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
+       
       />
     </>
   );
