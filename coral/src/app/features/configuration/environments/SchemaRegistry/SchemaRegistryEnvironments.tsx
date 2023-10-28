@@ -8,6 +8,7 @@ import {
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import SchemaRegistryEnvironmentsTable from "src/app/features/configuration/environments/SchemaRegistry/components/SchemaRegistryEnvironmentsTable";
 import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 const SchemaRegistryEnvironments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,7 +44,16 @@ const SchemaRegistryEnvironments = () => {
       } of ${environments?.totalPages ?? 0}`}
     />
   );
+    // Calculate rowLength
+    const rowLength = environments?.entries.length || 0;
 
+    // Calculate columns
+    let columns: LoadingTableColumn[] = [];
+    if(environments && environments.entries && environments.entries.length > 0){
+      columns = Object.keys(environments.entries[0]).map((key) => ({
+                headerName: key,
+           }));
+    }
   return (
     <TableLayout
       filters={[
@@ -62,6 +72,10 @@ const SchemaRegistryEnvironments = () => {
       isLoading={isLoading}
       isErrorLoading={isError}
       errorMessage={error}
+      loadingState={{
+        rowLength: rowLength,
+        columns: columns,
+      }}
     />
   );
 };

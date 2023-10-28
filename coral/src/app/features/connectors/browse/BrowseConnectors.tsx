@@ -11,7 +11,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
-
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 function BrowseConnectors() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
@@ -50,6 +50,17 @@ function BrowseConnectors() {
       />
     ) : undefined;
 
+     // Calculate rowLength
+     const rowLength = connectors?.entries.length || 0;
+
+     // Calculate columns
+     let columns: LoadingTableColumn[] = [];
+     if(connectors && connectors.entries && connectors.entries.length > 0){
+       columns = Object.keys(connectors.entries[0]).map((key) => ({
+                 headerName: key,
+            }));
+     }
+
   return (
     <TableLayout
       filters={[
@@ -69,6 +80,10 @@ function BrowseConnectors() {
       isLoading={isLoading}
       isErrorLoading={isError}
       errorMessage={error}
+      loadingState={{
+        rowLength: rowLength,
+        columns: columns,
+      }}
     />
   );
 }
