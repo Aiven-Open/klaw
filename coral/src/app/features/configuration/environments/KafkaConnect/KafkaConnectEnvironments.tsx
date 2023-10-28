@@ -8,6 +8,7 @@ import {
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import KafkaConnectEnvironmentsTable from "src/app/features/configuration/environments/KafkaConnect/components/KafkaConnectEnvironmentsTable";
 import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 const KafkaConnectEnvironments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,6 +46,17 @@ const KafkaConnectEnvironments = () => {
     />
   );
 
+    // Calculate rowLength
+const rowLength = environments?.entries.length || 0;
+
+// Calculate columns
+let columns: LoadingTableColumn[] = [];
+if(environments && environments.entries && environments.entries.length > 0){
+  columns = Object.keys(environments.entries[0]).map((key) => ({
+            headerName: key,
+       }));
+}
+
   return (
     <TableLayout
       filters={[
@@ -63,6 +75,10 @@ const KafkaConnectEnvironments = () => {
       isLoading={isLoading}
       isErrorLoading={isError}
       errorMessage={error}
+      loadingState={{
+        rowLength: rowLength,
+        columns: columns,
+      }}
     />
   );
 };
