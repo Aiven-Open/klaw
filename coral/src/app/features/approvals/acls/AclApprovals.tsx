@@ -24,6 +24,7 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable'
 
 function AclApprovals() {
   const queryClient = useQueryClient();
@@ -189,6 +190,17 @@ function AclApprovals() {
     );
   }
 
+   // Calculate rowLength and columns for LoadingTable
+   const rowLength = data?.entries.length ?? 0;
+   let columns: LoadingTableColumn[] = []; 
+
+if (data && data.entries && data.entries.length > 0) {
+  columns = Object.keys(data.entries[0]).map((key) => ({
+    headerName: key,
+  })) ;
+}
+
+
   return (
     <>
       {detailsModal.isOpen && (
@@ -265,6 +277,10 @@ function AclApprovals() {
         isLoading={isLoading}
         isErrorLoading={isError}
         errorMessage={error}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
