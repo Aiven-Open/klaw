@@ -1,7 +1,7 @@
 import { DataTable, Skeleton } from "@aivenio/aquarium";
 import { DataTableRow } from "@aivenio/aquarium/dist/src/utils/table/types";
 
-type LoadingTableColumn = {
+export type LoadingTableColumn = {
   headerName: string;
   width?: number | `${number}%`;
   headerInvisible?: boolean;
