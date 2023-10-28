@@ -22,6 +22,7 @@ import { useState } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { ConnectorRequestDetails } from "src/app/features/components/ConnectorDetailsModalContent";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function ConnectorRequests() {
   const queryClient = useQueryClient();
@@ -103,6 +104,16 @@ function ConnectorRequests() {
   const selectedRequest = data?.entries.find(
     (request) => request.connectorId === modals.connectorId
   );
+    // Calculate rowLength
+    const rowLength = data?.entries.length || 0;
+
+    // Calculate columns
+    let columns: LoadingTableColumn[] = [];
+    if(data && data.entries && data.entries.length > 0){
+      columns = Object.keys(data.entries[0]).map((key) => ({
+                headerName: key,
+           }));
+    }
 
   return (
     <>
@@ -168,6 +179,10 @@ function ConnectorRequests() {
         isLoading={isLoading}
         isErrorLoading={isError}
         errorMessage={error}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );

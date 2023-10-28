@@ -22,6 +22,7 @@ import {
   getSchemaRequests,
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function SchemaRequests() {
   const queryClient = useQueryClient();
@@ -108,6 +109,16 @@ function SchemaRequests() {
         setActivePage={setCurrentPage}
       />
     ) : undefined;
+       // Calculate rowLength
+       const rowLength = schemaRequests?.entries.length || 0;
+
+       // Calculate columns
+       let columns: LoadingTableColumn[] = [];
+       if(schemaRequests && schemaRequests.entries && schemaRequests.entries.length > 0){
+         columns = Object.keys(schemaRequests.entries[0]).map((key) => ({
+                   headerName: key,
+              }));
+       }
 
   return (
     <>
@@ -180,6 +191,10 @@ function SchemaRequests() {
         isLoading={isLoading}
         isErrorLoading={isError}
         errorMessage={error}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
