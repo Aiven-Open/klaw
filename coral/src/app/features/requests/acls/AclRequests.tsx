@@ -20,6 +20,7 @@ import { AclRequestsTable } from "src/app/features/requests/acls/components/AclR
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {LoadingTableColumn} from 'src/app/features/components/layouts/LoadingTable';
 
 function AclRequests() {
   const queryClient = useQueryClient();
@@ -125,6 +126,16 @@ function AclRequests() {
   const selectedRequest = data?.entries.find(
     (request) => request.req_no === modals.req_no
   );
+    // Calculate rowLength
+    const rowLength = data?.entries.length || 0;
+
+    // Calculate columns
+    let columns: LoadingTableColumn[] = [];
+    if(data && data.entries && data.entries.length > 0){
+      columns = Object.keys(data.entries[0]).map((key) => ({
+                headerName: key,
+           }));
+    }
 
   return (
     <>
@@ -192,6 +203,10 @@ function AclRequests() {
         isLoading={dataIsLoading}
         isErrorLoading={isError}
         errorMessage={error}
+        loadingState={{
+          rowLength: rowLength,
+          columns: columns,
+        }}
       />
     </>
   );
