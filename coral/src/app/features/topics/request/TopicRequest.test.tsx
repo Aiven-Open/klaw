@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
 import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";

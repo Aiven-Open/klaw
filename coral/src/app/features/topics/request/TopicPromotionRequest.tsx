@@ -35,6 +35,11 @@ import {
 } from "src/domain/topic";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import isString from "lodash/isString";
+
+function parseNumberOrUndefined(value: string | undefined): number | undefined {
+  return isString(value) ? parseInt(value, 10) : undefined;
+}
 
 function TopicPromotionRequest() {
   const { topicName } = useParams();
@@ -229,7 +234,9 @@ function TopicPromotionRequest() {
               <SelectOrNumberInput
                 name={"topicpartitions"}
                 label={"Topic partitions"}
-                max={targetEnvironment.params?.maxPartitions}
+                max={parseNumberOrUndefined(
+                  targetEnvironment.params.maxPartitions
+                )}
                 required={true}
               />
             ) : (
@@ -241,7 +248,9 @@ function TopicPromotionRequest() {
               <SelectOrNumberInput
                 name={"replicationfactor"}
                 label={"Replication factor"}
-                max={targetEnvironment.params?.maxRepFactor}
+                max={parseNumberOrUndefined(
+                  targetEnvironment.params?.maxRepFactor
+                )}
                 required={true}
               />
             ) : (

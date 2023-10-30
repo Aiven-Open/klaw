@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
 import {
   approveAclRequest,
@@ -19,7 +19,6 @@ import {
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -104,8 +103,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
       "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
   },
 ];
-const mockGetEnvironmentResponse: Environment[] =
-  transformEnvironmentApiResponse(mockedEnvironmentResponse);
+const mockGetEnvironmentResponse: Environment[] = mockedEnvironmentResponse;
 
 const mockGetAclRequestsForApproverResponse = transformAclRequestApiResponse(
   mockedAclRequestsForApproverApiResponse

@@ -19,7 +19,7 @@ import {
   getAllEnvironmentsForConnector,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -70,11 +70,11 @@ const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
 ]);
 
 const mockEnvironments = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "1",
     name: "DEV",
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "2",
     name: "TST",
   }),

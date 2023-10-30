@@ -1,6 +1,6 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import SchemaRegistryEnvironmentsTable from "src/app/features/configuration/environments/SchemaRegistry/components/SchemaRegistryEnvironmentsTable";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -14,7 +14,7 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const mockEnvironments: Environment[] = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "schemaregistry",
     name: "DEV_SCH",
     id: "1",
@@ -23,7 +23,7 @@ const mockEnvironments: Environment[] = [
     associatedEnv: { id: "1", name: "DEV" },
     envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "schemaregistry",
     name: "TST_SCH",
     id: "2",
@@ -32,7 +32,7 @@ const mockEnvironments: Environment[] = [
     associatedEnv: { id: "2", name: "TST" },
     envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "schemaregistry",
     name: "PROD_SCH",
     id: "3",
