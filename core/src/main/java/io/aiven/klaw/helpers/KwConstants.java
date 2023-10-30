@@ -78,7 +78,7 @@ public class KwConstants {
       "Dear User,\\nYou have successfully changed your password.\\n If you did not request a password change, please contact your administrator.";
 
   public static final String REPORTS_LOCATION = "/tmp/";
-  public static final String MAIL_NOTIFICATIONS_ENABLE = "true";
+  public static final String MAIL_NOTIFICATIONS_ENABLE = "false";
   public static final String GETSCHEMAS_ENABLE = "false";
   public static final String TENANT_CONFIG = "{}";
 

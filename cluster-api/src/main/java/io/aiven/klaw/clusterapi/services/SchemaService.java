@@ -1,12 +1,12 @@
 package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
+import io.aiven.klaw.clusterapi.models.ClusterKeyIdentifier;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
-import io.aiven.klaw.clusterapi.models.SchemaInfoCacheKeySet;
 import io.aiven.klaw.clusterapi.models.SchemaInfoOfTopic;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -60,7 +60,7 @@ public class SchemaService {
   private static Map<String, SchemasInfoOfClusterResponse> schemasInfoOfClusterResponseMap =
       new HashMap<>();
 
-  private static Map<String, SchemaInfoCacheKeySet> schemasInfoCacheKeySetMap = new HashMap<>();
+  private static Map<String, ClusterKeyIdentifier> schemasInfoCacheKeySetMap = new HashMap<>();
 
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
@@ -703,11 +703,11 @@ public class SchemaService {
       String schemasVersionsStorageKey,
       SchemasInfoOfClusterResponse schemasInfoOfClusterResponse) {
     schemasInfoOfClusterResponseMap.put(schemasVersionsStorageKey, schemasInfoOfClusterResponse);
-    SchemaInfoCacheKeySet schemaInfoCacheKeySet = new SchemaInfoCacheKeySet();
-    schemaInfoCacheKeySet.setProtocol(protocol);
-    schemaInfoCacheKeySet.setClusterIdentification(clusterIdentification);
-    schemaInfoCacheKeySet.setBootstrapServers(bootstrapServers);
-    schemasInfoCacheKeySetMap.put(schemasVersionsStorageKey, schemaInfoCacheKeySet);
+    ClusterKeyIdentifier clusterKeyIdentifier = new ClusterKeyIdentifier();
+    clusterKeyIdentifier.setProtocol(protocol);
+    clusterKeyIdentifier.setClusterIdentification(clusterIdentification);
+    clusterKeyIdentifier.setBootstrapServers(bootstrapServers);
+    schemasInfoCacheKeySetMap.put(schemasVersionsStorageKey, clusterKeyIdentifier);
   }
 
   private SchemasInfoOfClusterResponse handleInterimUpdatesOnSchemas(
@@ -769,13 +769,13 @@ public class SchemaService {
       zone = "${klaw.schemainfo.cron.expression.timezone:UTC}")
   public void resetSchemaCacheScheduler() {
     for (String schemasVersionsStorageKey : schemasInfoCacheKeySetMap.keySet()) {
-      SchemaInfoCacheKeySet schemaInfoCacheKeySet =
+      ClusterKeyIdentifier clusterKeyIdentifier =
           schemasInfoCacheKeySetMap.get(schemasVersionsStorageKey);
       schemasInfoOfClusterResponseMap.remove(schemasVersionsStorageKey);
       loadAllSchemasInfoFromCluster(
-          schemaInfoCacheKeySet.getBootstrapServers(),
-          schemaInfoCacheKeySet.getProtocol(),
-          schemaInfoCacheKeySet.getClusterIdentification(),
+          clusterKeyIdentifier.getBootstrapServers(),
+          clusterKeyIdentifier.getProtocol(),
+          clusterKeyIdentifier.getClusterIdentification(),
           false,
           SchemaCacheUpdateType.NONE,
           null);
