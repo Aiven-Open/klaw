@@ -7,7 +7,7 @@ import {
   getAllEnvironmentsForTopicAndAcl,
   getAllEnvironmentsForConnector,
 } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/environment/environment-api.ts");
@@ -23,11 +23,11 @@ const mockGetSyncConnectorsEnvironments =
   >;
 
 const mockEnvironments = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "DEV",
     id: "1",
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "TST",
     id: "2",
   }),
@@ -150,18 +150,18 @@ describe("EnvironmentFilter.tsx", () => {
     };
 
     const mockEnvironmentsSchema = [
-      createEnvironment({
+      createMockEnvironmentDTO({
         name: "DEV",
         id: "1",
         associatedEnv: associatedEnvDev,
       }),
-      createEnvironment({
+      createMockEnvironmentDTO({
         name: "TST",
         id: "2",
         associatedEnv: associatedEnvTst,
       }),
 
-      createEnvironment({
+      createMockEnvironmentDTO({
         name: "DIV",
         id: "3",
       }),
