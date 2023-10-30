@@ -6,7 +6,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Connector, getConnectors } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
 
@@ -143,11 +143,11 @@ const mockTeams = [
 ];
 
 const mockEnvironments = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "1",
     name: "DEV",
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "2",
     name: "TST",
   }),

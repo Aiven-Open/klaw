@@ -1,10 +1,9 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import {
   getSchemaRequestsForApprover,
   SchemaRequest,
@@ -42,10 +41,10 @@ const mockedEnvironments = [
   { name: "RANDOM", id: "3" },
 ];
 
-const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+const mockedEnvironmentResponse = [
   createMockEnvironmentDTO(mockedEnvironments[0]),
   createMockEnvironmentDTO(mockedEnvironments[1]),
-]);
+];
 
 const mockedResponseSchemaRequests: SchemaRequest[] = [
   {

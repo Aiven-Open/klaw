@@ -24,6 +24,11 @@ import { generateTopicNameDescription } from "src/app/features/topics/request/ut
 import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import isString from "lodash/isString";
+
+function parseNumberOrUndefined(value: string | undefined): number | undefined {
+  return isString(value) ? parseInt(value, 10) : undefined;
+}
 
 function TopicRequest() {
   const navigate = useNavigate();
@@ -145,7 +150,9 @@ function TopicRequest() {
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
-                  max={selectedEnvironment?.params?.maxPartitions}
+                  max={parseNumberOrUndefined(
+                    selectedEnvironment?.params.maxPartitions
+                  )}
                   required={true}
                 />
               </Box>
@@ -153,7 +160,9 @@ function TopicRequest() {
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
-                  max={selectedEnvironment?.params?.maxRepFactor}
+                  max={parseNumberOrUndefined(
+                    selectedEnvironment?.params.maxRepFactor
+                  )}
                   required={true}
                 />
               </Box>

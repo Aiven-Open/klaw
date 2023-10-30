@@ -1,4 +1,3 @@
-import { Environment } from "src/domain/environment/environment-types";
 import { KlawApiModel } from "types/utils";
 
 const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
@@ -38,19 +37,4 @@ function createMockEnvironmentDTO(
   return { ...defaultEnvironmentDTO, ...environment };
 }
 
-const defaultEnvironment: Environment = {
-  name: "DEV",
-  id: "1",
-  params: {},
-  type: "kafka",
-  clusterName: "DEV",
-  tenantName: "default",
-  envStatus: "ONLINE",
-  envStatusTimeString: "21-Sep-2023 11:46:15",
-};
-
-function createEnvironment(environment: Partial<Environment>): Environment {
-  return { ...defaultEnvironment, ...environment };
-}
-
-export { createMockEnvironmentDTO, createEnvironment };
+export { createMockEnvironmentDTO };

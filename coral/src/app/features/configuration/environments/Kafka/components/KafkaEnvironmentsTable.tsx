@@ -18,8 +18,8 @@ interface KafkaEnvironmentsTableRow {
   environmentName: Environment["name"];
   clusterName: Environment["clusterName"];
   tenantName: Environment["tenantName"];
-  replicationFactor: { default: number; max: number };
-  partition: { default: number; max: number };
+  replicationFactor: { default: string; max: string };
+  partition: { default: string; max: string };
   status: Environment["envStatus"];
   envStatusTimeString: Environment["envStatusTimeString"];
 }
@@ -118,12 +118,12 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
       clusterName: env.clusterName,
       tenantName: env.tenantName,
       replicationFactor: {
-        default: env.params?.defaultRepFactor || 0,
-        max: env.params?.maxRepFactor || 0,
+        default: env.params?.defaultRepFactor || "0",
+        max: env.params?.maxRepFactor || "0",
       },
       partition: {
-        default: env.params?.defaultPartitions || 0,
-        max: env.params?.maxPartitions || 0,
+        default: env.params?.defaultPartitions || "0",
+        max: env.params?.maxPartitions || "0",
       },
       status: env.envStatus,
       envStatusTimeString: env.envStatusTimeString,

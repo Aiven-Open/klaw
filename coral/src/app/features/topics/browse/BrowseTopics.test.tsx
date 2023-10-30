@@ -1,13 +1,12 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
 import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTeams } from "src/domain/team";
 import { AllTeams } from "src/domain/team/team-types";
 import { getTopics } from "src/domain/topic";
@@ -38,8 +37,7 @@ const mockedGetTopicsResponseSinglePage: TopicApiResponse =
   mockedResponseTransformed;
 const mockedGetTopicsResponseMultiplePages: TopicApiResponse =
   mockedResponseMultiplePageTransformed;
-const mockGetEnvironmentResponse: Environment[] =
-  transformEnvironmentApiResponse(mockedEnvironmentResponse);
+const mockGetEnvironmentResponse: Environment[] = mockedEnvironmentResponse;
 const mockGetTeamsResponse: AllTeams = [
   {
     teamname: "TEST_TEAM_01",
