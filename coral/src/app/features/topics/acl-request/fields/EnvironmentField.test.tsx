@@ -2,6 +2,7 @@ import { cleanup, screen, within } from "@testing-library/react";
 import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
 import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
@@ -11,37 +12,43 @@ const schema = z.object({
 
 const mockedEnvironments: ExtendedEnvironment[] = [
   {
-    name: "DEV",
-    id: "1",
+    ...createMockEnvironmentDTO({
+      name: "DEV",
+      id: "1",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: ["hello", "there"],
     isAivenCluster: true,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
-    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
   {
-    name: "TST",
-    id: "2",
+    ...createMockEnvironmentDTO({
+      name: "TST",
+      id: "2",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: ["hello", "there", "general"],
     isAivenCluster: true,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
-    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
   {
-    name: "NOTOPIC",
-    id: "3",
+    ...createMockEnvironmentDTO({
+      name: "NOTOPIC",
+      id: "3",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: [],
     isAivenCluster: true,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
-    envStatusTimeString: "21-Sep-2023 11:46:15",
   },
 ];
 

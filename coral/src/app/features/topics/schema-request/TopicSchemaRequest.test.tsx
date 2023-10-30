@@ -6,11 +6,10 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -53,12 +52,11 @@ const mockedEnvironments = [
   { name: "INFRA", id: "3", associatedEnv: { id: "9", name: "INFRA_SCH" } },
   { name: "SOME", id: "3", associatedEnv: undefined },
 ];
-const mockedGetAllEnvironmentsForTopicAndAclResponse =
-  transformEnvironmentApiResponse(
-    mockedEnvironments.map((entry) => {
-      return createMockEnvironmentDTO(entry);
-    })
-  );
+const mockedGetAllEnvironmentsForTopicAndAclResponse = mockedEnvironments.map(
+  (entry) => {
+    return createMockEnvironmentDTO(entry);
+  }
+);
 
 const fileName = "my-awesome-schema.avsc";
 const testFile: File = new File(["{}"], fileName, {
