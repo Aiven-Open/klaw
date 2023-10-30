@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           java-version: 20
-          distribution: "temurin"
+          distribution: 'temurin'
           cache: maven
 
       - name: Build Klaw

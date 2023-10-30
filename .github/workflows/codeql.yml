@@ -80,6 +80,7 @@ jobs:
       uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
       with:
         java-version: 19
+        distribution: 'temurin'
 
     - name: Build with Maven
       run: ./mvnw verify
