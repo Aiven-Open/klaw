@@ -3,7 +3,7 @@ import {
   DropdownMenu,
   Typography,
   Icon,
-  useToast,
+  useToastContext,
 } from "@aivenio/aquarium";
 import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
@@ -34,7 +34,8 @@ const menuItems: MenuItem[] = [
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
   const authUser = useAuthContext();
-  const toast = useToast();
+  const [toast, dismiss] = useToastContext();
+
   function navigateToAngular(path: string) {
     window.location.assign(`${window.origin}${path}`);
   }
@@ -42,13 +43,15 @@ function ProfileDropdown() {
   function onDropdownClick(actionKey: string | number) {
     if (actionKey === LOGOUT_KEY) {
       toast({
+        id: "logout",
         message: "You are being logged out of Klaw...",
         position: "bottom-left",
         variant: "default",
-        duration: 30 * 1000,
       });
       logoutUser().catch((error) => {
+        // dismiss toast in case logout fails
         if (error.status !== 401) {
+          dismiss("logout");
           toast({
             message:
               "Something went wrong in the log out process. Please try again or contact your administrator.",
@@ -60,7 +63,6 @@ function ProfileDropdown() {
           window.location.assign(`${window.origin}/login`);
         }
       });
-
       return;
     } else {
       const selectedItem = menuItems[actionKey as number];
