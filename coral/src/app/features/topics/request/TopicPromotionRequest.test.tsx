@@ -4,7 +4,7 @@ import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicPromotionRequest from "src/app/features/topics/request/TopicPromotionRequest";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTopicDetailsPerEnv, requestTopicPromotion } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
