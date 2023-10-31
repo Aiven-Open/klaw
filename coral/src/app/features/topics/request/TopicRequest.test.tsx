@@ -2,17 +2,23 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
-import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
+import { getEnvironmentsForTopicRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import {
-  defaultgetTopicAdvancedConfigOptionsResponse,
-  mockRequestTopic,
-  mockgetTopicAdvancedConfigOptions,
-} from "src/domain/topic/topic-api.msw";
-import api from "src/services/api";
+import { requestTopicCreation } from "src/domain/topic/topic-api";
 import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
+
+jest.mock("src/domain/environment/environment-api.ts");
+const mockGetEnvironments =
+  getEnvironmentsForTopicRequest as jest.MockedFunction<
+    typeof getEnvironmentsForTopicRequest
+  >;
+
+jest.mock("src/domain/topic/topic-api");
+const mockRequestTopicCreation = requestTopicCreation as jest.MockedFunction<
+  typeof requestTopicCreation
+>;
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -47,22 +53,12 @@ describe("<TopicRequest />", () => {
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-              createMockEnvironmentDTO({ name: "TST", id: "2" }),
-              createMockEnvironmentDTO({ name: "PROD", id: "3" }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+          createMockEnvironmentDTO({ name: "TST", id: "2" }),
+          createMockEnvironmentDTO({ name: "PROD", id: "3" }),
+        ]);
+
         customRender(
           <AquariumContext>
             <TopicRequest />
@@ -113,22 +109,12 @@ describe("<TopicRequest />", () => {
 
     describe("when field is clicked", () => {
       beforeEach(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-              createMockEnvironmentDTO({ name: "TST", id: "2" }),
-              createMockEnvironmentDTO({ name: "PROD", id: "3" }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+          createMockEnvironmentDTO({ name: "TST", id: "2" }),
+          createMockEnvironmentDTO({ name: "PROD", id: "3" }),
+        ]);
+
         customRender(
           <AquariumContext>
             <TopicRequest />
@@ -184,27 +170,16 @@ describe("<TopicRequest />", () => {
   describe("Topic name", () => {
     describe("informs user about valid input with placeholder per default", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "DEV",
-                id: "4",
-                params: {
-                  applyRegex: false,
-                  topicRegex: [".*Dev.*"],
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "DEV",
+            id: "4",
+            params: {
+              applyRegex: false,
+              topicRegex: [".*Dev.*"],
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -237,28 +212,16 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with placeholder when regex should be applied", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "DEV",
-                id: "4",
-                params: {
-                  applyRegex: true,
-                  topicRegex: [".*Dev.*"],
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
-
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "DEV",
+            id: "4",
+            params: {
+              applyRegex: true,
+              topicRegex: [".*Dev.*"],
+            },
+          }),
+        ]);
         customRender(
           <AquariumContext>
             <TopicRequest />
@@ -290,27 +253,16 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with a prefix is needed", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "DEV",
-                id: "4",
-                params: {
-                  applyRegex: false,
-                  topicPrefix: ["prefix_"],
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "DEV",
+            id: "4",
+            params: {
+              applyRegex: false,
+              topicPrefix: ["prefix_"],
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -343,23 +295,12 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not have enough characters", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "EnvWithTopicPrefix",
-                id: "4",
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "EnvWithTopicPrefix",
+            id: "4",
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -397,23 +338,12 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not match the default pattern", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "EnvWithTopicPrefix",
-                id: "4",
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "EnvWithTopicPrefix",
+            id: "4",
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -451,33 +381,22 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicPrefix defined", () => {
       beforeEach(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "EnvWithTopicPrefix",
-                id: "4",
-                params: { topicPrefix: ["test-"], applyRegex: undefined },
-              }),
-              createMockEnvironmentDTO({
-                name: "EnvWithTopicRegex",
-                id: "2",
-                params: {
-                  applyRegex: true,
-                  topicRegex: [".*Dev*."],
-                  topicPrefix: ["test-"],
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "EnvWithTopicPrefix",
+            id: "4",
+            params: { topicPrefix: ["test-"], applyRegex: undefined },
+          }),
+          createMockEnvironmentDTO({
+            name: "EnvWithTopicRegex",
+            id: "2",
+            params: {
+              applyRegex: true,
+              topicRegex: [".*Dev*."],
+              topicPrefix: ["test-"],
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -542,26 +461,15 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicSuffix defined", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({
-                name: "EnvWithTopicSuffix",
-                id: "4",
-                params: {
-                  topicSuffix: ["-test"],
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({
+            name: "EnvWithTopicSuffix",
+            id: "4",
+            params: {
+              topicSuffix: ["-test"],
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -600,43 +508,32 @@ describe("<TopicRequest />", () => {
   describe("Replication factor", () => {
     describe("renders all necessary elements on default", () => {
       beforeAll(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-              createMockEnvironmentDTO({
-                name: "TST",
-                id: "2",
-                params: {
-                  maxPartitions: "8",
-                  maxRepFactor: "2",
-                },
-              }),
-              createMockEnvironmentDTO({
-                name: "PROD",
-                id: "3",
-                params: {
-                  maxPartitions: "16",
-                  maxRepFactor: "4",
-                },
-              }),
-              createMockEnvironmentDTO({
-                name: "WITH_DEFAULT_PARTITIONS",
-                id: "4",
-                params: {
-                  defaultRepFactor: "4",
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+          createMockEnvironmentDTO({
+            name: "TST",
+            id: "2",
+            params: {
+              maxPartitions: "8",
+              maxRepFactor: "2",
+            },
+          }),
+          createMockEnvironmentDTO({
+            name: "PROD",
+            id: "3",
+            params: {
+              maxPartitions: "16",
+              maxRepFactor: "4",
+            },
+          }),
+          createMockEnvironmentDTO({
+            name: "WITH_DEFAULT_PARTITIONS",
+            id: "4",
+            params: {
+              defaultRepFactor: "4",
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -680,43 +577,32 @@ describe("<TopicRequest />", () => {
 
     describe("when environment is changed", () => {
       beforeEach(() => {
-        mockgetEnvironmentsForTopicRequest({
-          mswInstance: server,
-          response: {
-            data: [
-              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-              createMockEnvironmentDTO({
-                name: "TST",
-                id: "2",
-                params: {
-                  maxPartitions: "8",
-                  maxRepFactor: "2",
-                },
-              }),
-              createMockEnvironmentDTO({
-                name: "PROD",
-                id: "3",
-                params: {
-                  maxPartitions: "16",
-                  maxRepFactor: "4",
-                },
-              }),
-              createMockEnvironmentDTO({
-                name: "WITH_DEFAULT_PARTITIONS",
-                id: "4",
-                params: {
-                  defaultRepFactor: "4",
-                },
-              }),
-            ],
-          },
-        });
-        mockgetTopicAdvancedConfigOptions({
-          mswInstance: server,
-          response: {
-            data: defaultgetTopicAdvancedConfigOptionsResponse,
-          },
-        });
+        mockGetEnvironments.mockResolvedValue([
+          createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+          createMockEnvironmentDTO({
+            name: "TST",
+            id: "2",
+            params: {
+              maxPartitions: "8",
+              maxRepFactor: "2",
+            },
+          }),
+          createMockEnvironmentDTO({
+            name: "PROD",
+            id: "3",
+            params: {
+              maxPartitions: "16",
+              maxRepFactor: "4",
+            },
+          }),
+          createMockEnvironmentDTO({
+            name: "WITH_DEFAULT_PARTITIONS",
+            id: "4",
+            params: {
+              defaultRepFactor: "4",
+            },
+          }),
+        ]);
 
         customRender(
           <AquariumContext>
@@ -805,43 +691,32 @@ describe("<TopicRequest />", () => {
 
   describe("Topic partitions", () => {
     beforeAll(() => {
-      mockgetEnvironmentsForTopicRequest({
-        mswInstance: server,
-        response: {
-          data: [
-            createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-            createMockEnvironmentDTO({
-              name: "TST",
-              id: "2",
-              params: {
-                maxPartitions: "8",
-                maxRepFactor: "2",
-              },
-            }),
-            createMockEnvironmentDTO({
-              name: "PROD",
-              id: "3",
-              params: {
-                maxPartitions: "16",
-                maxRepFactor: "4",
-              },
-            }),
-            createMockEnvironmentDTO({
-              name: "WITH_DEFAULT_PARTITIONS",
-              id: "4",
-              params: {
-                defaultPartitions: "4",
-              },
-            }),
-          ],
-        },
-      });
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+      mockGetEnvironments.mockResolvedValue([
+        createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+        createMockEnvironmentDTO({
+          name: "TST",
+          id: "2",
+          params: {
+            maxPartitions: "8",
+            maxRepFactor: "2",
+          },
+        }),
+        createMockEnvironmentDTO({
+          name: "PROD",
+          id: "3",
+          params: {
+            maxPartitions: "16",
+            maxRepFactor: "4",
+          },
+        }),
+        createMockEnvironmentDTO({
+          name: "WITH_DEFAULT_PARTITIONS",
+          id: "4",
+          params: {
+            defaultPartitions: "4",
+          },
+        }),
+      ]);
 
       customRender(
         <AquariumContext>
@@ -881,43 +756,32 @@ describe("<TopicRequest />", () => {
 
   describe("when environment is changed", () => {
     beforeEach(() => {
-      mockgetEnvironmentsForTopicRequest({
-        mswInstance: server,
-        response: {
-          data: [
-            createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-            createMockEnvironmentDTO({
-              name: "TST",
-              id: "2",
-              params: {
-                maxPartitions: "8",
-                maxRepFactor: "2",
-              },
-            }),
-            createMockEnvironmentDTO({
-              name: "PROD",
-              id: "3",
-              params: {
-                maxPartitions: "16",
-                maxRepFactor: "4",
-              },
-            }),
-            createMockEnvironmentDTO({
-              name: "WITH_DEFAULT_PARTITIONS",
-              id: "4",
-              params: {
-                defaultPartitions: "4",
-              },
-            }),
-          ],
-        },
-      });
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+      mockGetEnvironments.mockResolvedValue([
+        createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+        createMockEnvironmentDTO({
+          name: "TST",
+          id: "2",
+          params: {
+            maxPartitions: "8",
+            maxRepFactor: "2",
+          },
+        }),
+        createMockEnvironmentDTO({
+          name: "PROD",
+          id: "3",
+          params: {
+            maxPartitions: "16",
+            maxRepFactor: "4",
+          },
+        }),
+        createMockEnvironmentDTO({
+          name: "WITH_DEFAULT_PARTITIONS",
+          id: "4",
+          params: {
+            defaultPartitions: "4",
+          },
+        }),
+      ]);
 
       customRender(
         <AquariumContext>
@@ -988,19 +852,9 @@ describe("<TopicRequest />", () => {
 
   describe("AdvancedConfiguration", () => {
     beforeAll(() => {
-      mockgetEnvironmentsForTopicRequest({
-        mswInstance: server,
-        response: {
-          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
-        },
-      });
-
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+      mockGetEnvironments.mockResolvedValue([
+        createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+      ]);
 
       customRender(
         <AquariumContext>
@@ -1037,19 +891,9 @@ describe("<TopicRequest />", () => {
 
   describe("form submission", () => {
     beforeAll(async () => {
-      mockgetEnvironmentsForTopicRequest({
-        mswInstance: server,
-        response: {
-          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
-        },
-      });
-
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+      mockGetEnvironments.mockResolvedValue([
+        createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+      ]);
 
       customRender(
         <AquariumContext>
@@ -1096,33 +940,37 @@ describe("<TopicRequest />", () => {
     });
 
     describe("handles an error from the api", () => {
-      beforeEach(async () => {
-        mockRequestTopic({
-          mswInstance: server,
-          response: {
-            data: { message: "Topic with such name already exists!" },
-            status: 400,
-          },
-        });
-      });
-
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockRequestTopicCreation.mockRejectedValue({
+          data: { message: "Topic with such name already exists!" },
+          status: 400,
+        });
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createTopics", {
-          environment: "1",
+        expect(mockRequestTopicCreation).toHaveBeenCalledTimes(1);
+        expect(mockRequestTopicCreation).toHaveBeenCalledWith({
+          environment: {
+            id: "1",
+            name: "DEV",
+            params: {
+              applyRegex: undefined,
+              defaultPartitions: undefined,
+              defaultRepFactor: undefined,
+              maxPartitions: undefined,
+              maxRepFactor: undefined,
+              topicPrefix: undefined,
+              topicSuffix: undefined,
+            },
+          },
           topicname: "this-is-topic-name",
           replicationfactor: "3",
-          topicpartitions: 3,
-          advancedTopicConfigEntries: [],
+          topicpartitions: "3",
+          advancedConfiguration: undefined,
           description: "test",
           remarks: "",
-          requestOperationType: "CREATE",
         });
 
         const alert = await screen.findByRole("alert");
@@ -1139,13 +987,7 @@ describe("<TopicRequest />", () => {
 
         mockedUsedNavigate.mockReset();
 
-        mockRequestTopic({
-          mswInstance: server,
-          response: {
-            status: 200,
-            data: { success: true, message: "success" },
-          },
-        });
+        // const originalConsoleError = console.error;
       });
 
       afterEach(() => {
@@ -1153,29 +995,41 @@ describe("<TopicRequest />", () => {
       });
 
       it("creates a new topic request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockRequestTopicCreation.mockResolvedValue({
+          success: true,
+          message: "",
+        });
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        expect(spyPost).toHaveBeenCalledWith("/createTopics", {
-          environment: "1",
+        expect(mockRequestTopicCreation).toHaveBeenCalledTimes(1);
+        expect(mockRequestTopicCreation).toHaveBeenCalledWith({
+          environment: {
+            id: "1",
+            name: "DEV",
+            params: {
+              applyRegex: undefined,
+              defaultPartitions: undefined,
+              defaultRepFactor: undefined,
+              maxPartitions: undefined,
+              maxRepFactor: undefined,
+              topicPrefix: undefined,
+              topicSuffix: undefined,
+            },
+          },
           topicname: "this-is-topic-name",
           replicationfactor: "3",
-          topicpartitions: 3,
-          advancedTopicConfigEntries: [],
+          topicpartitions: "3",
+          advancedConfiguration: undefined,
           description: "test",
           remarks: "",
-          requestOperationType: "CREATE",
         });
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("errors and does not create a new topic request when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
-
         await user.clear(screen.getByLabelText("Topic name*"));
 
         await user.click(
@@ -1186,7 +1040,7 @@ describe("<TopicRequest />", () => {
           expect(screen.getByText("Topic name can not be empty")).toBeVisible()
         );
 
-        expect(spyPost).not.toHaveBeenCalled();
+        expect(mockRequestTopicCreation).not.toHaveBeenCalled();
         expect(mockedUseToast).not.toHaveBeenCalled();
         expect(
           screen.getByRole("button", { name: "Submit request" })
@@ -1194,13 +1048,11 @@ describe("<TopicRequest />", () => {
       });
 
       it("shows a notification that request was successful and redirects user", async () => {
-        const spyPost = jest.spyOn(api, "post");
-
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(mockRequestTopicCreation).toHaveBeenCalledTimes(1);
         await waitFor(() => {
           expect(mockedUsedNavigate).toHaveBeenCalledWith(
             "/requests/topics?status=CREATED"
@@ -1224,19 +1076,9 @@ describe("<TopicRequest />", () => {
     };
 
     beforeEach(async () => {
-      mockgetEnvironmentsForTopicRequest({
-        mswInstance: server,
-        response: {
-          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
-        },
-      });
-
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+      mockGetEnvironments.mockResolvedValue([
+        createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+      ]);
 
       customRender(
         <AquariumContext>
