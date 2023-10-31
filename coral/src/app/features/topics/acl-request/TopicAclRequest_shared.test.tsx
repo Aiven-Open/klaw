@@ -1,7 +1,7 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
 import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api.msw";
@@ -13,9 +13,11 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import {
   mockGetTopicNames,
   mockGetTopicTeam,
+} from "src/domain/topic/topic-api.msw";
+import {
   mockedResponseTopicNames,
   mockedResponseTopicTeamLiteral,
-} from "src/domain/topic/topic-api.msw";
+} from "src/domain/topic/topic-test-helper";
 import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
