@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import ConnectorRequests from "src/app/features/requests/connectors/ConnectorRequests";

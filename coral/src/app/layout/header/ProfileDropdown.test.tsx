@@ -1,5 +1,5 @@
 import { cleanup, screen, render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { AuthUser, logoutUser } from "src/domain/auth-user";
 

@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { getTeams } from "src/domain/team/team-api";
