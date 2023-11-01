@@ -55,11 +55,6 @@ import {
 import { getRouterBasename } from "src/config";
 
 const routes: Array<RouteObject> = [
-  // Login is currently the responsibility of the
-  // Angular Klaw app
-  // {
-  //   path: "/login",
-  // },
   {
     path: "/",
     element: <Layout />,

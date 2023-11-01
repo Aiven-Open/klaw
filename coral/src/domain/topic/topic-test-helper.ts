@@ -3,8 +3,6 @@ import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import { Topic } from "src/domain/topic/topic-types";
 import { KlawApiModel, KlawApiResponse } from "types/utils";
 
-// currently this file is used in code (topcis-api.msw.ts)
-// so "expect" is not defined there
 const baseTestObjectMockedTopic = (): Topic => {
   return {
     topicid: expect.any(Number),
