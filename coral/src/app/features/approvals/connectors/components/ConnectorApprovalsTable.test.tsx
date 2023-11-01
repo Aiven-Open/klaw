@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import ConnectorApprovalsTable from "src/app/features/approvals/connectors/components/ConnectorApprovalsTable";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";

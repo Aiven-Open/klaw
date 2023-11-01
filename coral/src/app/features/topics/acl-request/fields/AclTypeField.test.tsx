@@ -1,5 +1,5 @@
 import { cleanup, render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 
 describe("AclTypeField", () => {

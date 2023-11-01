@@ -3,7 +3,7 @@ import { Dialog } from "src/app/components/Dialog";
 import confirm from "@aivenio/aquarium/dist/src/icons/confirm";
 import warningSign from "@aivenio/aquarium/dist/src/icons/warningSign";
 import error from "@aivenio/aquarium/dist/src/icons/error";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 describe("Dialog.tsx", () => {
   const testTitle = "Dialog title";

@@ -5,7 +5,7 @@ import { cleanup, screen, within } from "@testing-library/react";
 import { SwitchTeamsDropdown } from "src/app/features/team-info/SwitchTeamsDropdown";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiResponse } from "types/utils";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { KlawApiError } from "src/services/api";
 
 jest.mock("src/domain/team/team-api.ts");

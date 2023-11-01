@@ -4,7 +4,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { TopicMessages } from "src/app/features/topics/details/messages/TopicMessages";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Outlet, Route, Routes } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/topic/topic-api.ts");
 

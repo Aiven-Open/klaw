@@ -5,7 +5,7 @@ import {
   TopicRequestsTable,
   type TopicRequestsTableProps,
 } from "src/app/features/requests/topics/components/TopicRequestsTable";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockedRequests: TopicRequest[] = [
   {
