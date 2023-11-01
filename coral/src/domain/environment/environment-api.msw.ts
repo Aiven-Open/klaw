@@ -1,6 +1,5 @@
 import { SetupServer } from "msw/node";
 import { rest } from "msw";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { KlawApiResponse } from "types/utils";
 import { operations } from "types/api";
@@ -37,11 +36,6 @@ function mockgetEnvironmentsForTopicRequest({
   );
 }
 
-const mockedEnvironmentResponse = [
-  createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-  createMockEnvironmentDTO({ name: "TST", id: "2" }),
-];
-
 interface GetClusterInfoFromEnvRequestArgs {
   mswInstance: SetupServer;
   response: KlawApiResponse<"getClusterInfoFromEnv">;
@@ -63,6 +57,5 @@ function mockGetClusterInfoFromEnv({
 export {
   mockgetAllEnvironmentsForTopicAndAcl,
   mockgetEnvironmentsForTopicRequest,
-  mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
 };

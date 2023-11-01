@@ -37,4 +37,9 @@ function createMockEnvironmentDTO(
   return { ...defaultEnvironmentDTO, ...environment };
 }
 
-export { createMockEnvironmentDTO };
+const mockedEnvironmentResponse = [
+  createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+  createMockEnvironmentDTO({ name: "TST", id: "2" }),
+];
+
+export { createMockEnvironmentDTO, mockedEnvironmentResponse };

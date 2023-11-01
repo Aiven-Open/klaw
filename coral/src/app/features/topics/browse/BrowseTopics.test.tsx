@@ -6,7 +6,7 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTeams } from "src/domain/team";
 import { AllTeams } from "src/domain/team/team-types";
 import { getTopics } from "src/domain/topic";

@@ -3,7 +3,7 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { userEvent } from "@testing-library/user-event";
 import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTeams } from "src/domain/team/team-api";
 import { TopicRequest } from "src/domain/topic";
 import {

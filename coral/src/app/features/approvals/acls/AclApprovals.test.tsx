@@ -18,7 +18,7 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
