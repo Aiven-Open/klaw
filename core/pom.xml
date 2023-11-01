@@ -23,7 +23,7 @@
         <!-- the list is sorted-->
         <apachecommons.version>2.14.0</apachecommons.version>
         <apachepoi.version>5.2.4</apachepoi.version>
-        <commons-text.version>1.10.0</commons-text.version>
+        <commons-text.version>1.11.0</commons-text.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
         <h2.version>2.1.214</h2.version>
@@ -281,6 +281,7 @@
                     <jvmArguments>
                         -Dspringdoc.writer-with-default-pretty-printer=true
                         -Dklaw.core.ha.enable=true
+                        -Dspring.application.admin.enabled=true
                     </jvmArguments>
                 </configuration>
                 <executions>
