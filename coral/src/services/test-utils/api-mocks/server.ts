@@ -1,16 +1,16 @@
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 export const server = setupServer(
-  rest.all("*", (req, res, ctx) => {
+  http.all("*", ({ request }) => {
     console.error(
-      `
-A test has made an API call which was not caught by a mock (endpoint: ${req.url}). 
-Please make sure that every test file is mocking the appropriate API endpoints. 
-Some page components may render child components sending those call.
-`
+      `A test has made an API call which was not caught by a mock (endpoint: ${request.url}).
+       Please make sure that every test file is mocking the appropriate API endpoints.
+       Some page components may render child components sending those call.`
     );
 
-    return res(ctx.status(404), ctx.json({}));
+    return new HttpResponse("Non existent endpoint", {
+      status: 404,
+    });
   })
 );
