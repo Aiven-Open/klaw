@@ -23,7 +23,7 @@
         <!-- the list is sorted-->
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
         <kafka.version>3.5.1</kafka.version>
-        <kafka.client.version>3.5.1</kafka.client.version>
+        <kafka.client.version>3.6.0</kafka.client.version>
         <mockserver.version>5.15.0</mockserver.version>
         <spring-kafka-test.version>3.0.12</spring-kafka-test.version>
     </properties>
