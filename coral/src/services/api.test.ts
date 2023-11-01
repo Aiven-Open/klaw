@@ -39,6 +39,9 @@ describe("API client", () => {
   beforeAll(() => {
     server.listen();
   });
+  afterAll(() => {
+    server.close();
+  });
 
   beforeEach(() => {
     server.use(
