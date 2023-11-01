@@ -12,7 +12,7 @@ import {
   requestConnectorClaim,
 } from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockMatches = jest.fn();
 const mockedNavigate = jest.fn();

@@ -6,7 +6,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import {
   requestAclDeletion,

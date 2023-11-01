@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 
 import { ClaimBanner } from "src/app/features/components/ClaimBanner";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockClaimEntity = jest.fn();
 

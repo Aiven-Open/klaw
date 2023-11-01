@@ -5,7 +5,7 @@ import { TopicDetailsSchema } from "src/app/features/topics/details/schema/Topic
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicSchemaOverview } from "src/domain/topic";
 import { requestSchemaPromotion } from "src/domain/schema-request";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 const mockPromoteSchemaRequest = requestSchemaPromotion as jest.MockedFunction<

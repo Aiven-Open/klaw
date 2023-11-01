@@ -5,7 +5,7 @@ import {
   ConnectorRequestsTable,
   type ConnectorRequestsTableProps,
 } from "src/app/features/requests/connectors/components/ConnectorRequestsTable";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockedRequests: ConnectorRequest[] = [
   {

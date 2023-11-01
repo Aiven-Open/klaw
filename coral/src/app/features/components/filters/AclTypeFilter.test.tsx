@@ -1,5 +1,5 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";

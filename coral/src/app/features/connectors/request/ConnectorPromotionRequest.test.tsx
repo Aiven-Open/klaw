@@ -14,7 +14,7 @@ import {
   requestConnectorPromotion,
 } from "src/domain/connector";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/environment/environment-api.ts");
 const mockGetConnectorEnvironmentRequest =

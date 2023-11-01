@@ -1,5 +1,5 @@
 import { cleanup, screen } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";

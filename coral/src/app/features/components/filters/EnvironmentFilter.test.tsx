@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import {

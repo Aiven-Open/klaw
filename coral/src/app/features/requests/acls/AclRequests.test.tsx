@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclRequests from "src/app/features/requests/acls/AclRequests";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";

@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import KafkaConnectEnvironments from "src/app/features/configuration/environments/KafkaConnect/KafkaConnectEnvironments";
 import { getPaginatedEnvironmentsForConnector } from "src/domain/environment";
 import { transformPaginatedEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
