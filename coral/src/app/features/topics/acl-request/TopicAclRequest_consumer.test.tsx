@@ -4,7 +4,10 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
-import { mockCreateAclRequest } from "src/domain/acl/acl-api-msw";
+import {
+  createAclRequest,
+  getAivenServiceAccounts,
+} from "src/domain/acl/acl-api";
 import { getClusterInfoFromEnvironment } from "src/domain/cluster";
 import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api-test-helper";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
@@ -14,7 +17,6 @@ import {
   mockedResponseTopicNames,
   mockedResponseTopicTeamLiteral,
 } from "src/domain/topic/topic-test-helper";
-import api from "src/services/api";
 import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -24,16 +26,20 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
-jest.mock("src/domain/acl/acl-api", () => ({
-  ...jest.requireActual("src/domain/acl/acl-api"),
-  getAivenServiceAccounts: jest.fn().mockReturnValue(["account"]),
-}));
-
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToast: () => mockedUseToast,
 }));
+
+jest.mock("src/domain/acl/acl-api");
+const mockGetAivenServiceAccounts =
+  getAivenServiceAccounts as jest.MockedFunction<
+    typeof getAivenServiceAccounts
+  >;
+const mockCreateAclRequest = createAclRequest as jest.MockedFunction<
+  typeof createAclRequest
+>;
 
 jest.mock("src/domain/environment/environment-api.ts");
 const mockgetAllEnvironmentsForTopicAndAcl =
@@ -56,6 +62,7 @@ const mockGetClusterInfoFromEnv =
   >;
 
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
+  mockGetAivenServiceAccounts.mockResolvedValue(["account"]);
   mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
     createMockEnvironmentDTO({
       name: "TST",
@@ -501,13 +508,6 @@ describe("<TopicAclRequest />", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
         console.error = jest.fn();
-        mockCreateAclRequest({
-          mswInstance: server,
-          response: {
-            data: { message: "Error message example" },
-            status: 400,
-          },
-        });
       });
 
       afterEach(() => {
@@ -515,7 +515,10 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockCreateAclRequest.mockRejectedValue({
+          message: "Error message example",
+        });
+
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -554,9 +557,11 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() =>
-          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledWith({
             remarks: "",
             aclIpPrincipleType: "PRINCIPAL",
             acl_ssl: ["Alice"],
@@ -566,7 +571,6 @@ describe("<TopicAclRequest />", () => {
             aclType: "CONSUMER",
             teamId: 1,
             consumergroup: "group",
-            requestOperationType: "CREATE",
           })
         );
 
@@ -579,33 +583,22 @@ describe("<TopicAclRequest />", () => {
         // in case a console.error with a different message
         // gets called - which could be hinting to a problem
         expect(console.error).toHaveBeenCalledWith({
-          data: { message: "Error message example" },
-          status: 400,
-          statusText: "Bad Request",
-          headers: {
-            map: { "x-powered-by": "msw", "content-type": "application/json" },
-          },
+          message: "Error message example",
         });
       });
     });
 
     describe("enables user to create a new acl request", () => {
-      beforeEach(async () => {
-        mockCreateAclRequest({
-          mswInstance: server,
-          response: {
-            status: 200,
-            data: { success: true, message: "success" },
-          },
-        });
-      });
-
       afterEach(() => {
         mockedUseToast.mockReset();
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockCreateAclRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -647,9 +640,11 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() =>
-          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledWith({
             remarks: "",
             aclIpPrincipleType: "PRINCIPAL",
             acl_ssl: ["Alice"],
@@ -659,15 +654,12 @@ describe("<TopicAclRequest />", () => {
             aclType: "CONSUMER",
             teamId: 1,
             consumergroup: "group",
-            requestOperationType: "CREATE",
-            transactionalId: undefined,
           })
         );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -692,12 +684,11 @@ describe("<TopicAclRequest />", () => {
           expect(screen.getByText("Enter at least one element.")).toBeVisible()
         );
 
-        expect(spyPost).not.toHaveBeenCalled();
+        expect(mockCreateAclRequest).not.toHaveBeenCalled();
         expect(submitButton).toBeEnabled();
       });
 
       it("shows a notification informing user that request was successful and redirects them", async () => {
-        const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -739,7 +730,9 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
             "/requests/acls?status=CREATED"
@@ -1155,13 +1148,6 @@ describe("<TopicAclRequest />", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
         console.error = jest.fn();
-        mockCreateAclRequest({
-          mswInstance: server,
-          response: {
-            data: { message: "Error message example" },
-            status: 400,
-          },
-        });
       });
 
       afterEach(() => {
@@ -1169,7 +1155,10 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockCreateAclRequest.mockRejectedValue({
+          message: "Error message example",
+        });
+
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1219,9 +1208,11 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() =>
-          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledWith({
             remarks: "",
             aclIpPrincipleType: "PRINCIPAL",
             acl_ssl: ["Alice"],
@@ -1231,7 +1222,6 @@ describe("<TopicAclRequest />", () => {
             aclType: "CONSUMER",
             teamId: 1,
             consumergroup: "group",
-            requestOperationType: "CREATE",
           })
         );
 
@@ -1244,33 +1234,21 @@ describe("<TopicAclRequest />", () => {
         // in case a console.error with a different message
         // gets called - which could be hinting to a problem
         expect(console.error).toHaveBeenCalledWith({
-          data: { message: "Error message example" },
-          status: 400,
-          statusText: "Bad Request",
-          headers: {
-            map: { "x-powered-by": "msw", "content-type": "application/json" },
-          },
+          message: "Error message example",
         });
       });
     });
 
     describe("enables user to create a new acl request", () => {
-      beforeEach(async () => {
-        mockCreateAclRequest({
-          mswInstance: server,
-          response: {
-            status: 200,
-            data: { success: true, message: "success" },
-          },
-        });
-      });
-
       afterEach(() => {
         mockedUseToast.mockReset();
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockCreateAclRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1323,9 +1301,11 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
         await waitFor(() =>
-          expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledWith({
             remarks: "",
             aclIpPrincipleType: "PRINCIPAL",
             acl_ssl: ["Alice"],
@@ -1335,15 +1315,12 @@ describe("<TopicAclRequest />", () => {
             aclType: "CONSUMER",
             teamId: 1,
             consumergroup: "group",
-            requestOperationType: "CREATE",
-            transactionalId: undefined,
           })
         );
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1368,12 +1345,16 @@ describe("<TopicAclRequest />", () => {
           expect(screen.getByText("Enter at least one element.")).toBeVisible()
         );
 
-        expect(spyPost).not.toHaveBeenCalled();
+        expect(mockCreateAclRequest).not.toHaveBeenCalled();
         expect(submitButton).toBeEnabled();
       });
 
       it("shows a notification informing user that request was successful and redirects them", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        mockCreateAclRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1426,7 +1407,9 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => expect(spyPost).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+          expect(mockCreateAclRequest).toHaveBeenCalledTimes(1)
+        );
         await waitFor(() => {
           expect(mockedNavigate).toHaveBeenLastCalledWith(
             "/requests/acls?status=CREATED"
