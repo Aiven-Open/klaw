@@ -80,11 +80,11 @@ public class UtilMethods {
     if (response.getStatusCode().is2xxSuccessful()
         && (response.getBody() != null && response.getBody().isSuccess())) {
       UtilMethods.updateLatestStatus(
-          ClusterStatus.ONLINE, manageDatabase, tenantId, Integer.valueOf(environmentId));
+          ClusterStatus.ONLINE, manageDatabase, tenantId, Integer.parseInt(environmentId));
     } else {
       if (response.getStatusCode().is5xxServerError()) {
         UtilMethods.updateLatestStatus(
-            ClusterStatus.NOT_KNOWN, manageDatabase, tenantId, Integer.valueOf(environmentId));
+            ClusterStatus.NOT_KNOWN, manageDatabase, tenantId, Integer.parseInt(environmentId));
       }
     }
   }
