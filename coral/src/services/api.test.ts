@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import api, {
   HTTPMethod,
   isClientError,
@@ -7,7 +11,7 @@ import api, {
   KlawApiResponse,
 } from "src/services/api";
 import { server } from "src/services/test-utils/api-mocks/server";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { paths as ApiPaths } from "types/api";
 
@@ -45,28 +49,36 @@ describe("API client", () => {
 
   beforeEach(() => {
     server.use(
-      rest.all(apiUrl("/ok"), async (req, res, ctx) => {
-        return res.once(ctx.status(200), ctx.json(mockResponseData));
+      http.all(apiUrl("/ok"), async () => {
+        return HttpResponse.json({ ...mockResponseData });
       }),
 
-      rest.all(apiUrl("/fakeOk"), async (req, res, ctx) => {
-        return res.once(ctx.status(200), ctx.json(klawErrorResult));
+      http.all(apiUrl("/fakeOk"), async () => {
+        return HttpResponse.json({ ...klawErrorResult });
       }),
-      rest.all(apiUrl("/okButHTML"), async (req, res, ctx) => {
-        return res.once(
-          ctx.status(200),
-          ctx.set("Content-Type", "text/html"),
-          ctx.text("<html></html>")
-        );
+
+      http.all(apiUrl("/okButHTML"), async () => {
+        return new HttpResponse("<html></html>", {
+          status: 200,
+          headers: {
+            "Content-Type": "text/html",
+          },
+        });
       }),
-      rest.all(apiUrl("/unauthorized"), async (req, res, ctx) => {
-        return res.once(ctx.status(401), ctx.json(mockResponseData));
+      http.all(apiUrl("/unauthorized"), async () => {
+        return new HttpResponse(null, {
+          status: 401,
+        });
       }),
-      rest.all(apiUrl("/clientError"), async (req, res, ctx) => {
-        return res.once(ctx.status(400), ctx.json(mockResponseData));
+      http.all(apiUrl("/clientError"), async () => {
+        return new HttpResponse(null, {
+          status: 400,
+        });
       }),
-      rest.all(apiUrl("/serverError"), async (req, res, ctx) => {
-        return res.once(ctx.status(500), ctx.json(mockResponseData));
+      http.all(apiUrl("/serverError"), async () => {
+        return new HttpResponse(null, {
+          status: 500,
+        });
       })
     );
   });
