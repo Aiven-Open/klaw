@@ -17,6 +17,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -44,18 +45,7 @@ import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.enums.AclPatternType;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.MailType;
-import io.aiven.klaw.model.enums.MetadataOperationType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
@@ -819,6 +809,7 @@ public class TopicControllerService {
           TOPIC_REQUEST_APPROVED,
           commonUtilsService.getLoginUrl());
     }
+    updateEnvStatus(response, manageDatabase, tenantId, topicRequest.getEnvironment());
     return updateTopicReqStatus;
   }
 
