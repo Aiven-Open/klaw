@@ -5,7 +5,6 @@ import TopicRequest from "src/app/features/topics/request/TopicRequest";
 import { getEnvironmentsForTopicRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { requestTopicCreation } from "src/domain/topic/topic-api";
-import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
 
@@ -37,12 +36,10 @@ describe("<TopicRequest />", () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   beforeAll(() => {
-    server.listen();
     console.error = jest.fn();
   });
 
   afterAll(() => {
-    server.close();
     console.error = originalConsoleError;
   });
 

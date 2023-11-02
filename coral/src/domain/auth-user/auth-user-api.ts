@@ -1,19 +1,6 @@
-import {
-  AuthUser,
-  AuthUserLoginData,
-} from "src/domain/auth-user/auth-user-types";
+import { AuthUser } from "src/domain/auth-user/auth-user-types";
 import api, { API_PATHS, HTTPError } from "src/services/api";
-import { paths as ApiPaths } from "types/api";
 import { KlawApiResponse } from "types/utils";
-
-const getAuthUserMockForLogin = (
-  userLogin: AuthUserLoginData
-): Promise<AuthUser> => {
-  // /login is a path which does not currently exist, because there is no auth flow in coral currently
-  // getAuthUser is used in a component that is currently never rendered (LoginForm)
-  // We coerce the keyof ApiPaths to avoid TS compiling error
-  return api.post("/login" as keyof ApiPaths, userLogin);
-};
 
 // user roles are added dynamically by admins, we can't make them enums
 // but "SUPERADMIN" is the default role set by us. It's highly unlikely
@@ -60,4 +47,4 @@ function logoutUser() {
   return api.post<KlawApiResponse<"logout">, never>(API_PATHS.logout);
 }
 
-export { getAuthUserMockForLogin, getAuth, logoutUser };
+export { getAuth, logoutUser };
