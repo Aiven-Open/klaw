@@ -7,7 +7,6 @@ import {
   getPaginatedEnvironmentsForTopicAndAcl,
   getUpdateEnvStatus,
 } from "src/domain/environment/environment-api";
-import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
@@ -23,6 +22,5 @@ export {
   getPaginatedEnvironmentsForSchema,
   getPaginatedEnvironmentsForTopicAndAcl,
   getUpdateEnvStatus,
-  mockgetEnvironmentsForTopicRequest,
 };
 export type { Environment, EnvironmentInfo };

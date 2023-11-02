@@ -17,7 +17,6 @@ import {
   mockedResponseTopicNames,
   mockedResponseTopicTeamLiteral,
 } from "src/domain/topic/topic-test-helper";
-import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedNavigate = jest.fn();
@@ -99,14 +98,6 @@ const selectTestEnvironment = async () => {
 };
 
 describe("<TopicAclRequest />", () => {
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   describe("/topic/:topicName/subscribe: User interaction (TopicProducerForm)", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: false });

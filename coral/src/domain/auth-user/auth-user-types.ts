@@ -8,9 +8,4 @@ type AuthUser = {
   canSwitchTeams: KlawApiModel<"AuthenticationInfo">["canSwitchTeams"];
 };
 
-type AuthUserLoginData = {
-  username: string;
-  password: string;
-};
-
-export type { AuthUser, AuthUserLoginData };
+export type { AuthUser };
