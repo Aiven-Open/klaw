@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 
 const mockOnSubmit = jest.fn();

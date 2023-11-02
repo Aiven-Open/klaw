@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import ConnectorRequest from "src/app/features/connectors/request/ConnectorRequest";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

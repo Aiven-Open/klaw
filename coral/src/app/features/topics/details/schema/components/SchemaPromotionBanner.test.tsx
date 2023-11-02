@@ -1,5 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { TopicSchemaOverview } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

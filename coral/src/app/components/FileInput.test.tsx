@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { FileInput } from "src/app/components/FileInput";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const testValid = true;
 const testLabelText = "Upload your favorite dog pic!";

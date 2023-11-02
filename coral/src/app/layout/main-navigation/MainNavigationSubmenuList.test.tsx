@@ -1,7 +1,7 @@
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { cleanup, screen, render, within } from "@testing-library/react";
 import data from "@aivenio/aquarium/dist/src/icons/console";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const textButtonSubmenuClosed = "Topics submenu, closed. Click to open.";
 const textButtonSubmenuOpened = "Topics submenu, open. Click to close.";

@@ -1,7 +1,7 @@
 import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
 import { render, cleanup, screen } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

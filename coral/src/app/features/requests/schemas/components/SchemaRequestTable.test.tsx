@@ -8,7 +8,7 @@ import {
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { mockedApiResponses } from "src/app/features/requests/schemas/utils/mocked-api-responses";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const schemaRequests = [...mockedApiResponses];
 const deletableRequests = schemaRequests.filter((entry) => entry.deletable);

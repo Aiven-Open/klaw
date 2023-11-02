@@ -1,5 +1,5 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
 import { getUpdateEnvStatus } from "src/domain/environment";
 

@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 import { ConnectorDocumentation } from "src/app/features/connectors/details/documentation/ConnectorDocumentation";
 import {

@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicDocumentation } from "src/app/features/topics/details/documentation/TopicDocumentation";
 import {

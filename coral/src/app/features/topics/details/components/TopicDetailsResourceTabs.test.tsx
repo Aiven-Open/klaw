@@ -1,5 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { TopicOverviewTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";

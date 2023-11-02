@@ -1,6 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 describe("DeleteRequestDialog", () => {
   const cancelMock = jest.fn();

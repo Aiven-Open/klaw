@@ -1,6 +1,6 @@
 import { DisabledButtonTooltip } from "src/app/components/DisabledButtonTooltip";
 import { cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const testTooltip = "There is a pending request.";
 const testChild = "Edit this!";
