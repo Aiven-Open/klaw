@@ -165,7 +165,8 @@ public abstract class BaseOverviewService {
         if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
           producerIp = initializeAclInfo(producerIp, info);
           producerIp.getAcl_ips().add(info.getAcl_ip());
-        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+        }
+        if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
           producerPrincipal = initializeAclInfo(producerPrincipal, info);
           producerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
         }
@@ -173,7 +174,8 @@ public abstract class BaseOverviewService {
         if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
           consumerIp = initializeAclInfo(consumerIp, info);
           consumerIp.getAcl_ips().add(info.getAcl_ip());
-        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+        }
+        if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
           consumerPrincipal = initializeAclInfo(consumerPrincipal, info);
           consumerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
         }
