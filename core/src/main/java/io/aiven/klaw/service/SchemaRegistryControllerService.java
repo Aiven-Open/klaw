@@ -9,6 +9,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -24,13 +25,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.response.BaseRequestsResponseModel;
@@ -245,6 +240,7 @@ public class SchemaRegistryControllerService {
     ResponseEntity<ApiResponse> response =
         clusterApiService.postSchema(
             schemaRequest, schemaRequest.getEnvironment(), schemaRequest.getTopicname(), tenantId);
+    updateEnvStatus(response, manageDatabase, tenantId, schemaRequest.getEnvironment());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     ApiResponse apiResponse = response.getBody();
     Map<String, Object> registerSchemaCustomResponse = null;

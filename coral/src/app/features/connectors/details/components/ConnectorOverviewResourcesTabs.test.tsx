@@ -1,6 +1,6 @@
 import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
 import { ConnectorOverviewTabEnum } from "src/app/router_utils";
 import { ConnectorOverview } from "src/domain/connector";

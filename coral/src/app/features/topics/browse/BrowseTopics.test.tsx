@@ -6,14 +6,15 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTeams } from "src/domain/team";
 import { AllTeams } from "src/domain/team/team-types";
 import { getTopics } from "src/domain/topic";
 import {
-  mockedResponseMultiplePageTransformed,
   mockedResponseTransformed,
-} from "src/domain/topic/topic-api.msw";
+  mockedResponseMultiplePageTransformed,
+} from "src/domain/topic/topic-test-helper";
+
 import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

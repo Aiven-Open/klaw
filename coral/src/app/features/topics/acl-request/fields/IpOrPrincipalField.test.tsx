@@ -3,7 +3,7 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
 import { aclIpPrincipleType } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";

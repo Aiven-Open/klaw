@@ -6,7 +6,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import {

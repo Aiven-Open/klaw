@@ -1,9 +1,8 @@
-import { Topic } from "src/domain/topic/topic-types";
-import { KlawApiResponse } from "types/utils";
 import { EnvironmentInfo } from "src/domain/environment/environment-types";
+import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
+import { Topic } from "src/domain/topic/topic-types";
+import { KlawApiModel, KlawApiResponse } from "types/utils";
 
-// currently this file is used in code (topcis-api.msw.ts)
-// so "expect" is not defined there
 const baseTestObjectMockedTopic = (): Topic => {
   return {
     topicid: expect.any(Number),
@@ -116,8 +115,46 @@ function createMockTopicApiResponse({
   return response;
 }
 
+const mockedResponseSinglePage: KlawApiResponse<"getTopics"> =
+  createMockTopicApiResponse({
+    entries: 10,
+  });
+
+const mockedResponseMultiplePage: KlawApiResponse<"getTopics"> =
+  createMockTopicApiResponse({
+    entries: 2,
+    totalPages: 4,
+    currentPage: 2,
+  });
+
+const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
+  mockedResponseMultiplePage
+);
+
+// This mirrors the formatting formation used in the api call
+// for usage in tests that use the mock API
+const mockedResponseTransformed = transformTopicApiResponse(
+  mockedResponseSinglePage
+);
+
+const mockedResponseTopicNames: KlawApiResponse<"getTopicsOnly"> = [
+  "aivtopic1",
+  "topic-two",
+  "topic-myteam",
+];
+
+const mockedResponseTopicTeamLiteral: KlawApiModel<"TopicTeamResponse"> = {
+  status: true,
+  team: "Ospo",
+  teamId: 1,
+};
+
 export {
+  baseTestObjectMockedTopic,
   createMockTopic,
   createMockTopicApiResponse,
-  baseTestObjectMockedTopic,
+  mockedResponseMultiplePageTransformed,
+  mockedResponseTopicNames,
+  mockedResponseTopicTeamLiteral,
+  mockedResponseTransformed,
 };

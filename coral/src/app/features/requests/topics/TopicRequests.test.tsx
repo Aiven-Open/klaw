@@ -13,7 +13,7 @@ import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transf
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import TopicRequests from "src/app/features/requests/topics/TopicRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";

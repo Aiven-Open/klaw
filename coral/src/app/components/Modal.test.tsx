@@ -1,5 +1,5 @@
 import { cleanup, render, RenderResult, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Modal } from "src/app/components/Modal";
 
 describe("Modal.tsx", () => {

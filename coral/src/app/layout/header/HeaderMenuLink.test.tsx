@@ -1,6 +1,6 @@
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

@@ -1,4 +1,4 @@
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 async function tabThroughForward(times: number) {
   for (let i = times; i > 0; i--) {

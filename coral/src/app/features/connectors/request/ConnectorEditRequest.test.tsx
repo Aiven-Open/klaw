@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import ConnectorEditRequest from "src/app/features/connectors/request/ConnectorEditRequest";
 import {

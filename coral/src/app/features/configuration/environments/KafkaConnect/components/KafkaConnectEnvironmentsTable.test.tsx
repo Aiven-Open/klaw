@@ -148,9 +148,9 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
         });
         const statusText =
           environment.envStatus === "ONLINE"
-            ? "Working"
+            ? "Online"
             : environment.envStatus === "OFFLINE"
-            ? "Not working"
+            ? "Offline"
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
