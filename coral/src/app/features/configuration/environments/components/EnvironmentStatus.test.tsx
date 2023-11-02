@@ -34,7 +34,7 @@ describe("EnvironmentStatus", () => {
           queryClient: true,
         }
       );
-      const text = screen.getByText("Working");
+      const text = screen.getByText("Online");
       const button = screen.getByRole("button", {
         name: "Refresh Environment status",
       });
@@ -54,7 +54,7 @@ describe("EnvironmentStatus", () => {
           queryClient: true,
         }
       );
-      const text = screen.getByText("Not working");
+      const text = screen.getByText("Offline");
       const button = screen.getByRole("button", {
         name: "Refresh Environment status",
       });
@@ -118,7 +118,7 @@ describe("EnvironmentStatus", () => {
         envStatusTimeString: "21-Sep-2023 11:46:15",
       });
 
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
 
       const refreshButton = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -128,7 +128,7 @@ describe("EnvironmentStatus", () => {
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
     });
 
     it("renders correct Status chip when status does change", async () => {
@@ -139,7 +139,7 @@ describe("EnvironmentStatus", () => {
         envStatusTimeString: "21-Sep-2023 11:46:15",
       });
 
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
 
       const refreshButton = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -149,13 +149,13 @@ describe("EnvironmentStatus", () => {
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
-      expect(screen.getByText("Not working")).toBeVisible();
+      expect(screen.getByText("Offline")).toBeVisible();
     });
 
     it("renders previous Status chip and toast when there is an error", async () => {
       mockGetUpdateEnvStatus.mockRejectedValue(errorMessage);
 
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
 
       const refreshButton = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -164,7 +164,7 @@ describe("EnvironmentStatus", () => {
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
 
       await waitFor(() =>
         expect(mockedUseToast).toHaveBeenCalledWith({
@@ -185,7 +185,7 @@ describe("EnvironmentStatus", () => {
         envStatusTimeString: "21-Sep-2023 11:46:15",
       });
 
-      expect(screen.getByText("Working")).toBeVisible();
+      expect(screen.getByText("Online")).toBeVisible();
 
       const refreshButton = screen.getByRole("button", {
         name: "Refresh Environment status",
@@ -195,19 +195,19 @@ describe("EnvironmentStatus", () => {
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
-      expect(screen.getByText("Not working")).toBeVisible();
+      expect(screen.getByText("Offline")).toBeVisible();
 
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
-      expect(screen.getByText("Not working")).toBeVisible();
+      expect(screen.getByText("Offline")).toBeVisible();
 
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
       expect(console.error).not.toHaveBeenCalled();
-      expect(screen.getByText("Not working")).toBeVisible();
+      expect(screen.getByText("Offline")).toBeVisible();
     });
   });
 });
