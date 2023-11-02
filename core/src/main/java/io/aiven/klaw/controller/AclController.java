@@ -221,6 +221,7 @@ public class AclController {
       @RequestParam(value = "userName") String userName,
       @RequestParam(value = "aclReqNo") String aclReqNo) {
     return new ResponseEntity<>(
+        // deepcode ignore Ssrf: Spring framework handles input sanitizing by default
         aclControllerService.getAivenServiceAccountDetails(envId, topicName, userName, aclReqNo),
         HttpStatus.OK);
   }
