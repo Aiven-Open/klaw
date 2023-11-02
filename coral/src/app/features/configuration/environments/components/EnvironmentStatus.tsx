@@ -93,7 +93,7 @@ const EnvironmentStatus = ({
         style={{ gridTemplateColumns: "100px 280px 20px" }}
       >
         <Grid.Item>
-          <StatusChip dense status="danger" text="Not working" />
+          <StatusChip dense status="danger" text="Offline" />
         </Grid.Item>
         <Grid.Item>
           <Typography.Small>
@@ -119,7 +119,7 @@ const EnvironmentStatus = ({
         style={{ gridTemplateColumns: "100px 280px 20px" }}
       >
         <Grid.Item>
-          <StatusChip dense status="success" text="Working" />
+          <StatusChip dense status="success" text="Online" />
         </Grid.Item>
         <Grid.Item>
           <Typography.Small>
