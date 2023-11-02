@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
@@ -410,6 +411,7 @@ public class ClusterApiService {
       String connectorConfig,
       String kafkaConnectHost,
       String clusterIdentification,
+      String environemt,
       int tenantId)
       throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
@@ -443,7 +445,7 @@ public class ClusterApiService {
       response =
           getRestTemplate(null)
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
-
+      updateEnvStatus(response, manageDatabase, tenantId, environemt);
       ApiResponse apiResponse = response.getBody();
       if (apiResponse != null) {
         if (apiResponse.isSuccess()) {
@@ -1173,7 +1175,7 @@ public class ClusterApiService {
                   HttpMethod.POST,
                   request,
                   new ParameterizedTypeReference<>() {});
-
+      updateEnvStatus(response, manageDatabase, tenantId, environmentId);
       return response.getBody();
 
     } catch (Exception e) {

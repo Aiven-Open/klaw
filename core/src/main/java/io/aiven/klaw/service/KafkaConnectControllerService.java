@@ -707,6 +707,7 @@ public class KafkaConnectControllerService {
               jsonConnectorConfig,
               kafkaConnectHost,
               kwClusters.getClusterName() + kwClusters.getClusterId(),
+              connectorRequest.getEnvironment(),
               tenantId);
 
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
