@@ -416,7 +416,8 @@ describe("AclRequests", () => {
         name: "Filter by ACL type",
       });
 
-      expect(envFilter).toHaveDisplayValue("CONSUMER");
+      expect(envFilter).toHaveDisplayValue("Consumer");
+      expect(envFilter).toHaveValue("CONSUMER");
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
