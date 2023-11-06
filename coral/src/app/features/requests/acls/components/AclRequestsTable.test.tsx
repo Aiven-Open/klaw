@@ -156,7 +156,7 @@ describe("AclRequestsTable", () => {
       within(getNthRow(0)).getAllByRole("columnheader")[4]
     ).toHaveTextContent("ACL type");
     expect(within(getNthRow(1)).getAllByRole("cell")[4]).toHaveTextContent(
-      "PRODUCER"
+      "Producer"
     );
   });
 

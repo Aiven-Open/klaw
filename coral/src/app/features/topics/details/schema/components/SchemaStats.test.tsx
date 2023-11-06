@@ -1,5 +1,6 @@
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 import { cleanup, render, screen } from "@testing-library/react";
+import upperFirst from "lodash/upperFirst";
 
 const testVersion = 99;
 const testId = 111;
@@ -80,7 +81,7 @@ describe("SchemaStats", () => {
       const compatibility = screen.getByText("Compatibility");
 
       expect(compatibility.parentElement).toHaveTextContent(
-        `${testCompatibility}Compatibility`
+        `${upperFirst(testCompatibility.toLowerCase())}Compatibility`
       );
     });
   });

@@ -22,6 +22,7 @@ import {
   RequestOperationType,
   RequestStatus,
 } from "src/domain/requests/requests-types";
+import upperFirst from "lodash/upperFirst";
 
 interface AclRequestTableRow {
   id: number;
@@ -154,7 +155,7 @@ export default function AclApprovalsTable({
       headerName: "ACL type",
       status: ({ aclType }) => ({
         status: aclType === "CONSUMER" ? "success" : "info",
-        text: aclType,
+        text: upperFirst(aclType.toLowerCase()),
       }),
     },
     {

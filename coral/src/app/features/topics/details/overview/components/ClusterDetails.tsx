@@ -50,6 +50,16 @@ function getChipStatus(
   return "neutral";
 }
 
+function getTextStatus(status?: ClusterDetailsType["clusterStatus"]): string {
+  if (status === "ONLINE") {
+    return "Online";
+  }
+  if (status === "OFFLINE") {
+    return "Offline";
+  }
+  return "Not know";
+}
+
 type ClusterDetailsProps = {
   clusterDetails: ClusterDetailsType | undefined;
   isUpdating: boolean;
@@ -101,7 +111,7 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
             term={"Cluster status"}
             definition={
               <StatusChip
-                text={clusterDetails?.clusterStatus || "NOT_KNOWN"}
+                text={getTextStatus(clusterDetails?.clusterStatus)}
                 status={getChipStatus(
                   clusterDetails?.clusterStatus || "NOT_KNOWN"
                 )}
