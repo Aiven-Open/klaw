@@ -16,6 +16,7 @@ import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import io.aiven.klaw.service.CommonUtilsService;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -935,6 +937,17 @@ public class SelectDataJdbc {
     return env.orElse(null);
   }
 
+  public Iterable<Env> selectEnvsDetails(Collection<String> envIds, int tenantId) {
+    List<EnvID> ids = new ArrayList<>(envIds.size());
+    for (var env : envIds) {
+      EnvID envID = new EnvID();
+      envID.setId(env);
+      envID.setTenantId(tenantId);
+      ids.add(envID);
+    }
+    return envRepo.findAllById(ids);
+  }
+
   public UserInfo selectUserInfo(String username) {
     Optional<UserInfo> userRec = userInfoRepo.findByUsernameIgnoreCase(username);
     return userRec.orElse(null);
@@ -1276,14 +1289,19 @@ public class SelectDataJdbc {
         new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsForTeamGroupByEnv(teamId, tenantId);
-      for (Object[] topic : topics) {
-        Env env = selectEnvDetails((String) topic[0], tenantId);
-        if (env == null) {
-          log.error("Error: Environment not found for env {}", topic[0]);
+      Map<String, Integer> envIds =
+          topics.stream()
+              .collect(Collectors.toMap(e -> (String) e[0], e -> ((Long) e[1]).intValue()));
+      Map<String, Env> name2envsFromDb =
+          StreamSupport.stream(selectEnvsDetails(envIds.keySet(), tenantId).spliterator(), false)
+              .collect(Collectors.toMap(Env::getName, Function.identity()));
+
+      for (var envIdEntry : envIds.entrySet()) {
+        if (!name2envsFromDb.containsKey(envIdEntry.getKey())) {
+          log.error("Error: Environment not found for env {}", envIdEntry.getKey());
         } else {
           totalTopicCount.add(
-              CommonUtilsService.ChartsOverviewItem.of(
-                  env.getName(), ((Long) topic[1]).intValue()));
+              CommonUtilsService.ChartsOverviewItem.of(envIdEntry.getKey(), envIdEntry.getValue()));
         }
       }
     } catch (Exception e) {
