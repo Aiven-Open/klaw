@@ -185,7 +185,7 @@ describe("AclApprovalsTable", () => {
       within(getNthRow(0)).getAllByRole("columnheader")[6]
     ).toHaveTextContent("ACL type");
     expect(within(getNthRow(1)).getAllByRole("cell")[6]).toHaveTextContent(
-      "CONSUMER"
+      "Consumer"
     );
   });
 

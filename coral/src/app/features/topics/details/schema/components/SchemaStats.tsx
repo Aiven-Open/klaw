@@ -1,5 +1,6 @@
 import { Box, Card, Grid } from "@aivenio/aquarium";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import upperFirst from "lodash/upperFirst";
 
 type SchemaStatsProps = {
   version: number;
@@ -32,7 +33,10 @@ function SchemaStats({
             <StatsDisplay isLoading={isLoading} amount={id} entity={"ID"} />
             <StatsDisplay
               isLoading={isLoading}
-              chip={{ status: "info", text: compatibility }}
+              chip={{
+                status: "info",
+                text: upperFirst(compatibility.toLowerCase()),
+              }}
               entity={"Compatibility"}
             />
           </Box.Flex>

@@ -3,6 +3,7 @@ import { userEvent } from "@testing-library/user-event";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import upperFirst from "lodash/upperFirst";
 
 const mockUserSubs: AclOverviewInfo[] = [
   {
@@ -172,11 +173,9 @@ describe("TopicSubscriptionsTable.tsx", () => {
 
       it("renders the filtered data as row content", () => {
         const firstRow = mockUserSubs[0];
-        const rowContent = `${
-          firstRow.acl_ssl
-        } * ${firstRow.topictype.toUpperCase()} ${
-          firstRow.teamname
-        } Details Delete`;
+        const rowContent = `${firstRow.acl_ssl} * ${upperFirst(
+          firstRow.topictype.toLowerCase()
+        )} ${firstRow.teamname} Details Delete`;
 
         const firstContentRow = screen.getByRole("row", { name: rowContent });
 
@@ -215,7 +214,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
         const firstRow = mockedPrefixedSubs[0];
         const rowContent = `${firstRow.topicname} ${
           firstRow.acl_ssl
-        } * ${firstRow.topictype.toUpperCase()} ${
+        } * ${upperFirst(firstRow.topictype.toLowerCase())} ${
           firstRow.teamname
         } Details Delete`;
 
@@ -256,7 +255,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
         const firstRow = mockedTransactionalSubs[0];
         const rowContent = `${firstRow.transactionalId} ${firstRow.acl_ssl} ${
           firstRow.acl_ip
-        } ${firstRow.topictype.toUpperCase()} ${
+        } ${upperFirst(firstRow.topictype.toLowerCase())} ${
           firstRow.teamname
         } Details Delete`;
 

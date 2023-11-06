@@ -1,5 +1,6 @@
 import { Box, Grid, StatusChip } from "@aivenio/aquarium";
 import { AclRequest } from "src/domain/acl/acl-types";
+import upperFirst from "lodash/upperFirst";
 
 interface DetailsModalContentProps {
   request?: AclRequest;
@@ -36,7 +37,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
         <dd>
           <StatusChip
             status={aclType === "PRODUCER" ? "info" : "success"}
-            text={aclType}
+            text={upperFirst(aclType.toLowerCase())}
           />
         </dd>
       </Box.Flex>

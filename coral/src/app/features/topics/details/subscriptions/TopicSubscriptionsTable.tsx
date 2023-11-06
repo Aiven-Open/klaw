@@ -9,6 +9,7 @@ import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { LoadingTable } from "src/app/features/components/layouts/LoadingTable";
+import upperFirst from "lodash/upperFirst";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -146,7 +147,7 @@ const getColumns = (
       headerName: "ACL type",
       status: ({ aclType }) => ({
         status: aclType === "Consumer" ? "success" : "info",
-        text: aclType.toUpperCase(),
+        text: upperFirst(aclType.toLowerCase()),
       }),
     },
     {
