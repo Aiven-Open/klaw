@@ -531,11 +531,11 @@ public class CommonUtilsService {
     groupedList.forEach(
         (k, v) -> {
           Topic t = v.get(0);
-          List<String> tmpEnvList = new ArrayList<>();
+          Set<String> tmpEnvSet = new HashSet<>();
           for (Topic topic : v) {
-            tmpEnvList.add(topic.getEnvironment());
+            tmpEnvSet.add(topic.getEnvironment());
           }
-          t.setEnvironmentsList(tmpEnvList);
+          t.setEnvironmentsSet(tmpEnvSet);
           tmpTopicList.add(t);
         });
     return tmpTopicList;
