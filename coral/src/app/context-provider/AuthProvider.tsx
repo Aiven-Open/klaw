@@ -1,9 +1,10 @@
 import { createContext, ReactNode, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AuthUser, getAuth } from "src/domain/auth-user";
+import { AuthUser, getAuth, isSuperAdmin } from "src/domain/auth-user";
 import { BasePage } from "src/app/layout/page/BasePage";
 import { Box, Icon } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
+import { NoCoralAccessSuperadmin } from "src/app/components/NoCoralAccessSuperadmin";
 
 /** We don't do Authentication on Corals side
  * at the moment, so we only have a AuthUser
@@ -18,6 +19,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     ["user-getAuth-data"],
     getAuth
   );
+
+  // SUPERADMIN does not have access to coral, so we show a reduced page with
+  // information about that and nothing else.
+  if (!isLoading && authUser && isSuperAdmin(authUser)) {
+    return (
+      <BasePage headerContent={<></>} content={<NoCoralAccessSuperadmin />} />
+    );
+  }
 
   if (!isLoading && authUser) {
     return (
