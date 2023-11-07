@@ -55,6 +55,7 @@ public class AuthenticationInfo {
   @NotNull private String addDeleteEditClusters;
   @NotNull private String addDeleteEditEnvs;
   @NotNull private String coralEnabled;
+  @NotNull private String coralAvailableForUser;
   @NotNull private String adAuthRoleEnabled;
   @NotNull private String supportlink;
   @NotNull private String myteamtopics;

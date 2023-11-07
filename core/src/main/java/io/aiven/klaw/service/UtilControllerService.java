@@ -648,6 +648,8 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setCoralEnabled(
           Boolean.toString(coralEnabled && isCoralBuilt && !isUserSuperadmin));
 
+      authenticationInfo.setCoralAvailableForUser(Boolean.toString(coralEnabled && isCoralBuilt));
+
       return authenticationInfo;
     } else return null;
   }
