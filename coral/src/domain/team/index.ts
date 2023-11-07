@@ -1,9 +1,9 @@
 import {
   ALL_TEAMS_VALUE,
-  Team,
+  TeamName,
   TEAM_NOT_INITIALIZED,
 } from "src/domain/team/team-types";
 import { getTeams, getTeamsOfUser } from "src/domain/team/team-api";
 
-export type { Team };
+export type { TeamName };
 export { getTeams, ALL_TEAMS_VALUE, TEAM_NOT_INITIALIZED, getTeamsOfUser };

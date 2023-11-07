@@ -1,9 +1,9 @@
-import { Team } from "src/domain/team/team-types";
+import { TeamName } from "src/domain/team/team-types";
 import { KlawApiResponse } from "types/utils";
 
 function transformTeamNamesGetResponse(
   response: KlawApiResponse<"getAllTeamsSUOnly">
-): Team[] {
+): TeamName[] {
   return response.filter((name) => name !== "All teams");
 }
 
