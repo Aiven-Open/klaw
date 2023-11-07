@@ -894,6 +894,10 @@ public class SelectDataJdbc {
     return teamRepo.findAllByTenantId(tenantId);
   }
 
+  public List<Team> selectAllTeamsByTenantIdAndTeamId(int tenantId, int teamId) {
+    return teamRepo.findAllByTenantIdAndTeamId(tenantId, teamId);
+  }
+
   public AclRequests selectAcl(int req_no, int tenantId) {
     log.debug("selectAcl {}", req_no);
     AclRequestID aclRequestID = new AclRequestID();
@@ -983,10 +987,6 @@ public class SelectDataJdbc {
   }
 
   public List<Team> selectTeamsOfUsers(String username, int tenantId) {
-    log.debug("selectTeamsOfUsers {}", username);
-    Map<Integer, Team> allTeams =
-        selectAllTeams(tenantId).stream()
-            .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
 
     Optional<UserInfo> userInfoOpt =
         userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
@@ -996,13 +996,8 @@ public class SelectDataJdbc {
 
     Integer teamId = userInfoOpt.get().getTeamId();
 
-    Team teamSel = allTeams.get(teamId);
-
-    if (teamSel == null) {
-      return Collections.emptyList();
-    }
-
-    return List.of(teamSel);
+    log.debug("selectTeamsOfUsers {}", username);
+    return selectAllTeamsByTenantIdAndTeamId(tenantId, teamId);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
