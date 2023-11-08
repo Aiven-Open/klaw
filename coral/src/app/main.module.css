@@ -22,6 +22,14 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+/*!* removes the "x" in search inputs from webkit *!*/
+/*input[type="search"]::-webkit-search-decoration,*/
+/*input[type="search"]::-webkit-search-cancel-button,*/
+/*input[type="search"]::-webkit-search-results-button,*/
+/*input[type="search"]::-webkit-search-results-decoration {*/
+/*  display: none;*/
+/*}*/
+
 /*Override custom CSS variables DS*/
 :root {
   --aquarium-colors-primary-100: #0788d1;
