@@ -71,6 +71,8 @@ const teamTwo: Team = {
 const mockedTeams = [teamOne, teamTwo];
 
 describe("Users.tsx", () => {
+  const user = userEvent.setup();
+
   describe("handles loading state", () => {
     beforeAll(() => {
       mockGetTeams.mockResolvedValue([]);
@@ -295,7 +297,7 @@ describe("Users.tsx", () => {
         name: "Go to next page, page 4",
       });
 
-      await userEvent.click(pageTwoButton);
+      await user.click(pageTwoButton);
 
       expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
         pageNo: "4",
@@ -344,24 +346,40 @@ describe("Users.tsx", () => {
 
       const option = within(select).getByRole("option", { name: teamToSelect });
 
-      await userEvent.selectOptions(select, option);
+      await user.selectOptions(select, option);
 
-      expect(mockGetUsers).toHaveBeenCalledWith({
+      //first call on load
+      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         teamName: "NCC-1701-D",
       });
     });
 
     it("removes teamName as url param when user chooses All teams", async () => {
+      const teamToSelect = mockedTeams[0].teamname;
       const select = screen.getByRole("combobox", {
         name: "Filter by team",
       });
+      const optionOne = within(select).getByRole("option", {
+        name: teamToSelect,
+      });
 
-      const option = within(select).getByRole("option", { name: "All teams" });
+      await user.selectOptions(select, optionOne);
 
-      await userEvent.selectOptions(select, option);
+      //first call on load
+      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        teamName: "NCC-1701-D",
+      });
 
-      expect(mockGetUsers).toHaveBeenCalledWith({
+      const optionTwo = within(select).getByRole("option", {
+        name: "All teams",
+      });
+
+      await user.selectOptions(select, optionTwo);
+
+      //first call on load, second for the first filter
+      expect(mockGetUsers).toHaveBeenNthCalledWith(3, {
         pageNo: "1",
       });
     });
@@ -403,7 +421,7 @@ describe("Users.tsx", () => {
         name: "Search username",
       });
 
-      await userEvent.type(search, usernameSearch);
+      await user.type(search, usernameSearch);
 
       await waitFor(() => {
         expect(mockGetUsers).toHaveBeenCalledWith({
@@ -420,7 +438,7 @@ describe("Users.tsx", () => {
         name: "Search username",
       });
 
-      await userEvent.type(search, usernameSearch);
+      await user.type(search, usernameSearch);
 
       await waitFor(() => {
         // first call is on load
@@ -430,7 +448,7 @@ describe("Users.tsx", () => {
         });
       });
 
-      await userEvent.clear(search);
+      await user.clear(search);
 
       await waitFor(() => {
         // first call is on load, second for search
