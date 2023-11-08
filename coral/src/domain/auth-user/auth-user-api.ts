@@ -1,5 +1,5 @@
 import { AuthUser } from "src/domain/auth-user/auth-user-types";
-import api, { API_PATHS, HTTPError } from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
 // user roles are added dynamically by admins, we can't make them enums
@@ -13,21 +13,6 @@ function isSuperAdmin(user: AuthUser): user is SuperAdminUser {
 }
 
 function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
-  const headers = {} as Headers;
-
-  if (isSuperAdmin(response)) {
-    // We're marking the SUPERADMIN as not authorized
-    // by manually throwing the correct error that will
-    // be caught by isUnauthorizedError
-    const error: HTTPError = {
-      data: " ",
-      headers,
-      status: 401,
-      statusText: "Not authorized to access Coral.",
-    };
-    throw error;
-  }
-
   return {
     username: response.username,
     teamname: response.teamname,
@@ -47,4 +32,4 @@ function logoutUser() {
   return api.post<KlawApiResponse<"logout">, never>(API_PATHS.logout);
 }
 
-export { getAuth, logoutUser };
+export { getAuth, logoutUser, isSuperAdmin };

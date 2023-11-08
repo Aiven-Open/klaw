@@ -436,6 +436,13 @@
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
             <div class="row page-titles">
+                <div class="row" ng-if="dashboardDetails.coralAvailableForUser === 'true' && userrole === 'SUPERADMIN'">
+                    <div class="ribbon-wrapper card">
+                        <div class="ribbon ribbon-success">Explore the new user interface</div>
+                        <p class="ribbon-content">
+                            You're currently logged in as superadmin. To experience the new user interface, switch to your user account.
+                        </p>
+                </div>
             </div>
 
             <div class="row">
