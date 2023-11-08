@@ -10,10 +10,13 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { getUserList, User } from "src/domain/user";
 import { Users } from "src/app/features/configuration/users/Users";
 import { userEvent } from "@testing-library/user-event";
+import { getTeams, Team } from "src/domain/team";
 
 jest.mock("src/domain/user/user-api");
+jest.mock("src/domain/team/team-api.ts");
 
 const mockGetUsers = getUserList as jest.MockedFunction<typeof getUserList>;
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 
 const userOne: User = {
   fullname: "Jean-Luc Picard",
@@ -41,9 +44,35 @@ const userTwo: User = {
 
 const mockUsers = [userOne, userTwo];
 
+const teamOne: Team = {
+  app: "",
+  contactperson: "Picard",
+  envList: [],
+  serviceAccounts: {},
+  showDeleteTeam: false,
+  teamId: 1111,
+  teammail: "",
+  teamname: "NCC-1701-D",
+  teamphone: "12345",
+  tenantId: 0,
+  tenantName: "UFP",
+};
+const teamTwo: Team = {
+  contactperson: "Pike",
+  showDeleteTeam: false,
+  teamId: 2222,
+  teamname: "NCC-1701",
+  teamphone: "67890",
+  tenantId: 0,
+  tenantName: "default",
+};
+
+const mockedTeams = [teamOne, teamTwo];
+
 describe("Users.tsx", () => {
   describe("handles loading state", () => {
     beforeAll(() => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockResolvedValue({
         currentPage: 1,
         totalPages: 1,
@@ -65,6 +94,7 @@ describe("Users.tsx", () => {
 
   describe("handles empty state", () => {
     beforeAll(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockResolvedValue({
         currentPage: 1,
         totalPages: 1,
@@ -100,6 +130,7 @@ describe("Users.tsx", () => {
 
     beforeAll(async () => {
       console.error = jest.fn();
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockRejectedValue(testError);
       customRender(<Users />, { queryClient: true, memoryRouter: true });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -130,6 +161,7 @@ describe("Users.tsx", () => {
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
       mockIntersectionObserver();
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockResolvedValue({
         currentPage: 1,
         totalPages: 1,
@@ -160,6 +192,13 @@ describe("Users.tsx", () => {
       expect(pagination).not.toBeInTheDocument();
     });
 
+    it("shows select element for teams with All teams as default", () => {
+      const select = screen.getByRole("combobox", { name: "Filter by team" });
+
+      expect(select).toBeEnabled();
+      expect(select).toHaveDisplayValue("All teams");
+    });
+
     mockUsers.forEach((user) => {
       it(`renders the user name "${user.username}"`, () => {
         const table = screen.getByRole("table", {
@@ -177,6 +216,7 @@ describe("Users.tsx", () => {
   describe("handles successful response with 3 pages", () => {
     beforeAll(async () => {
       mockIntersectionObserver();
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockResolvedValue({
         currentPage: 2,
         totalPages: 4,
@@ -224,6 +264,7 @@ describe("Users.tsx", () => {
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
       mockIntersectionObserver();
+      mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockResolvedValue({
         currentPage: 3,
         totalPages: 5,
@@ -257,6 +298,70 @@ describe("Users.tsx", () => {
 
       expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
         pageNo: "4",
+      });
+    });
+  });
+
+  describe("enables user to filter by team", () => {
+    beforeEach(async () => {
+      mockIntersectionObserver();
+      mockGetTeams.mockResolvedValue(mockedTeams);
+      mockGetUsers.mockResolvedValue({
+        currentPage: 3,
+        totalPages: 5,
+        entries: mockUsers,
+      });
+      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("renders a select with all teams fetched from the endpoint", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by team",
+      });
+
+      const options = within(select).getAllByRole("option");
+
+      // one option for "All teams"
+      expect(options).toHaveLength(mockedTeams.length + 1);
+      expect(options[0]).toHaveValue("ALL");
+      expect(options[1]).toHaveValue(mockedTeams[0].teamname);
+      expect(options[2]).toHaveValue(mockedTeams[1].teamname);
+    });
+
+    it("fetches new data when user filters by a team", async () => {
+      const teamToSelect = mockedTeams[0].teamname;
+
+      const select = screen.getByRole("combobox", {
+        name: "Filter by team",
+      });
+
+      const option = within(select).getByRole("option", { name: teamToSelect });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(mockGetUsers).toHaveBeenCalledWith({
+        pageNo: "1",
+        teamName: "NCC-1701-D",
+      });
+    });
+
+    it("removes teamName as url param when user chooses All teams", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by team",
+      });
+
+      const option = within(select).getByRole("option", { name: "All teams" });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(mockGetUsers).toHaveBeenCalledWith({
+        pageNo: "1",
       });
     });
   });

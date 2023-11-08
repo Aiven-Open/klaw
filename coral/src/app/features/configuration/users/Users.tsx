@@ -4,9 +4,16 @@ import { getUserList } from "src/domain/user";
 import { UsersTable } from "src/app/features/configuration/users/components/UsersTable";
 import { Pagination } from "src/app/components/Pagination";
 import { useSearchParams } from "react-router-dom";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
 
-function Users() {
+function UsersWithoutFilterContext() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { teamName } = useFiltersContext();
+
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
@@ -16,8 +23,13 @@ function Users() {
     isLoading,
     isError,
     error,
-  } = useQuery(["get-user-list", currentPage], {
-    queryFn: () => getUserList({ pageNo: String(currentPage) }),
+  } = useQuery(["get-user-list", currentPage, teamName], {
+    queryFn: () =>
+      getUserList({
+        pageNo: String(currentPage),
+        teamName: teamName === "ALL" ? undefined : teamName,
+      }),
+    keepPreviousData: true,
   });
 
   function handleChangePage(page: number) {
@@ -45,7 +57,7 @@ function Users() {
 
   return (
     <TableLayout
-      filters={[]}
+      filters={[<TeamFilter useTeamName={true} key={"team"} />]}
       table={table}
       pagination={pagination}
       isLoading={isLoading}
@@ -54,5 +66,9 @@ function Users() {
     />
   );
 }
+
+const Users = withFiltersContext({
+  element: <UsersWithoutFilterContext />,
+});
 
 export { Users };
