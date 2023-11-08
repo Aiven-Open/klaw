@@ -1,6 +1,7 @@
 import {
   cleanup,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
@@ -362,6 +363,80 @@ describe("Users.tsx", () => {
 
       expect(mockGetUsers).toHaveBeenCalledWith({
         pageNo: "1",
+      });
+    });
+  });
+
+  describe("enables user to search for user name", () => {
+    beforeEach(async () => {
+      mockIntersectionObserver();
+      mockGetTeams.mockResolvedValue(mockedTeams);
+      mockGetUsers.mockResolvedValue({
+        currentPage: 3,
+        totalPages: 5,
+        entries: mockUsers,
+      });
+      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("renders a search field for username", () => {
+      const search = screen.getByRole("search", {
+        name: "Search username",
+      });
+
+      expect(search).toBeEnabled();
+      expect(search).toHaveAccessibleDescription(
+        'Partial match for user name Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+      );
+    });
+
+    it("fetches new data when user searches for username", async () => {
+      const usernameSearch = "myname";
+
+      const search = screen.getByRole("search", {
+        name: "Search username",
+      });
+
+      await userEvent.type(search, usernameSearch);
+
+      await waitFor(() => {
+        expect(mockGetUsers).toHaveBeenCalledWith({
+          pageNo: "1",
+          searchUserParam: usernameSearch,
+        });
+      });
+    });
+
+    it("removes username search as url param when user deletes input", async () => {
+      const usernameSearch = "myname";
+
+      const search = screen.getByRole("search", {
+        name: "Search username",
+      });
+
+      await userEvent.type(search, usernameSearch);
+
+      await waitFor(() => {
+        // first call is on load
+        expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
+          pageNo: "1",
+          searchUserParam: usernameSearch,
+        });
+      });
+
+      await userEvent.clear(search);
+
+      await waitFor(() => {
+        // first call is on load, second for search
+        expect(mockGetUsers).toHaveBeenNthCalledWith(3, {
+          pageNo: "1",
+        });
       });
     });
   });

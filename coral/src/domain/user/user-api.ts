@@ -10,6 +10,7 @@ async function getUserList(
   const queryParams = convertQueryValuesToString({
     ...params,
     ...(params?.teamName && { teamName: params.teamName }),
+    ...(params?.searchUserParam && { searchUserParam: params.searchUserParam }),
   });
 
   return api

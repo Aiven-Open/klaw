@@ -9,10 +9,11 @@ import {
   withFiltersContext,
 } from "src/app/features/components/filters/useFiltersContext";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 
 function UsersWithoutFilterContext() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { teamName } = useFiltersContext();
+  const { teamName, search } = useFiltersContext();
 
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
@@ -23,11 +24,12 @@ function UsersWithoutFilterContext() {
     isLoading,
     isError,
     error,
-  } = useQuery(["get-user-list", currentPage, teamName], {
+  } = useQuery(["get-user-list", currentPage, teamName, search], {
     queryFn: () =>
       getUserList({
         pageNo: String(currentPage),
         teamName: teamName === "ALL" ? undefined : teamName,
+        searchUserParam: search.length === 0 ? undefined : search,
       }),
     keepPreviousData: true,
   });
@@ -57,7 +59,16 @@ function UsersWithoutFilterContext() {
 
   return (
     <TableLayout
-      filters={[<TeamFilter useTeamName={true} key={"team"} />]}
+      filters={[
+        <TeamFilter useTeamName={true} key={"team"} />,
+        <SearchFilter
+          key="search"
+          label="Search username"
+          placeholder={"infrateam"}
+          description={`Partial match for user name`}
+          ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+        />,
+      ]}
       table={table}
       pagination={pagination}
       isLoading={isLoading}
