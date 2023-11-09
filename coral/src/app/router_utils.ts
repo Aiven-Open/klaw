@@ -19,6 +19,7 @@ enum Routes {
   APPROVALS = "/approvals",
   CONFIGURATION = "/configuration",
   ENVIRONMENTS = "/configuration/environments",
+  TEAMS = "/configuration/teams",
 }
 
 enum EnvironmentsTabEnum {

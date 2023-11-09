@@ -1,16 +1,5 @@
-// "teamName" is an optional parameter for the getTopics api,
-// but we still need an identifier in frontend
-// to be able to set "All teams" as a visible option
-// for the user, UUID makes sure we don't overlap with an
+import { KlawApiModel } from "types/utils";
 
-import { KlawApiResponse } from "types/utils";
+type Team = KlawApiModel<"TeamModelResponse">;
 
-// actual team name in the future
-const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
-const TEAM_NOT_INITIALIZED = "931bd061-fb50-4b92-ae49-b1e8004324d3";
-
-type Team = string | typeof ALL_TEAMS_VALUE;
-type AllTeams = KlawApiResponse<"getAllTeamsSU">;
-
-export type { Team, AllTeams };
-export { ALL_TEAMS_VALUE, TEAM_NOT_INITIALIZED };
+export type { Team };

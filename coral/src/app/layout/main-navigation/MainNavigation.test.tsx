@@ -16,6 +16,11 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   },
 }));
 
+const isFeatureFlagActiveMock = jest.fn();
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const navLinks = [
   {
     name: "Dashboard",
@@ -39,7 +44,10 @@ const submenuItems = [
     name: "Configuration",
     links: [
       { name: "Users", linkTo: "/users" },
-      { name: "Teams", linkTo: "/teams" },
+      {
+        name: "Teams",
+        linkTo: isFeatureFlagActiveMock() ? `/configuration/teams` : `/teams`,
+      },
       {
         name: "Environments",
         linkTo: "/configuration/environments",
@@ -129,6 +137,55 @@ describe("MainNavigation.tsx", () => {
 
       const icons = within(nav).getAllByTestId("ds-icon");
       expect(icons).toHaveLength(iconAmount);
+    });
+  });
+
+  describe("renders links to teams behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Teams" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/teams");
+    });
+
+    it("renders a link to the teams page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValueOnce(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Teams" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/configuration/teams");
     });
   });
 

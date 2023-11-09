@@ -4,7 +4,7 @@ import { useFiltersContext } from "src/app/features/components/filters/useFilter
 import { getTeams } from "src/domain/team/team-api";
 
 function TeamFilter() {
-  const { data: topicTeams } = useQuery(["topic-get-teams"], {
+  const { data: topicTeams } = useQuery(["get-teams"], {
     queryFn: () => getTeams(),
   });
 
