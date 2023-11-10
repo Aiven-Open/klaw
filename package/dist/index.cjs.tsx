@@ -1,28 +1,33 @@
-// useKlaw.tsx
-import { useQuery } from "@tanstack/react-query";
-var useKlaw = ({
-  getTopicsCall
-}) => {
-  const topics = useQuery({
-    queryKey: ["getTopics"],
-    queryFn: () => getTopicsCall({
-      organizationId: "1"
-    }),
-    keepPreviousData: true
-  });
-  return { topics };
-};
-
 // TopicsTable.tsx
 import {
   DataTable,
-  EmptyState,
   InlineIcon
 } from "@aivenio/aquarium";
 import link from "@aivenio/aquarium/dist/src/icons/link";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
-var TopicsTable = (props) => {
-  const { topics, ariaLabel } = props;
+import { useQuery } from "@tanstack/react-query";
+
+// sourcesContext.tsx
+import { createContext, useContext } from "react";
+import { jsx } from "react/jsx-runtime";
+var SourcesContext = createContext({
+  getTopics: new Promise(() => [])
+});
+var SourcesProvider = ({
+  children,
+  sources
+}) => {
+  return /* @__PURE__ */ jsx(SourcesContext.Provider, { value: sources, children });
+};
+
+// TopicsTable.tsx
+import { Fragment, jsx as jsx2, jsxs } from "react/jsx-runtime";
+var TopicsTableBase = (props) => {
+  const { ariaLabel, getTopics } = props;
+  const topics = useQuery({
+    queryKey: ["getTopics"],
+    queryFn: () => getTopics,
+    keepPreviousData: true
+  });
   const columns = [
     {
       type: "custom",
@@ -31,21 +36,20 @@ var TopicsTable = (props) => {
         return /* @__PURE__ */ jsxs(Fragment, { children: [
           topicName,
           " ",
-          /* @__PURE__ */ jsx(InlineIcon, { icon: link })
+          /* @__PURE__ */ jsx2(InlineIcon, { icon: link })
         ] });
       }
     }
   ];
-  const rows = topics.map((topic) => {
-    return {
-      id: topic.topicId,
-      topicName: topic.topicName
-    };
-  });
-  if (rows.length === 0) {
-    return /* @__PURE__ */ jsx(EmptyState, { title: "No Topics", children: "No Topics matched your criteria." });
-  }
-  return /* @__PURE__ */ jsx(
+  const rows = (topics?.data?.topics || []).map(
+    ({ topicName }, index) => {
+      return {
+        id: `${index}-${topicName}`,
+        topicName
+      };
+    }
+  );
+  return /* @__PURE__ */ jsx2(
     DataTable,
     {
       ariaLabel,
@@ -54,6 +58,11 @@ var TopicsTable = (props) => {
       noWrap: false
     }
   );
+};
+var TopicsTable = (props) => {
+  return /* @__PURE__ */ jsx2(SourcesContext.Consumer, { children: ({ getTopics }) => {
+    return /* @__PURE__ */ jsx2(TopicsTableBase, { ...props, getTopics });
+  } });
 };
 
 // node_modules/@tanstack/query-core/build/lib/subscribable.mjs
@@ -1809,22 +1818,24 @@ var QueryClient = class {
 
 // KlawProvider.tsx
 import { QueryClientProvider } from "@tanstack/react-query";
-import { jsx as jsx2 } from "react/jsx-runtime";
+import { jsx as jsx3 } from "react/jsx-runtime";
 var queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: (failureCount, error) => {
+      retry: (failureCount) => {
         return failureCount < 2;
       },
       refetchOnWindowFocus: false
     }
   }
 });
-var KlawProvider = ({ children }) => {
-  return /* @__PURE__ */ jsx2(QueryClientProvider, { client: queryClient, children });
+var KlawProvider = ({
+  children,
+  sources
+}) => {
+  return /* @__PURE__ */ jsx3(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsx3(SourcesProvider, { sources, children }) });
 };
 export {
   KlawProvider,
-  TopicsTable,
-  useKlaw
+  TopicsTable
 };

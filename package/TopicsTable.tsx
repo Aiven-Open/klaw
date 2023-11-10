@@ -4,14 +4,13 @@ import {
   EmptyState,
   InlineIcon,
 } from "@aivenio/aquarium";
+import data from "@aivenio/aquarium/dist/src/icons/link";
 import link from "@aivenio/aquarium/dist/src/icons/link";
-
-interface Topic {
-  topicName: string;
-}
+import { useQuery } from "@tanstack/react-query";
+import { Sources } from "KlawProvider";
+import { SourcesContext } from "sourcesContext";
 
 interface TopicListProps {
-  topics: Topic[];
   ariaLabel: string;
 }
 
@@ -20,8 +19,18 @@ interface TopicsTableRow {
   topicName: string;
 }
 
-export const TopicsTable = (props: TopicListProps) => {
-  const { topics, ariaLabel } = props;
+const TopicsTableBase = (
+  props: TopicListProps & { getTopics: Sources["getTopics"] }
+) => {
+  // Will not work in console (React v17)
+  // const { getTopics } = useSourcesContext();
+  const { ariaLabel, getTopics } = props;
+
+  const topics = useQuery({
+    queryKey: ["getTopics"],
+    queryFn: () => getTopics,
+    keepPreviousData: true,
+  });
 
   const columns: Array<DataTableColumn<TopicsTableRow>> = [
     {
@@ -37,20 +46,14 @@ export const TopicsTable = (props: TopicListProps) => {
     },
   ];
 
-  const rows: TopicsTableRow[] = topics.map((topic: Topic, index) => {
-    return {
-      id: `${index}-${topic.topicName}`,
-      topicName: topic.topicName,
-    };
-  });
-
-  if (rows.length === 0) {
-    return (
-      <EmptyState title="No Topics">
-        No Topics matched your criteria.
-      </EmptyState>
-    );
-  }
+  const rows: TopicsTableRow[] = (topics?.data?.topics || []).map(
+    ({ topicName }, index) => {
+      return {
+        id: `${index}-${topicName}`,
+        topicName: topicName,
+      };
+    }
+  );
 
   return (
     <DataTable
@@ -59,5 +62,15 @@ export const TopicsTable = (props: TopicListProps) => {
       rows={rows}
       noWrap={false}
     />
+  );
+};
+
+export const TopicsTable = (props: TopicListProps) => {
+  return (
+    <SourcesContext.Consumer>
+      {({ getTopics }) => {
+        return <TopicsTableBase {...props} getTopics={getTopics} />;
+      }}
+    </SourcesContext.Consumer>
   );
 };
