@@ -10,4 +10,6 @@ public interface KwEntitySequenceRepo extends CrudRepository<KwEntitySequence, K
   Optional<KwEntitySequence> findById(KwEntitySequenceID id);
 
   List<KwEntitySequence> findAllByEntityNameAndTenantId(String entityName, Integer tenantId);
+
+  int countAllByEntityNameAndTenantId(String entityName, Integer tenantId);
 }

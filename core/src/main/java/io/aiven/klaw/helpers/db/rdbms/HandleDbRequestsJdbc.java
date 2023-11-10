@@ -99,6 +99,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean hasSequence(String entityName, int tenantId) {
+    return jdbcInsertHelper.hasSequence(entityName, tenantId);
+  }
+
+  @Override
   public String registerUser(RegisterUserInfo newUser) {
     return jdbcInsertHelper.insertIntoRegisterUsers(newUser);
   }

@@ -424,6 +424,12 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public boolean hasSequence(String entityName, int tenantId) {
+    int kwEntitySequenceList =
+        kwEntitySequenceRepo.countAllByEntityNameAndTenantId(entityName, tenantId);
+    return (kwEntitySequenceList > 0);
+  }
+
   public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
     List<KwEntitySequence> kwEntitySequenceList =
         kwEntitySequenceRepo.findAllByEntityNameAndTenantId(entityName, tenantId);

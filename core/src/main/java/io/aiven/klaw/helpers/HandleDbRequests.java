@@ -45,7 +45,9 @@ public interface HandleDbRequests {
 
   String addToSyncacls(List<Acl> acls);
 
-  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId);
+  Integer getNextSeqIdAndUpdate(String entityName, int tenantId);
+
+  boolean hasSequence(String entityName, int tenantId);
 
   String registerUser(RegisterUserInfo newUser);
 
