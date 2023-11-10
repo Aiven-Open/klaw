@@ -5,7 +5,6 @@ import {
   RequestOperationType,
   RequestStatus,
 } from "src/domain/requests/requests-types";
-import { ALL_TEAMS_VALUE } from "src/domain/team";
 
 type SetFiltersParams =
   | { name: "environment"; value: string }
