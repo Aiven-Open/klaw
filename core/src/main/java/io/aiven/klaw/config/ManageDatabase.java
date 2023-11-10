@@ -267,31 +267,22 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     setDefaultEntitySequencesForTenant(tenantId);
   }
 
-  private void setDefaultEntitySequencesForTenant(int tenantId) {
+  public void setDefaultEntitySequencesForTenant(int tenantId) {
     Integer lastId = handleDbRequests.getNextClusterId(tenantId);
-    if (lastId == null) {
-      lastId = getNextId(1, lastId);
-      handleDbRequests.insertIntoKwEntitySequence(EntityType.CLUSTER.name(), lastId, tenantId);
-    } else if (!handleDbRequests.hasSequence(EntityType.CLUSTER.name(), tenantId)) {
+    if (lastId == null || !handleDbRequests.hasSequence(EntityType.CLUSTER.name(), tenantId)) {
       lastId = getNextId(1, lastId);
       handleDbRequests.insertIntoKwEntitySequence(EntityType.CLUSTER.name(), lastId, tenantId);
     }
 
     lastId = handleDbRequests.getNextEnvId(tenantId);
-    if (lastId == null) {
-      lastId = getNextId(1, lastId);
-      handleDbRequests.insertIntoKwEntitySequence(EntityType.ENVIRONMENT.name(), lastId, tenantId);
-    } else if (!handleDbRequests.hasSequence(EntityType.ENVIRONMENT.name(), tenantId)) {
+    if (lastId == null || !handleDbRequests.hasSequence(EntityType.ENVIRONMENT.name(), tenantId)) {
       lastId = getNextId(1, lastId);
       handleDbRequests.insertIntoKwEntitySequence(EntityType.ENVIRONMENT.name(), lastId, tenantId);
     }
 
     lastId = handleDbRequests.getNextTeamId(tenantId);
-    if (lastId == null) {
+    if (lastId == null || !handleDbRequests.hasSequence(EntityType.TEAM.name(), tenantId)) {
       lastId = getNextId(1001, lastId);
-      handleDbRequests.insertIntoKwEntitySequence(EntityType.TEAM.name(), lastId, tenantId);
-    } else if (!handleDbRequests.hasSequence(EntityType.TEAM.name(), tenantId)) {
-      lastId = getNextId(1, lastId);
       handleDbRequests.insertIntoKwEntitySequence(EntityType.TEAM.name(), lastId, tenantId);
     }
   }
