@@ -22,6 +22,7 @@ interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
   topicname: SchemaRequest["topicname"];
   environmentName: SchemaRequest["environmentName"];
+  teamname: SchemaRequest["teamname"];
   requestor: SchemaRequest["requestor"];
   requesttimestring: SchemaRequest["requesttimestring"];
   requestStatus: SchemaRequest["requestStatus"];
@@ -71,6 +72,11 @@ function SchemaApprovalsTable({
           text: requestStatusNameMap[requestStatus],
         };
       },
+    },
+    {
+      type: "text",
+      field: "teamname",
+      headerName: "Team",
     },
     {
       type: "status",
@@ -170,6 +176,7 @@ function SchemaApprovalsTable({
         id: request.req_no,
         topicname: request.topicname,
         environmentName: request.environmentName,
+        teamname: request.teamname,
         requestor: request.requestor,
         requesttimestring: request.requesttimestring,
         requestStatus: request.requestStatus,
