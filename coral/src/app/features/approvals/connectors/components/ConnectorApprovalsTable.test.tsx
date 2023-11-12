@@ -71,6 +71,7 @@ describe("ConnectorApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Connector name", relatedField: "connectorName" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Requested by", relatedField: "requestor" },

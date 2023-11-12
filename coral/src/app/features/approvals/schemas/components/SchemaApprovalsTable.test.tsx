@@ -77,6 +77,7 @@ describe("SchemaApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Additional notes", relatedField: "forceRegister" },
