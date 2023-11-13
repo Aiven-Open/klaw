@@ -7,8 +7,7 @@ import {
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
-import { getTeams } from "src/domain/team";
-import { AllTeams } from "src/domain/team/team-types";
+import { getTeams, Team } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
 import {
   mockedResponseTransformed,
@@ -39,7 +38,7 @@ const mockedGetTopicsResponseSinglePage: TopicApiResponse =
 const mockedGetTopicsResponseMultiplePages: TopicApiResponse =
   mockedResponseMultiplePageTransformed;
 const mockGetEnvironmentResponse: Environment[] = mockedEnvironmentResponse;
-const mockGetTeamsResponse: AllTeams = [
+const mockGetTeamsResponse: Team[] = [
   {
     teamname: "TEST_TEAM_01",
     teamphone: "000",
