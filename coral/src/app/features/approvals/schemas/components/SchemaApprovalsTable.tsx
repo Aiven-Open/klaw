@@ -22,8 +22,8 @@ interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
   topicname: SchemaRequest["topicname"];
   environmentName: SchemaRequest["environmentName"];
-  teamname: SchemaRequest["teamname"];
   requestor: SchemaRequest["requestor"];
+  teamname: SchemaRequest["teamname"];
   requesttimestring: SchemaRequest["requesttimestring"];
   requestStatus: SchemaRequest["requestStatus"];
   requestOperationType: SchemaRequest["requestOperationType"];

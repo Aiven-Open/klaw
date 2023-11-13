@@ -17,8 +17,8 @@ interface ConnectorRequestTableData {
   id: ConnectorRequest["connectorId"];
   connectorName: ConnectorRequest["connectorName"];
   environmentName: ConnectorRequest["environmentName"];
-  teamname: ConnectorRequest["teamname"];
   requestor: ConnectorRequest["requestor"];
+  teamname: ConnectorRequest["teamname"];
   requesttimestring: ConnectorRequest["requesttimestring"];
   requestStatus: ConnectorRequest["requestStatus"];
   requestOperationType: ConnectorRequest["requestOperationType"];
