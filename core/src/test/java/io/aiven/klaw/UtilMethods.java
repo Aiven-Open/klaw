@@ -245,7 +245,7 @@ public class UtilMethods {
       t.setTopicid(i);
       t.setEnvironment(env);
       t.setTeamId(teamId);
-      t.setEnvironmentsList(new ArrayList<>());
+      t.setEnvironmentsSet(new HashSet<>());
 
       listTopics.add(t);
     }
