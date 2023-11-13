@@ -213,7 +213,7 @@ public class SchemaRegistryController {
       value = "/schema/request/{schemaReqId}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemaRequestsResponseModel> getTopicRequest(
+  public ResponseEntity<SchemaRequestsResponseModel> getSchemaRequest(
       @PathVariable Integer schemaReqId) {
     return new ResponseEntity<>(
         schemaRegistryControllerService.getSchemaRequest(schemaReqId), HttpStatus.OK);

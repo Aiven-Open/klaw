@@ -43,6 +43,7 @@ import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import io.aiven.klaw.model.response.SchemaOverview;
+import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
@@ -1322,6 +1323,46 @@ public class TopicAclControllerIT {
 
   @Order(37)
   @Test
+  public void editSchemaRequest() throws Exception {
+    Integer schemaRequestId = 1001;
+    String response = getSchemaRequest(schemaRequestId);
+
+    SchemaRequestsResponseModel schemaRequestsResponseModel =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(schemaRequestsResponseModel.getForceRegister()).isNull();
+    schemaRequestsResponseModel.setForceRegister(Boolean.TRUE); // Set force register to true
+
+    SchemaRequestModel schemaRequest = new SchemaRequestModel();
+    schemaRequest.setRequestId(schemaRequestId);
+    schemaRequest.setTopicname(schemaRequestsResponseModel.getTopicname());
+    schemaRequest.setRequestor(schemaRequestsResponseModel.getRequestor());
+    schemaRequest.setEnvironment(schemaRequestsResponseModel.getEnvironment());
+    schemaRequest.setForceRegister(schemaRequestsResponseModel.getForceRegister());
+    schemaRequest.setSchemafull(schemaRequestsResponseModel.getSchemafull());
+    schemaRequest.setRequestOperationType(schemaRequestsResponseModel.getRequestOperationType());
+
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
+    ApiResponse apiResponse = ApiResponse.builder().success(true).build();
+    ResponseEntity<ApiResponse> responseResponseEntity =
+        new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(responseResponseEntity);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/uploadSchema")
+                .with(user(user1).password(PASSWORD).roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+
+    response = getSchemaRequest(schemaRequestId);
+    schemaRequestsResponseModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(schemaRequestsResponseModel.getForceRegister()).isTrue();
+  }
+
+  @Order(38)
+  @Test
   public void execSchemaRequests() throws Exception {
     Map<String, Object> registerSchemaCustomResponse = new HashMap<>();
     registerSchemaCustomResponse.put("schemaRegistered", true);
@@ -1345,7 +1386,7 @@ public class TopicAclControllerIT {
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
-  @Order(38)
+  @Order(39)
   @Test
   public void getSchemaOverview() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
@@ -1370,7 +1411,7 @@ public class TopicAclControllerIT {
     assertThat(response.getAllSchemaVersions()).hasSize(1);
   }
 
-  @Order(39)
+  @Order(40)
   @Test
   public void getHistoriesOfTopicAclSchema() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
@@ -1398,7 +1439,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(40)
+  @Order(41)
   public void createOffsetResetRequestToDelete() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1406,7 +1447,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(41)
+  @Order(42)
   public void getOffsetResetRequests() throws Exception {
     List<OperationalRequestsResponseModel> operationalRequestList =
         getOperationalRequestsFromStatus(RequestStatus.CREATED.name());
@@ -1421,7 +1462,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(42)
+  @Order(43)
   public void deleteOffsetRequest() throws Exception {
     String response =
         mvc.perform(
@@ -1441,7 +1482,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(43)
+  @Order(44)
   public void createOffsetResetRequestToDecline() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1452,7 +1493,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(44)
+  @Order(45)
   public void declineOffsetRequest() throws Exception {
     String response =
         mvc.perform(
@@ -1473,7 +1514,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(45)
+  @Order(46)
   public void createOffsetResetRequestToApprove() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1484,7 +1525,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(46)
+  @Order(47)
   public void approveOffsetRequest() throws Exception {
     Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
         UtilMethods.getOffsetsTimingMapMap();
@@ -1511,7 +1552,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(47)
+  @Order(48)
   public void editTopicRequestFailureTopicDoesNotExist() throws Exception {
     TopicRequestModel updateTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId1);
     updateTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
@@ -1530,6 +1571,18 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
     assertThat(str).contains(TOPICS_VLD_ERR_124);
+  }
+
+  private String getSchemaRequest(Integer schemaRequestId) throws Exception {
+    return mvc.perform(
+            MockMvcRequestBuilders.get("/schema/request/" + schemaRequestId)
+                .with(user(user1).password(PASSWORD).roles("USER"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
   }
 
   private String createOffsetRequest() throws Exception {

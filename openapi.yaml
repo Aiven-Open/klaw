@@ -2473,6 +2473,33 @@
         }
       }
     },
+    "/schema/request/{schemaReqId}" : {
+      "get" : {
+        "tags" : [ "schema-registry-controller" ],
+        "operationId" : "getSchemaRequest",
+        "parameters" : [ {
+          "name" : "schemaReqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SchemaRequestsResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/resetCache" : {
       "get" : {
         "tags" : [ "server-config-controller" ],
@@ -7410,6 +7437,95 @@
           }
         }
       },
+      "SchemaRequestsResponseModel" : {
+        "properties" : {
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "requestOperationType" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "schemafull" : {
+            "type" : "string"
+          },
+          "req_no" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "forceRegister" : {
+            "type" : "boolean"
+          },
+          "schemaversion" : {
+            "type" : "string"
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
+      },
       "RequestEntityStatusCount" : {
         "properties" : {
           "requestEntityType" : {
@@ -7916,10 +8032,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -8527,95 +8643,6 @@
           }
         }
       },
-      "SchemaRequestsResponseModel" : {
-        "properties" : {
-          "environment" : {
-            "type" : "string"
-          },
-          "environmentName" : {
-            "type" : "string"
-          },
-          "requestor" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "teamname" : {
-            "type" : "string"
-          },
-          "requestOperationType" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
-          },
-          "requestStatus" : {
-            "type" : "string",
-            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
-          },
-          "requesttime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "requesttimestring" : {
-            "type" : "string"
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "approvingTeamDetails" : {
-            "type" : "string"
-          },
-          "approver" : {
-            "type" : "string"
-          },
-          "approvingtime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "remarks" : {
-            "type" : "string"
-          },
-          "appname" : {
-            "type" : "string"
-          },
-          "otherParams" : {
-            "type" : "string"
-          },
-          "topicname" : {
-            "type" : "string"
-          },
-          "schemafull" : {
-            "type" : "string"
-          },
-          "req_no" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "forceRegister" : {
-            "type" : "boolean"
-          },
-          "schemaversion" : {
-            "type" : "string"
-          },
-          "deletable" : {
-            "type" : "boolean"
-          },
-          "editable" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
-      },
       "SchemaDetailsPerEnv" : {
         "properties" : {
           "id" : {
@@ -9147,6 +9174,9 @@
           "coralEnabled" : {
             "type" : "string"
           },
+          "coralAvailableForUser" : {
+            "type" : "string"
+          },
           "adAuthRoleEnabled" : {
             "type" : "string"
           },
@@ -9157,7 +9187,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {
