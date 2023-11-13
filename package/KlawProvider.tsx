@@ -4,7 +4,7 @@ import React from "react";
 import { SourcesProvider } from "sourcesContext";
 
 export interface Sources {
-  getTopics: Promise<{ topics: { topicName: string }[] }>;
+  getTopics: (params: unknown) => Promise<{ topics: { topicName: string }[] }>;
 }
 
 interface KlawProviderProps {

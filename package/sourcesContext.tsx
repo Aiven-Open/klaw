@@ -2,7 +2,7 @@ import { Sources } from "KlawProvider";
 import { createContext, useContext } from "react";
 
 export const SourcesContext = createContext<Sources>({
-  getTopics: new Promise(() => []),
+  getTopics: () => new Promise(() => []),
 });
 // Cannot work in React v17 (console)
 export const useSourcesContext = () => useContext(SourcesContext);

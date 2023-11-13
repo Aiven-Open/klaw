@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
 import { jsx } from "react/jsx-runtime";
 var SourcesContext = createContext({
-  getTopics: new Promise(() => [])
+  getTopics: () => new Promise(() => [])
 });
 var SourcesProvider = ({
   children,
@@ -22,10 +22,10 @@ var SourcesProvider = ({
 // TopicsTable.tsx
 import { Fragment, jsx as jsx2, jsxs } from "react/jsx-runtime";
 var TopicsTableBase = (props) => {
-  const { ariaLabel, getTopics } = props;
+  const { ariaLabel, getTopics, params } = props;
   const topics = useQuery({
-    queryKey: ["getTopics"],
-    queryFn: () => getTopics,
+    queryKey: ["getTopics", params],
+    queryFn: () => getTopics(params),
     keepPreviousData: true
   });
   const columns = [

@@ -3,11 +3,12 @@ import React from 'react';
 
 interface TopicListProps {
     ariaLabel: string;
+    params: unknown;
 }
 declare const TopicsTable: (props: TopicListProps) => react_jsx_runtime.JSX.Element;
 
 interface Sources {
-    getTopics: Promise<{
+    getTopics: (params: unknown) => Promise<{
         topics: {
             topicName: string;
         }[];

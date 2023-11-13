@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { TopicsTable } from "klaw";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
@@ -8,9 +8,6 @@ import {
   useFiltersContext,
   withFiltersContext,
 } from "src/app/features/components/filters/useFiltersContext";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
-import TopicTable from "src/app/features/topics/browse/components/TopicTable";
-import { getTopics } from "src/domain/topic";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,59 +18,31 @@ function BrowseTopics() {
 
   const { search, environment, teamId } = useFiltersContext();
 
-  const {
-    data: topics,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["browseTopics", currentPage, search, environment, teamId],
-    queryFn: () =>
-      getTopics({
-        pageNo: currentPage.toString(),
-        env: environment,
-        teamId: teamId === "ALL" ? undefined : Number(teamId),
-        topicnamesearch: search.length === 0 ? undefined : search,
-      }),
-    keepPreviousData: true,
-  });
-
   function handleChangePage(page: number) {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   }
-  const pagination =
-    topics && topics.totalPages > 1 ? (
+  return (
+    <>
+      <TeamFilter key="team" />
+      <EnvironmentFilter key="environment" environmentsFor={"TOPIC_AND_ACL"} />
+
+      <SearchTopicFilter key={"search"} />
+      <TopicsTable
+        ariaLabel="Hello"
+        params={{
+          pageNo: currentPage.toString(),
+          env: environment,
+          teamId: teamId === "ALL" ? undefined : Number(teamId),
+          topicnamesearch: search.length === 0 ? undefined : search,
+        }}
+      />
       <Pagination
-        activePage={topics.currentPage}
-        totalPages={topics.totalPages}
+        activePage={currentPage}
+        totalPages={1000}
         setActivePage={handleChangePage}
       />
-    ) : undefined;
-
-  return (
-    <TableLayout
-      filters={[
-        <TeamFilter key="team" />,
-        <EnvironmentFilter
-          key="environment"
-          environmentsFor={"TOPIC_AND_ACL"}
-        />,
-        <SearchTopicFilter key={"search"} />,
-      ]}
-      table={
-        <TopicTable
-          topics={topics?.entries ?? []}
-          ariaLabel={`Topics overview, page ${topics?.currentPage ?? 0} of ${
-            topics?.totalPages ?? 0
-          }`}
-        />
-      }
-      pagination={pagination}
-      isLoading={isLoading}
-      isErrorLoading={isError}
-      errorMessage={error}
-    />
+    </>
   );
 }
 

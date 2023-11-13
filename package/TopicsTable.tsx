@@ -1,10 +1,4 @@
-import {
-  DataTable,
-  DataTableColumn,
-  EmptyState,
-  InlineIcon,
-} from "@aivenio/aquarium";
-import data from "@aivenio/aquarium/dist/src/icons/link";
+import { DataTable, DataTableColumn, InlineIcon } from "@aivenio/aquarium";
 import link from "@aivenio/aquarium/dist/src/icons/link";
 import { useQuery } from "@tanstack/react-query";
 import { Sources } from "KlawProvider";
@@ -12,6 +6,7 @@ import { SourcesContext } from "sourcesContext";
 
 interface TopicListProps {
   ariaLabel: string;
+  params: unknown;
 }
 
 interface TopicsTableRow {
@@ -24,11 +19,11 @@ const TopicsTableBase = (
 ) => {
   // Will not work in console (React v17)
   // const { getTopics } = useSourcesContext();
-  const { ariaLabel, getTopics } = props;
+  const { ariaLabel, getTopics, params } = props;
 
   const topics = useQuery({
-    queryKey: ["getTopics"],
-    queryFn: () => getTopics,
+    queryKey: ["getTopics", params],
+    queryFn: () => getTopics(params),
     keepPreviousData: true,
   });
 
@@ -55,6 +50,8 @@ const TopicsTableBase = (
     }
   );
 
+  // Make a table that can take an arbitrary amount of data
+  // take keys in response payload and render columns for them
   return (
     <DataTable
       ariaLabel={ariaLabel}
