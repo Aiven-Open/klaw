@@ -9,6 +9,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_111;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -513,12 +515,30 @@ public class SchemaRegistryControllerService {
           schemaReqs.stream()
               .filter(
                   schemaRequest1 ->
-                      "created".equals(schemaRequest1.getRequestStatus())
+                      RequestStatus.CREATED.value.equals(schemaRequest1.getRequestStatus())
                           && Objects.equals(
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
         return ApiResponse.notOk(SCHEMA_ERR_107);
+      }
+    } else if (schemaReqs != null && schemaRequest.getRequestId() != null) {
+      // edit schema request
+      Optional<SchemaRequest> optionalSchemaRequest =
+          schemaReqs.stream()
+              .filter(schemaReq -> schemaReq.getReq_no().equals(schemaRequest.getRequestId()))
+              .findFirst();
+
+      if (optionalSchemaRequest.isPresent()) {
+        // verify if request is in CREATED state
+        if (!optionalSchemaRequest.get().getRequestStatus().equals(RequestStatus.CREATED.value)) {
+          return ApiResponse.notOk(SCHEMA_ERR_110);
+        }
+
+        // verify if the edit request is being submitted by request owner
+        if (!optionalSchemaRequest.get().getRequestor().equals(schemaRequest.getRequestor())) {
+          return ApiResponse.notOk(SCHEMA_ERR_111);
+        }
       }
     }
 
