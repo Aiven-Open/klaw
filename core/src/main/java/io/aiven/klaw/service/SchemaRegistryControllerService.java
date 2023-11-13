@@ -508,7 +508,7 @@ public class SchemaRegistryControllerService {
               .collect(Collectors.toList());
 
     // request status filtering
-    if (schemaReqs != null) {
+    if (schemaReqs != null && schemaRequest.getRequestId() == null) {
       schemaReqs =
           schemaReqs.stream()
               .filter(
@@ -525,6 +525,7 @@ public class SchemaRegistryControllerService {
     schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
+    schemaRequestDao.setReq_no(schemaRequest.getRequestId());
     schemaRequestDao.setRequestOperationType(requestOperationType.value);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     schemaRequestDao.setTenantId(tenantId);
@@ -565,6 +566,44 @@ public class SchemaRegistryControllerService {
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
+    }
+  }
+
+  public SchemaRequestsResponseModel getSchemaRequest(Integer schemaReqId) {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    SchemaRequest schemaRequest =
+        manageDatabase.getHandleDbRequests().getSchemaRequest(schemaReqId, tenantId);
+
+    if (schemaRequest == null) {
+      return null;
+    } else {
+      SchemaRequestsResponseModel schemaRequestsResponseModel = new SchemaRequestsResponseModel();
+      copyProperties(schemaRequest, schemaRequestsResponseModel);
+      schemaRequestsResponseModel.setRequestStatus(
+          RequestStatus.of(schemaRequest.getRequestStatus()));
+      schemaRequestsResponseModel.setRequestOperationType(
+          RequestOperationType.of(schemaRequest.getRequestOperationType()));
+      // Set kafka env name, id
+      manageDatabase.getKafkaEnvList(tenantId).stream()
+          .filter(
+              kafkaEnv -> {
+                if (kafkaEnv.getAssociatedEnv() != null) {
+                  return kafkaEnv.getAssociatedEnv().getId().equals(schemaRequest.getEnvironment());
+                }
+                return false;
+              })
+          .findFirst()
+          .ifPresent(
+              env -> {
+                schemaRequestsResponseModel.setEnvironmentName(env.getName());
+                schemaRequestsResponseModel.setEnvironment(env.getId());
+              });
+
+      schemaRequestsResponseModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(tenantId, schemaRequest.getTeamId()));
+
+      return schemaRequestsResponseModel;
     }
   }
 

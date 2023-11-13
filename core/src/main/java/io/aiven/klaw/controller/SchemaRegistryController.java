@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -202,5 +203,19 @@ public class SchemaRegistryController {
       throws Exception {
 
     return ResponseEntity.ok(schemaRegistryControllerService.validateSchema(schemaRequest));
+  }
+
+  /**
+   * @param schemaReqId requestId of schema
+   * @return Schema Request details
+   */
+  @RequestMapping(
+      value = "/schema/request/{schemaReqId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<SchemaRequestsResponseModel> getTopicRequest(
+      @PathVariable Integer schemaReqId) {
+    return new ResponseEntity<>(
+        schemaRegistryControllerService.getSchemaRequest(schemaReqId), HttpStatus.OK);
   }
 }
