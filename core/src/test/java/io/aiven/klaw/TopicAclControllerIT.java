@@ -1336,7 +1336,7 @@ public class TopicAclControllerIT {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setRequestId(schemaRequestId);
     schemaRequest.setTopicname(schemaRequestsResponseModel.getTopicname());
-    schemaRequest.setRequestor(user3);
+    schemaRequest.setRequestor(user2);
     schemaRequest.setEnvironment(schemaRequestsResponseModel.getEnvironment());
     schemaRequest.setForceRegister(schemaRequestsResponseModel.getForceRegister());
     schemaRequest.setSchemafull(schemaRequestsResponseModel.getSchemafull());
@@ -1350,7 +1350,7 @@ public class TopicAclControllerIT {
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
-                .with(user(user1).password(PASSWORD).roles("USER"))
+                .with(user(user2).password(PASSWORD).roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

@@ -453,6 +453,7 @@ public class SchemaRegistryControllerService {
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
+    schemaRequest.setRequestor(userName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Optional<Env> schemaEnv = getSchemaEnvFromKafkaEnvId(schemaRequest.getEnvironment());
@@ -542,7 +543,6 @@ public class SchemaRegistryControllerService {
       }
     }
 
-    schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
     schemaRequestDao.setReq_no(schemaRequest.getRequestId());
