@@ -3358,6 +3358,8 @@ export type operations = {
         topicName: string;
         consumerGroupId: string;
         offsetId: string;
+        selectedPartitionId: number;
+        selectedNumberOfOffsets: number;
       };
     };
     responses: {
