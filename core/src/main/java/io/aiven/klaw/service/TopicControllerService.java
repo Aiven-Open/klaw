@@ -62,6 +62,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -1152,12 +1153,12 @@ public class TopicControllerService {
               TopicInfo mp = new TopicInfo();
               mp.setSequence(counterInc + "");
 
-              List<String> envList = topicSOT.getEnvironmentsList();
-              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+              TreeSet<String> envSet = new TreeSet<>(Comparator.comparingInt(orderOfEnvs::indexOf));
+              envSet.addAll(topicSOT.getEnvironmentsSet());
 
               mp.setTopicid(topicSOT.getTopicid());
               mp.setEnvId(topicSOT.getEnvironment());
-              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envSet));
               mp.setTopicName(topicSOT.getTopicname());
               mp.setTeamId(topicSOT.getTeamId());
               mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
@@ -1228,14 +1229,14 @@ public class TopicControllerService {
                 tmpTopicFull.replaceAll(prefixVar + AclPatternType.PREFIXED + prefixVar, "");
             if (topicInfo.getTopicname().startsWith(tmpTopicSub)
                 && topicInfo
-                    .getEnvironmentsList()
+                    .getEnvironmentsSet()
                     .contains(producerConsumerTopic.getEnvironment())) {
-              topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
               filterProducerConsumerList.add(topicInfo);
             }
           } else if (Objects.equals(producerConsumerTopic.getTopicname(), topicInfo.getTopicname())
-              && topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
-            topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
+            topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
           }
         }
