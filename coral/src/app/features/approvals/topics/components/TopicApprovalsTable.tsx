@@ -74,8 +74,8 @@ function TopicApprovalsTable({
         };
       },
     },
-    { type: "text", field: "teamname", headerName: "Team" },
     { type: "text", field: "requestor", headerName: "Requested by" },
+    { type: "text", field: "teamname", headerName: "Team" },
     {
       type: "text",
       field: "requesttimestring",

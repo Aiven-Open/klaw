@@ -74,11 +74,6 @@ function SchemaApprovalsTable({
       },
     },
     {
-      type: "text",
-      field: "teamname",
-      headerName: "Team",
-    },
-    {
       type: "status",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
@@ -96,6 +91,11 @@ function SchemaApprovalsTable({
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
       },
+    },
+    {
+      type: "text",
+      field: "teamname",
+      headerName: "Team",
     },
     {
       type: "custom",

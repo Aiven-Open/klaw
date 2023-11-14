@@ -68,11 +68,6 @@ function ConnectorApprovalsTable({
       },
     },
     {
-      type: "text",
-      field: "teamname",
-      headerName: "Team",
-    },
-    {
       type: "status",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
@@ -83,6 +78,11 @@ function ConnectorApprovalsTable({
       },
     },
     { type: "text", field: "requestor", headerName: "Requested by" },
+    {
+      type: "text",
+      field: "teamname",
+      headerName: "Team",
+    },
     {
       type: "text",
       field: "requesttimestring",
