@@ -376,6 +376,15 @@ public class TemplateMapController {
     return checkAuth("editAclRequest.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/editSchemaRequest", method = RequestMethod.GET)
+  public String editSchemaRequest(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("editSchemaRequest.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/requestConnector", method = RequestMethod.GET)
   public String requestConnector(
       ModelMap model,
