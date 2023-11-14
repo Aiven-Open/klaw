@@ -10,9 +10,17 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
-import { getTopics } from "src/domain/topic";
+// import { getTopics } from "src/domain/topic";
+import { KlawApiRequestQueryParameters } from "types/utils";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
 
-function BrowseTopics() {
+type BrowseTopicsProps = {
+  apiEndpoint: (
+    params: KlawApiRequestQueryParameters<"getTopics">
+  ) => Promise<TopicApiResponse>;
+  queryKey: "browseTopics";
+};
+function BrowseTopics({ apiEndpoint, queryKey }: BrowseTopicsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = searchParams.get("page")
@@ -27,9 +35,9 @@ function BrowseTopics() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["browseTopics", currentPage, search, environment, teamId],
+    queryKey: [queryKey, currentPage, search, environment, teamId],
     queryFn: () =>
-      getTopics({
+      apiEndpoint({
         pageNo: currentPage.toString(),
         env: environment,
         teamId: teamId === "ALL" ? undefined : Number(teamId),
@@ -77,4 +85,8 @@ function BrowseTopics() {
   );
 }
 
+//@ts-ignore
 export default withFiltersContext({ element: <BrowseTopics /> });
+
+export { BrowseTopics };
+export type { BrowseTopicsProps };

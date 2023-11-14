@@ -297,8 +297,11 @@ const routes: Array<RouteObject> = [
   },
 ];
 
-const router = createBrowserRouter(routes, {
-  basename: getRouterBasename(),
-});
+const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter(
+  routes,
+  {
+    basename: getRouterBasename(),
+  }
+);
 
 export default router;

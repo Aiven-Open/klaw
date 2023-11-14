@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "composite": true,
-    "target": "ESNext",
+    "allowJs": true,
     "declaration": true,
-    "noEmit": false,
-    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "declarationMap": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/app": ["../coral/src/app"],
+      "src/domain": ["../coral/src/domain"]
+    },
+    "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
@@ -16,11 +20,10 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "jsx": "react-jsx",
     "noErrorTruncation": true
   },
-  "include": ["src", "test-setup/setup-files-after-env.ts"],
-  "exclude": ["proxy", "../e2e"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["components/**/*.ts", "components/**/*.tsx", "components/**/*.d.ts"],
+  "references": [{ "path": "../coral" }]
 }
