@@ -7,7 +7,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,7 +34,7 @@ public class Topic implements Serializable {
   @Column(name = "env")
   private String environment;
 
-  @Transient private List<String> environmentsList;
+  @Transient private Set<String> environmentsSet;
 
   @Column(name = "partitions")
   private Integer noOfPartitions;

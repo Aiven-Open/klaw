@@ -997,7 +997,7 @@ public class TopicControllerServiceTest {
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM);
     List<Topic> syncTopics = getSyncTopics("topic", 4);
-    syncTopics.get(0).setEnvironmentsList(List.of("1", "2"));
+    syncTopics.get(0).setEnvironmentsSet(Set.of("1", "2"));
     syncTopics.get(0).setTopicname("testtopic");
     when(handleDbRequests.getAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
@@ -1696,7 +1696,7 @@ public class TopicControllerServiceTest {
       t.setTopicid(i);
       t.setEnvironment("1");
       t.setTeamId(101);
-      t.setEnvironmentsList(new ArrayList<>());
+      t.setEnvironmentsSet(new HashSet<>());
 
       listTopics.add(t);
     }
