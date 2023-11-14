@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('requestSchemaApp',[]);
+var app = angular.module('editSchemaApp',[]);
 
 app.directive('onReadFile', function ($parse) {
 	return {
@@ -28,7 +28,7 @@ app.directive('onReadFile', function ($parse) {
 	};
 });
 
-app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) {
+app.controller("editSchemaCtrl", function($scope, $http, $location, $window) {
 	
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
@@ -70,23 +70,46 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
 
     $scope.loadParams = function() {
+            var schemaRequestId;
+
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === "topicname")
+                if (sParameterName[0] === "schemaRequestId")
                 {
-                    $scope.topicSelectedFromUrl = sParameterName[1];
-                    $scope.addSchema.topicname = $scope.topicSelectedFromUrl;
-                    $scope.validatedSchema=false;
-                }
-                if (sParameterName[0] === "envId")
-                {
-                    $scope.addSchema.envId = sParameterName[1];
-                    $scope.getEnvDetails($scope.addSchema.envId);
+                    schemaRequestId = sParameterName[1];
                 }
             }
+
+            if(schemaRequestId){
+                $scope.getMySchemaRequestDetail(schemaRequestId);
+            }
+        }
+
+        $scope.getMySchemaRequestDetail = function(schemaRequestId) {
+            $http({
+                method: "GET",
+                url: "schema/request/" + schemaRequestId,
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.schemaRequestDetail = output;
+                if(output != null && output !== ''){
+                    $scope.addSchema = $scope.schemaRequestDetail;
+                    $scope.addSchema.envId = $scope.schemaRequestDetail.environment;
+                }else{
+                    $scope.alertnote = "Request not found.";
+                    $scope.showAlertToast();
+                    $window.location.href = $window.location.origin;
+                }
+
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
         }
 
     $scope.getEnvDetails = function(envSelected) {
@@ -113,7 +136,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 $scope.addSchema.schemafull = $fileContent;
             };
 
-        $scope.addSchema = function() {
+        $scope.submitEditSchemaRequest = function() {
 
                     if(!$scope.addSchema.envId)
                     {
@@ -122,7 +145,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                         return;
                     }
 
-                    if($scope.addSchema.topicname == null || $scope.addSchema.topicname.length==0)
+                    if($scope.addSchema.topicname == null || $scope.addSchema.topicname.length === 0)
                     {
                         $scope.alertnote = "Please fill in topic name.";
                         $scope.showAlertToast();
@@ -146,11 +169,15 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
                     let updatedRemarks;
                     if($scope.addSchema.forceRegister === true) {
-                        var forceRegisterString = " Force register for schema selected. This overrides standard schema compatibility.";
+                        var forceRegisterString = "Force register for schema selected. This overrides standard schema compatibility.";
                         if($scope.addSchema.remarks == null) {
                             updatedRemarks = forceRegisterString;
                         } else {
-                            updatedRemarks = $scope.addSchema.remarks + forceRegisterString;
+                            if(!$scope.addSchema.remarks.includes(forceRegisterString)){
+                                updatedRemarks = $scope.addSchema.remarks + forceRegisterString;
+                            }else{
+                                updatedRemarks = $scope.addSchema.remarks;
+                            }
                         }
                     }else{
                         updatedRemarks = $scope.addSchema.remarks;
@@ -166,8 +193,9 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     serviceInput['remarks'] = updatedRemarks;
                     serviceInput['schemafull'] = $scope.addSchema.schemafull;
                     serviceInput['schemaversion'] = "1.0";
-                    serviceInput['requestOperationType'] = 'CREATE';
+                    serviceInput['requestOperationType'] = $scope.addSchema.requestOperationType;
                     serviceInput['forceRegister'] = $scope.addSchema.forceRegister;
+                    serviceInput['requestId'] = $scope.addSchema.req_no;
 
                     $http({
                         method: "POST",

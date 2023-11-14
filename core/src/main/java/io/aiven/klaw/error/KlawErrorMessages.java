@@ -286,6 +286,10 @@ public class KlawErrorMessages {
   public static final String SCHEMA_ERR_109 =
       "Failure. Request Schema environments not configured Settings - tenant config";
 
+  public static final String SCHEMA_ERR_110 = "Failure. Schema request is not in CREATED state";
+
+  public static final String SCHEMA_ERR_111 = "Failure. Schema request is not owned by you.";
+
   public static final String SERVER_CONFIG_ERR_101 =
       "Failure. Invalid json / incorrect name values. Check tenant and env details.";
 

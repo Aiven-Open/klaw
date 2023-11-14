@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html ng-app="requestSchemaApp" ng-controller="requestSchemaCtrl">
+<html ng-app="editSchemaApp" ng-controller="editSchemaCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -27,7 +27,7 @@
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/requestAvroSchemaUpload.js"></script>
+	<script src="js/editAvroSchemaUpload.js"></script>
 	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -452,7 +452,7 @@
 							<form id="form">
 								<div class="form-body">
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Avro Schema Request</h3>
+										<td align="left"><h3 class="card-title">Edit Schema Request</h3>
 										</td>
 										<td align="right">
 											<a href="browseTopics">
@@ -469,7 +469,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Kafka Environment</label>
-												<input disabled type="text" value="{{environmentDetails.name}}" class="form-control">
+												<input disabled type="text" value="{{addSchema.environmentName}}" class="form-control">
 											</div>
 										</div>
 										<!--/span-->
@@ -539,7 +539,7 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addSchema();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+									<button ng-click="submitEditSchemaRequest();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
 									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>

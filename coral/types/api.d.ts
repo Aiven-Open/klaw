@@ -255,6 +255,9 @@ export type paths = {
   "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
     get: operations["getSchemaOfTopicFromSource"];
   };
+  "/schema/request/{schemaReqId}": {
+    get: operations["getSchemaRequest"];
+  };
   "/resetCache": {
     get: operations["resetCache"];
   };
@@ -1067,6 +1070,39 @@ export type components = {
       schemaVersion?: string;
       envName?: string;
     };
+    SchemaRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: string[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      topicname: string;
+      schemafull: string;
+      /** Format: int32 */
+      req_no: number;
+      forceRegister: boolean;
+      schemaversion?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
@@ -1245,8 +1281,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1323,6 +1359,7 @@ export type components = {
       allTopicsCount?: number;
       /** Format: int32 */
       allTopicWarningsCount?: number;
+      topicsLoadingStatus?: boolean;
     };
     TopicSyncResponseModel: {
       environment: string;
@@ -1454,39 +1491,6 @@ export type components = {
       /** @enum {string} */
       kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
       remarks?: string;
-    };
-    SchemaRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      schemafull: string;
-      /** Format: int32 */
-      req_no: number;
-      forceRegister: boolean;
-      schemaversion?: string;
-      deletable?: boolean;
-      editable?: boolean;
     };
     SchemaDetailsPerEnv: {
       /** Format: int32 */
@@ -1678,6 +1682,7 @@ export type components = {
       addDeleteEditClusters: string;
       addDeleteEditEnvs: string;
       coralEnabled: string;
+      coralAvailableForUser: string;
       adAuthRoleEnabled: string;
       supportlink: string;
       myteamtopics: string;
@@ -3066,6 +3071,21 @@ export type operations = {
       };
     };
   };
+  getSchemaRequest: {
+    parameters: {
+      path: {
+        schemaReqId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaRequestsResponseModel"];
+        };
+      };
+    };
+  };
   resetCache: {
     responses: {
       /** @description OK */
@@ -3421,6 +3441,7 @@ export type operations = {
         currentPage?: string;
         topicnamesearch?: string;
         showAllTopics?: string;
+        resetTopicsCache?: boolean;
         isBulkOption?: string;
       };
     };
