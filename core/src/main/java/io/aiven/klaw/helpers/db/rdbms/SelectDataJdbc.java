@@ -437,9 +437,9 @@ public class SelectDataJdbc {
 
     List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
-    Map<String, List<String>> topicEnvMap = new HashMap<>();
+    Map<String, Set<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
-    List<String> envList;
+    Set<String> envSet;
 
     for (Acl acl : acls) {
       t = new Topic();
@@ -453,22 +453,22 @@ public class SelectDataJdbc {
       t.setTopicname(tmpTopicName);
 
       if (topicEnvMap.containsKey(tmpTopicName)) {
-        envList = topicEnvMap.get(tmpTopicName);
-        if (!envList.contains(acl.getEnvironment())) {
-          envList.add(acl.getEnvironment());
-          topicEnvMap.put(tmpTopicName, envList);
+        envSet = topicEnvMap.get(tmpTopicName);
+        if (!envSet.contains(acl.getEnvironment())) {
+          envSet.add(acl.getEnvironment());
+          topicEnvMap.put(tmpTopicName, envSet);
         }
       } else {
-        envList = new ArrayList<>();
-        envList.add(acl.getEnvironment());
-        topicEnvMap.put(tmpTopicName, envList);
+        envSet = new HashSet<>();
+        envSet.add(acl.getEnvironment());
+        topicEnvMap.put(tmpTopicName, envSet);
       }
 
       topics.add(t);
     }
 
     for (Topic topic : topics) {
-      topic.setEnvironmentsList(topicEnvMap.get(topic.getTopicname()));
+      topic.setEnvironmentsSet(topicEnvMap.get(topic.getTopicname()));
     }
 
     topics =
