@@ -1006,17 +1006,7 @@
 								<div class="tab-pane  p-3" id="topiccontents" role="tabpanel">
 
 									<div ng-show="topicOverview[0].teamname == teamname" class="row" ng-init="getEnvs();loadTeams();">
-										<div class="col-md-4">
-											<div class="form-group has-info">
-												<label class="control-label">Kafka Environment</label>
-												<select class="form-control custom-select"
-														ng-model="topicEventsSelectedEnv" ng-options="env.id as env.name for env in allenvs">
-													<option value="" selected="selected">
-														Select Environment</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-md-4">
+										<div class="col-md-3">
 											<div class="form-group has-info">
 												<label class="control-label">Last Offsets of Topic Partitions</label>
 												<select class="form-control custom-select" ng-model="topicOffsetsVal">
@@ -1025,10 +1015,19 @@
 													<option value="5">5</option>
 													<option value="25">25</option>
 													<option value="50">50</option>
+													<option value="custom">Custom</option>
 												</select>
 											</div>
 										</div>
-										<div class="col-md-4">
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
+											<label class="control-label">Partition id</label>
+											<input type="text" class="form-control" ng-model="selectedPartitionId" placeholder="0">
+										</div>
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
+											<label class="control-label">Number of Offsets</label>
+											<input type="text" class="form-control" ng-model="selectedNumberOfOffsets" placeholder="100">
+										</div>
+										<div class="col-md-3">
 											<div class="form-group has-success">
 												<label class="control-label">Display topic events</label>
 												<button

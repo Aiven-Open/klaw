@@ -252,11 +252,20 @@ public class ClusterApiService {
       String clusterIdentification,
       String topic,
       String offsetId,
+      Integer selectedPartitionId,
+      Integer selectedNumberOfOffsets,
       String consumerGroupId,
       int tenantId)
       throws KlawException {
     log.info(
-        "getTopicEvents {} {} {} {} {}", bootstrapHost, protocol, topic, offsetId, consumerGroupId);
+        "getTopicEvents {} {} {} {} {} {} {}",
+        bootstrapHost,
+        protocol,
+        topic,
+        offsetId,
+        selectedPartitionId,
+        selectedNumberOfOffsets,
+        consumerGroupId);
     getClusterApiProperties(tenantId);
     Map<String, String> eventsMap;
     try {
@@ -273,6 +282,10 @@ public class ClusterApiService {
                   consumerGroupId,
                   topic,
                   offsetId,
+                  "partitionId",
+                  String.valueOf(selectedPartitionId),
+                  "selectedNumberOfOffsets",
+                  String.valueOf(selectedNumberOfOffsets),
                   clusterIdentification);
 
       ResponseEntity<Map<String, String>> resultBody =

@@ -1096,11 +1096,19 @@ public class TopicControllerServiceTest {
     eventsMap.put("1", "hello world1"); // offsetid, content
     eventsMap.put("2", "hello world2"); // offsetid, content
     when(clusterApiService.getTopicEvents(
-            anyString(), any(), anyString(), anyString(), anyString(), anyString(), anyInt()))
+            anyString(),
+            any(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyInt()))
         .thenReturn(eventsMap);
 
     Map<String, String> topicEventsMap =
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId);
+        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
     assertThat(topicEventsMap).hasSize(2);
   }
 

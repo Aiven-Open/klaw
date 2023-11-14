@@ -22,7 +22,8 @@ public class TopicContentsController {
   @RequestMapping(
       value =
           "/getTopicContents/{bootstrapServers}/"
-              + "{protocol}/{clusterName}/{consumerGroupId}/{topicName}/{offsetPosition}/{clusterIdentification}",
+              + "{protocol}/{clusterName}/{consumerGroupId}/{topicName}/{offsetPosition}/partitionId/{selectedPartitionId}/"
+              + "selectedNumberOfOffsets/{selectedNumberOfOffsets}/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<Long, String>> getTopicContents(
@@ -31,7 +32,9 @@ public class TopicContentsController {
       @PathVariable String clusterName,
       @PathVariable String consumerGroupId,
       @PathVariable String topicName,
-      @PathVariable int offsetPosition,
+      @PathVariable String offsetPosition,
+      @PathVariable Integer selectedPartitionId,
+      @PathVariable Integer selectedNumberOfOffsets,
       @PathVariable String clusterIdentification) {
     Map<Long, String> events =
         topicContentsService.readEvents(
@@ -41,6 +44,8 @@ public class TopicContentsController {
             consumerGroupId,
             topicName,
             offsetPosition,
+            selectedPartitionId,
+            selectedNumberOfOffsets,
             "OFFSET_ID",
             clusterIdentification);
 

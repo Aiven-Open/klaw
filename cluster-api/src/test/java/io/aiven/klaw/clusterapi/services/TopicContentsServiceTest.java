@@ -40,7 +40,9 @@ class TopicContentsServiceTest {
             TestConstants.CLUSTER_NAME,
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
-            offsetPosition,
+            offsetPosition + "",
+            0,
+            0,
             readMessagesType,
             TestConstants.CLUSTER_IDENTIFICATION);
 

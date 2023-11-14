@@ -826,17 +826,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.showTopicEvents = function() {
                 $scope.topiccontents = null;
 
-                if(!$scope.topicEventsSelectedEnv || $scope.topicEventsSelectedEnv === ""){
-                    swal({
-                         title: "",
-                         text: "Please select an Environment !!",
-                         timer: 2000,
-                         showConfirmButton: false
-                         });
-                    return;
-                }
-
-
                 if(!$scope.topicOffsetsVal || $scope.topicOffsetsVal === ""){
                     swal({
                          title: "",
@@ -847,14 +836,50 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
+                if($scope.topicOffsetsVal === 'custom'){
+                    if(!$scope.selectedPartitionId || $scope.selectedPartitionId === ""){
+                        $scope.alert = "Please fill in a partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if($scope.selectedPartitionId < 0 || isNaN($scope.selectedPartitionId))
+                    {
+                        $scope.alert = "Please fill in a valid partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if(!$scope.selectedNumberOfOffsets || $scope.selectedNumberOfOffsets === ""){
+                        $scope.alert = "Please fill how many events/offsets to be displayed";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if($scope.selectedNumberOfOffsets <= 0 || isNaN($scope.selectedNumberOfOffsets))
+                    {
+                        $scope.alert = "Please fill in a valid number of offset events to display.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+                }else{
+                    $scope.selectedPartitionId = 0;
+                    $scope.selectedNumberOfOffsets = 0;
+                }
+
                 $scope.ShowSpinnerStatus = true;
 
                 $http({
                     method: "GET",
                     url: "getTopicEvents",
                     headers : { 'Content-Type' : 'application/json' },
-                    params : {'topicName' : $scope.topicSelectedParam, 'offsetId' : $scope.topicOffsetsVal,
-                     'envId' : $scope.topicEventsSelectedEnv, 'consumerGroupId': "notdefined"}
+                    params : {'topicName' : $scope.topicSelectedParam,
+                        'offsetId' : $scope.topicOffsetsVal,
+                        'selectedPartitionId' : $scope.selectedPartitionId,
+                        'selectedNumberOfOffsets' : $scope.selectedNumberOfOffsets,
+                        'envId' : $scope.topicOverview[0].envId,
+                        'consumerGroupId': "notdefined"
+                    }
                 }).success(function(output) {
                     $scope.ShowSpinnerStatus = false;
                     if(output.status != null && output.status === "false"){

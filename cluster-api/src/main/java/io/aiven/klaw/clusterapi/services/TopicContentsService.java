@@ -35,12 +35,15 @@ public class TopicContentsService {
       String clusterName,
       String consumerGroupId,
       String topicName,
-      int offsetPosition,
+      String offsetPosition,
+      Integer selectedPartitionId,
+      Integer selectedNumberOfOffsets,
       String readMessagesType,
       String clusterIdentification) {
     log.info(
-        "readEvents bootStrapServers {}, protocol {}, clusterName {},  consumerGroupId {},  topicName {},\n"
-            + "                                               offsetPosition {},  readMessagesType {} clusterIdentification {}",
+        "readEvents bootStrapServers {}, protocol {}, clusterName {},  consumerGroupId {},"
+            + " topicName {}, offsetPosition {},  readMessagesType {} clusterIdentification {} selectedPartitionId {}"
+            + " selectedNumberOfOffsets {}",
         bootStrapServers,
         protocol,
         clusterName,
@@ -48,7 +51,9 @@ public class TopicContentsService {
         topicName,
         offsetPosition,
         readMessagesType,
-        clusterIdentification);
+        clusterIdentification,
+        selectedPartitionId,
+        selectedNumberOfOffsets);
 
     Map<Long, String> eventMap = new TreeMap<>();
     KafkaConsumer<String, String> consumer;
@@ -64,16 +69,35 @@ public class TopicContentsService {
 
     consumer.subscribe(Collections.singleton(topicName));
     consumer.poll(Duration.ofMillis(defaultPollInterval));
-    Set<TopicPartition> assignment = consumer.assignment();
+    Set<TopicPartition> topicPartitionsSet = consumer.assignment();
 
-    consumer.seekToBeginning(assignment);
-    Map<TopicPartition, Long> endOffsets = consumer.endOffsets(assignment);
+    Set<TopicPartition> partitionsAssignment = new HashSet<>();
+    if (offsetPosition.equals("custom")) {
+      for (TopicPartition tp : topicPartitionsSet) {
+        if (tp.partition() == selectedPartitionId) {
+          partitionsAssignment = Collections.singleton(tp);
+          break;
+        }
+      }
+    } else {
+      partitionsAssignment = topicPartitionsSet;
+    }
+
+    if (partitionsAssignment.isEmpty()) {
+      return eventMap;
+    }
+    consumer.seekToBeginning(partitionsAssignment);
+    Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitionsAssignment);
     long newOffset;
     if (readMessagesType.equals("OFFSET_ID")) {
-      for (TopicPartition tp : assignment) {
+      for (TopicPartition tp : partitionsAssignment) {
         long beginningOffset = consumer.position(tp);
         long endOffset = endOffsets.get(tp);
-        newOffset = endOffset - offsetPosition;
+        if (offsetPosition.equals("custom")) {
+          newOffset = endOffset - selectedNumberOfOffsets;
+        } else {
+          newOffset = endOffset - Integer.parseInt(offsetPosition);
+        }
         if (newOffset < beginningOffset) {
           newOffset = beginningOffset;
         }
@@ -83,12 +107,12 @@ public class TopicContentsService {
     }
 
     int i = 0;
-    int numOfEventsToRead = 5;
+    int numberOfPolls = 3;
     do {
       ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(500));
       consumerRecords.forEach(record -> eventMap.put(record.offset(), record.value()));
       i++;
-    } while (i != numOfEventsToRead);
+    } while (i != numberOfPolls);
 
     consumer.commitAsync();
     consumer.close();
