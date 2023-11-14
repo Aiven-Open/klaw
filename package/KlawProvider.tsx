@@ -4,7 +4,12 @@ import React from "react";
 import { SourcesProvider } from "sourcesContext";
 
 export interface Sources {
-  getTopics: (params: unknown) => Promise<{ topics: { topicName: string }[] }>;
+  getTopics: <
+    ReturnType extends Record<string, any>,
+    ParamType extends Record<string, any>
+  >(
+    params: ParamType
+  ) => Promise<{ topics: ReturnType[] }>;
 }
 
 interface KlawProviderProps {

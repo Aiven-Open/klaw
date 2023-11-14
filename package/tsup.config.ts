@@ -1,23 +1,19 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  "dts": true,
-  "bundle": true,
-  "treeshake": true,
-  "format": [
-    "esm",
-    "cjs"
-  ],
-  "entry": [
-    "./index.ts"
-  ],
-  "loader": {
-    ".tsx": "tsx"
+  dts: true,
+  bundle: true,
+  treeshake: true,
+  sourcemap: true,
+  format: ["esm", "cjs"],
+  entry: ["./index.ts"],
+  loader: {
+    ".tsx": "tsx",
   },
-  "shims": true,
+  shims: true,
   outExtension({ format }) {
     return {
       js: `.${format}.tsx`,
-    }
+    };
   },
-})
+});

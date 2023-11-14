@@ -1,17 +1,20 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import React from 'react';
 
-interface TopicListProps {
+interface TopicListProps<ParamsType extends Record<string, any>> {
     ariaLabel: string;
-    params: unknown;
+    params: ParamsType;
 }
-declare const TopicsTable: (props: TopicListProps) => react_jsx_runtime.JSX.Element;
+declare const TopicsTable: <ParamsType extends Record<string, any>>(props: TopicListProps<ParamsType>) => react_jsx_runtime.JSX.Element;
 
 interface Sources {
-    getTopics: (params: unknown) => Promise<{
-        topics: {
-            topicName: string;
-        }[];
+    getTopics: <ReturnType extends {
+        [key: string]: string;
+        topicName: string;
+    }, ParamType extends {
+        [key: string]: number | string;
+    }>(params: ParamType) => Promise<{
+        topics: ReturnType[];
     }>;
 }
 interface KlawProviderProps {

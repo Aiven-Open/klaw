@@ -7,15 +7,11 @@ import { KlawProvider } from "klaw";
 import { getTopics } from "src/domain/topic";
 import { KlawApiRequestQueryParameters } from "types/utils";
 
+// <TopicApiResponse["entries"], KlawApiRequestQueryParameters<"getTopics">>
+
 const sources = {
-  getTopics: (params: unknown) =>
-    getTopics(params as KlawApiRequestQueryParameters<"getTopics">).then(
-      (res) => ({
-        topics: res.entries.map((topic) => ({
-          topicName: topic.topicName,
-        })),
-      })
-    ),
+  getTopics: (params: KlawApiRequestQueryParameters<"getTopics">) =>
+    getTopics(params).then((response) => ({ topics: response.entries })),
 };
 
 const Topics = () => {

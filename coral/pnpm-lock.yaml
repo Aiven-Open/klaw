@@ -6,26 +6,26 @@ settings:
 
 dependencies:
   '@aivenio/aquarium':
-    specifier: ^1.46.0
+    specifier: ^1.43.0
     version: 1.46.0(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(webpack@5.89.0)
   '@hookform/resolvers':
-    specifier: ^2.9.11
+    specifier: ^2.9.10
     version: 2.9.11(react-hook-form@7.48.2)
   '@monaco-editor/react':
-    specifier: ^4.6.0
+    specifier: ^4.5.2
     version: 4.6.0(monaco-editor@0.44.0)(react-dom@18.2.0)(react@18.2.0)
   '@tanstack/react-query':
-    specifier: ^4.36.1
+    specifier: ^4.29.5
     version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
   '@types/react-syntax-highlighter':
-    specifier: ^15.5.10
+    specifier: ^15.5.9
     version: 15.5.10
   json5:
     specifier: '>=1.0.2'
     version: 2.2.3
   klaw:
-    specifier: file:klaw-0.0.10.tgz
-    version: file:klaw-0.0.10.tgz(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(typescript@5.2.2)(webpack@5.89.0)
+    specifier: file:klaw-0.0.11.tgz
+    version: file:klaw-0.0.11.tgz(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(typescript@5.2.2)(webpack@5.89.0)
   monaco-editor:
     specifier: ^0.44.0
     version: 0.44.0
@@ -36,19 +36,19 @@ dependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   react-hook-form:
-    specifier: ^7.48.2
+    specifier: ^7.43.9
     version: 7.48.2(react@18.2.0)
   react-markdown:
     specifier: ^8.0.7
     version: 8.0.7(@types/react@18.2.37)(react@18.2.0)
   react-router-dom:
-    specifier: ^6.18.0
+    specifier: ^6.10.0
     version: 6.18.0(react-dom@18.2.0)(react@18.2.0)
   react-syntax-highlighter:
     specifier: ^15.5.0
     version: 15.5.0(react@18.2.0)
   rehype-parse:
-    specifier: ^8.0.5
+    specifier: ^8.0.4
     version: 8.0.5
   rehype-remark:
     specifier: ^9.1.2
@@ -57,7 +57,7 @@ dependencies:
     specifier: ^6.0.0
     version: 6.0.0
   rehype-stringify:
-    specifier: ^9.0.4
+    specifier: ^9.0.3
     version: 9.0.4
   remark-parse:
     specifier: ^10.0.2
@@ -80,16 +80,16 @@ dependencies:
 
 devDependencies:
   '@tanstack/react-query-devtools':
-    specifier: ^4.36.1
+    specifier: ^4.29.5
     version: 4.36.1(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react@18.2.0)
   '@testing-library/dom':
-    specifier: ^9.3.3
+    specifier: ^9.3.1
     version: 9.3.3
   '@testing-library/jest-dom':
-    specifier: ^6.1.4
+    specifier: ^6.1.3
     version: 6.1.4(@types/jest@29.5.8)(jest@29.7.0)
   '@testing-library/react':
-    specifier: ^14.1.0
+    specifier: ^14.0.0
     version: 14.1.0(react-dom@18.2.0)(react@18.2.0)
   '@testing-library/react-hooks':
     specifier: ^8.0.1
@@ -98,19 +98,19 @@ devDependencies:
     specifier: ^14.5.1
     version: 14.5.1(@testing-library/dom@9.3.3)
   '@types/jest':
-    specifier: ^29.5.8
+    specifier: ^29.5.6
     version: 29.5.8
   '@types/lodash':
-    specifier: ^4.14.201
+    specifier: ^4.14.200
     version: 4.14.201
   '@types/node':
-    specifier: ^18.18.9
+    specifier: ^18.17.14
     version: 18.18.9
   '@types/react':
-    specifier: ^18.2.37
+    specifier: ^18.2.35
     version: 18.2.37
   '@types/react-dom':
-    specifier: ^18.2.15
+    specifier: ^18.2.7
     version: 18.2.15
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.62.0
@@ -119,10 +119,10 @@ devDependencies:
     specifier: ^5.62.0
     version: 5.62.0(eslint@8.53.0)(typescript@5.2.2)
   '@vitejs/plugin-react':
-    specifier: ^4.1.1
+    specifier: ^4.1.0
     version: 4.1.1(vite@4.5.0)
   eslint:
-    specifier: ^8.53.0
+    specifier: ^8.51.0
     version: 8.53.0
   eslint-config-prettier:
     specifier: ^9.0.0
@@ -131,13 +131,13 @@ devDependencies:
     specifier: ^3.6.1
     version: 3.6.1(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.29.0)(eslint@8.53.0)
   eslint-plugin-import:
-    specifier: ^2.29.0
+    specifier: ^2.28.1
     version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.53.0)
   eslint-plugin-lodash:
     specifier: ^7.4.0
     version: 7.4.0(eslint@8.53.0)
   eslint-plugin-no-relative-import-paths:
-    specifier: ^1.5.3
+    specifier: ^1.5.2
     version: 1.5.3
   eslint-plugin-react:
     specifier: ^7.33.2
@@ -155,20 +155,20 @@ devDependencies:
     specifier: ^2.0.0
     version: 2.0.0
   lint-staged:
-    specifier: ^13.3.0
+    specifier: ^13.0.3
     version: 13.3.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
   msw:
-    specifier: ^2.0.5
-    version: 2.0.5(typescript@5.2.2)
+    specifier: ^2.0.1
+    version: 2.0.6(typescript@5.2.2)
   openapi-typescript:
-    specifier: ^6.7.1
+    specifier: ^6.7.0
     version: 6.7.1
   prettier:
     specifier: ^3.0.3
-    version: 3.0.3
+    version: 3.1.0
   prop-types:
     specifier: ^15.8.1
     version: 15.8.1
@@ -185,13 +185,13 @@ devDependencies:
     specifier: ^10.9.1
     version: 10.9.1(@types/node@18.18.9)(typescript@5.2.2)
   typescript:
-    specifier: ^5.2.2
+    specifier: ^5.0.4
     version: 5.2.2
   vite:
     specifier: ^4.5.0
     version: 4.5.0(@types/node@18.18.9)(less@4.2.0)
   vite-plugin-svgr:
-    specifier: ^3.3.0
+    specifier: ^3.2.0
     version: 3.3.0(typescript@5.2.2)(vite@4.5.0)
   whatwg-fetch:
     specifier: ^3.6.19
@@ -846,8 +846,8 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@fastify/busboy@2.0.0:
-    resolution: {integrity: sha512-JUFJad5lv7jxj926GPgymrWQxxjPYuJNiNjNMzqT+HiuP6Vl3dk5xzG+8sTX96np0ZAluvaMzPsjhHZ5rNuNQQ==}
+  /@fastify/busboy@2.1.0:
+    resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
     engines: {node: '>=14'}
     dev: true
 
@@ -879,10 +879,10 @@ packages:
     resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
-  /@formatjs/ecma402-abstract@1.17.3:
-    resolution: {integrity: sha512-2Q4hmKQ6CM30mRG/YMdSBW8LXf32BfuOb1FZgG+uVWPC/SQMoiVFz5JaeOukt96v6TZ4ddE+bHCmd611PW38QA==}
+  /@formatjs/ecma402-abstract@1.17.4:
+    resolution: {integrity: sha512-mLxTq+UrMoOoafVxG5HdmrfPpjv0uINQw1d0ADKfQMqhDaR4SDXdw3olXkOP05DGSAsVvSxzfKEuVKcLB15b9A==}
     dependencies:
-      '@formatjs/intl-localematcher': 0.5.0
+      '@formatjs/intl-localematcher': 0.5.1
       tslib: 2.6.2
     dev: false
 
@@ -892,23 +892,23 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@formatjs/icu-messageformat-parser@2.7.1:
-    resolution: {integrity: sha512-ErnXyRdk8AlpGcKskKVYn23aAlWXhI1kt5ek2o3pJwVeMTcrosSESQ8baztdTtJjfQHlB4NBeocfRA5C6DKv2g==}
+  /@formatjs/icu-messageformat-parser@2.7.2:
+    resolution: {integrity: sha512-dJ/My3RigHf76xDtk9EAf5zW0EvFMp6uoUIcAQfSNx5kScgEPVbKROWLi3v1kRZX/2eBof6eAJsyfgNOggIOJA==}
     dependencies:
-      '@formatjs/ecma402-abstract': 1.17.3
-      '@formatjs/icu-skeleton-parser': 1.6.3
+      '@formatjs/ecma402-abstract': 1.17.4
+      '@formatjs/icu-skeleton-parser': 1.6.4
       tslib: 2.6.2
     dev: false
 
-  /@formatjs/icu-skeleton-parser@1.6.3:
-    resolution: {integrity: sha512-Viggz4Pic7oC4uR8z2VroL8H9boiUTTB0TqEsiRb6DHZv7QEcg1BoVQZBkBdLmvxhBS7nwBNrTdbaiW8GOV58Q==}
+  /@formatjs/icu-skeleton-parser@1.6.4:
+    resolution: {integrity: sha512-DiCSD/8mwP3UICjAXzLXvJ3UM7wpViG47YoplGqlpl9jauDbLD3MByAY4Vs0IWPNrO+/pWSyowEWfcFLM7oZUw==}
     dependencies:
-      '@formatjs/ecma402-abstract': 1.17.3
+      '@formatjs/ecma402-abstract': 1.17.4
       tslib: 2.6.2
     dev: false
 
-  /@formatjs/intl-localematcher@0.5.0:
-    resolution: {integrity: sha512-K1Xpg/8oyfCMxisJQa/fILoeoeyndcM0wcN8QiNG/uM5OAe1BcO1+2yd0gIboDI2tRJEsUi/sSBEYPbgkIdq4A==}
+  /@formatjs/intl-localematcher@0.5.1:
+    resolution: {integrity: sha512-An6EtxT0txJI8dQwOmLqs4lC3/+Dl9YuTGDWdxxtAT/9sx0r9DupnC3/k6F87Tb5gqXdR/ACdB7bmR+Zo2eu+g==}
     dependencies:
       tslib: 2.6.2
     dev: false
@@ -963,7 +963,7 @@ packages:
     resolution: {integrity: sha512-ZgHxf5HAPIaR0th+w0RUD62yF6vxitjlprSxmLJ1tam7FOekqRSDELMg4Cr/DdszG5YLsp5BG3FgHgqquQZbqw==}
     dependencies:
       '@swc/helpers': 0.5.3
-      intl-messageformat: 10.5.5
+      intl-messageformat: 10.5.7
     dev: false
 
   /@internationalized/number@3.4.0:
@@ -4715,7 +4715,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001561
-      electron-to-chromium: 1.4.580
+      electron-to-chromium: 1.4.581
       node-releases: 2.0.13
       update-browserslist-db: 1.0.13(browserslist@4.22.1)
 
@@ -5384,8 +5384,8 @@ packages:
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  /electron-to-chromium@1.4.580:
-    resolution: {integrity: sha512-T5q3pjQon853xxxHUq3ZP68ZpvJHuSMY2+BZaW3QzjS4HvNuvsMmZ/+lU+nCrftre1jFZ+OSlExynXWBihnXzw==}
+  /electron-to-chromium@1.4.581:
+    resolution: {integrity: sha512-6uhqWBIapTJUxgPTCHH9sqdbxIMPt7oXl0VcAL1kOtlU6aECdcMncCrX5Z7sHQ/invtrC9jUQUef7+HhO8vVFw==}
 
   /emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -5506,8 +5506,8 @@ packages:
       safe-array-concat: 1.0.1
     dev: true
 
-  /es-module-lexer@1.4.0:
-    resolution: {integrity: sha512-lcCr3v3OLezdfFyx9r5NRYHOUTQNnFEQ9E87Mx8Kc+iqyJNkO7MJoB4GQRTlIMw9kLLTwGw0OAkm4BQQud/d9g==}
+  /es-module-lexer@1.4.1:
+    resolution: {integrity: sha512-cXLGjP0c4T3flZJKQSuziYoq7MlT+rnvfZjfp7h+I7K9BNX54kP9nyWvdbwjQ4u1iWbOL4u96fgeZLToQlZC7w==}
     dev: false
 
   /es-set-tostringtag@2.0.2:
@@ -5989,7 +5989,7 @@ packages:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
-      flat-cache: 3.1.1
+      flat-cache: 3.2.0
     dev: true
 
   /file-system-cache@2.3.0:
@@ -6029,9 +6029,9 @@ packages:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
-  /flat-cache@3.1.1:
-    resolution: {integrity: sha512-/qM2b3LUIaIgviBQovTLvijfyOQXPtSRnRK26ksj2J7rzPIecePUIpJsZ4T02Qg+xiAEKIs5K8dsHEd+VaKa/Q==}
-    engines: {node: '>=12.0.0'}
+  /flat-cache@3.2.0:
+    resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
+    engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
       flatted: 3.2.9
       keyv: 4.5.4
@@ -6634,12 +6634,12 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /intl-messageformat@10.5.5:
-    resolution: {integrity: sha512-sF+cJCfMn+kGcSeGGRcB1UpBH0/+Ko2KByHj2RpL2qIkRvsrnuDl8zufEkvk+GPosk932C6W1Kq24xWaw+2jDA==}
+  /intl-messageformat@10.5.7:
+    resolution: {integrity: sha512-ubr/60TUVpGX4JzL74p6tF3+0kut+mdxRElPEYcRG98yf02449ZbDygR+hleQHAClbgFQdLRk5W19WhlqryKBQ==}
     dependencies:
-      '@formatjs/ecma402-abstract': 1.17.3
+      '@formatjs/ecma402-abstract': 1.17.4
       '@formatjs/fast-memoize': 2.2.0
-      '@formatjs/icu-messageformat-parser': 2.7.1
+      '@formatjs/icu-messageformat-parser': 2.7.2
       tslib: 2.6.2
     dev: false
 
@@ -7755,9 +7755,11 @@ packages:
       highlight.js: 10.7.3
     dev: false
 
-  /lru-cache@10.0.1:
-    resolution: {integrity: sha512-IJ4uwUTi2qCccrioU6g9g/5rvvVl13bsdczUUcqbciD9iLr095yj8DQKdObriEvuNSx325N1rV1O0sJFszx75g==}
+  /lru-cache@10.0.2:
+    resolution: {integrity: sha512-Yj9mA8fPiVgOUpByoTZO5pNrcl5Yk37FcSHsUINpAsaBIEZIuqcCclDZJCVxqQShDsmYX8QG63svJiTbOATZwg==}
     engines: {node: 14 || >=16.14}
+    dependencies:
+      semver: 7.5.4
     dev: false
 
   /lru-cache@5.1.1:
@@ -8152,8 +8154,8 @@ packages:
   /ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  /msw@2.0.5(typescript@5.2.2):
-    resolution: {integrity: sha512-vjI7rEtv879CvbTGUfcI6JjKVE/XX/MU8uggiCkAzfl930U8LSp0h81RnfNfVOllELlbLTCvGkpV3e7TuVBGdA==}
+  /msw@2.0.6(typescript@5.2.2):
+    resolution: {integrity: sha512-74nN9ADQxHsVx8YGOq5yeDE4bye1mVMAYXojKl0qWraRunTK8UjAVk3wSmOOvVVIDJsyySyjDZ4oYvRuzuMO2g==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
@@ -8516,7 +8518,7 @@ packages:
     resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
-      lru-cache: 10.0.1
+      lru-cache: 10.0.2
       minipass: 7.0.4
     dev: false
 
@@ -8653,8 +8655,8 @@ packages:
     hasBin: true
     dev: false
 
-  /prettier@3.0.3:
-    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
+  /prettier@3.1.0:
+    resolution: {integrity: sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==}
     engines: {node: '>=14'}
     hasBin: true
     dev: true
@@ -10104,7 +10106,7 @@ packages:
     resolution: {integrity: sha512-iS857PdOEy/y3wlM3yRp+6SNQQ6xU0mmZcwRSriqk+et/cwWAtwmIGf6WkoDN2EK/AMdCO/dfXzIwi+rFMrjjQ==}
     engines: {node: '>=14.0'}
     dependencies:
-      '@fastify/busboy': 2.0.0
+      '@fastify/busboy': 2.1.0
     dev: true
 
   /unified@10.1.2:
@@ -10435,7 +10437,7 @@ packages:
       browserslist: 4.22.1
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.15.0
-      es-module-lexer: 1.4.0
+      es-module-lexer: 1.4.1
       eslint-scope: 5.1.1
       events: 3.3.0
       glob-to-regexp: 0.4.1
@@ -10665,11 +10667,11 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
 
-  file:klaw-0.0.10.tgz(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(typescript@5.2.2)(webpack@5.89.0):
-    resolution: {integrity: sha512-pc67gNZ7daIQDkqxAGCUCEhHGKmPp6YJuiCWAWp8dJUPIT8cJ20l4EpYnigMWLYcKfSQE0GipFwQDJ4vnV7x1Q==, tarball: file:klaw-0.0.10.tgz}
-    id: file:klaw-0.0.10.tgz
+  file:klaw-0.0.11.tgz(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(typescript@5.2.2)(webpack@5.89.0):
+    resolution: {integrity: sha512-pGcR3fBbRauLZjr0e1KO4Ajp74mIxyqrpOoa/5tReoB/+gbmmwq/Ox4P+LxrHRs3fDL6k+ojwiOKHLWaVR1iyw==, tarball: file:klaw-0.0.11.tgz}
+    id: file:klaw-0.0.11.tgz
     name: klaw
-    version: 0.0.10
+    version: 0.0.11
     engines: {node: '>=18.0.0 <19.0.0'}
     dependencies:
       '@aivenio/aquarium': 1.46.0(@types/react-dom@18.2.15)(@types/react@18.2.37)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(webpack@5.89.0)

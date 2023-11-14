@@ -1,16 +1,12 @@
 // TopicsTable.tsx
-import {
-  DataTable,
-  InlineIcon
-} from "@aivenio/aquarium";
-import link from "@aivenio/aquarium/dist/src/icons/link";
+import { DataTable, Icon } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 
 // sourcesContext.tsx
 import { createContext, useContext } from "react";
 import { jsx } from "react/jsx-runtime";
 var SourcesContext = createContext({
-  getTopics: () => new Promise(() => [])
+  getTopics: () => new Promise(() => [{}])
 });
 var SourcesProvider = ({
   children,
@@ -20,35 +16,38 @@ var SourcesProvider = ({
 };
 
 // TopicsTable.tsx
-import { Fragment, jsx as jsx2, jsxs } from "react/jsx-runtime";
+import loadingIcon from "@aivenio/aquarium/icons/loading";
+import { jsx as jsx2 } from "react/jsx-runtime";
 var TopicsTableBase = (props) => {
   const { ariaLabel, getTopics, params } = props;
-  const topics = useQuery({
+  const { data } = useQuery({
     queryKey: ["getTopics", params],
     queryFn: () => getTopics(params),
     keepPreviousData: true
   });
-  const columns = [
-    {
-      type: "custom",
-      headerName: "Topic",
-      UNSAFE_render: ({ topicName }) => {
-        return /* @__PURE__ */ jsxs(Fragment, { children: [
-          topicName,
-          " ",
-          /* @__PURE__ */ jsx2(InlineIcon, { icon: link })
-        ] });
-      }
-    }
-  ];
-  const rows = (topics?.data?.topics || []).map(
-    ({ topicName }, index) => {
+  if (data === void 0) {
+    return /* @__PURE__ */ jsx2(Icon, { icon: loadingIcon });
+  }
+  const columnNames = Object.keys((data?.topics || [])[0]);
+  const columns = columnNames.map(
+    (columnName) => {
       return {
-        id: `${index}-${topicName}`,
-        topicName
+        type: "text",
+        headerName: columnName,
+        field: columnName
       };
     }
   );
+  const rows = (data?.topics || []).map((topic, index) => {
+    const keys = Object.keys(topic);
+    const values = keys.reduce((prev, curr) => {
+      return { ...prev, [curr]: String(topic[curr]) };
+    }, {});
+    return {
+      id: index,
+      ...values
+    };
+  });
   return /* @__PURE__ */ jsx2(
     DataTable,
     {

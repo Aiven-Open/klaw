@@ -42,7 +42,7 @@
     ]
   },
   "dependencies": {
-    "klaw": "file:klaw-0.0.10.tgz",
+    "klaw": "file:klaw-0.0.11.tgz",
     "@aivenio/aquarium": "^1.43.0",
     "@hookform/resolvers": "^2.9.10",
     "@monaco-editor/react": "^4.5.2",
