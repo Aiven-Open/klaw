@@ -37,7 +37,6 @@ class TopicContentsServiceTest {
         topicContentsService.readEvents(
             bootstrapServers,
             protocol,
-            TestConstants.CLUSTER_NAME,
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
             offsetPosition + "",

@@ -32,7 +32,6 @@ public class TopicContentsService {
   public Map<Long, String> readEvents(
       String bootStrapServers,
       String protocol,
-      String clusterName,
       String consumerGroupId,
       String topicName,
       String offsetPosition,
@@ -41,12 +40,11 @@ public class TopicContentsService {
       String readMessagesType,
       String clusterIdentification) {
     log.info(
-        "readEvents bootStrapServers {}, protocol {}, clusterName {},  consumerGroupId {},"
+        "readEvents bootStrapServers {}, protocol {},  consumerGroupId {},"
             + " topicName {}, offsetPosition {},  readMessagesType {} clusterIdentification {} selectedPartitionId {}"
             + " selectedNumberOfOffsets {}",
         bootStrapServers,
         protocol,
-        clusterName,
         consumerGroupId,
         topicName,
         offsetPosition,

@@ -278,7 +278,6 @@ public class ClusterApiService {
               + String.join(
                   URL_DELIMITER,
                   protocol.getName(),
-                  clusterIdentification,
                   consumerGroupId,
                   topic,
                   offsetId,
