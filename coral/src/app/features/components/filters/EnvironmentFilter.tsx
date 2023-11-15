@@ -1,39 +1,14 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
-import {
-  Environment,
-  getAllEnvironmentsForTopicAndAcl,
-  getAllEnvironmentsForConnector,
-} from "src/domain/environment";
+import { Environment } from "src/domain/environment";
 import { HTTPError } from "src/services/api";
+import { useApiConfig } from "src/app/context-provider/ApiProvider";
 
 type EnvironmentFor = "TOPIC_AND_ACL" | "SCHEMA" | "CONNECTOR";
 interface EnvironmentFilterProps {
   environmentsFor: EnvironmentFor;
 }
-
-const environmentEndpointMap: {
-  [key in EnvironmentFor]: {
-    apiEndpoint: () => Promise<Environment[]>;
-    // we use the api function name as query usually, so we
-    // want to keep that pattern here, too.
-    queryFn: string;
-  };
-} = {
-  TOPIC_AND_ACL: {
-    apiEndpoint: getAllEnvironmentsForTopicAndAcl,
-    queryFn: "getAllEnvironmentsForTopicAndAcl",
-  },
-  SCHEMA: {
-    apiEndpoint: getAllEnvironmentsForTopicAndAcl,
-    queryFn: "getAllEnvironmentsForTopicAndAcl",
-  },
-  CONNECTOR: {
-    apiEndpoint: getAllEnvironmentsForConnector,
-    queryFn: "getAllEnvironmentsForConnector",
-  },
-};
 
 function filterEnvironmentsForSchema(
   environments: Environment[]
@@ -52,7 +27,30 @@ function filterEnvironmentsForSchema(
 }
 
 function EnvironmentFilter({ environmentsFor }: EnvironmentFilterProps) {
+  const apiConfig = useApiConfig();
   const { environment, setFilterValue } = useFiltersContext();
+
+  const environmentEndpointMap: {
+    [key in EnvironmentFor]: {
+      apiEndpoint: () => Promise<Environment[]>;
+      // we use the api function name as query usually, so we
+      // want to keep that pattern here, too.
+      queryFn: string;
+    };
+  } = {
+    TOPIC_AND_ACL: {
+      apiEndpoint: apiConfig.getAllEnvironmentsForTopicAndAcl,
+      queryFn: "getAllEnvironmentsForTopicAndAcl",
+    },
+    SCHEMA: {
+      apiEndpoint: apiConfig.getAllEnvironmentsForTopicAndAcl,
+      queryFn: "getAllEnvironmentsForTopicAndAcl",
+    },
+    CONNECTOR: {
+      apiEndpoint: apiConfig.getAllEnvironmentsForConnector,
+      queryFn: "getAllEnvironmentsForConnector",
+    },
+  };
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
     [environmentEndpointMap[environmentsFor].queryFn],

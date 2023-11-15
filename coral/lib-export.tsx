@@ -9,6 +9,8 @@ import { ApiProvider } from "./src/app/context-provider/ApiProvider";
 import type { ApiConfig } from "./src/app/context-provider/ApiProvider";
 // eslint-disable-next-line
 import { TopicApiResponse } from "./src/domain/topic/topic-types";
+// eslint-disable-next-line
+import "./src/app/accessibility.module.css";
 
 type BrowseTopicsApiResponse = TopicApiResponse;
 const withWrapper = ({ element }: { element: ReactNode }) => {

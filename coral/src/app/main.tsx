@@ -20,6 +20,11 @@ import { BasePage } from "src/app/layout/page/BasePage";
 import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
 import { ApiConfig, ApiProvider } from "src/app/context-provider/ApiProvider";
 import { getTopics } from "src/domain/topic";
+import {
+  getAllEnvironmentsForConnector,
+  getAllEnvironmentsForTopicAndAcl,
+} from "src/domain/environment";
+import { getTeams } from "src/domain/team";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -55,6 +60,9 @@ const queryClient = new QueryClient({
 
 const apiConfig: ApiConfig = {
   getTopics: (params) => getTopics(params),
+  getAllEnvironmentsForTopicAndAcl: getAllEnvironmentsForTopicAndAcl,
+  getAllEnvironmentsForConnector: getAllEnvironmentsForConnector,
+  getTeams: getTeams,
 };
 
 root.render(

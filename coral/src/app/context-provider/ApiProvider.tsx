@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useContext } from "react";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
+import { Environment } from "src/domain/environment";
+import { KlawApiResponse } from "types/utils";
 
 type ApiConfig = {
   getTopics: (params: {
@@ -8,6 +10,9 @@ type ApiConfig = {
     teamId?: number;
     topicnamesearch?: string;
   }) => Promise<TopicApiResponse>;
+  getAllEnvironmentsForTopicAndAcl: () => Promise<Environment[]>;
+  getAllEnvironmentsForConnector: () => Promise<Environment[]>;
+  getTeams: () => Promise<KlawApiResponse<"getAllTeamsSU">>;
 };
 
 const ApiContext = createContext<ApiConfig | undefined>(undefined);

@@ -1,11 +1,12 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
-import { getTeams } from "src/domain/team/team-api";
+import { useApiConfig } from "src/app/context-provider/ApiProvider";
 
 function TeamFilter() {
+  const apiConfig = useApiConfig();
   const { data: topicTeams } = useQuery(["get-teams"], {
-    queryFn: () => getTeams(),
+    queryFn: () => apiConfig.getTeams(),
   });
 
   const { teamId, setFilterValue } = useFiltersContext();
