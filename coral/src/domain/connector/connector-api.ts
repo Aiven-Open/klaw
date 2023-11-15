@@ -7,6 +7,7 @@ import {
 import {
   ConnectorClaimPayload,
   ConnectorDocumentationMarkdown,
+  ConnectorOverview,
   DeleteConnectorPayload,
 } from "src/domain/connector/connector-types";
 import { createStringifiedHtml } from "src/domain/helper/documentation-helper";
@@ -171,7 +172,7 @@ type GetConnectorOverviewParams =
 const getConnectorOverview = ({
   connectornamesearch,
   environmentId,
-}: GetConnectorOverviewParams) => {
+}: GetConnectorOverviewParams): Promise<ConnectorOverview> => {
   const queryParams = convertQueryValuesToString({
     connectornamesearch,
     ...(environmentId && { environmentId }),

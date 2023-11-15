@@ -14,7 +14,7 @@ export default {
     "<rootDir>/test-setup/mock-monaco-editor.tsx",
     "<rootDir>/test-setup/mock-ds-icon-component.tsx",
   ],
-
+  testPathIgnorePatterns: ["lib-dist", ".rollup.cache"],
   moduleNameMapper: {
     ".+\\.(png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
     "\\.css$": "identity-obj-proxy",

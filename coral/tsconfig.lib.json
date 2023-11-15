@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationDir": "lib-dist",
+    "declarationMap": true,
+    "composite": true,
+    "isolatedModules": false,
+    "outDir": "lib-dist/@types",
+    "paths": {
+      "src/*": ["./src/*"],
+    }
+  },
+  "include": ["src", "lib-export.tsx"],
+  "exclude": ["src/**/*.test.tsx", "src/services/test-utils/**", "test-setup/**", "src/__mocks__/**"]
+}

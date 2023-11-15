@@ -61,3 +61,5 @@ coral/stats.html
 # POC files
 coral-lib/dist
 coral-lib/node_modules
+coral/lib-dist
+coral/.rollup.cache/
