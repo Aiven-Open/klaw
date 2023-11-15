@@ -18,6 +18,8 @@ import "/src/services/configure-monaco-editor";
 import { AuthProvider } from "src/app/context-provider/AuthProvider";
 import { BasePage } from "src/app/layout/page/BasePage";
 import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
+import { ApiConfig, ApiProvider } from "src/app/context-provider/ApiProvider";
+import { getTopics } from "src/domain/topic";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -51,15 +53,21 @@ const queryClient = new QueryClient({
   },
 });
 
+const apiConfig: ApiConfig = {
+  getTopics: (params) => getTopics(params),
+};
+
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AquariumContext>
-          <RouterProvider router={router} />
-          {DEV_MODE && <ReactQueryDevtools />}
-        </AquariumContext>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ApiProvider config={apiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <AquariumContext>
+            <RouterProvider router={router} />
+            {DEV_MODE && <ReactQueryDevtools />}
+          </AquariumContext>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ApiProvider>
   </React.StrictMode>
 );
