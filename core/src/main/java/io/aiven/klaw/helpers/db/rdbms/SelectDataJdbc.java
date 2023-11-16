@@ -1096,7 +1096,6 @@ public class SelectDataJdbc {
           gatherActivityList(
               activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
       for (Pair<String, Integer> elem : fromDb) {
-        log.info("selectActivityLogByTeam {} {}", elem.getKey(), elem.getValue());
         res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
       return res;
