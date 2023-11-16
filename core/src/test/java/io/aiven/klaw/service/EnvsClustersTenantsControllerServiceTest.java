@@ -217,6 +217,27 @@ class EnvsClustersTenantsControllerServiceTest {
     verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
   }
 
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addEnvRemoveAssociatedEnvIncorrectIdSupplied()
+      throws KlawValidationException, KlawException {
+    EnvModel env = getTestSchemaEnvModel(null);
+    Env env1 = generateKafkaEnv("1", "Kafka");
+    env1.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
+    env1.setAssociatedEnv(new EnvTag("2", "TST_SCH"));
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(null);
+    when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
+        .thenReturn(1);
+    ApiResponse response = service.addNewEnv(env);
+
+    assertThat(response.getMessage()).contains("success");
+    // 1 time for the env we are saving and 1 time for removing an existing mapping of a kafka env.
+    verify(handleDbRequestsJdbc, times(1)).addNewEnv(any(Env.class));
+  }
+
   @ParameterizedTest(name = "actual={0} / search={1} / pageNo={2} / expectedNumberOfMatches={4}")
   @MethodSource
   @WithMockUser(
