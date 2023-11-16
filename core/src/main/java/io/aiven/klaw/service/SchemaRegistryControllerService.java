@@ -109,7 +109,7 @@ public class SchemaRegistryControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<SchemaRequestsResponseModel> schemaRequestModels = new ArrayList<>();
 
@@ -166,7 +166,7 @@ public class SchemaRegistryControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
