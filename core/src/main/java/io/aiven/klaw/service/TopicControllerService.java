@@ -588,7 +588,7 @@ public class TopicControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     int tenantId = commonUtilsService.getTenantId(userName);
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
@@ -660,7 +660,7 @@ public class TopicControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {

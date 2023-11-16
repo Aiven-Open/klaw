@@ -11,7 +11,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -225,9 +224,9 @@ public class RolesPermissionsControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  protected List<String> getApproverRoles(String requestType, int tenantId) {
+  protected Set<String> getApproverRoles(String requestType, int tenantId) {
     Map<String, List<Map<String, Boolean>>> existingPermissions = getPermissions(false);
-    List<String> approverRoles = new ArrayList<>();
+    Set<String> approverRoles = new HashSet<>();
     for (Map.Entry<String, List<Map<String, Boolean>>> permissionsListEntry :
         existingPermissions.entrySet()) {
       List<Map<String, Boolean>> entryDets = permissionsListEntry.getValue();
@@ -258,6 +257,6 @@ public class RolesPermissionsControllerService {
       }
     }
 
-    return approverRoles.stream().distinct().collect(Collectors.toList());
+    return approverRoles;
   }
 }
