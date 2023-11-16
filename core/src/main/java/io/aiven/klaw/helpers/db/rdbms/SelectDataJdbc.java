@@ -1,7 +1,8 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static io.aiven.klaw.helpers.KwConstants.*;
-import static org.reflections.Reflections.log;
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
+import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
@@ -1284,14 +1285,15 @@ public class SelectDataJdbc {
 
       Map<String, Env> name2envsFromDb =
           StreamSupport.stream(selectEnvsDetails(envIds.keySet(), tenantId).spliterator(), false)
-              .collect(Collectors.toMap(Env::getName, Function.identity()));
+              .collect(Collectors.toMap(Env::getId, Function.identity()));
 
       for (var envIdEntry : envIds.entrySet()) {
         if (!name2envsFromDb.containsKey(envIdEntry.getKey())) {
           log.error("Error: Environment not found for env {}", envIdEntry.getKey());
         } else {
           totalTopicCount.add(
-              CommonUtilsService.ChartsOverviewItem.of(envIdEntry.getKey(), envIdEntry.getValue()));
+              CommonUtilsService.ChartsOverviewItem.of(
+                  name2envsFromDb.get(envIdEntry.getKey()).getName(), envIdEntry.getValue()));
         }
       }
     } catch (Exception e) {
