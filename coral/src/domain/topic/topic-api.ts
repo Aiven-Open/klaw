@@ -103,6 +103,8 @@ const getTopicAdvancedConfigOptions = (): Promise<
     )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
+// Could also be an entry in source with an arbitrary payload
+// But arbitrary form component, wew lad
 const requestTopicCreation = (
   data: Schema
 ): Promise<KlawApiResponse<"createTopicsCreateRequest">> => {
