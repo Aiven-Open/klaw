@@ -8032,10 +8032,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
