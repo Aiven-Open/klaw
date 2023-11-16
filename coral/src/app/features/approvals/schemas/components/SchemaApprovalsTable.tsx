@@ -86,16 +86,16 @@ function SchemaApprovalsTable({
     { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",
+      field: "teamname",
+      headerName: "Team",
+    },
+    {
+      type: "text",
       field: "requesttimestring",
       headerName: "Requested on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
       },
-    },
-    {
-      type: "text",
-      field: "teamname",
-      headerName: "Team",
     },
     {
       type: "custom",
