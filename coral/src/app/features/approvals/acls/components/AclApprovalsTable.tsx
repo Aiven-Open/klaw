@@ -146,11 +146,6 @@ export default function AclApprovalsTable({
       },
     },
     {
-      type: "text",
-      field: "teamname",
-      headerName: "Team",
-    },
-    {
       type: "status",
       headerName: "ACL type",
       status: ({ aclType }) => ({
@@ -172,6 +167,11 @@ export default function AclApprovalsTable({
       type: "text",
       field: "requestor",
       headerName: "Requested by",
+    },
+    {
+      type: "text",
+      field: "teamname",
+      headerName: "Team",
     },
     {
       type: "text",
