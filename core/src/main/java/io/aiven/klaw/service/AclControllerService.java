@@ -331,7 +331,7 @@ public class AclControllerService {
     List<AclRequestsResponseModel> aclRequestsModels = new ArrayList<>();
     AclRequestsResponseModel aclRequestsModel;
 
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("SUBSCRIPTIONS", tenantId);
 
     if (aclReqs != null)
@@ -379,7 +379,7 @@ public class AclControllerService {
       String topicName,
       RequestOperationType requestOperationType,
       Integer team,
-      List<String> approverRoles,
+      Set<String> approverRoles,
       String requester,
       int tenantId) {
     List<Topic> topicTeamsList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
