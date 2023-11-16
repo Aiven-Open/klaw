@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TopicContentsService {
 
+  public static final String CUSTOM_OFFSET_SELECTION = "custom";
   final ClusterApiUtils clusterApiUtils;
 
   @Value("${klaw.topiccontents.consumergroup.id:notdefined}")
@@ -39,7 +40,7 @@ public class TopicContentsService {
       Integer selectedNumberOfOffsets,
       String readMessagesType,
       String clusterIdentification) {
-    log.info(
+    log.debug(
         "readEvents bootStrapServers {}, protocol {},  consumerGroupId {},"
             + " topicName {}, offsetPosition {},  readMessagesType {} clusterIdentification {} selectedPartitionId {}"
             + " selectedNumberOfOffsets {}",
@@ -70,7 +71,7 @@ public class TopicContentsService {
     Set<TopicPartition> topicPartitionsSet = consumer.assignment();
 
     Set<TopicPartition> partitionsAssignment = new HashSet<>();
-    if (offsetPosition.equals("custom")) {
+    if (offsetPosition.equals(CUSTOM_OFFSET_SELECTION)) {
       for (TopicPartition tp : topicPartitionsSet) {
         if (tp.partition() == selectedPartitionId) {
           partitionsAssignment = Collections.singleton(tp);
@@ -91,7 +92,7 @@ public class TopicContentsService {
       for (TopicPartition tp : partitionsAssignment) {
         long beginningOffset = consumer.position(tp);
         long endOffset = endOffsets.get(tp);
-        if (offsetPosition.equals("custom")) {
+        if (offsetPosition.equals(CUSTOM_OFFSET_SELECTION)) {
           newOffset = endOffset - selectedNumberOfOffsets;
         } else {
           newOffset = endOffset - Integer.parseInt(offsetPosition);

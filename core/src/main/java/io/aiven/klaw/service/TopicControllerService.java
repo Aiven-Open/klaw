@@ -78,6 +78,7 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String CUSTOM_OFFSET_SELECTION = "custom";
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -1306,7 +1307,7 @@ public class TopicControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId).getClusterId());
-      if (offsetId != null && offsetId.equals("custom")) {
+      if (offsetId != null && offsetId.equals(CUSTOM_OFFSET_SELECTION)) {
         if (selectedPartitionId == null
             || selectedNumberOfOffsets == null
             || selectedPartitionId < 0

@@ -102,6 +102,8 @@ public class ClusterApiService {
   public static final String URI_CONNECTOR_STATUS = "?connectorStatus=";
   public static final String TOPICS_NATIVE_TYPE = "topicsNativeType";
   public static final String RESET_CACHE = "resetCache";
+  public static final String PARTITION_ID = "partitionId";
+  public static final String SELECTED_NUMBER_OF_OFFSETS = "selectedNumberOfOffsets";
 
   @Autowired private ManageDatabase manageDatabase;
 
@@ -257,7 +259,7 @@ public class ClusterApiService {
       String consumerGroupId,
       int tenantId)
       throws KlawException {
-    log.info(
+    log.debug(
         "getTopicEvents {} {} {} {} {} {} {}",
         bootstrapHost,
         protocol,
@@ -281,9 +283,9 @@ public class ClusterApiService {
                   consumerGroupId,
                   topic,
                   offsetId,
-                  "partitionId",
+                  PARTITION_ID,
                   String.valueOf(selectedPartitionId),
-                  "selectedNumberOfOffsets",
+                  SELECTED_NUMBER_OF_OFFSETS,
                   String.valueOf(selectedNumberOfOffsets),
                   clusterIdentification);
 
