@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ReactNode } from "react";
 // eslint-disable-next-line
-import { BrowseTopics as BrowseTopicsKlaw } from "./src/app/features/topics/browse/BrowseTopics";
+import BrowseTopicsKlaw from "./src/app/features/topics/browse/BrowseTopics";
 // eslint-disable-next-line
 import { ApiProvider } from "./src/app/context-provider/ApiProvider";
 // eslint-disable-next-line
@@ -13,18 +13,32 @@ import { TopicApiResponse } from "./src/domain/topic/topic-types";
 import "./src/app/accessibility.module.css";
 
 type BrowseTopicsApiResponse = TopicApiResponse;
-const withWrapper = ({ element }: { element: ReactNode }) => {
+
+const withWrapper = ({
+  element,
+  currentLocation,
+}: {
+  element: ReactNode;
+  currentLocation: string;
+}) => {
   const queryClient = new QueryClient();
 
-  const WrappedElement = () => (
+  return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{element}</BrowserRouter>
+      <RouterProvider
+        router={createBrowserRouter([
+          { path: currentLocation, element: element },
+        ])}
+      />
     </QueryClientProvider>
   );
-  return <WrappedElement />;
 };
 
-const BrowseTopics = () => withWrapper({ element: <BrowseTopicsKlaw /> });
+const BrowseTopics = ({ currentLocation }: { currentLocation: string }) =>
+  withWrapper({
+    element: <BrowseTopicsKlaw />,
+    currentLocation,
+  });
 
 export type { ApiConfig, BrowseTopicsApiResponse };
 export { ApiProvider, BrowseTopics };

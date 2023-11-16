@@ -78,8 +78,4 @@ function BrowseTopics() {
     />
   );
 }
-
-//@ts-ignore
 export default withFiltersContext({ element: <BrowseTopics /> });
-
-export { BrowseTopics };
