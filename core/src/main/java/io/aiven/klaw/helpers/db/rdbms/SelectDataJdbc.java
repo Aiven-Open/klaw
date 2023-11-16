@@ -1,7 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
-import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
+import static io.aiven.klaw.helpers.KwConstants.*;
+import static org.reflections.Reflections.log;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
@@ -15,24 +15,15 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import io.aiven.klaw.service.CommonUtilsService;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
@@ -1101,12 +1092,11 @@ public class SelectDataJdbc {
       Integer teamId, int numberOfDays, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Integer> fromDb =
+      List<Pair<String, Integer>> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
-      for (int elem : fromDb) {
-
-        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
       return res;
     } catch (Exception e) {
@@ -1119,11 +1109,11 @@ public class SelectDataJdbc {
       int numberOfDays, String[] envIdList, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Integer> fromDb =
+      List<Pair<String, Integer>> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
-      for (int elem : fromDb) {
-        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
       return res;
     } catch (Exception e) {
@@ -1146,10 +1136,14 @@ public class SelectDataJdbc {
     }
   }
 
-  private List<Integer> gatherActivityList(List<Object[]> activityCount) {
-    List<Integer> res = new ArrayList<>(activityCount.size());
+  private List<Pair<String, Integer>> gatherActivityList(List<Object[]> activityCount) {
+    List<Pair<String, Integer>> res = new ArrayList<>(activityCount.size());
     for (Object[] activity : activityCount) {
-      res.add((((Long) activity[1]).intValue()));
+
+      res.add(
+          new ImmutablePair<>(
+              DATE_DDMMMYYYY_FORMATTER.format(((java.sql.Date) activity[0]).toLocalDate()),
+              ((Long) activity[1]).intValue()));
     }
     return res;
   }
@@ -1287,6 +1281,7 @@ public class SelectDataJdbc {
       Map<String, Integer> envIds =
           topics.stream()
               .collect(Collectors.toMap(e -> (String) e[0], e -> ((Long) e[1]).intValue()));
+
       Map<String, Env> name2envsFromDb =
           StreamSupport.stream(selectEnvsDetails(envIds.keySet(), tenantId).spliterator(), false)
               .collect(Collectors.toMap(Env::getName, Function.identity()));

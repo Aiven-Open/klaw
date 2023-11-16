@@ -150,4 +150,7 @@ public class KwConstants {
 
   public static final DateTimeFormatter DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER =
       DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
+
+  public static final DateTimeFormatter DATE_DDMMMYYYY_FORMATTER =
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy").withZone(ZoneId.systemDefault());
 }
