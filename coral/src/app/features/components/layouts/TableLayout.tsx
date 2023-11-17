@@ -28,13 +28,17 @@ function TableLayout(props: TableLayoutProps) {
         flexDirection={"row"}
         flexWrap={"wrap"}
         alignItems={"center"}
-        justifyContent={"stretch"}
+        justifyContent={"space-between"}
         colGap={"l1"}
         marginY={"l1"}
       >
         {filters.map((element) => {
           return (
-            <Box.Flex key={element.key} flexDirection={"column"}>
+            <Box.Flex
+              key={element.key}
+              flexDirection={"column"}
+              flex={"1 0 auto"}
+            >
               {element}
             </Box.Flex>
           );
