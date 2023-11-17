@@ -171,10 +171,10 @@ describe("AclApprovalsTable", () => {
   it("has column to describe the team", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[5]
+      within(getNthRow(0)).getAllByRole("columnheader")[8]
     ).toHaveTextContent("Team");
 
-    expect(within(getNthRow(1)).getAllByRole("cell")[5]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[8]).toHaveTextContent(
       "Ospo"
     );
   });
@@ -182,9 +182,9 @@ describe("AclApprovalsTable", () => {
   it("has column to decsribe the acl type", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[6]
+      within(getNthRow(0)).getAllByRole("columnheader")[5]
     ).toHaveTextContent("ACL type");
-    expect(within(getNthRow(1)).getAllByRole("cell")[6]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[5]).toHaveTextContent(
       "Consumer"
     );
   });
@@ -192,9 +192,9 @@ describe("AclApprovalsTable", () => {
   it("has column to describe the request type", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[7]
+      within(getNthRow(0)).getAllByRole("columnheader")[6]
     ).toHaveTextContent("Request type");
-    expect(within(getNthRow(1)).getAllByRole("cell")[7]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[6]).toHaveTextContent(
       "Create"
     );
   });
@@ -202,9 +202,9 @@ describe("AclApprovalsTable", () => {
   it("has column to decsribe the author of the request", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[8]
+      within(getNthRow(0)).getAllByRole("columnheader")[7]
     ).toHaveTextContent("Requested by");
-    expect(within(getNthRow(1)).getAllByRole("cell")[8]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[7]).toHaveTextContent(
       "amathieu"
     );
   });
