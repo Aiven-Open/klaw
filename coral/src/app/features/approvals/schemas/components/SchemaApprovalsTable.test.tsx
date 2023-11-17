@@ -43,7 +43,7 @@ const mockedRequests: SchemaRequest[] = [
     environment: "2",
     environmentName: "SEC",
     schemaversion: "1.0",
-    teamname: "NCC1701D",
+    teamname: "NCC1702D",
     teamId: 1702,
     appname: "App",
     schemafull: "",
@@ -54,7 +54,7 @@ const mockedRequests: SchemaRequest[] = [
     requestOperationType: "DELETE",
     remarks: "asap",
     approvingTeamDetails:
-      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
+      "Team : NCC1702D, Users : jlpicard, worf, bcrusher, geordilf",
     approvingtime: "2022-11-04T14:54:13.414+00:00",
     totalNoPages: "4",
     allPageNos: ["1"],
@@ -77,6 +77,7 @@ describe("SchemaApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Additional notes", relatedField: "forceRegister" },

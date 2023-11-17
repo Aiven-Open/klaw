@@ -230,8 +230,10 @@ public class CommonUtilsService {
     List<String> labels = new ArrayList<>(size);
     List<String> colors = new ArrayList<>(size);
 
-    data.add(0);
-    labels.add("");
+    if (activityCountList.isEmpty()) {
+      data.add(0);
+      labels.add("");
+    }
 
     int totalCount = 0;
 
