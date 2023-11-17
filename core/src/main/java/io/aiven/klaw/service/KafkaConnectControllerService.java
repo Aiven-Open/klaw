@@ -1225,7 +1225,7 @@ public class KafkaConnectControllerService {
       List<KwKafkaConnector> connectors, String envId, int tenantId) {
     ConnectorOverview overview = new ConnectorOverview();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_KAFKA_CONNECT_ENVS);
-    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    Set<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     connectors.forEach(
