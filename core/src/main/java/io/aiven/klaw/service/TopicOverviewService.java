@@ -444,7 +444,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
       promotionStatus.setTopicName(topicSearch);
       String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-      LinkedHashSet<String> envOrderList = KlawResourceUtils.getOrderedEnvsSet(orderEnvs);
+      LinkedHashSet<String> orderedEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderEnvs);
 
       if (topics != null && topics.size() > 0) {
         List<String> envList =
@@ -455,9 +455,9 @@ public class TopicOverviewService extends BaseOverviewService {
         // T env
         if (promotionStatus.getTargetEnvId() != null) {
           String targetEnvId = promotionStatus.getTargetEnvId();
-          if (!envOrderList.contains(environmentId)
-              || !envOrderList.contains(targetEnvId)
-              || !checkIfElementsAreNeighbors(envOrderList, environmentId, targetEnvId)) {
+          if (!orderedEnvsSet.contains(environmentId)
+              || !orderedEnvsSet.contains(targetEnvId)
+              || !checkIfElementsAreNeighbors(orderedEnvsSet, environmentId, targetEnvId)) {
             promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
           } else if (isTopicPromoteRequestOpen(
               topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {
