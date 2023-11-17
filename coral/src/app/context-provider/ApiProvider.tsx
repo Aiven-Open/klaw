@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useContext } from "react";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { Environment } from "src/domain/environment";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
+import { ConnectorApiResponse } from "src/domain/connector/connector-types";
 
 type ApiConfig = {
   getTopics: (params: {
@@ -13,6 +14,9 @@ type ApiConfig = {
   getAllEnvironmentsForTopicAndAcl: () => Promise<Environment[]>;
   getAllEnvironmentsForConnector: () => Promise<Environment[]>;
   getTeams: () => Promise<KlawApiResponse<"getAllTeamsSU">>;
+  getConnectors: (
+    params: KlawApiRequestQueryParameters<"getConnectors">
+  ) => Promise<ConnectorApiResponse>;
 };
 
 const ApiContext = createContext<ApiConfig | undefined>(undefined);

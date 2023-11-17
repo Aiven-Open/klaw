@@ -11,6 +11,8 @@ import type { ApiConfig } from "./src/app/context-provider/ApiProvider";
 import { TopicApiResponse } from "./src/domain/topic/topic-types";
 // eslint-disable-next-line
 import "./src/app/accessibility.module.css";
+// eslint-disable-next-line
+import BrowseConnectorsKlaw from "src/app/features/connectors/browse/BrowseConnectors";
 
 type BrowseTopicsApiResponse = TopicApiResponse;
 
@@ -40,5 +42,12 @@ const BrowseTopics = ({ currentLocation }: { currentLocation: string }) =>
     currentLocation,
   });
 
+const BrowseConnectors = ({ currentLocation }: { currentLocation: string }) =>
+  withWrapper({
+    element: <BrowseConnectorsKlaw />,
+    currentLocation,
+  });
+
+BrowseConnectors;
 export type { ApiConfig, BrowseTopicsApiResponse };
-export { ApiProvider, BrowseTopics };
+export { ApiProvider, BrowseTopics, BrowseConnectors };

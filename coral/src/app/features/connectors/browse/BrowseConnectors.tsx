@@ -2,7 +2,6 @@ import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import ConnectorTable from "src/app/features/connectors/browse/components/ConnectorTable";
 import { useQuery } from "@tanstack/react-query";
-import { getConnectors } from "src/domain/connector/connector-api";
 import { useSearchParams } from "react-router-dom";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import {
@@ -11,8 +10,10 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import { useApiConfig } from "src/app/context-provider/ApiProvider";
 
 function BrowseConnectors() {
+  const apiConfig = useApiConfig();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
@@ -27,7 +28,7 @@ function BrowseConnectors() {
   } = useQuery({
     queryKey: ["browseConnectors", currentPage, environment, teamId, search],
     queryFn: () =>
-      getConnectors({
+      apiConfig.getConnectors({
         pageNo: currentPage.toString(),
         env: environment,
         connectornamesearch: search.length === 0 ? undefined : search,

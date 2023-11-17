@@ -25,6 +25,7 @@ import {
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
 import { getTeams } from "src/domain/team";
+import { getConnectors } from "src/domain/connector";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -63,6 +64,7 @@ const apiConfig: ApiConfig = {
   getAllEnvironmentsForTopicAndAcl: getAllEnvironmentsForTopicAndAcl,
   getAllEnvironmentsForConnector: getAllEnvironmentsForConnector,
   getTeams: getTeams,
+  getConnectors: (params) => getConnectors(params),
 };
 
 root.render(
