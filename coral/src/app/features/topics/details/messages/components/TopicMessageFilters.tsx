@@ -61,7 +61,7 @@ function TopicMessageFilters({
       <Input
         value={values.partitionId || undefined}
         labelText="Partition ID"
-        placeholder={"123"}
+        placeholder={"1"}
         description={"Choose which partition you want to query"}
         onChange={(e) => onPartitionIdChange(e.target.value)}
         type="number"
