@@ -76,6 +76,8 @@ describe("TopicMessages", () => {
       consumerGroupId: "notdefined",
       envId: "2",
       offsetId: "5",
+      selectedNumberOfOffsets: 0,
+      selectedPartitionId: 0,
     });
     screen.getByText("HELLO");
     screen.getByText("WORLD");
@@ -125,7 +127,7 @@ describe("TopicMessages", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/?offset=25",
+          customRoutePath: "/?defaultOffset=25",
         }
       );
       await userEvent.click(
@@ -139,6 +141,8 @@ describe("TopicMessages", () => {
           consumerGroupId: "notdefined",
           envId: "2",
           offsetId: "25",
+          selectedNumberOfOffsets: 0,
+          selectedPartitionId: 0,
         });
       });
     });
@@ -166,6 +170,8 @@ describe("TopicMessages", () => {
           consumerGroupId: "notdefined",
           envId: "2",
           offsetId: "50",
+          selectedNumberOfOffsets: 0,
+          selectedPartitionId: 0,
         });
       });
     });
