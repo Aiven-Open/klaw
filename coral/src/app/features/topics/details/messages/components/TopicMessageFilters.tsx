@@ -67,6 +67,7 @@ function TopicMessageFilters({
         type="number"
         helperText={filterErrors.partitionIdFilters || undefined}
         valid={filterErrors.partitionIdFilters === null}
+        required
       />
       <Input
         value={values.customOffset || undefined}
@@ -79,6 +80,7 @@ function TopicMessageFilters({
         type="number"
         helperText={filterErrors.customOffsetFilters || undefined}
         valid={filterErrors.customOffsetFilters === null}
+        required
       />
     </Box.Flex>
   );
