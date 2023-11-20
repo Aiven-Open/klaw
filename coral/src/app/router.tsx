@@ -56,6 +56,7 @@ import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { TeamsPage } from "src/app/pages/configuration/teams";
+import { UsersPage } from "src/app/pages/configuration/users";
 
 const routes: Array<RouteObject> = [
   {
@@ -238,6 +239,12 @@ const routes: Array<RouteObject> = [
             featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
             redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <TeamsPage />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USERS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <UsersPage />,
           }),
         ],
       },
