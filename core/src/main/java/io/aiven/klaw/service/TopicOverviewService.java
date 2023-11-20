@@ -126,7 +126,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-    Set<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
+    Set<String> orderOfEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
     topics.forEach(
         topic -> {
           EnvIdInfo envIdInfo = new EnvIdInfo();
@@ -137,7 +137,7 @@ public class TopicOverviewService extends BaseOverviewService {
                   .map(Env::getName)
                   .findFirst()
                   .orElse("ENV_NOT_FOUND"));
-          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+          if (orderOfEnvsSet.contains(envIdInfo.getId())) {
             availableEnvs.add(envIdInfo);
           } else {
             availableEnvsNotInPromotionOrder.add(envIdInfo);
