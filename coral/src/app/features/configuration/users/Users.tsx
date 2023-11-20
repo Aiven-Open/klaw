@@ -24,7 +24,7 @@ function UsersWithoutFilterContext() {
     isLoading,
     isError,
     error,
-  } = useQuery(["get-user-list", currentPage, teamName, search], {
+  } = useQuery(["getUserList", currentPage, teamName, search], {
     queryFn: () =>
       getUserList({
         pageNo: String(currentPage),
