@@ -3,14 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { getTeams } from "src/domain/team/team-api";
 
-function TeamFilter() {
-  const { data: topicTeams } = useQuery(["get-teams"], {
+type TeamFilterProps = {
+  useTeamName?: boolean;
+};
+function TeamFilter({ useTeamName }: TeamFilterProps) {
+  const { data: teams } = useQuery(["get-teams"], {
     queryFn: () => getTeams(),
   });
 
-  const { teamId, setFilterValue } = useFiltersContext();
+  const { teamId, teamName, setFilterValue } = useFiltersContext();
 
-  if (!topicTeams) {
+  if (!teams) {
     return (
       <div data-testid={"select-team-loading"}>
         <NativeSelect.Skeleton />
@@ -20,16 +23,22 @@ function TeamFilter() {
     return (
       <NativeSelect
         labelText="Filter by team"
-        value={teamId}
-        onChange={(event) =>
-          setFilterValue({ name: "teamId", value: event.target.value })
-        }
+        value={useTeamName ? teamName : teamId}
+        onChange={(event) => {
+          return setFilterValue({
+            name: useTeamName ? "teamName" : "teamId",
+            value: event.target.value,
+          });
+        }}
       >
         <Option key={"ALL"} value={"ALL"}>
           All teams
         </Option>
-        {topicTeams.map((team) => (
-          <Option key={team.teamId} value={team.teamId}>
+        {teams.map((team) => (
+          <Option
+            key={team.teamId}
+            value={useTeamName ? team.teamname : team.teamId}
+          >
             {team.teamname}
           </Option>
         ))}

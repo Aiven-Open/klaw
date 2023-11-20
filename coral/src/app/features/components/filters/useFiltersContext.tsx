@@ -13,7 +13,8 @@ type SetFiltersParams =
   | { name: "teamId"; value: string }
   | { name: "showOnlyMyRequests"; value: boolean }
   | { name: "requestType"; value: RequestOperationType }
-  | { name: "search"; value: string };
+  | { name: "search"; value: string }
+  | { name: "teamName"; value: string };
 
 interface UseFiltersDefaultValues {
   environment: string;
@@ -24,6 +25,7 @@ interface UseFiltersDefaultValues {
   requestType: RequestOperationType;
   search: string;
   paginated: boolean;
+  teamName: string;
 }
 
 interface UseFiltersReturnedValues
@@ -36,6 +38,7 @@ const emptyValues: UseFiltersDefaultValues = {
   aclType: "ALL",
   status: "ALL",
   teamId: "ALL",
+  teamName: "ALL",
   showOnlyMyRequests: false,
   requestType: "ALL",
   search: "",
@@ -73,6 +76,7 @@ const FiltersProvider = ({
     initialValues.requestType;
   const search = searchParams.get("search") ?? initialValues.search;
   const paginated = initialValues.paginated;
+  const teamName = searchParams.get("teamName") ?? initialValues.teamName;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     const parsedValue = typeof value === "boolean" ? String(value) : value;
@@ -94,6 +98,7 @@ const FiltersProvider = ({
     aclType,
     status,
     teamId,
+    teamName,
     showOnlyMyRequests,
     requestType,
     search,
