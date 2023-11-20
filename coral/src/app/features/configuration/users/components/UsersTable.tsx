@@ -32,7 +32,6 @@ const UsersTable = ({ users, ariaLabel }: UsersProps) => {
     },
     {
       type: "status",
-      field: "role",
       headerName: "Role",
       status: ({ role }) => ({
         status: role === "SUPERADMIN" ? "info" : "neutral",
@@ -51,7 +50,6 @@ const UsersTable = ({ users, ariaLabel }: UsersProps) => {
     },
     {
       type: "status",
-      field: "switchTeams",
       headerName: "Switch teams",
       status: ({ switchTeams }) => ({
         status: switchTeams ? "success" : "neutral",
@@ -60,7 +58,6 @@ const UsersTable = ({ users, ariaLabel }: UsersProps) => {
     },
     {
       type: "custom",
-      field: "switchAllowedTeamNames",
       width: 200,
       headerName: "Switch between teams",
       UNSAFE_render: ({ switchAllowedTeamNames }) => {
