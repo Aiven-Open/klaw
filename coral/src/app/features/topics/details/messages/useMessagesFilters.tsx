@@ -111,6 +111,9 @@ function useMessagesFilters(): OffsetFilters {
   }
 
   function setCustomOffset(customOffset: string): void {
+    if (getDefaultOffset() !== "custom") {
+      setDefaultOffset("custom");
+    }
     if (customOffset.length === 0) {
       setFilterErrors((prev) => ({
         ...prev,
@@ -142,6 +145,9 @@ function useMessagesFilters(): OffsetFilters {
   }
 
   function setPartitionId(partitionId: string): void {
+    if (getDefaultOffset() !== "custom") {
+      setDefaultOffset("custom");
+    }
     if (partitionId.length === 0) {
       setFilterErrors((prev) => ({
         ...prev,

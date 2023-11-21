@@ -62,7 +62,7 @@ function TopicMessageFilters({
         value={values.partitionId || undefined}
         labelText="Partition ID"
         placeholder={"1"}
-        description={"Choose which partition you want to query"}
+        description={"Choose which partition you want to query."}
         onChange={(e) => onPartitionIdChange(e.target.value)}
         type="number"
         helperText={filterErrors.partitionIdFilters || undefined}

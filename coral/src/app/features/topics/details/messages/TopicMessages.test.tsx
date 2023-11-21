@@ -33,7 +33,7 @@ describe("TopicMessages", () => {
     cleanup();
     jest.resetAllMocks();
   });
-  it("informs user to specify offset and fetch topic messages", async () => {
+  it("allows to switch between Default and Custom modes", async () => {
     mockGetTopicMessages.mockResolvedValue(
       mockGetTopicMessagesNoContentResponse
     );
@@ -41,6 +41,95 @@ describe("TopicMessages", () => {
       <Routes>
         <Route path="/" element={<DummyParent />}>
           <Route path="/" element={<TopicMessages />} />
+        </Route>
+      </Routes>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
+
+    const switchInput = screen.getByRole("checkbox");
+
+    const switchGroupDefault = screen.getByRole("group", {
+      name: "Fetching mode Get the latest messages",
+    });
+
+    expect(switchGroupDefault).toBeVisible();
+    expect(switchInput).not.toBeChecked();
+
+    await userEvent.click(switchInput);
+
+    const switchGroupCustom = screen.getByRole("group", {
+      name: "Fetching mode Get a specific offset",
+    });
+
+    expect(switchGroupCustom).toBeVisible();
+    expect(switchInput).toBeChecked();
+  });
+
+  it("shows switch as Default mode according to URL search params", async () => {
+    mockGetTopicMessages.mockResolvedValue(
+      mockGetTopicMessagesNoContentResponse
+    );
+    customRender(
+      <Routes>
+        <Route path="/" element={<DummyParent />}>
+          <Route path="/" element={<TopicMessages />} />
+        </Route>
+      </Routes>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: "/?defaultOffset=5",
+      }
+    );
+
+    const switchInput = screen.getByRole("checkbox");
+
+    const switchGroupDefault = screen.getByRole("group", {
+      name: "Fetching mode Get the latest messages",
+    });
+
+    expect(switchGroupDefault).toBeVisible();
+    expect(switchInput).not.toBeChecked();
+  });
+
+  it("shows switch as Custom mode according to URL search params", async () => {
+    mockGetTopicMessages.mockResolvedValue(
+      mockGetTopicMessagesNoContentResponse
+    );
+    customRender(
+      <Routes>
+        <Route path="/" element={<DummyParent />}>
+          <Route path="/" element={<TopicMessages />} />
+        </Route>
+      </Routes>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: "/?defaultOffset=custom&customOffset=20partitionId=1",
+      }
+    );
+
+    const switchInput = screen.getByRole("checkbox");
+
+    const switchGroupCustom = screen.getByRole("group", {
+      name: "Fetching mode Get a specific offset",
+    });
+
+    expect(switchGroupCustom).toBeVisible();
+    expect(switchInput).toBeChecked();
+  });
+
+  it("informs user to specify offset and fetch topic messages", async () => {
+    mockGetTopicMessages.mockResolvedValue(
+      mockGetTopicMessagesNoContentResponse
+    );
+    customRender(
+      <Routes>
+        <Route path="/" element={<DummyParent />}>
+          <Route path="/?" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -117,7 +206,7 @@ describe("TopicMessages", () => {
       jest.resetAllMocks();
     });
 
-    it("populates the filter from the url search parameters", async () => {
+    it("populates the filter from the url search parameters (defaultOffset)", async () => {
       customRender(
         <Routes>
           <Route path="/" element={<DummyParent />}>
@@ -143,6 +232,36 @@ describe("TopicMessages", () => {
           offsetId: "25",
           selectedNumberOfOffsets: 0,
           selectedPartitionId: 0,
+        });
+      });
+    });
+    it("populates the filter from the url search parameters (partitionId and customOffset)", async () => {
+      customRender(
+        <Routes>
+          <Route path="/" element={<DummyParent />}>
+            <Route path="/" element={<TopicMessages />} />
+          </Route>
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath:
+            "/?defaultOffset=custom&partitionId=1&customOffset=20",
+        }
+      );
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: "Fetch and display the latest 20 messages from partiton 1 of topic test",
+        })
+      );
+      await waitFor(() => {
+        expect(getTopicMessages).toHaveBeenNthCalledWith(1, {
+          topicName: "test",
+          consumerGroupId: "notdefined",
+          envId: "2",
+          offsetId: "custom",
+          selectedNumberOfOffsets: 20,
+          selectedPartitionId: 1,
         });
       });
     });
