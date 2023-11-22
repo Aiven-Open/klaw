@@ -56,6 +56,7 @@ public class UtilControllerTest {
   public void getAuth() throws Exception {
     AuthenticationInfo authenticationInfo = new AuthenticationInfo();
     authenticationInfo.setCoralEnabled("true");
+    authenticationInfo.setCoralAvailableForUser("true");
     when(utilControllerService.getAuth()).thenReturn(authenticationInfo);
 
     mvc.perform(

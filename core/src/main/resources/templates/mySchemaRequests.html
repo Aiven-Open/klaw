@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -504,10 +495,17 @@
 													<h3 class="card-title">Topic : <a href="topicOverview?topicname={{schemaRequest.topicname}}"> {{ schemaRequest.topicname }}</a></h3>
 												</td>
 												<td align="right">
-
-												</button>
 													<button type="button" ng-click="deleteSchemaRequest(schemaRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-													</button></td>
+													</button>
+												</td>
+												<td ng-show="schemaRequest.requestStatus == 'CREATED' && schemaRequest.requestor === userlogged &&
+														schemaRequest.requestOperationType != 'DELETE'" align="right" width="2%">
+													<a href="editSchemaRequest?schemaRequestId={{ schemaRequest.req_no }}">
+														<button type="button" class="btn btn-info btn-circle">
+															<i class="fa fa-edit"></i>
+														</button>
+													</a>
+												</td>
 											</tr>
 										</table>
 									</div>
@@ -547,6 +545,10 @@
 										<div class="p-2 border-left" ng-show="schemaRequest.requestStatus == 'APPROVED'" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-info">{{ schemaRequest.approver }}</span></b>
+										</div>
+										<div class="p-2 border-left"  style="width:10%">
+											<h6 class="text-primary">Force Register</h6><b>
+											{{ schemaRequest.forceRegister }}</b>
 										</div>
 										<div ng-show="schemaRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
 											<h6 class="text-primary">Approving Info</h6>

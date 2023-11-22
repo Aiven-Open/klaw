@@ -1,6 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { TopicMessageOffsetFilter } from "src/app/features/topics/details/messages/components/TopicMessageOffsetFilter";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 describe("TopicMessageOffsetFilter", () => {
   afterEach(() => {

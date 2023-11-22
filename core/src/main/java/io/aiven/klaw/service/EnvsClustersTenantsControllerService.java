@@ -587,7 +587,9 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), tenantId);
-      newEnv.setId(String.valueOf(id));
+      if (id != null) {
+        newEnv.setId(String.valueOf(id));
+      }
     } else {
       // modify env
       envActualList =
@@ -848,7 +850,7 @@ public class EnvsClustersTenantsControllerService {
     if (KafkaClustersType.KAFKA.value.equals(envType)
         || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
       Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
-      if (env.getAssociatedEnv() != null) {
+      if (env != null && env.getAssociatedEnv() != null) {
         Env linkedEnv =
             manageDatabase
                 .getHandleDbRequests()

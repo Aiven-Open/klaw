@@ -481,6 +481,7 @@ public class ClusterApiServiceTest {
             "1",
             "",
             "1",
+            "2",
             101);
     assertThat(Objects.requireNonNull(response1)).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -514,6 +515,7 @@ public class ClusterApiServiceTest {
             "1",
             "",
             "1",
+            "2",
             101);
     assertThat(Objects.requireNonNull(response1)).isEqualTo(FAILED_TO_EXECUTE_SUCCESSFULLY);
   }

@@ -16,7 +16,7 @@ import {
   mockedApiResponseSchemaRequests,
   mockedEnvironmentResponse,
 } from "src/app/features/requests/schemas/utils/mocked-api-responses";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";

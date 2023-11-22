@@ -144,13 +144,16 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                         return;
                     }
 
+                    let updatedRemarks;
                     if($scope.addSchema.forceRegister === true) {
-                    var forceRegisterString = " Force register for schema selected. This overrides standard schema compatibility.";
+                        var forceRegisterString = " Force register for schema selected. This overrides standard schema compatibility.";
                         if($scope.addSchema.remarks == null) {
-                         $scope.addSchema.remarks = forceRegisterString;
+                            updatedRemarks = forceRegisterString;
                         } else {
-                         $scope.addSchema.remarks += forceRegisterString;
+                            updatedRemarks = $scope.addSchema.remarks + forceRegisterString;
                         }
+                    }else{
+                        updatedRemarks = $scope.addSchema.remarks;
                     }
 
                     var serviceInput = {};
@@ -160,7 +163,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     serviceInput['environment'] = $scope.addSchema.envId;
                     serviceInput['topicname'] = $scope.addSchema.topicname;
                     serviceInput['appname'] = "App";
-                    serviceInput['remarks'] = $scope.addSchema.remarks;
+                    serviceInput['remarks'] = updatedRemarks;
                     serviceInput['schemafull'] = $scope.addSchema.schemafull;
                     serviceInput['schemaversion'] = "1.0";
                     serviceInput['requestOperationType'] = 'CREATE';

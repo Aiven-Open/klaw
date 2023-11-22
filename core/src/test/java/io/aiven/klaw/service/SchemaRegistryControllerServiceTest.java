@@ -137,7 +137,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(false)))
         .thenReturn(getSchemasReqs());
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(List.of(""));
+        .thenReturn(Set.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
@@ -674,7 +674,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(false)))
         .thenReturn(getSchemasReqs(40));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(List.of(""));
+        .thenReturn(Set.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
@@ -721,7 +721,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(false)))
         .thenReturn(getSchemasReqs(40));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(List.of(""));
+        .thenReturn(Set.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
@@ -746,7 +746,7 @@ public class SchemaRegistryControllerServiceTest {
     for (SchemaRequestsResponseModel req : ordered_response) {
 
       // assert That each new Request time is newer than or equal to the previous request
-      assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
+      assertThat(origReqTime).isBeforeOrEqualTo(req.getRequesttime());
       origReqTime = req.getRequesttime();
     }
   }

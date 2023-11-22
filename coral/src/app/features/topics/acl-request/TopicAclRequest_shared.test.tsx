@@ -1,22 +1,18 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
-import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api.msw";
-import {
-  mockGetClusterInfoFromEnv,
-  mockgetAllEnvironmentsForTopicAndAcl,
-} from "src/domain/environment/environment-api.msw";
+import { getClusterInfoFromEnvironment } from "src/domain/cluster";
+import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api-test-helper";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
+import { getTopicNames, getTopicTeam } from "src/domain/topic";
 import {
-  mockGetTopicNames,
-  mockGetTopicTeam,
   mockedResponseTopicNames,
   mockedResponseTopicTeamLiteral,
-} from "src/domain/topic/topic-api.msw";
-import { server } from "src/services/test-utils/api-mocks/server";
+} from "src/domain/topic/topic-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedNavigate = jest.fn();
@@ -36,39 +32,46 @@ jest.mock("@aivenio/aquarium", () => ({
   useToast: () => mockedUseToast,
 }));
 
+jest.mock("src/domain/environment/environment-api.ts");
+const mockgetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
+
+jest.mock("src/domain/topic/topic-api.ts");
+const mockGetTopicNames = getTopicNames as jest.MockedFunction<
+  typeof getTopicNames
+>;
+const mockGetTopicTeam = getTopicTeam as jest.MockedFunction<
+  typeof getTopicTeam
+>;
+
+jest.mock("src/domain/cluster/cluster-api.ts");
+const mockGetClusterInfoFromEnv =
+  getClusterInfoFromEnvironment as jest.MockedFunction<
+    typeof getClusterInfoFromEnvironment
+  >;
+
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
-  mockgetAllEnvironmentsForTopicAndAcl({
-    mswInstance: server,
-    response: {
-      data: [
-        createMockEnvironmentDTO({
-          name: "TST",
-          id: "1",
-        }),
-        createMockEnvironmentDTO({
-          name: "DEV",
-          id: "2",
-        }),
-        createMockEnvironmentDTO({
-          name: "PROD",
-          id: "3",
-        }),
-      ],
-    },
-  });
-  mockGetTopicNames({
-    mswInstance: server,
-    response: mockedResponseTopicNames,
-  });
-  mockGetTopicTeam({
-    mswInstance: server,
-    response: mockedResponseTopicTeamLiteral,
-    topicName: "aivtopic1",
-  });
-  mockGetClusterInfoFromEnv({
-    mswInstance: server,
-    response: getMockedResponseGetClusterInfoFromEnvironment(isAivenCluster),
-  });
+  mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+    createMockEnvironmentDTO({
+      name: "TST",
+      id: "1",
+    }),
+    createMockEnvironmentDTO({
+      name: "DEV",
+      id: "2",
+    }),
+    createMockEnvironmentDTO({
+      name: "PROD",
+      id: "3",
+    }),
+  ]);
+  mockGetTopicNames.mockResolvedValue(mockedResponseTopicNames);
+  mockGetTopicTeam.mockResolvedValue(mockedResponseTopicTeamLiteral);
+  mockGetClusterInfoFromEnv.mockResolvedValue(
+    getMockedResponseGetClusterInfoFromEnvironment(isAivenCluster)
+  );
 };
 
 const assertSkeleton = async () => {
@@ -86,14 +89,6 @@ const selectTestEnvironment = async () => {
 };
 
 describe("<TopicAclRequest />", () => {
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   describe("/topic/:topicName/subscribe: Form states (producer, consumer)", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: true });

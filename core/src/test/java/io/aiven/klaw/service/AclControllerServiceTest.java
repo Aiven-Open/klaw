@@ -328,7 +328,7 @@ public class AclControllerServiceTest {
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 15));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(Collections.singletonList("USER"));
+        .thenReturn(Collections.singleton("USER"));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);

@@ -1,15 +1,14 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
+import * as ReactQuery from "@tanstack/react-query";
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicEditRequest from "src/app/features/topics/request/TopicEditRequest";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
-import { requestTopicEdit, getTopicDetailsPerEnv } from "src/domain/topic";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
+import { getTopicDetailsPerEnv, requestTopicEdit } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import * as ReactQuery from "@tanstack/react-query";
 
 const TOPIC_NAME = "test-topic-name";
 const ENV_ID = "1";
@@ -54,16 +53,14 @@ const mockError = {
   },
 };
 
-const mockEnvironments = transformEnvironmentApiResponse(
-  mockedEnvironmentResponse
-).map((env) => ({
+const mockEnvironments = mockedEnvironmentResponse.map((env) => ({
   ...env,
   params: {
     ...env.params,
-    defaultPartitions: 2,
-    defaultRepFactor: 1,
-    maxPartitions: 2,
-    maxRepFactor: 1,
+    defaultPartitions: "2",
+    defaultRepFactor: "1",
+    maxPartitions: "2",
+    maxRepFactor: "1",
   },
 }));
 

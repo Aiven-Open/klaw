@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 
 const mockOnClose = jest.fn();

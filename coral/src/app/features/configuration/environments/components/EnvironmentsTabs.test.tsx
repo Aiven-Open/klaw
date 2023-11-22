@@ -1,5 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import EnvironmentsTabs from "src/app/features/configuration/environments/components/EnvironmentsTabs";
 import {
   ENVIRONMENT_TAB_ID_INTO_PATH,
@@ -11,6 +11,7 @@ import {
   getPaginatedEnvironmentsForSchema,
   getPaginatedEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 
 import { EnvironmentPaginatedApiResponse } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -26,7 +27,7 @@ const mockedKafkaTotalEnvs: EnvironmentPaginatedApiResponse = {
   currentPage: 1,
   totalEnvs: 1,
   entries: [
-    {
+    createMockEnvironmentDTO({
       type: "kafka",
       name: "DEV",
       id: "1001",
@@ -35,7 +36,7 @@ const mockedKafkaTotalEnvs: EnvironmentPaginatedApiResponse = {
       tenantName: "default",
       envStatus: "ONLINE",
       envStatusTimeString: "21-Sep-2023 11:46:15",
-    },
+    }),
   ],
 };
 
@@ -44,7 +45,7 @@ const mockedSchemaTotalEnvs: EnvironmentPaginatedApiResponse = {
   currentPage: 1,
   totalEnvs: 2,
   entries: [
-    {
+    createMockEnvironmentDTO({
       type: "schemaregistry",
       name: "DEV",
       id: "1001",
@@ -53,8 +54,8 @@ const mockedSchemaTotalEnvs: EnvironmentPaginatedApiResponse = {
       tenantName: "default",
       envStatus: "ONLINE",
       envStatusTimeString: "21-Sep-2023 11:46:15",
-    },
-    {
+    }),
+    createMockEnvironmentDTO({
       type: "schemaregistry",
       name: "TST",
       id: "1002",
@@ -63,7 +64,7 @@ const mockedSchemaTotalEnvs: EnvironmentPaginatedApiResponse = {
       tenantName: "default",
       envStatus: "ONLINE",
       envStatusTimeString: "21-Sep-2023 11:46:15",
-    },
+    }),
   ],
 };
 

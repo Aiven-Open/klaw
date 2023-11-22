@@ -1,6 +1,6 @@
 import { RadioButton as BaseRadioButton } from "@aivenio/aquarium";
 import { cleanup, RenderResult, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import {
   ComplexNativeSelect,
   FileInput,

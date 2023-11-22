@@ -1,5 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
@@ -15,22 +16,15 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import io.aiven.klaw.service.CommonUtilsService;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
@@ -435,9 +429,9 @@ public class SelectDataJdbc {
 
     List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
-    Map<String, List<String>> topicEnvMap = new HashMap<>();
+    Map<String, Set<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
-    List<String> envList;
+    Set<String> envSet;
 
     for (Acl acl : acls) {
       t = new Topic();
@@ -451,22 +445,22 @@ public class SelectDataJdbc {
       t.setTopicname(tmpTopicName);
 
       if (topicEnvMap.containsKey(tmpTopicName)) {
-        envList = topicEnvMap.get(tmpTopicName);
-        if (!envList.contains(acl.getEnvironment())) {
-          envList.add(acl.getEnvironment());
-          topicEnvMap.put(tmpTopicName, envList);
+        envSet = topicEnvMap.get(tmpTopicName);
+        if (!envSet.contains(acl.getEnvironment())) {
+          envSet.add(acl.getEnvironment());
+          topicEnvMap.put(tmpTopicName, envSet);
         }
       } else {
-        envList = new ArrayList<>();
-        envList.add(acl.getEnvironment());
-        topicEnvMap.put(tmpTopicName, envList);
+        envSet = new HashSet<>();
+        envSet.add(acl.getEnvironment());
+        topicEnvMap.put(tmpTopicName, envSet);
       }
 
       topics.add(t);
     }
 
     for (Topic topic : topics) {
-      topic.setEnvironmentsList(topicEnvMap.get(topic.getTopicname()));
+      topic.setEnvironmentsSet(topicEnvMap.get(topic.getTopicname()));
     }
 
     topics =
@@ -892,6 +886,10 @@ public class SelectDataJdbc {
     return teamRepo.findAllByTenantId(tenantId);
   }
 
+  public List<Team> selectAllTeamsByTenantIdAndTeamId(int tenantId, int teamId) {
+    return teamRepo.findAllByTenantIdAndTeamId(tenantId, teamId);
+  }
+
   public AclRequests selectAcl(int req_no, int tenantId) {
     log.debug("selectAcl {}", req_no);
     AclRequestID aclRequestID = new AclRequestID();
@@ -935,6 +933,17 @@ public class SelectDataJdbc {
     return env.orElse(null);
   }
 
+  public Iterable<Env> selectEnvsDetails(Collection<String> envIds, int tenantId) {
+    List<EnvID> ids = new ArrayList<>(envIds.size());
+    for (var env : envIds) {
+      EnvID envID = new EnvID();
+      envID.setId(env);
+      envID.setTenantId(tenantId);
+      ids.add(envID);
+    }
+    return envRepo.findAllById(ids);
+  }
+
   public UserInfo selectUserInfo(String username) {
     Optional<UserInfo> userRec = userInfoRepo.findByUsernameIgnoreCase(username);
     return userRec.orElse(null);
@@ -970,10 +979,6 @@ public class SelectDataJdbc {
   }
 
   public List<Team> selectTeamsOfUsers(String username, int tenantId) {
-    log.debug("selectTeamsOfUsers {}", username);
-    Map<Integer, Team> allTeams =
-        selectAllTeams(tenantId).stream()
-            .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
 
     Optional<UserInfo> userInfoOpt =
         userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
@@ -983,13 +988,8 @@ public class SelectDataJdbc {
 
     Integer teamId = userInfoOpt.get().getTeamId();
 
-    Team teamSel = allTeams.get(teamId);
-
-    if (teamSel == null) {
-      return Collections.emptyList();
-    }
-
-    return List.of(teamSel);
+    log.debug("selectTeamsOfUsers {}", username);
+    return selectAllTeamsByTenantIdAndTeamId(tenantId, teamId);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
@@ -1093,12 +1093,11 @@ public class SelectDataJdbc {
       Integer teamId, int numberOfDays, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Integer> fromDb =
+      List<Pair<String, Integer>> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
-      for (int elem : fromDb) {
-
-        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
       return res;
     } catch (Exception e) {
@@ -1111,11 +1110,11 @@ public class SelectDataJdbc {
       int numberOfDays, String[] envIdList, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
-      List<Integer> fromDb =
+      List<Pair<String, Integer>> fromDb =
           gatherActivityList(
               activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
-      for (int elem : fromDb) {
-        res.add(CommonUtilsService.ChartsOverviewItem.of("activitycount", elem));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
       return res;
     } catch (Exception e) {
@@ -1138,10 +1137,14 @@ public class SelectDataJdbc {
     }
   }
 
-  private List<Integer> gatherActivityList(List<Object[]> activityCount) {
-    List<Integer> res = new ArrayList<>(activityCount.size());
+  private List<Pair<String, Integer>> gatherActivityList(List<Object[]> activityCount) {
+    List<Pair<String, Integer>> res = new ArrayList<>(activityCount.size());
     for (Object[] activity : activityCount) {
-      res.add((((Long) activity[1]).intValue()));
+
+      res.add(
+          new ImmutablePair<>(
+              DATE_DDMMMYYYY_FORMATTER.format(((java.sql.Date) activity[0]).toLocalDate()),
+              ((Long) activity[1]).intValue()));
     }
     return res;
   }
@@ -1276,14 +1279,21 @@ public class SelectDataJdbc {
         new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsForTeamGroupByEnv(teamId, tenantId);
-      for (Object[] topic : topics) {
-        Env env = selectEnvDetails((String) topic[0], tenantId);
-        if (env == null) {
-          log.error("Error: Environment not found for env {}", topic[0]);
+      Map<String, Integer> envIds =
+          topics.stream()
+              .collect(Collectors.toMap(e -> (String) e[0], e -> ((Long) e[1]).intValue()));
+
+      Map<String, Env> name2envsFromDb =
+          StreamSupport.stream(selectEnvsDetails(envIds.keySet(), tenantId).spliterator(), false)
+              .collect(Collectors.toMap(Env::getId, Function.identity()));
+
+      for (var envIdEntry : envIds.entrySet()) {
+        if (!name2envsFromDb.containsKey(envIdEntry.getKey())) {
+          log.error("Error: Environment not found for env {}", envIdEntry.getKey());
         } else {
           totalTopicCount.add(
               CommonUtilsService.ChartsOverviewItem.of(
-                  env.getName(), ((Long) topic[1]).intValue()));
+                  name2envsFromDb.get(envIdEntry.getKey()).getName(), envIdEntry.getValue()));
         }
       }
     } catch (Exception e) {

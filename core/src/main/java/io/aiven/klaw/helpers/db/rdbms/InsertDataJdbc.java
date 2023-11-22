@@ -312,7 +312,10 @@ public class InsertDataJdbc {
   public synchronized String insertIntoRequestSchema(SchemaRequest schemaRequest) {
     log.debug("insertIntoRequestSchema {}", schemaRequest.getTopicname());
 
-    schemaRequest.setReq_no(getNextSchemaRequestId("SCHEMA_REQ_ID", schemaRequest.getTenantId()));
+    if (schemaRequest.getReq_no() == null) {
+      schemaRequest.setReq_no(getNextSchemaRequestId("SCHEMA_REQ_ID", schemaRequest.getTenantId()));
+    }
+
     schemaRequest.setSchemafull(schemaRequest.getSchemafull().trim());
     schemaRequest.setRequestStatus(RequestStatus.CREATED.value);
     schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
@@ -422,6 +425,12 @@ public class InsertDataJdbc {
     kwClusterRepo.save(kwClusters);
 
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  public boolean hasSequence(String entityName, int tenantId) {
+    int kwEntitySequenceList =
+        kwEntitySequenceRepo.countAllByEntityNameAndTenantId(entityName, tenantId);
+    return (kwEntitySequenceList > 0);
   }
 
   public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {

@@ -1,6 +1,6 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import KafkaConnectEnvironmentsTable from "src/app/features/configuration/environments/KafkaConnect/components/KafkaConnectEnvironmentsTable";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -14,7 +14,7 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const mockEnvironments: Environment[] = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "DEV",
     id: "1",
@@ -22,7 +22,7 @@ const mockEnvironments: Environment[] = [
     envStatus: "ONLINE",
     envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "TST",
     id: "2",
@@ -30,7 +30,7 @@ const mockEnvironments: Environment[] = [
     envStatus: "OFFLINE",
     envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "PROD",
     id: "3",
@@ -148,9 +148,9 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
         });
         const statusText =
           environment.envStatus === "ONLINE"
-            ? "Working"
+            ? "Online"
             : environment.envStatus === "OFFLINE"
-            ? "Not working"
+            ? "Offline"
             : "Unknown";
 
         const status = within(row).getByRole("cell", {

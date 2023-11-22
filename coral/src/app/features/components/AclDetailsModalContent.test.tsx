@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { AclRequest } from "src/domain/acl/acl-types";
+import upperFirst from "lodash/upperFirst";
 
 const mockedIpsAclRequest: AclRequest = {
   remarks: "hello",
@@ -90,8 +91,11 @@ describe("AclDetailsModalContent", () => {
     afterAll(cleanup);
 
     it("renders ACL type", () => {
+      const aclTypeFormatted = upperFirst(
+        mockedIpsAclRequest.aclType.toLowerCase()
+      );
       expect(findTerm("ACL type")).toBeVisible();
-      expect(findDefinition(mockedIpsAclRequest.aclType)).toBeVisible();
+      expect(findDefinition(aclTypeFormatted)).toBeVisible();
     });
     it("renders Requesting team", () => {
       expect(findTerm("Requesting team")).toBeVisible();
@@ -139,8 +143,11 @@ describe("AclDetailsModalContent", () => {
     afterAll(cleanup);
 
     it("renders ACL type", () => {
+      const aclTypeFormatted = upperFirst(
+        mockedPrincipalsAclrequest.aclType.toLowerCase()
+      );
       expect(findTerm("ACL type")).toBeVisible();
-      expect(findDefinition(mockedPrincipalsAclrequest.aclType)).toBeVisible();
+      expect(findDefinition(aclTypeFormatted)).toBeVisible();
     });
     it("renders Requesting team", () => {
       expect(findTerm("Requesting team")).toBeVisible();

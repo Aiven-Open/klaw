@@ -20,4 +20,9 @@ export default {
     "\\.css$": "identity-obj-proxy",
     "^src/(.*)$": "<rootDir>/src/$1",
   },
+  // Fixing "Cannot find module ‘msw/node’"
+  // https://mswjs.io/docs/migrations/1.x-to-2.x#cannot-find-module-mswnode-jsdom
+  testEnvironmentOptions: {
+    customExportConditions: [""],
+  },
 };

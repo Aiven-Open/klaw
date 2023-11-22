@@ -9,6 +9,9 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_111;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -24,13 +27,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.response.BaseRequestsResponseModel;
@@ -112,7 +109,7 @@ public class SchemaRegistryControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<SchemaRequestsResponseModel> schemaRequestModels = new ArrayList<>();
 
@@ -169,7 +166,7 @@ public class SchemaRegistryControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
@@ -245,6 +242,7 @@ public class SchemaRegistryControllerService {
     ResponseEntity<ApiResponse> response =
         clusterApiService.postSchema(
             schemaRequest, schemaRequest.getEnvironment(), schemaRequest.getTopicname(), tenantId);
+    updateEnvStatus(response, manageDatabase, tenantId, schemaRequest.getEnvironment());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     ApiResponse apiResponse = response.getBody();
     Map<String, Object> registerSchemaCustomResponse = null;
@@ -455,6 +453,7 @@ public class SchemaRegistryControllerService {
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
+    schemaRequest.setRequestor(userName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Optional<Env> schemaEnv = getSchemaEnvFromKafkaEnvId(schemaRequest.getEnvironment());
@@ -512,23 +511,41 @@ public class SchemaRegistryControllerService {
               .collect(Collectors.toList());
 
     // request status filtering
-    if (schemaReqs != null) {
+    if (schemaReqs != null && schemaRequest.getRequestId() == null) {
       schemaReqs =
           schemaReqs.stream()
               .filter(
                   schemaRequest1 ->
-                      "created".equals(schemaRequest1.getRequestStatus())
+                      RequestStatus.CREATED.value.equals(schemaRequest1.getRequestStatus())
                           && Objects.equals(
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
         return ApiResponse.notOk(SCHEMA_ERR_107);
       }
+    } else if (schemaReqs != null && schemaRequest.getRequestId() != null) {
+      // edit schema request
+      Optional<SchemaRequest> optionalSchemaRequest =
+          schemaReqs.stream()
+              .filter(schemaReq -> schemaReq.getReq_no().equals(schemaRequest.getRequestId()))
+              .findFirst();
+
+      if (optionalSchemaRequest.isPresent()) {
+        // verify if request is in CREATED state
+        if (!optionalSchemaRequest.get().getRequestStatus().equals(RequestStatus.CREATED.value)) {
+          return ApiResponse.notOk(SCHEMA_ERR_110);
+        }
+
+        // verify if the edit request is being submitted by request owner
+        if (!optionalSchemaRequest.get().getRequestor().equals(schemaRequest.getRequestor())) {
+          return ApiResponse.notOk(SCHEMA_ERR_111);
+        }
+      }
     }
 
-    schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
+    schemaRequestDao.setReq_no(schemaRequest.getRequestId());
     schemaRequestDao.setRequestOperationType(requestOperationType.value);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     schemaRequestDao.setTenantId(tenantId);
@@ -569,6 +586,44 @@ public class SchemaRegistryControllerService {
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
+    }
+  }
+
+  public SchemaRequestsResponseModel getSchemaRequest(Integer schemaReqId) {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    SchemaRequest schemaRequest =
+        manageDatabase.getHandleDbRequests().getSchemaRequest(schemaReqId, tenantId);
+
+    if (schemaRequest == null) {
+      return null;
+    } else {
+      SchemaRequestsResponseModel schemaRequestsResponseModel = new SchemaRequestsResponseModel();
+      copyProperties(schemaRequest, schemaRequestsResponseModel);
+      schemaRequestsResponseModel.setRequestStatus(
+          RequestStatus.of(schemaRequest.getRequestStatus()));
+      schemaRequestsResponseModel.setRequestOperationType(
+          RequestOperationType.of(schemaRequest.getRequestOperationType()));
+      // Set kafka env name, id
+      manageDatabase.getKafkaEnvList(tenantId).stream()
+          .filter(
+              kafkaEnv -> {
+                if (kafkaEnv.getAssociatedEnv() != null) {
+                  return kafkaEnv.getAssociatedEnv().getId().equals(schemaRequest.getEnvironment());
+                }
+                return false;
+              })
+          .findFirst()
+          .ifPresent(
+              env -> {
+                schemaRequestsResponseModel.setEnvironmentName(env.getName());
+                schemaRequestsResponseModel.setEnvironment(env.getId());
+              });
+
+      schemaRequestsResponseModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(tenantId, schemaRequest.getTeamId()));
+
+      return schemaRequestsResponseModel;
     }
   }
 

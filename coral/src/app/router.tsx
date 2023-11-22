@@ -53,13 +53,12 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
+import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
+import { TeamsPage } from "src/app/pages/configuration/teams";
+import { UsersPage } from "src/app/pages/configuration/users";
 
 const routes: Array<RouteObject> = [
-  // Login is currently the responsibility of the
-  // Angular Klaw app
-  // {
-  //   path: "/login",
-  // },
   {
     path: "/",
     element: <Layout />,
@@ -235,6 +234,18 @@ const routes: Array<RouteObject> = [
               },
             ],
           },
+          createRouteBehindFeatureFlag({
+            path: Routes.TEAMS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <TeamsPage />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USERS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <UsersPage />,
+          }),
         ],
       },
     ],

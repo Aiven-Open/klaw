@@ -1,6 +1,6 @@
 import { cleanup, render, within, screen } from "@testing-library/react";
 import { Pagination } from "src/app/components/Pagination";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 function getNavigationElement() {
   return screen.getByRole("navigation", { name: /Pagination/ });

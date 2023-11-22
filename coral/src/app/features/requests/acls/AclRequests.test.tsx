@@ -5,12 +5,12 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclRequests from "src/app/features/requests/acls/AclRequests";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -102,7 +102,7 @@ const mockGetAclRequestsResponse = transformAclRequestApiResponse([
 ]);
 
 const mockGetEnvironmentsResponse = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "DEV",
     id: "1",
   }),
@@ -416,7 +416,8 @@ describe("AclRequests", () => {
         name: "Filter by ACL type",
       });
 
-      expect(envFilter).toHaveDisplayValue("CONSUMER");
+      expect(envFilter).toHaveDisplayValue("Consumer");
+      expect(envFilter).toHaveValue("CONSUMER");
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",

@@ -1,11 +1,10 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicPromotionRequest from "src/app/features/topics/request/TopicPromotionRequest";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTopicDetailsPerEnv, requestTopicPromotion } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -49,16 +48,14 @@ const mockError = {
   },
 };
 
-const mockEnvironments = transformEnvironmentApiResponse(
-  mockedEnvironmentResponse
-).map((env) => ({
+const mockEnvironments = mockedEnvironmentResponse.map((env) => ({
   ...env,
   params: {
     ...env.params,
-    defaultPartitions: 2,
-    defaultRepFactor: 1,
-    maxPartitions: 2,
-    maxRepFactor: 1,
+    defaultPartitions: "2",
+    defaultRepFactor: "1",
+    maxPartitions: "2",
+    maxRepFactor: "1",
   },
 }));
 
@@ -443,10 +440,10 @@ describe("<TopicPromotionRequest />", () => {
           name: "TST",
           params: {
             applyRegex: undefined,
-            defaultPartitions: 2,
-            defaultRepFactor: 1,
-            maxPartitions: 2,
-            maxRepFactor: 1,
+            defaultPartitions: "2",
+            defaultRepFactor: "1",
+            maxPartitions: "2",
+            maxRepFactor: "1",
             topicPrefix: undefined,
             topicSuffix: undefined,
           },

@@ -230,8 +230,10 @@ public class CommonUtilsService {
     List<String> labels = new ArrayList<>(size);
     List<String> colors = new ArrayList<>(size);
 
-    data.add(0);
-    labels.add("");
+    if (activityCountList.isEmpty()) {
+      data.add(0);
+      labels.add("");
+    }
 
     int totalCount = 0;
 
@@ -531,11 +533,11 @@ public class CommonUtilsService {
     groupedList.forEach(
         (k, v) -> {
           Topic t = v.get(0);
-          List<String> tmpEnvList = new ArrayList<>();
+          Set<String> tmpEnvSet = new HashSet<>();
           for (Topic topic : v) {
-            tmpEnvList.add(topic.getEnvironment());
+            tmpEnvSet.add(topic.getEnvironment());
           }
-          t.setEnvironmentsList(tmpEnvList);
+          t.setEnvironmentsSet(tmpEnvSet);
           tmpTopicList.add(t);
         });
     return tmpTopicList;

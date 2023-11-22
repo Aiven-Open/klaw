@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -724,6 +715,11 @@
 															<div ng-show="aclRequest.acl_ssl != null && (aclRequest.acl_ssls == null || aclRequest.acl_ssls.length == 0)" class="p-2 border-right" style="width:30%" >
 
 																<h6 class="text-primary">Principal / Username</h6><b><i ng-show="aclRequest.showDeleteAcl == false" class="fa fa-lock"></i> {{ aclRequest.acl_ssl }}</b>
+
+															</div>
+															<div ng-show="aclRequest.acl_ssl == null && (aclRequest.acl_ssls == null || aclRequest.acl_ssls.length == 0)" class="p-2 border-right" style="width:30%" >
+
+																<h6 class="text-primary">Principal / Username</h6><b></b>
 
 															</div>
 															<div ng-show="aclRequest.acl_ssl == null && aclRequest.acl_ssls.length > 0" class="p-2 border-right" style="width:30%" >

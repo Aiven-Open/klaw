@@ -6,7 +6,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import {
   requestAclDeletion,
@@ -365,7 +365,7 @@ describe("TopicSubscriptions.tsx", () => {
         name: "Filter by ACL type",
       });
       const producerOption = within(filter).getByRole("option", {
-        name: "PRODUCER",
+        name: "Producer",
       });
 
       await userEvent.selectOptions(filter, producerOption);

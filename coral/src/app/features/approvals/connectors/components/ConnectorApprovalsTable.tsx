@@ -18,6 +18,7 @@ interface ConnectorRequestTableData {
   connectorName: ConnectorRequest["connectorName"];
   environmentName: ConnectorRequest["environmentName"];
   requestor: ConnectorRequest["requestor"];
+  teamname: ConnectorRequest["teamname"];
   requesttimestring: ConnectorRequest["requesttimestring"];
   requestStatus: ConnectorRequest["requestStatus"];
   requestOperationType: ConnectorRequest["requestOperationType"];
@@ -77,6 +78,11 @@ function ConnectorApprovalsTable({
       },
     },
     { type: "text", field: "requestor", headerName: "Requested by" },
+    {
+      type: "text",
+      field: "teamname",
+      headerName: "Team",
+    },
     {
       type: "text",
       field: "requesttimestring",
@@ -147,6 +153,7 @@ function ConnectorApprovalsTable({
       connectorId,
       connectorName,
       environmentName,
+      teamname,
       requestor,
       requesttimestring,
       requestStatus,
@@ -156,6 +163,7 @@ function ConnectorApprovalsTable({
         id: connectorId,
         connectorName,
         environmentName,
+        teamname,
         requestor,
         requesttimestring,
         requestStatus,

@@ -11,9 +11,14 @@ import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
+  const teamsUsersFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_TEAMS
+  );
 
   return (
     <Box
@@ -92,8 +97,16 @@ function MainNavigation() {
             text={"Configuration"}
             defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
-            <MainNavigationLink to={`/users`} linkText={"Users"} />
-            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
+            <MainNavigationLink
+              to={teamsUsersFeatureFlagEnabled ? Routes.USERS : "/users"}
+              linkText={"Users"}
+              active={pathname.startsWith(Routes.USERS)}
+            />
+            <MainNavigationLink
+              to={teamsUsersFeatureFlagEnabled ? Routes.TEAMS : "/teams"}
+              linkText={"Teams"}
+              active={pathname.startsWith(Routes.TEAMS)}
+            />
             <MainNavigationLink
               to={Routes.ENVIRONMENTS}
               linkText={"Environments"}

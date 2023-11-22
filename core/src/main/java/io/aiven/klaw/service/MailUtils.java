@@ -11,10 +11,12 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -635,7 +637,7 @@ public class MailUtils {
     Map<String, List<String>> rolesToPermissions =
         manageDatabase.getRolesPermissionsPerTenant(tenantId);
 
-    List<String> roles = new ArrayList<>();
+    Set<String> roles = new HashSet<>();
 
     rolesToPermissions.forEach(
         (k, v) -> {

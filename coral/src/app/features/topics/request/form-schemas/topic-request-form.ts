@@ -1,4 +1,4 @@
-import z, { RefinementCtx } from "zod";
+import { z, RefinementCtx } from "zod";
 import isNumber from "lodash/isNumber";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
@@ -20,10 +20,10 @@ const topicPartitionsField = z.string();
 const replicationFactorField = z.string();
 
 const environmentParams = z.object({
-  maxRepFactor: z.number().optional(),
-  maxPartitions: z.number().optional(),
-  defaultPartitions: z.number().optional(),
-  defaultRepFactor: z.number().optional(),
+  maxRepFactor: z.string().optional(),
+  maxPartitions: z.string().optional(),
+  defaultPartitions: z.string().optional(),
+  defaultRepFactor: z.string().optional(),
   applyRegex: z.boolean().optional(),
   topicPrefix: z.array(z.string()).optional(),
   topicSuffix: z.array(z.string()).optional(),
@@ -34,7 +34,7 @@ type EnvironmentForTopicForm = Pick<Environment, "name" | "id" | "params">;
 const environmentField: z.ZodType<EnvironmentForTopicForm> = z.object({
   name: z.string(),
   id: z.string(),
-  params: environmentParams.optional(),
+  params: environmentParams,
 });
 
 const advancedConfigurationField = z.string().optional();
@@ -224,9 +224,9 @@ const useExtendedFormValidationAndTriggers = (
         currentValue: topicPartitions,
         environmentMax: environment.params?.maxPartitions,
         environmentDefault: environment.params?.defaultPartitions,
-        fallbackDefault: 2,
+        fallbackDefault: "2",
       });
-      form.setValue("topicpartitions", nextTopicPartitions.toString(), {
+      form.setValue("topicpartitions", nextTopicPartitions, {
         shouldValidate: false,
       });
 
@@ -234,15 +234,11 @@ const useExtendedFormValidationAndTriggers = (
         currentValue: replicationFactor,
         environmentMax: environment.params?.maxRepFactor,
         environmentDefault: environment.params?.defaultRepFactor,
-        fallbackDefault: 1,
+        fallbackDefault: "1",
       });
-      form.setValue(
-        "replicationfactor",
-        nextReplicationFactorValue.toString(),
-        {
-          shouldValidate: false,
-        }
-      );
+      form.setValue("replicationfactor", nextReplicationFactorValue, {
+        shouldValidate: false,
+      });
 
       if (topicName.length > 0) {
         form.trigger(["replicationfactor", "topicpartitions", "topicname"]);
@@ -269,30 +265,40 @@ const useExtendedFormValidationAndTriggers = (
   }, [topicName]);
 };
 
-type FoobarArgs = {
+type FindNextValueArgs = {
   currentValue: string;
   environmentMax: z.infer<typeof environmentParams>["maxPartitions"];
   environmentDefault: z.infer<typeof environmentParams>["defaultPartitions"];
-  fallbackDefault: number;
+  fallbackDefault: string;
 };
 function findNextValue({
   currentValue,
   environmentMax,
   environmentDefault,
   fallbackDefault,
-}: FoobarArgs): number {
-  if (isNumber(environmentDefault)) {
+}: FindNextValueArgs): string {
+  if (environmentDefault !== undefined) {
     return environmentDefault;
   }
 
   const currentValueAsNumber = parseInt(currentValue, 10);
+
   // parseInt("", 10) = NaN
   if (!Number.isNaN(currentValueAsNumber)) {
-    if (isNumber(environmentMax) && currentValueAsNumber > environmentMax) {
-      return environmentMax;
-    } else {
-      return currentValueAsNumber;
+    if (environmentMax === undefined) {
+      return currentValue;
     }
+
+    const environmentMaxAsNumber = parseInt(environmentMax, 10);
+
+    if (
+      isNumber(environmentMaxAsNumber) &&
+      currentValueAsNumber > environmentMaxAsNumber
+    ) {
+      return environmentMax;
+    }
+
+    return currentValue;
   }
   return fallbackDefault;
 }

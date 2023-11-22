@@ -707,6 +707,7 @@ public class KafkaConnectControllerService {
               jsonConnectorConfig,
               kafkaConnectHost,
               kwClusters.getClusterName() + kwClusters.getClusterId(),
+              connectorRequest.getEnvironment(),
               tenantId);
 
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
@@ -1224,7 +1225,7 @@ public class KafkaConnectControllerService {
       List<KwKafkaConnector> connectors, String envId, int tenantId) {
     ConnectorOverview overview = new ConnectorOverview();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_KAFKA_CONNECT_ENVS);
-    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    Set<String> orderOfEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     connectors.forEach(
@@ -1237,7 +1238,7 @@ public class KafkaConnectControllerService {
                   .map(Env::getName)
                   .findFirst()
                   .orElse("ENV_NOT_FOUND"));
-          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+          if (orderOfEnvsSet.contains(envIdInfo.getId())) {
             availableEnvs.add(envIdInfo);
           } else {
             availableEnvsNotInPromotionOrder.add(envIdInfo);
@@ -1422,7 +1423,7 @@ public class KafkaConnectControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     int tenantId = commonUtilsService.getTenantId(userName);
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
@@ -1485,7 +1486,7 @@ public class KafkaConnectControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
