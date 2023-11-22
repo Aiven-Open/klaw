@@ -306,11 +306,10 @@ describe("ConnectorDetails", () => {
 
       await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 
-      const description = await waitFor(() =>
-        screen.getByText(
-          `This connector is currently owned by ${testConnectorOverview.connectorInfo.teamName}. Select "Claim connector" to request ownership.`
-        )
+      const description = await screen.findByText(
+        `This connector is currently owned by ${testConnectorOverview.connectorInfo.teamName}. Select "Claim connector" to request ownership.`
       );
+
       const button = await waitFor(() =>
         screen.getByRole("button", { name: "Claim connector" })
       );
