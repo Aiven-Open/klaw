@@ -97,7 +97,11 @@ function MainNavigation() {
             text={"Configuration"}
             defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
-            <MainNavigationLink to={`/users`} linkText={"Users"} />
+            <MainNavigationLink
+              to={teamsUsersFeatureFlagEnabled ? Routes.USERS : "/users"}
+              linkText={"Users"}
+              active={pathname.startsWith(Routes.USERS)}
+            />
             <MainNavigationLink
               to={teamsUsersFeatureFlagEnabled ? Routes.TEAMS : "/teams"}
               linkText={"Teams"}

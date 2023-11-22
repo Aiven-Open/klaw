@@ -189,6 +189,53 @@ describe("MainNavigation.tsx", () => {
     });
   });
 
+  describe("renders links to users behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Users" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/users");
+    });
+
+    it("renders a link to the users page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValueOnce(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Users" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/configuration/users");
+    });
+  });
+
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {
