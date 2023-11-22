@@ -4,9 +4,8 @@ import {
   ClusterDetails as ClusterDetailsType,
   getClusterDetails,
 } from "src/domain/cluster";
-import { cleanup, RenderResult, screen } from "@testing-library/react";
+import { cleanup, RenderResult, screen, within } from "@testing-library/react";
 import { getDefinitionList } from "src/services/test-utils/custom-queries";
-import { within } from "@testing-library/react/pure";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({

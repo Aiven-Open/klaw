@@ -6,6 +6,7 @@ import {
   EnvironmentsTabEnum,
   isEnvironmentsTabEnum,
 } from "src/app/router_utils";
+import PreviewBanner from "src/app/components/PreviewBanner";
 
 function findMatchingTab(
   matches: ReturnType<typeof useMatches>
@@ -30,6 +31,7 @@ const EnvironmentsPage = () => {
   }
   return (
     <>
+      <PreviewBanner linkTarget={"/envs"} />
       <PageHeader title={"Environments"} />
       <EnvironmentsTabs currentTab={currentTab} />
     </>
