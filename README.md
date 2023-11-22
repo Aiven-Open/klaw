@@ -109,6 +109,8 @@ For the versions available, see the [tags on this repository](https://github.com
 
 - Help Wizard to setup Klaw
 
+[See Features of Klaw in docs](https://www.klaw-project.io/docs/features)
+
 ## Documentation
 
 - User documentation : https://klaw-project.io/docs
