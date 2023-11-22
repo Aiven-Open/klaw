@@ -90,6 +90,13 @@ const REQUESTS_TAB_ID_INTO_PATH = {
   [RequestsTabEnum.CONNECTORS]: "connectors",
 } as const;
 
+const REQUESTS_TAB_PATH_LINK_MAP = {
+  [RequestsTabEnum.TOPICS]: "/myTopicRequests",
+  [RequestsTabEnum.ACLS]: "/myAclRequests",
+  [RequestsTabEnum.SCHEMAS]: "/mySchemaRequests",
+  [RequestsTabEnum.CONNECTORS]: "/myConnectorRequests",
+} as const;
+
 const APPROVALS_TAB_ID_INTO_PATH = {
   [ApprovalsTabEnum.TOPICS]: "topics",
   [ApprovalsTabEnum.ACLS]: "acls",
@@ -170,6 +177,7 @@ export {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
   APPROVALS_TAB_PATH_LINK_MAP,
+  REQUESTS_TAB_PATH_LINK_MAP,
   isEnvironmentsTabEnum,
   isRequestsTabEnum,
   isApprovalsTabEnum,
