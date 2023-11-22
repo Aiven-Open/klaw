@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Declarations
-version=2.6.0
+version=2.6.1
 core_lib=./core/target/klaw-${version}.jar
 cluster_lib=./cluster-api/target/cluster-api-${version}.jar
 core_config=./core/target/classes/application.properties
