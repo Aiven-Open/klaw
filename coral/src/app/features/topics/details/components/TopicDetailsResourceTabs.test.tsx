@@ -3,7 +3,6 @@ import { userEvent } from "@testing-library/user-event";
 import { TopicOverviewTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
-import { within } from "@testing-library/react/pure";
 import { TopicOverview } from "src/domain/topic";
 
 const mockedNavigate = jest.fn();
