@@ -3,8 +3,8 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
 import { ConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 import {
   ConnectorOverview,

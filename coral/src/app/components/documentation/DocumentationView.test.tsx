@@ -1,5 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 const markdownInput = `# Hello world`;

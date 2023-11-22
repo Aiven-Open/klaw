@@ -1,6 +1,5 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
-import { cleanup, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
+import { cleanup, screen, within } from "@testing-library/react";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicSchemaOverview } from "src/domain/topic";

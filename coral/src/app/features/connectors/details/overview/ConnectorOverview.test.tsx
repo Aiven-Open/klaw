@@ -1,8 +1,7 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { ConnectorOverview } from "src/app/features/connectors/details/overview/ConnectorOverview";
 import { ConnectorOverview as ConnectorOverviewType } from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { within } from "@testing-library/react/pure";
 
 const mockedUseConnectorDetails = jest.fn();
 jest.mock("src/app/features/connectors/details/ConnectorDetails", () => ({
