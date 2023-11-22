@@ -269,7 +269,7 @@ describe("useMessagesFilters.tsx", () => {
       expect(isValid).toBe(false);
 
       expect(result.current.filterErrors).toStrictEqual({
-        customOffsetFilters: "Max offset: 1000",
+        customOffsetFilters: "Max offset: 100",
         partitionIdFilters: null,
       });
     });

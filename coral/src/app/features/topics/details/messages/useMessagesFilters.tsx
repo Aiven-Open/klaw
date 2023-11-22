@@ -66,8 +66,8 @@ function useMessagesFilters(): OffsetFilters {
     const customOffsetFiltersError =
       getCustomOffset() === "" || getCustomOffset() === null
         ? "Please enter an offset"
-        : Number(getCustomOffset()) > 1000
-        ? "Max offset: 1000"
+        : Number(getCustomOffset()) > 100
+        ? "Max offset: 100"
         : null;
 
     setFilterErrors({
@@ -127,8 +127,8 @@ function useMessagesFilters(): OffsetFilters {
       customOffsetFilters:
         customOffset === ""
           ? "Please enter an offset"
-          : Number(customOffset) > 1000
-          ? "Max offset: 1000"
+          : Number(customOffset) > 100
+          ? "Max offset: 100"
           : null,
     }));
     searchParams.set(NAMES.customOffset, customOffset);
