@@ -52,7 +52,7 @@ describe("TopicMessages", () => {
     const switchInput = screen.getByRole("checkbox");
 
     const switchGroupDefault = screen.getByRole("group", {
-      name: "Fetching mode Get the latest messages",
+      name: "Fetching mode Select message offset",
     });
 
     expect(switchGroupDefault).toBeVisible();
@@ -61,7 +61,7 @@ describe("TopicMessages", () => {
     await userEvent.click(switchInput);
 
     const switchGroupCustom = screen.getByRole("group", {
-      name: "Fetching mode Get a specific offset",
+      name: "Fetching mode Specify message offset",
     });
 
     expect(switchGroupCustom).toBeVisible();
@@ -88,7 +88,7 @@ describe("TopicMessages", () => {
     const switchInput = screen.getByRole("checkbox");
 
     const switchGroupDefault = screen.getByRole("group", {
-      name: "Fetching mode Get the latest messages",
+      name: "Fetching mode Select message offset",
     });
 
     expect(switchGroupDefault).toBeVisible();
@@ -115,7 +115,7 @@ describe("TopicMessages", () => {
     const switchInput = screen.getByRole("checkbox");
 
     const switchGroupCustom = screen.getByRole("group", {
-      name: "Fetching mode Get a specific offset",
+      name: "Fetching mode Specify message offset",
     });
 
     expect(switchGroupCustom).toBeVisible();

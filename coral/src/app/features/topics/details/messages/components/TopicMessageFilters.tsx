@@ -41,9 +41,7 @@ function TopicMessageFilters({
       labelText="Number of messages"
       disabled={disabled}
       onChange={(value) => onDefaultOffsetChange(value as DefaultOffset)}
-      description={
-        "Choose how many recent messages you want to view from this topic."
-      }
+      description={"Select number of messages to display from this topic"}
     >
       {defaultOffsets.map((defaultOffset) => {
         if (defaultOffset === "custom") {
@@ -61,8 +59,8 @@ function TopicMessageFilters({
       <Input
         value={values.partitionId || undefined}
         labelText="Partition ID"
-        placeholder={"1"}
-        description={"Choose which partition you want to query."}
+        placeholder={"0"}
+        description={"Enter partition ID to retrieve last messages"}
         onChange={(e) => onPartitionIdChange(e.target.value)}
         type="number"
         helperText={filterErrors.partitionIdFilters || undefined}
@@ -74,7 +72,7 @@ function TopicMessageFilters({
         labelText="Number of messages"
         placeholder={"50"}
         description={
-          "Choose how many recent messages you want to view from this partition."
+          "Set the number of recent messages to display from this partition"
         }
         onChange={(e) => onCustomOffsetChange(e.target.value)}
         type="number"
