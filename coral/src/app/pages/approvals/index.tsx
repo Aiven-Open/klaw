@@ -5,7 +5,9 @@ import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
   isApprovalsTabEnum,
+  APPROVALS_TAB_PATH_LINK_MAP,
 } from "src/app/router_utils";
+import PreviewBanner from "src/app/components/PreviewBanner";
 
 const ApprovalsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,8 +16,10 @@ const ApprovalsPage = () => {
   if (currentTab === undefined) {
     return <Navigate to={`/approvals/topics`} replace={true} />;
   }
+
   return (
     <>
+      <PreviewBanner linkTarget={APPROVALS_TAB_PATH_LINK_MAP[currentTab]} />
       <PageHeader title={"Approve requests"} />
       <ApprovalResourceTabs currentTab={currentTab} />
     </>

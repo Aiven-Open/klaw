@@ -97,6 +97,13 @@ const APPROVALS_TAB_ID_INTO_PATH = {
   [ApprovalsTabEnum.CONNECTORS]: "connectors",
 } as const;
 
+const APPROVALS_TAB_PATH_LINK_MAP = {
+  [ApprovalsTabEnum.TOPICS]: "/execTopics",
+  [ApprovalsTabEnum.ACLS]: "/execAcls",
+  [ApprovalsTabEnum.SCHEMAS]: "/execSchemas",
+  [ApprovalsTabEnum.CONNECTORS]: "/execConnectors",
+} as const;
+
 function isEnvironmentsTabEnum(value: unknown): value is EnvironmentsTabEnum {
   if (isString(value)) {
     return Object.prototype.hasOwnProperty.call(
@@ -162,6 +169,7 @@ export {
   APPROVALS_TAB_ID_INTO_PATH,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  APPROVALS_TAB_PATH_LINK_MAP,
   isEnvironmentsTabEnum,
   isRequestsTabEnum,
   isApprovalsTabEnum,
