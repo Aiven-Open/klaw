@@ -150,8 +150,8 @@ function TopicMessages() {
                 labelText="Fetching mode"
                 description={
                   fetchingMode === "Default"
-                    ? "Get the latest messages"
-                    : "Get a specific offset"
+                    ? "Select message offset"
+                    : "Specify message offset"
                 }
               >
                 <Switch

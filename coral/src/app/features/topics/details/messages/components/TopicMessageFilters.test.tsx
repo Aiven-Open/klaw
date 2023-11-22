@@ -68,7 +68,7 @@ describe("TopicMessageFilters", () => {
       );
       within(
         screen.getByRole("group", {
-          name: "Number of messages Choose how many recent messages you want to view from this topic.",
+          name: "Number of messages Select number of messages to display from this topic",
         })
       )
         .getAllByRole("radio")
@@ -97,12 +97,12 @@ describe("TopicMessageFilters", () => {
       );
       expect(
         screen.getByRole("spinbutton", {
-          name: "Partition ID * Choose which partition you want to query.",
+          name: "Partition ID * Enter partition ID to retrieve last messages",
         })
       ).toBeVisible();
       expect(
         screen.getByRole("spinbutton", {
-          name: "Number of messages * Choose how many recent messages you want to view from this partition.",
+          name: "Number of messages * Set the number of recent messages to display from this partition",
         })
       ).toBeVisible();
     });
@@ -127,10 +127,10 @@ describe("TopicMessageFilters", () => {
       );
 
       const partitionIdInput = screen.getByRole("spinbutton", {
-        name: "Partition ID * Choose which partition you want to query.",
+        name: "Partition ID * Enter partition ID to retrieve last messages",
       });
       const customOffsetInput = screen.getByRole("spinbutton", {
-        name: "Number of messages * Choose how many recent messages you want to view from this partition.",
+        name: "Number of messages * Set the number of recent messages to display from this partition",
       });
 
       await userEvent.type(partitionIdInput, "1");
