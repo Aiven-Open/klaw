@@ -837,7 +837,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }
 
                 if($scope.topicOffsetsVal === 'custom'){
-                    if(!$scope.selectedPartitionId || $scope.selectedPartitionId === ""){
+                    if($scope.selectedPartitionId === ""){
                         $scope.alert = "Please fill in a partition id.";
                         $scope.showAlertToast();
                         return;
