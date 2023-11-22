@@ -1,5 +1,5 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import AclRequestsPage from "src/app/pages/requests/acls/index";
@@ -33,25 +33,6 @@ describe("AclRequestsPage", () => {
   });
 
   afterAll(cleanup);
-
-  it("shows a preview banner to inform users about the early version of the view", () => {
-    const previewBanner = screen.getByLabelText("Preview disclaimer");
-
-    expect(previewBanner).toBeVisible();
-    expect(previewBanner).toHaveTextContent(
-      "You are viewing a preview of the redesigned user interface. You are one of our early reviewers, and your feedback will help us improve the product. You can always go back to the old interface."
-    );
-  });
-
-  it("shows link back back to the original Klaw app for this view in the preview banner", () => {
-    const previewBanner = screen.getByLabelText("Preview disclaimer");
-    const link = within(previewBanner).getByRole("link", {
-      name: "old interface",
-    });
-
-    expect(link).toBeVisible();
-    expect(link).toHaveAttribute("href", "/myAclRequests");
-  });
 
   it("renders the Acl request view", () => {
     const emptyRequests = screen.getByText(

@@ -1,5 +1,4 @@
-import { RenderResult } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
+import { RenderResult, within } from "@testing-library/react";
 
 /** Custom query to be able to check for a Definition List
  * that testing-library does not provide

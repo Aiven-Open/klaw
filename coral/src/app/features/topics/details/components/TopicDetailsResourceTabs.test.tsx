@@ -3,7 +3,6 @@ import { userEvent } from "@testing-library/user-event";
 import { TopicOverviewTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
-import { within } from "@testing-library/react/pure";
 import { TopicOverview } from "src/domain/topic";
 
 const mockedNavigate = jest.fn();
@@ -309,17 +308,6 @@ describe("TopicDetailsResourceTabs", () => {
       const tab = screen.getByRole("tab", { selected: true });
 
       expect(tab).toHaveAccessibleName("Overview");
-    });
-
-    it("shows a preview banner to enables users to go back to original app", () => {
-      const banner = screen.getByRole("region", { name: "Preview disclaimer" });
-      const link = within(banner).getByRole("link", { name: "old interface" });
-
-      expect(banner).toBeVisible();
-      expect(link).toHaveAttribute(
-        "href",
-        `/topicOverview?topicname=${testTopicName}`
-      );
     });
   });
 
