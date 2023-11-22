@@ -107,12 +107,8 @@ a:not(.Aquarium-Button):focus-visible {
   outline-offset: 0 !important;
 }
 
-/*Applies color only to label text that is not in error state, not a badge, not a tooltip*/
+/*Applies color only to label and legend text that is not in error state*/
 :root legend span:not([class*="error"]),
-:root
-  [class*="typography-caption"]:not([class*="Aquarium-Badge"]):not(
-    [class*="text-error-50"]
-  ):not([role="tooltip"]:not([class*="Aquarium-Badge"])),
 :root label span:not([class*="error"]) {
   /*represents grey-70 */
   color: #4a4b57 !important;
