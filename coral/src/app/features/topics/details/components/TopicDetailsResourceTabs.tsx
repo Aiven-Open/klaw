@@ -1,7 +1,6 @@
 import { Alert, Box, Icon, Tabs } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
-import PreviewBanner from "src/app/components/PreviewBanner";
 import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   TopicOverviewTabEnum,
@@ -152,14 +151,7 @@ function TopicOverviewResourcesTabs({
             aria-label={tab.title}
             key={tab.title}
           >
-            {currentTab === tab.topicOverviewTabEnum && (
-              <div>
-                <PreviewBanner
-                  linkTarget={`/topicOverview?topicname=${topicName}`}
-                />
-                {renderTabContent()}
-              </div>
-            )}
+            {currentTab === tab.topicOverviewTabEnum && renderTabContent()}
           </Tabs.Tab>
         );
       })}

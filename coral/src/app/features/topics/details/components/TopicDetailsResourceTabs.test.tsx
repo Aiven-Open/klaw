@@ -310,17 +310,6 @@ describe("TopicDetailsResourceTabs", () => {
 
       expect(tab).toHaveAccessibleName("Overview");
     });
-
-    it("shows a preview banner to enables users to go back to original app", () => {
-      const banner = screen.getByRole("region", { name: "Preview disclaimer" });
-      const link = within(banner).getByRole("link", { name: "old interface" });
-
-      expect(banner).toBeVisible();
-      expect(link).toHaveAttribute(
-        "href",
-        `/topicOverview?topicname=${testTopicName}`
-      );
-    });
   });
 
   describe("enables users to switch panels", () => {

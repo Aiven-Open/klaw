@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
+import PreviewBanner from "src/app/components/PreviewBanner";
 
 function TopicDetailsPage() {
   const { topicName } = useParams();
@@ -10,7 +11,12 @@ function TopicDetailsPage() {
     return <></>;
   }
 
-  return <TopicDetails topicName={topicName} />;
+  return (
+    <>
+      <PreviewBanner linkTarget={`/topicOverview?topicname=${topicName}`} />
+      <TopicDetails topicName={topicName} />
+    </>
+  );
 }
 
 export { TopicDetailsPage };
