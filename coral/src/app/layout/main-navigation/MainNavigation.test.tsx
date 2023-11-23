@@ -179,7 +179,7 @@ describe("MainNavigation.tsx", () => {
         name: "User information submenu",
       });
 
-      const link = within(list).getByRole("link", { name: "Profile" });
+      const link = within(list).getByRole("link", { name: "User profile" });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute("href", "/myProfile");
     });
@@ -199,7 +199,7 @@ describe("MainNavigation.tsx", () => {
         name: "User information submenu",
       });
 
-      const link = within(list).getByRole("link", { name: "Profile" });
+      const link = within(list).getByRole("link", { name: "User profile" });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute("href", "/user/profile");
     });
