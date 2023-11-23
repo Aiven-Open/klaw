@@ -26,24 +26,6 @@ public class EnvControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  // every 1 hour
-  @Scheduled(fixedRateString = "PT1H", initialDelay = 60)
-  public void loadTenantActiveStatus() {
-    try {
-      for (Integer tenantId : manageDatabase.getTenantMap().keySet()) {
-        long expiryLong = manageDatabase.getTenantFullConfig(tenantId).getLicenseExpiry().getTime();
-        long currentTime = System.currentTimeMillis();
-        long diffTime = expiryLong - currentTime;
-        if (diffTime < 0) {
-          manageDatabase.getHandleDbRequests().setTenantActivestatus(tenantId, false);
-          manageDatabase.loadOneTenant(tenantId);
-        }
-      }
-    } catch (Exception e) {
-      log.info("loadTenantActiveStatus : ", e);
-    }
-  }
-
   @Scheduled(fixedRateString = "PT1H", initialDelay = 9000)
   public void loadEnvsWithStatus() {
     updateEnvsStatus();

@@ -37,7 +37,7 @@ public interface DefaultAttributeConverter<X> extends AttributeConverter<X, Stri
   default X convertToEntityAttribute(String value, X defaultValue) {
     X res = defaultValue;
     try {
-      if (value != null) {
+      if (value != null && !value.equals("")) {
         Class<X> classOfEntityAttribute = getClassOfEntityAttribute();
         if (classOfEntityAttribute != null) {
           res = OBJECT_MAPPER.readValue(value, classOfEntityAttribute);

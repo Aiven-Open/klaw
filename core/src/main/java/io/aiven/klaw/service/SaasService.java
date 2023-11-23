@@ -77,7 +77,6 @@ public class SaasService {
         kwTenantModel.setTenantName(newTenantName);
         kwTenantModel.setTenantDesc("");
         kwTenantModel.setContactPerson(newUser.getFullname());
-        kwTenantModel.setInTrialPhase(true);
         kwTenantModel.setActiveTenant(true);
         ApiResponse addTenantResult =
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
