@@ -53,9 +53,6 @@ export type paths = {
   "/udpateTenant": {
     post: operations["udpateTenant"];
   };
-  "/udpateTenantExtension": {
-    post: operations["udpateTenantExtension"];
-  };
   "/sendMessageToAdmin": {
     post: operations["sendMessageToAdmin"];
   };
@@ -390,9 +387,6 @@ export type paths = {
   };
   "/getKafkaConnectEnvs": {
     get: operations["getKafkaConnectEnvs"];
-  };
-  "/getExtensionPeriods": {
-    get: operations["getExtensionPeriods"];
   };
   "/getEnvs": {
     get: operations["getEnvs"];
@@ -930,11 +924,7 @@ export type components = {
       tenantDesc: string;
       /** Format: int32 */
       tenantId?: number;
-      licenseExpiryDate?: string;
       contactPerson?: string;
-      inTrialPhase?: boolean;
-      numberOfDays?: string;
-      numberOfHours?: string;
       orgName?: string;
       authorizedToDelete?: boolean;
       emailId?: string;
@@ -1281,8 +1271,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -2019,21 +2009,6 @@ export type operations = {
     parameters: {
       query: {
         orgName: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  udpateTenantExtension: {
-    parameters: {
-      query: {
-        selectedTenantExtensionPeriod: string;
       };
     };
     responses: {
@@ -3735,16 +3710,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getExtensionPeriods: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
         };
       };
     };

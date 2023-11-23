@@ -480,32 +480,6 @@
         }
       }
     },
-    "/udpateTenantExtension" : {
-      "post" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "udpateTenantExtension",
-        "parameters" : [ {
-          "name" : "selectedTenantExtensionPeriod",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/sendMessageToAdmin" : {
       "post" : {
         "tags" : [ "ui-config-controller" ],
@@ -4184,27 +4158,6 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/EnvModelResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getExtensionPeriods" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getExtensionPeriods",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
                   }
                 }
               }
@@ -8020,10 +7973,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
