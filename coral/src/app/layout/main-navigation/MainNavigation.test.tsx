@@ -54,6 +54,23 @@ const submenuItems = [
       },
     ],
   },
+  {
+    name: "User information",
+    links: [
+      {
+        name: "Profile",
+        linkTo: isFeatureFlagActiveMock() ? `/user/profile` : `/myProfile`,
+      },
+      {
+        name: "Change password",
+        linkTo: "/changePwd",
+      },
+      {
+        name: "Tenant",
+        linkTo: "/tenantInfo",
+      },
+    ],
+  },
 ];
 
 const navOrderFirstLevel = [
@@ -64,6 +81,7 @@ const navOrderFirstLevel = [
   { name: "My team's requests", isSubmenu: false },
   { name: "Audit log", isSubmenu: false },
   { name: "Configuration", isSubmenu: true },
+  { name: "User information", isSubmenu: true },
 ];
 
 describe("MainNavigation.tsx", () => {
@@ -147,7 +165,7 @@ describe("MainNavigation.tsx", () => {
     });
 
     it("renders a link to the old UI when feature flag is false", async () => {
-      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+      isFeatureFlagActiveMock.mockReturnValue(false);
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
@@ -167,13 +185,13 @@ describe("MainNavigation.tsx", () => {
     });
 
     it("renders a link to the teams page when feature flag is true", async () => {
-      isFeatureFlagActiveMock.mockReturnValueOnce(true);
+      isFeatureFlagActiveMock.mockReturnValue(true);
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
       });
 
-      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+      isFeatureFlagActiveMock.mockReturnValue(false);
 
       const button = screen.getByRole("button", {
         name: new RegExp("Configuration", "i"),
@@ -196,7 +214,7 @@ describe("MainNavigation.tsx", () => {
     });
 
     it("renders a link to the old UI when feature flag is false", async () => {
-      isFeatureFlagActiveMock.mockReturnValueOnce(false);
+      isFeatureFlagActiveMock.mockReturnValue(false);
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
@@ -216,7 +234,7 @@ describe("MainNavigation.tsx", () => {
     });
 
     it("renders a link to the users page when feature flag is true", async () => {
-      isFeatureFlagActiveMock.mockReturnValueOnce(true);
+      isFeatureFlagActiveMock.mockReturnValue(true);
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
@@ -233,6 +251,53 @@ describe("MainNavigation.tsx", () => {
       const link = within(list).getByRole("link", { name: "Users" });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute("href", "/configuration/users");
+    });
+  });
+
+  describe("renders links to profile behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("User information", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "User information submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "Profile" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/myProfile");
+    });
+
+    it("renders a link to the profile page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("User information", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "User information submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "Profile" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/user/profile");
     });
   });
 

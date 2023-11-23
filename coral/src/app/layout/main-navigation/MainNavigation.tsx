@@ -5,6 +5,7 @@ import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
+import person from "@aivenio/aquarium/dist/src/icons/person";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
@@ -18,6 +19,9 @@ function MainNavigation() {
   const { pathname } = useLocation();
   const teamsUsersFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_TEAMS
+  );
+  const userInformationFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
 
   return (
@@ -112,6 +116,28 @@ function MainNavigation() {
               linkText={"Environments"}
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
+          </MainNavigationSubmenuList>
+        </li>
+        <li>
+          <MainNavigationSubmenuList
+            icon={person}
+            text={"User information"}
+            defaultExpanded={pathname.startsWith(Routes.USER_INFORMATION)}
+          >
+            <MainNavigationLink
+              to={
+                userInformationFeatureFlagEnabled
+                  ? Routes.USER_PROFILE
+                  : "/myProfile"
+              }
+              linkText={"Profile"}
+              active={pathname.startsWith(Routes.USER_PROFILE)}
+            />
+            <MainNavigationLink
+              to={"/changePwd"}
+              linkText={"Change password"}
+            />
+            <MainNavigationLink to={"/tenantInfo"} linkText={"Tenant"} />
           </MainNavigationSubmenuList>
         </li>
       </ul>
