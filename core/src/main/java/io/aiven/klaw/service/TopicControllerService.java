@@ -15,6 +15,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
@@ -77,6 +78,7 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String CUSTOM_OFFSET_SELECTION = "custom";
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -1292,7 +1294,12 @@ public class TopicControllerService {
   }
 
   public Map<String, String> getTopicEvents(
-      String envId, String consumerGroupId, String topicName, String offsetId) {
+      String envId,
+      String consumerGroupId,
+      String topicName,
+      String offsetId,
+      Integer selectedPartitionId,
+      Integer selectedNumberOfOffsets) {
     Map<String, String> topicEvents = new TreeMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
@@ -1300,6 +1307,14 @@ public class TopicControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId).getClusterId());
+      if (offsetId != null && offsetId.equals(CUSTOM_OFFSET_SELECTION)) {
+        if (selectedPartitionId == null
+            || selectedNumberOfOffsets == null
+            || selectedPartitionId < 0
+            || selectedNumberOfOffsets <= 0) {
+          throw new KlawException(TOPICS_ERR_115);
+        }
+      }
       topicEvents =
           clusterApiService.getTopicEvents(
               kwClusters.getBootstrapServers(),
@@ -1307,6 +1322,8 @@ public class TopicControllerService {
               kwClusters.getClusterName() + kwClusters.getClusterId(),
               topicName,
               offsetId,
+              selectedPartitionId,
+              selectedNumberOfOffsets,
               consumerGroupId,
               tenantId);
     } catch (Exception e) {

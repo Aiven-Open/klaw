@@ -27,17 +27,9 @@ public class KwTenantModel implements Serializable {
 
   private Integer tenantId;
 
-  private String licenseExpiryDate;
-
   private String contactPerson;
 
-  private boolean inTrialPhase;
-
   private boolean isActiveTenant;
-
-  private String numberOfDays;
-
-  private String numberOfHours;
 
   private String orgName;
 

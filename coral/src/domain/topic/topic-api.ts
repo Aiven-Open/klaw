@@ -230,9 +230,11 @@ const getTopicRequests = (
 const getTopicMessages = (
   params: KlawApiRequestQueryParameters<"getTopicEvents">
 ): Promise<TopicMessages | NoContent> => {
+  const queryParams = convertQueryValuesToString(params);
+
   return api.get<KlawApiResponse<"getTopicEvents">>(
     "/getTopicEvents",
-    new URLSearchParams(params)
+    new URLSearchParams(queryParams)
   );
 };
 

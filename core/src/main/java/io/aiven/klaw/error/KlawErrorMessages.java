@@ -343,6 +343,9 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_ERR_114 = "Sorry, your team does not own the topic !!";
 
+  public static final String TOPICS_ERR_115 =
+      "PartitionId cannot be empty or less than zero. Number of Offsets cannot be less than zero.";
+
   // Topic Validation
   public static final String TOPICS_VLD_ERR_101 =
       "Failure. Invalid Topic request type. Possible Value : Create/Promote";
