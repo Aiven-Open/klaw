@@ -35,19 +35,19 @@ const menuItems = [
     angularPath: "/myProfile",
     path: "/user/profile",
     behindFeatureFlag: true,
-    name: "My profile",
-  },
-  {
-    angularPath: "/tenantInfo",
-    path: "/",
-    behindFeatureFlag: false,
-    name: "My tenant info",
+    name: "User profile",
   },
   {
     angularPath: "/changePwd",
     path: "/",
     behindFeatureFlag: false,
     name: "Change password",
+  },
+  {
+    angularPath: "/tenantInfo",
+    path: "/",
+    behindFeatureFlag: false,
+    name: "Tenant",
   },
 ];
 describe("ProfileDropdown", () => {

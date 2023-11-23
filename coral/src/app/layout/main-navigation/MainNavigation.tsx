@@ -130,7 +130,7 @@ function MainNavigation() {
                   ? Routes.USER_PROFILE
                   : "/myProfile"
               }
-              linkText={"Profile"}
+              linkText={"User profile"}
               active={pathname.startsWith(Routes.USER_PROFILE)}
             />
             <MainNavigationLink
