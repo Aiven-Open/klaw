@@ -65,9 +65,9 @@ function useMessagesFilters(): OffsetFilters {
         : null;
     const customOffsetFiltersError =
       getCustomOffset() === "" || getCustomOffset() === null
-        ? "Please enter an offset"
+        ? "Please enter the number of recent offsets you want to view"
         : Number(getCustomOffset()) > 100
-        ? "Max offset: 100"
+        ? "Entered value exceeds the view limit for offsets: 100"
         : null;
 
     setFilterErrors({
@@ -117,7 +117,8 @@ function useMessagesFilters(): OffsetFilters {
     if (customOffset.length === 0) {
       setFilterErrors((prev) => ({
         ...prev,
-        customOffsetFilters: "Please enter an offset",
+        customOffsetFilters:
+          "Please enter the number of recent offsets you want to view",
       }));
       deleteCustomOffset();
       return;
@@ -126,9 +127,9 @@ function useMessagesFilters(): OffsetFilters {
       ...prev,
       customOffsetFilters:
         customOffset === ""
-          ? "Please enter an offset"
+          ? "Please enter the number of recent offsets you want to view"
           : Number(customOffset) > 100
-          ? "Max offset: 100"
+          ? "Entered value exceeds the view limit for offsets: 100"
           : null,
     }));
     searchParams.set(NAMES.customOffset, customOffset);

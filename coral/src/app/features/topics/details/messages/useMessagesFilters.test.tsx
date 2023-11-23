@@ -243,7 +243,8 @@ describe("useMessagesFilters.tsx", () => {
       expect(isValid).toBe(false);
 
       expect(result.current.filterErrors).toStrictEqual({
-        customOffsetFilters: "Please enter an offset",
+        customOffsetFilters:
+          "Please enter the number of recent offsets you want to view",
         partitionIdFilters: null,
       });
     });
@@ -269,7 +270,8 @@ describe("useMessagesFilters.tsx", () => {
       expect(isValid).toBe(false);
 
       expect(result.current.filterErrors).toStrictEqual({
-        customOffsetFilters: "Max offset: 100",
+        customOffsetFilters:
+          "Entered value exceeds the view limit for offsets: 100",
         partitionIdFilters: null,
       });
     });
