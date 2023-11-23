@@ -1096,11 +1096,19 @@ public class TopicControllerServiceTest {
     eventsMap.put("1", "hello world1"); // offsetid, content
     eventsMap.put("2", "hello world2"); // offsetid, content
     when(clusterApiService.getTopicEvents(
-            anyString(), any(), anyString(), anyString(), anyString(), anyString(), anyInt()))
+            anyString(),
+            any(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyInt()))
         .thenReturn(eventsMap);
 
     Map<String, String> topicEventsMap =
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId);
+        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
     assertThat(topicEventsMap).hasSize(2);
   }
 
@@ -1538,6 +1546,76 @@ public class TopicControllerServiceTest {
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(topicRequestModel);
     assertThat(apiResponse.getMessage()).isEqualTo(TOPICS_VLD_ERR_121);
     assertThat(apiResponse.isSuccess()).isFalse();
+  }
+
+  @Test
+  @Order(57)
+  public void getTopicEventsForCustomOffset() throws KlawException {
+    String envId = "1",
+        consumerGroupId = "consuemrgroup",
+        topicName = "testtopic",
+        offsetId = "custom";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    Map<String, String> eventsMap = new HashMap<>();
+    eventsMap.put("1", "hello world1"); // offsetid, content
+    eventsMap.put("2", "hello world2"); // offsetid, content
+    eventsMap.put("3", "hello world3"); // offsetid, content
+    when(clusterApiService.getTopicEvents(
+            anyString(),
+            any(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyInt()))
+        .thenReturn(eventsMap);
+
+    Map<String, String> topicEventsMap =
+        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 3);
+    assertThat(topicEventsMap).hasSize(3);
+  }
+
+  @Test
+  @Order(58)
+  public void getTopicEventsForCustomOffsetFailureForZeroOffsets() throws KlawException {
+    String envId = "1",
+        consumerGroupId = "consuemrgroup",
+        topicName = "testtopic",
+        offsetId = "custom";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    Map<String, String> eventsMap = new HashMap<>();
+    eventsMap.put("1", "hello world1"); // offsetid, content
+    eventsMap.put("2", "hello world2"); // offsetid, content
+    eventsMap.put("3", "hello world3"); // offsetid, content
+    when(clusterApiService.getTopicEvents(
+            anyString(),
+            any(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyInt()))
+        .thenReturn(eventsMap);
+
+    Map<String, String> topicEventsMap =
+        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
+    assertThat(topicEventsMap.get("status")).isEqualTo("false");
   }
 
   private List<MessageSchema> getSchemas(int number) {

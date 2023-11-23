@@ -3251,6 +3251,22 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "selectedPartitionId",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "selectedNumberOfOffsets",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
         } ],
         "responses" : {
           "200" : {

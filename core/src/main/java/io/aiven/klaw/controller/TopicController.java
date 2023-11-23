@@ -282,10 +282,18 @@ public class TopicController {
       @RequestParam("envId") String envId,
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "consumerGroupId") String consumerGroupId,
-      @RequestParam(value = "offsetId") String offsetId)
+      @RequestParam(value = "offsetId") String offsetId,
+      @Valid @RequestParam(value = "selectedPartitionId") Integer selectedPartitionId,
+      @Valid @RequestParam(value = "selectedNumberOfOffsets") Integer selectedNumberOfOffsets)
       throws KlawException {
     return new ResponseEntity<>(
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId),
+        topicControllerService.getTopicEvents(
+            envId,
+            consumerGroupId,
+            topicName,
+            offsetId,
+            selectedPartitionId,
+            selectedNumberOfOffsets),
         HttpStatus.OK);
   }
 
