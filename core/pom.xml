@@ -229,6 +229,83 @@
         </testResources>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>Clean Coral assets before building</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${basedir}/src/main/resources/templates/coral</directory>
+                                    <includes>index.html</includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>${basedir}/src/main/resources/static/assets/coral</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-coral-index</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/templates/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-coral-assets</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/static/assets/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/assets/coral</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
@@ -241,17 +318,6 @@
                         <phase>test</phase>
                         <configuration>
                             <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Clean Coral assets before building</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>clean</phase>
-                        <configuration>
-                            <executable>make</executable>
-                            <commandlineArgs>clean</commandlineArgs>
                         </configuration>
                     </execution>
                     <execution>
