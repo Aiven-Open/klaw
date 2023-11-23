@@ -5,6 +5,7 @@ import static io.aiven.klaw.service.UsersTeamsControllerService.OBJECT_MAPPER;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.AttributeConverter;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public interface DefaultAttributeConverter<X> extends AttributeConverter<X, Stri
   default X convertToEntityAttribute(String value, X defaultValue) {
     X res = defaultValue;
     try {
-      if (value != null && !value.equals("")) {
+      if (!Strings.isEmpty(value)) {
         Class<X> classOfEntityAttribute = getClassOfEntityAttribute();
         if (classOfEntityAttribute != null) {
           res = OBJECT_MAPPER.readValue(value, classOfEntityAttribute);
