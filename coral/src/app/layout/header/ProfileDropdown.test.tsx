@@ -1,24 +1,28 @@
-import { cleanup, screen, render } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { AuthUser, logoutUser } from "src/domain/auth-user";
-
-const menuItems = [
-  { path: "/myProfile", name: "My profile" },
-  { path: "/tenantInfo", name: "My tenant info" },
-  { path: "/changePwd", name: "Change password" },
-];
-
-jest.mock("src/domain/auth-user/auth-user-api");
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
-
+const mockedNavigate = jest.fn();
+const mockAuthUser = jest.fn();
+const mockIsFeatureFlagActive = jest.fn();
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
 
-const mockAuthUser = jest.fn();
+jest.mock("src/domain/auth-user/auth-user-api");
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigate,
+}));
+
 jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => mockAuthUser(),
+}));
+
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => mockIsFeatureFlagActive(),
 }));
 
 jest.mock("@aivenio/aquarium", () => ({
@@ -26,6 +30,26 @@ jest.mock("@aivenio/aquarium", () => ({
   useToastContext: () => [mockToast, mockDismiss],
 }));
 
+const menuItems = [
+  {
+    angularPath: "/myProfile",
+    path: "/user/profile",
+    behindFeatureFlag: true,
+    name: "My profile",
+  },
+  {
+    angularPath: "/tenantInfo",
+    path: "/",
+    behindFeatureFlag: false,
+    name: "My tenant info",
+  },
+  {
+    angularPath: "/changePwd",
+    path: "/",
+    behindFeatureFlag: false,
+    name: "Change password",
+  },
+];
 describe("ProfileDropdown", () => {
   const testUser: AuthUser = {
     teamname: "new team",
@@ -39,8 +63,9 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is closed", () => {
     beforeAll(() => {
+      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
-      render(<ProfileDropdown />);
+      customRender(<ProfileDropdown />, { memoryRouter: true });
     });
     afterAll(cleanup);
 
@@ -64,8 +89,9 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is open", () => {
     beforeAll(async () => {
+      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
-      render(<ProfileDropdown />);
+      customRender(<ProfileDropdown />, { memoryRouter: true });
       const button = screen.getByRole("button", { name: "Open profile menu" });
       await user.click(button);
     });
@@ -99,8 +125,9 @@ describe("ProfileDropdown", () => {
     });
   });
 
-  describe("handles user choosing items from the menu", () => {
+  describe("handles user choosing items from the menu when feature-flag for user information is disabled", () => {
     beforeEach(() => {
+      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       Object.defineProperty(window, "location", {
         value: {
@@ -108,7 +135,7 @@ describe("ProfileDropdown", () => {
         },
         writable: true,
       });
-      render(<ProfileDropdown />);
+      customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
     afterEach(() => {
@@ -118,7 +145,7 @@ describe("ProfileDropdown", () => {
 
     menuItems.forEach((item) => {
       const name = item.name;
-      const path = item.path;
+      const path = item.angularPath;
 
       it(`navigates to "${path}" when user clicks "${name}"`, async () => {
         const button = screen.getByRole("button", {
@@ -137,8 +164,66 @@ describe("ProfileDropdown", () => {
     });
   });
 
+  describe("handles user choosing items from the menu when feature-flag for user information is enabled", () => {
+    beforeEach(() => {
+      mockIsFeatureFlagActive.mockReturnValue(true);
+      mockAuthUser.mockReturnValue(testUser);
+      Object.defineProperty(window, "location", {
+        value: {
+          assign: jest.fn(),
+        },
+        writable: true,
+      });
+      customRender(<ProfileDropdown />, { memoryRouter: true });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      cleanup();
+    });
+
+    menuItems.forEach((item) => {
+      const name = item.name;
+
+      if (item.behindFeatureFlag) {
+        const path = item.path;
+
+        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
+          const button = screen.getByRole("button", {
+            name: "Open profile menu",
+          });
+          await user.click(button);
+
+          const menuItem = screen.getByRole("menuitem", { name: name });
+          await user.click(menuItem);
+
+          expect(window.location.assign).not.toHaveBeenCalled();
+          expect(mockedNavigate).toHaveBeenCalledWith("/user/profile");
+        });
+      } else {
+        const path = item.angularPath;
+
+        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
+          const button = screen.getByRole("button", {
+            name: "Open profile menu",
+          });
+          await user.click(button);
+
+          const menuItem = screen.getByRole("menuitem", { name: name });
+          await user.click(menuItem);
+
+          // in tests it will start with http://localhost/ since that is the window.origin
+          expect(window.location.assign).toHaveBeenCalledWith(
+            `http://localhost${path}`
+          );
+        });
+      }
+    });
+  });
+
   describe("handles user sucessfully login out", () => {
     beforeEach(() => {
+      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
@@ -149,7 +234,7 @@ describe("ProfileDropdown", () => {
         },
         writable: true,
       });
-      render(<ProfileDropdown />);
+      customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
     afterEach(() => {
@@ -201,6 +286,7 @@ describe("ProfileDropdown", () => {
   });
 
   describe("handles error in logout process", () => {
+    mockIsFeatureFlagActive(false);
     mockAuthUser.mockReturnValue(testUser);
     const testError = {
       status: 500,
@@ -218,7 +304,7 @@ describe("ProfileDropdown", () => {
         },
         writable: true,
       });
-      render(<ProfileDropdown />);
+      customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
     afterEach(() => {

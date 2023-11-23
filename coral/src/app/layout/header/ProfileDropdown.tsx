@@ -10,29 +10,45 @@ import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
 import { logoutUser } from "src/domain/auth-user";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 type MenuItem = {
+  angularPath: string;
   path: string;
   name: string;
+  behindFeatureFlag: boolean;
 };
 
 const menuItems: MenuItem[] = [
   {
-    path: "/myProfile",
+    angularPath: "/myProfile",
+    path: "/user/profile",
+    behindFeatureFlag: true,
     name: "My profile",
   },
   {
-    path: "/tenantInfo",
+    angularPath: "/tenantInfo",
+    path: "/",
+    behindFeatureFlag: false,
     name: "My tenant info",
   },
   {
-    path: "/changePwd",
+    angularPath: "/changePwd",
+    path: "/",
+    behindFeatureFlag: false,
     name: "Change password",
   },
 ];
 
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
+  const userInformationFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
+  );
+
+  const navigate = useNavigate();
   const authUser = useAuthContext();
   const [toast, dismiss] = useToastContext();
 
@@ -70,9 +86,15 @@ function ProfileDropdown() {
       // developers and make sure we can not make a mistake here
       if (selectedItem === undefined) {
         console.error(`No item with index ${actionKey} found.`);
-      } else {
-        navigateToAngular(selectedItem.path);
+        return;
       }
+
+      if (selectedItem.behindFeatureFlag && userInformationFeatureFlagEnabled) {
+        navigate(selectedItem.path);
+        return;
+      }
+
+      navigateToAngular(selectedItem.angularPath);
     }
   }
 
