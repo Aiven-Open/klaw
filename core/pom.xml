@@ -263,7 +263,7 @@
                     <execution>
                         <id>copy-coral-index</id>
                         <!-- here the phase you need -->
-                        <phase>validate</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -289,7 +289,7 @@
                     <execution>
                         <id>copy-coral-assets</id>
                         <!-- here the phase you need -->
-                        <phase>validate</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
