@@ -15,10 +15,10 @@ interface ConsumerOffsetsProps {
 }
 
 const parseOffsetsContent = ({
-  topicPartitionId = "Unknown",
-  currentOffset = "Unknown",
-  endOffset = "Unknown",
-  lag = "Unknown",
+  topicPartitionId,
+  currentOffset,
+  endOffset,
+  lag,
 }: ConsumerOffsets) => {
   return `Partition ${topicPartitionId}: Current offset ${currentOffset} | End offset ${endOffset} | Lag ${lag}`;
 };
@@ -88,7 +88,7 @@ const ConsumerOffsetsValues = ({
             offsetsData.map((data, index) => {
               return (
                 <Typography.Default
-                  key={data?.topicPartitionId || index}
+                  key={data.topicPartitionId || index}
                   htmlTag="dd"
                 >
                   {parseOffsetsContent(data)}

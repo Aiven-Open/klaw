@@ -8777,7 +8777,8 @@
           "lag" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "currentOffset", "endOffset", "lag", "topicPartitionId" ]
       },
       "KafkaConnectorRequestsResponseModel" : {
         "properties" : {

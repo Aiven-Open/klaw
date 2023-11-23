@@ -1540,10 +1540,10 @@ export type components = {
       teamMembersCount?: number;
     };
     OffsetDetails: {
-      topicPartitionId?: string;
-      currentOffset?: string;
-      endOffset?: string;
-      lag?: string;
+      topicPartitionId: string;
+      currentOffset: string;
+      endOffset: string;
+      lag: string;
     };
     KafkaConnectorRequestsResponseModel: {
       environment: string;
