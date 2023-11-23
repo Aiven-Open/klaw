@@ -67,7 +67,7 @@ function useMessagesFilters(): OffsetFilters {
       getCustomOffset() === "" || getCustomOffset() === null
         ? "Please enter the number of recent offsets you want to view"
         : Number(getCustomOffset()) > 100
-        ? "Max offset: 100"
+        ? "Entered value exceeds the view limit for offsets: 100"
         : null;
 
     setFilterErrors({
@@ -129,7 +129,7 @@ function useMessagesFilters(): OffsetFilters {
         customOffset === ""
           ? "Please enter the number of recent offsets you want to view"
           : Number(customOffset) > 100
-          ? "Max offset: 100"
+          ? "Entered value exceeds the view limit for offsets: 100"
           : null,
     }));
     searchParams.set(NAMES.customOffset, customOffset);
