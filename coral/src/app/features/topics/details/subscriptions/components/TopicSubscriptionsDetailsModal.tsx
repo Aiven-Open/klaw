@@ -7,17 +7,12 @@ import {
   StatusChip,
   Typography,
 } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Modal } from "src/app/components/Modal";
-import {
-  getAivenServiceAccountDetails,
-  getConsumerOffsets,
-} from "src/domain/acl/acl-api";
-import {
-  ConsumerOffsets,
-  ServiceAccountDetails,
-} from "src/domain/acl/acl-types";
+import { ConsumerOffsetsValues } from "src/app/features/topics/details/subscriptions/components/ConsumerOffsetsValues";
+import { getAivenServiceAccountDetails } from "src/domain/acl/acl-api";
+import { ServiceAccountDetails } from "src/domain/acl/acl-types";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -26,7 +21,6 @@ interface TopicSubscriptionsDetailsModalProps {
   closeDetailsModal: () => void;
   isAivenCluster: boolean;
   selectedSubscription: AclOverviewInfo;
-  offsetsData?: ConsumerOffsets;
   serviceAccountData?: ServiceAccountDetails;
 }
 
@@ -47,26 +41,8 @@ const TopicSubscriptionsDetailsModal = ({
     aclPatternType,
   } = selectedSubscription;
 
+  const queryClient = useQueryClient();
   const [errors, setErrors] = useState<string[]>([]);
-
-  const {
-    data: offsetsData,
-    error: offsetsError,
-    isFetched: offsetsDataFetched,
-  } = useQuery<ConsumerOffsets[], HTTPError>(
-    ["consumer-offsets", topicname, environment, consumergroup],
-    {
-      queryFn: () => {
-        return getConsumerOffsets({
-          topicName: topicname,
-          env: environment,
-          consumerGroupId: consumergroup || "",
-        });
-      },
-      // Offsets data is only available for Consumer subscriptions in non-Aiven clusters
-      enabled: topictype === "Consumer" && !isAivenCluster,
-    }
-  );
 
   const {
     data: serviceAccountData,
@@ -89,18 +65,13 @@ const TopicSubscriptionsDetailsModal = ({
   );
 
   useEffect(() => {
-    if (offsetsError !== null) {
-      setErrors((prev) => [...prev, parseErrorMsg(offsetsError)]);
-    }
     if (serviceAccountError !== null) {
       setErrors((prev) => [...prev, parseErrorMsg(serviceAccountError)]);
     }
-  }, [offsetsError, serviceAccountError]);
+  }, [serviceAccountError]);
 
   const serviceAccountDataLoaded =
     serviceAccountDataFetched && serviceAccountData !== undefined;
-
-  const offsetsDataLoaded = offsetsDataFetched && offsetsData !== undefined;
 
   const serviceAccountOrPrincipalText = isAivenCluster
     ? "Service account"
@@ -111,9 +82,15 @@ const TopicSubscriptionsDetailsModal = ({
       title={"Subscription details"}
       primaryAction={{
         text: "Close",
-        onClick: closeDetailsModal,
+        onClick: () => {
+          closeDetailsModal();
+          queryClient.removeQueries({ queryKey: ["getConsumerOffsets"] });
+        },
       }}
-      close={closeDetailsModal}
+      close={() => {
+        closeDetailsModal();
+        queryClient.removeQueries({ queryKey: ["getConsumerOffsets"] });
+      }}
     >
       <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
         {errors.length > 0 && (
@@ -216,20 +193,16 @@ const TopicSubscriptionsDetailsModal = ({
           <Grid.Item xs={2}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
-                Consumer offset
+                Consumer offsets
               </Typography.SmallStrong>
-              {offsetsDataLoaded ? (
-                <Typography.Default htmlTag="dd">
-                  {`Partition ${offsetsData[0].topicPartitionId} |
-                  Current offset ${offsetsData[0].currentOffset} |
-                  End offset ${offsetsData[0].endOffset} |
-                  Lag ${offsetsData[0].lag}`}
-                </Typography.Default>
-              ) : (
-                <div data-testid={"offsets-skeleton"}>
-                  <Skeleton height={25} width={350} />
-                </div>
-              )}
+              <ConsumerOffsetsValues
+                setError={(error: string) =>
+                  setErrors((prev) => [...prev, error])
+                }
+                topicName={topicname}
+                environment={environment}
+                consumerGroup={consumergroup}
+              />
             </Box.Flex>
           </Grid.Item>
         ) : null}
