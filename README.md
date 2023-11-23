@@ -20,6 +20,13 @@ Not required but to get the latest experience we recommend also building the Rea
 - [pnpm](https://pnpm.io/)  (>=18.0.0 <19.0.0)
 - [nodejs](https://nodejs.org/) (>=8.0.0 <9.0.0)
 
+### Formatting
+
+Formatting can be tricky so to keep a consistent java code format throughout we use the spotless maven plugin.
+Run the below command to format your code changes.
+
+- mvn spotless:apply 
+
 ## Versioning
 
 For the versions available, see the [tags on this repository](https://github.com/aiven/klaw/tags).
