@@ -321,14 +321,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Build and copy Coral assets</id>
+                        <id>Build Coral assets</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
                             <executable>make</executable>
-                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                             <!-- Ignore errors during the execution of this plugin to unblock the user during build process -->
                             <successCodes>
                                 <successCode>0</successCode>
