@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class TopicContentsService {
 
   public static final String CUSTOM_OFFSET_SELECTION = "custom";
+  public static final int NUMBER_OF_POLLS = 3;
   final ClusterApiUtils clusterApiUtils;
 
   @Value("${klaw.topiccontents.consumergroup.id:notdefined}")
@@ -106,12 +107,11 @@ public class TopicContentsService {
     }
 
     int i = 0;
-    int numberOfPolls = 3;
     do {
       ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(500));
       consumerRecords.forEach(record -> eventMap.put(record.offset(), record.value()));
       i++;
-    } while (i != numberOfPolls);
+    } while (i != NUMBER_OF_POLLS);
 
     consumer.commitAsync();
     consumer.close();

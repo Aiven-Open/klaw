@@ -259,15 +259,6 @@ public class ClusterApiService {
       String consumerGroupId,
       int tenantId)
       throws KlawException {
-    log.debug(
-        "getTopicEvents {} {} {} {} {} {} {}",
-        bootstrapHost,
-        protocol,
-        topic,
-        offsetId,
-        selectedPartitionId,
-        selectedNumberOfOffsets,
-        consumerGroupId);
     getClusterApiProperties(tenantId);
     Map<String, String> eventsMap;
     try {
