@@ -90,11 +90,25 @@ const REQUESTS_TAB_ID_INTO_PATH = {
   [RequestsTabEnum.CONNECTORS]: "connectors",
 } as const;
 
+const REQUESTS_TAB_PATH_LINK_MAP = {
+  [RequestsTabEnum.TOPICS]: "/myTopicRequests",
+  [RequestsTabEnum.ACLS]: "/myAclRequests",
+  [RequestsTabEnum.SCHEMAS]: "/mySchemaRequests",
+  [RequestsTabEnum.CONNECTORS]: "/myConnectorRequests",
+} as const;
+
 const APPROVALS_TAB_ID_INTO_PATH = {
   [ApprovalsTabEnum.TOPICS]: "topics",
   [ApprovalsTabEnum.ACLS]: "acls",
   [ApprovalsTabEnum.SCHEMAS]: "schemas",
   [ApprovalsTabEnum.CONNECTORS]: "connectors",
+} as const;
+
+const APPROVALS_TAB_PATH_LINK_MAP = {
+  [ApprovalsTabEnum.TOPICS]: "/execTopics",
+  [ApprovalsTabEnum.ACLS]: "/execAcls",
+  [ApprovalsTabEnum.SCHEMAS]: "/execSchemas",
+  [ApprovalsTabEnum.CONNECTORS]: "/execConnectors",
 } as const;
 
 function isEnvironmentsTabEnum(value: unknown): value is EnvironmentsTabEnum {
@@ -162,6 +176,8 @@ export {
   APPROVALS_TAB_ID_INTO_PATH,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  APPROVALS_TAB_PATH_LINK_MAP,
+  REQUESTS_TAB_PATH_LINK_MAP,
   isEnvironmentsTabEnum,
   isRequestsTabEnum,
   isApprovalsTabEnum,

@@ -1,5 +1,4 @@
-import { cleanup, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
+import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { EnvironmentInfo } from "src/domain/environment";

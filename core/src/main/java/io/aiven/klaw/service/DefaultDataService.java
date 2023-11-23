@@ -8,13 +8,11 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.EnvParams;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -89,13 +87,8 @@ public class DefaultDataService {
     kwTenants.setTenantId(tenantId);
     kwTenants.setTenantName("default");
     kwTenants.setTenantDesc("default");
-    kwTenants.setInTrial("false");
     kwTenants.setContactPerson("Klaw Administrator");
     kwTenants.setOrgName("Default Organization");
-    kwTenants.setLicenseExpiry(
-        new Timestamp(
-            System.currentTimeMillis()
-                + TimeUnit.DAYS.toMillis(KwConstants.DAYS_EXPIRY_DEFAULT_TENANT)));
     kwTenants.setIsActive("true");
 
     return kwTenants;

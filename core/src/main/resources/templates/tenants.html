@@ -455,10 +455,7 @@
 										<th>Tenant Name</th>
 										<th>Contact Person</th>
 										<th>Email</th>
-										<th>InTrial</th>
 										<th>IsActive</th>
-										<th>License Expiry</th>
-										<th>TenantId</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -467,18 +464,10 @@
 										<td>{{ tenant.contactPerson }}</td>
 										<td>{{ tenant.emailId}}</td>
 
-										<td ng-show="tenant.inTrialPhase == false" >
-											<span class="badge badge-success">{{ tenant.inTrialPhase}}</span></td>
-										<td ng-show="tenant.inTrialPhase != false" >
-											<span class="badge badge-warning">{{ tenant.inTrialPhase}}</span></td>
-
 										<td ng-show="tenant.activeTenant == true" >
 											<span class="badge badge-success">{{ tenant.activeTenant}}</span></td>
 										<td ng-show="tenant.activeTenant != true" >
 											<span class="badge badge-warning">{{ tenant.activeTenant}}</span></td>
-
-										<td>{{ tenant.licenseExpiryDate}}</td>
-										<td>{{ tenant.tenantId}}</td>
 									</tr>
 									</tbody>
 								</table>

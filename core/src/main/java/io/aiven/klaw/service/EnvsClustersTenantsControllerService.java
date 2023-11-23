@@ -11,8 +11,6 @@ import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
-import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
-import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
@@ -60,11 +58,9 @@ import io.aiven.klaw.model.response.TenantInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,9 +94,6 @@ public class EnvsClustersTenantsControllerService {
 
   @Value("${klaw.saas.plaintext.aclcommand:acl}")
   private String aclCommandPlaintext;
-
-  @Value("${klaw.prizelist.pertenant}")
-  private String extensionPeriods;
 
   @Value("${klaw.saas.ssl.pubkey:pubkey.zip}")
   private String kwPublicKey;
@@ -959,9 +952,7 @@ public class EnvsClustersTenantsControllerService {
           kwTenantModel.setEmailId(userFound.get().getMailid());
         }
 
-        kwTenantModel.setLicenseExpiryDate(tenant.getLicenseExpiry() + "");
         kwTenantModel.setActiveTenant(Boolean.parseBoolean(tenant.getIsActive()));
-        kwTenantModel.setInTrialPhase(Boolean.parseBoolean(tenant.getInTrial()));
 
         tenantModels.add(kwTenantModel);
       }
@@ -1014,7 +1005,6 @@ public class EnvsClustersTenantsControllerService {
     KwTenants kwTenants = new KwTenants();
     kwTenants.setTenantName(kwTenantModel.getTenantName());
     kwTenants.setTenantDesc(kwTenantModel.getTenantDesc());
-    kwTenants.setInTrial(kwTenantModel.isInTrialPhase() + "");
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
     kwTenants.setOrgName(ENV_CLUSTER_TNT_109);
     if (isExternal) {
@@ -1025,15 +1015,6 @@ public class EnvsClustersTenantsControllerService {
       kwTenants.setIsActive("true");
     } else {
       kwTenants.setIsActive("false");
-    }
-
-    if ("saas".equals(kwInstallationType)) {
-      kwTenants.setLicenseExpiry(
-          new Timestamp(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_TRIAL_PERIOD)));
-    } else {
-      kwTenants.setLicenseExpiry(
-          new Timestamp(
-              System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_EXPIRY_DEFAULT_TENANT)));
     }
 
     try {
@@ -1080,19 +1061,7 @@ public class EnvsClustersTenantsControllerService {
     KwTenantModel kwTenantModel = new KwTenantModel();
     if (tenant.isPresent()) {
       kwTenantModel.setTenantName(tenant.get().getTenantName());
-      kwTenantModel.setLicenseExpiryDate(
-          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(tenant.get().getLicenseExpiry().toInstant()));
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
-      kwTenantModel.setInTrialPhase("true".equals(tenant.get().getInTrial()));
-      long timeInMilliSeconds =
-          tenant.get().getLicenseExpiry().getTime() - System.currentTimeMillis();
-      long hours = TimeUnit.MILLISECONDS.toHours(timeInMilliSeconds);
-
-      int days = (int) (hours / 24);
-      int hoursN = (int) hours % 24;
-
-      kwTenantModel.setNumberOfDays("" + days);
-      kwTenantModel.setNumberOfHours("" + hoursN);
       kwTenantModel.setActiveTenant("true".equals(tenant.get().getIsActive()));
       kwTenantModel.setOrgName(tenant.get().getOrgName());
 
@@ -1170,34 +1139,6 @@ public class EnvsClustersTenantsControllerService {
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
-  }
-
-  public List<String> getExtensionPeriods() {
-    return Arrays.asList(extensionPeriods.split(","));
-    // return Arrays.asList("1 month (7$)", "2 months (14$)", "3 months (20$)", "6 months", "1
-    // year", "2 years", "3 years", "5 years");
-  }
-
-  public ApiResponse udpateTenantExtension(String selectedTenantExtensionPeriod) {
-    // send mail
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      return ApiResponse.NOT_AUTHORIZED;
-    }
-
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    log.info("Into tenant extension : " + tenantId + "  from " + getUserName());
-
-    String result =
-        mailService.sendMailToSaasAdmin(
-            tenantId,
-            getUserName(),
-            selectedTenantExtensionPeriod,
-            commonUtilsService.getLoginUrl());
-
-    return ApiResultStatus.SUCCESS.value.equals(result)
-        ? ApiResponse.ok(result)
-        : ApiResponse.notOk(result);
   }
 
   public AclCommands getAclCommands() {
