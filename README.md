@@ -12,6 +12,13 @@ With several downloads every week, many more companies which did not adopt a sol
 - [Maven](https://maven.apache.org/) - Dependency Management
   - A maven wrapper, mvnw is included in the Klaw Git Repo
 - Java (Jdk 17, 21), Spring boot 3, Spring security, SQL, Apache Kafka Admin client
+- Make
+
+### New React UI
+
+Not required but to get the latest experience we recommend also building the React UI.
+- [pnpm](https://pnpm.io/)  (>=18.0.0 <19.0.0)
+- [nodejs](https://nodejs.org/) (>=8.0.0 <9.0.0)
 
 ## Versioning
 
