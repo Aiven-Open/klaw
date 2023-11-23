@@ -1,5 +1,5 @@
 import { transformUserListApiResponse } from "src/domain/user/user-transformer";
-import { UserListApiResponse } from "src/domain/user/user-types";
+import { User, UserListApiResponse } from "src/domain/user/user-types";
 import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {
@@ -30,6 +30,13 @@ async function getUserList(
     );
 }
 
+async function getUser(): Promise<User> {
+  return api.get<KlawApiResponse<"getMyProfileInfo">>(
+    API_PATHS.getMyProfileInfo
+  );
+}
+
+
 async function changePassword(
   payload: KlawApiRequest<"changePwd">
 ): Promise<KlawApiResponse<"changePwd">> {
@@ -40,4 +47,4 @@ async function getMyTenantInfo(): Promise<KlawApiResponse<"getMyTenantInfo">> {
   return api.get(API_PATHS.getMyTenantInfo);
 }
 
-export { changePassword, getUserList, getMyTenantInfo };
+export { changePassword, getUserList, getMyTenantInfo, getUser };
