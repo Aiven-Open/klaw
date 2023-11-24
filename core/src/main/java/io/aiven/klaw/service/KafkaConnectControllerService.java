@@ -171,7 +171,7 @@ public class KafkaConnectControllerService {
             kafkaConnectorList.get(0).getTeamId(), connectorRequestModel.getTeamId())) {
       return ApiResponse.notOk(KAFKA_CONNECT_ERR_106);
     }
-
+    log.info(" Env : {} orderOfEnvs {}", connectorRequestModel.getEnvironment(), orderOfEnvs);
     boolean promotionOrderCheck =
         checkInPromotionOrder(connectorRequestModel.getEnvironment(), orderOfEnvs);
 
@@ -1202,17 +1202,21 @@ public class KafkaConnectControllerService {
         }
 
       } else {
-        connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NOT_AUTHORIZED);
+        notAuthorizedPromotionDetails(connectorOverview);
       }
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      ConnectorPromotionStatus status = new ConnectorPromotionStatus();
-      status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
-      connectorOverview.setPromotionDetails(status);
+      notAuthorizedPromotionDetails(connectorOverview);
     }
 
     return connectorOverview;
+  }
+
+  private static void notAuthorizedPromotionDetails(ConnectorOverview connectorOverview) {
+    ConnectorPromotionStatus status = new ConnectorPromotionStatus();
+    status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+    connectorOverview.setPromotionDetails(status);
   }
 
   private boolean checkIsHighestEnv(String envId, List<EnvIdInfo> availableEnvs) {
