@@ -44,6 +44,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
@@ -108,6 +109,14 @@ public class UtilMethods {
     listMSchemas.add(mSchema);
 
     return listMSchemas;
+  }
+
+  public ProfileModel getUserInfoToUpdateMock() {
+    ProfileModel userInfo = new ProfileModel();
+    userInfo.setMailid("test@test.com");
+    userInfo.setFullname("My full name");
+
+    return userInfo;
   }
 
   public UserInfoModel getUserInfoMock() {

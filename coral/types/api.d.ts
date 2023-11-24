@@ -558,9 +558,9 @@ export type components = {
       timestamp?: string;
     };
     UserInfoModel: {
-      username: string;
       fullname: string;
       mailid?: string;
+      username: string;
       role: string;
       userPassword: string;
       /** Format: int32 */
@@ -659,6 +659,10 @@ export type components = {
       aclType?: string;
       envSelected?: string;
       aclId?: string;
+    };
+    ProfileModel: {
+      fullname: string;
+      mailid?: string;
     };
     KwRolesPermissionsModel: {
       /** Format: int32 */
@@ -1271,8 +1275,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1315,8 +1319,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      yaxes?: components["schemas"]["YAx"][];
       xaxes?: components["schemas"]["YAx"][];
+      yaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -1963,7 +1967,7 @@ export type operations = {
   updateProfile: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserInfoModel"];
+        "application/json": components["schemas"]["ProfileModel"];
       };
     };
     responses: {
