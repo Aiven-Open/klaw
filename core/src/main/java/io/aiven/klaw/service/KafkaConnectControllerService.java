@@ -911,7 +911,8 @@ public class KafkaConnectControllerService {
   }
 
   private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
-    return orderOfEnvs.startsWith(envId + ",")
+    return orderOfEnvs.equals(envId)
+        || orderOfEnvs.startsWith(envId + ",")
         || orderOfEnvs.endsWith("," + envId)
         || orderOfEnvs.contains("," + envId + ",");
   }
