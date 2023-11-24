@@ -171,7 +171,7 @@ public class KafkaConnectControllerService {
             kafkaConnectorList.get(0).getTeamId(), connectorRequestModel.getTeamId())) {
       return ApiResponse.notOk(KAFKA_CONNECT_ERR_106);
     }
-    log.info(" Env : {} orderOfEnvs {}", connectorRequestModel.getEnvironment(), orderOfEnvs);
+
     boolean promotionOrderCheck =
         checkInPromotionOrder(connectorRequestModel.getEnvironment(), orderOfEnvs);
 
