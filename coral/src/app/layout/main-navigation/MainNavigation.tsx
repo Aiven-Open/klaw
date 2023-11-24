@@ -140,6 +140,7 @@ function MainNavigation() {
                   : "/changePwd"
               }
               linkText={"Change password"}
+              active={pathname.startsWith(Routes.USER_CHANGE_PASSWORD)}
             />
             <MainNavigationLink to={"/tenantInfo"} linkText={"Tenant"} />
           </MainNavigationSubmenuList>
