@@ -17,6 +17,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.MyProfileModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
@@ -91,7 +92,7 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void updateProfile() throws KlawException {
-    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    MyProfileModel userInfoModel = utilMethods.getUserInfoToUpdateMock();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("kwusera");
     when(handleDbRequests.updateUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
@@ -101,7 +102,7 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void updateProfileFailureDbUpdate() {
-    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    MyProfileModel userInfoModel = utilMethods.getUserInfoToUpdateMock();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("kwusera");
     when(handleDbRequests.updateUser(any())).thenThrow(new RuntimeException("Db update failed"));

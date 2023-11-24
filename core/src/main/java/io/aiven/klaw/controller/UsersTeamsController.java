@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.requests.MyProfileModel;
 import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
@@ -89,7 +90,7 @@ public class UsersTeamsController {
   @PostMapping(
       value = "/updateProfile",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> updateProfile(@Valid @RequestBody UserInfoModel updateUserObj)
+  public ResponseEntity<ApiResponse> updateProfile(@Valid @RequestBody MyProfileModel updateUserObj)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);

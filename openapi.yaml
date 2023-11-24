@@ -374,7 +374,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/UserInfoModel"
+                "$ref" : "#/components/schemas/MyProfileModel"
               }
             }
           },
@@ -5920,11 +5920,6 @@
       },
       "UserInfoModel" : {
         "properties" : {
-          "username" : {
-            "type" : "string",
-            "maxLength" : 300,
-            "minLength" : 6
-          },
           "fullname" : {
             "type" : "string",
             "maxLength" : 50,
@@ -5933,6 +5928,11 @@
           },
           "mailid" : {
             "type" : "string"
+          },
+          "username" : {
+            "type" : "string",
+            "maxLength" : 300,
+            "minLength" : 6
           },
           "role" : {
             "type" : "string"
@@ -6228,6 +6228,20 @@
             "type" : "string"
           }
         }
+      },
+      "MyProfileModel" : {
+        "properties" : {
+          "fullname" : {
+            "type" : "string",
+            "maxLength" : 50,
+            "minLength" : 5,
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+          },
+          "mailid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "fullname" ]
       },
       "KwRolesPermissionsModel" : {
         "properties" : {
@@ -7989,10 +8003,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
