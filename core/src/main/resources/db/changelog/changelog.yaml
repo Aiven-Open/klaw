@@ -1207,3 +1207,14 @@ databaseChangeLog:
               columnName: envname
               newDataType: VARCHAR(25)
               tableName: kwenv
+    - changeSet:
+        id : 23-11-2023 delete unused columns from kwtenant table
+        author: muralibasani
+        changes:
+          - dropColumn:
+              columnName: intrial
+              tableName: kwtenants
+          - dropColumn:
+              columnName: licenseexpiry
+              tableName: kwtenants
+

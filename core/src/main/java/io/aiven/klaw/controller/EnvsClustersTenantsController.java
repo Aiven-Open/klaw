@@ -293,15 +293,6 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getStandardEnvNames(), HttpStatus.OK);
   }
 
-  @RequestMapping(
-      value = "/getExtensionPeriods",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<String>> getExtensionPeriods() {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getExtensionPeriods(), HttpStatus.OK);
-  }
-
   @PostMapping(
       value = "/addTenantId",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -328,16 +319,6 @@ public class EnvsClustersTenantsController {
       throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
-  }
-
-  @PostMapping(
-      value = "/udpateTenantExtension",
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> udpateTenantExtension(
-      @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.udpateTenantExtension(selectedTenantExtensionPeriod),
-        HttpStatus.OK);
   }
 
   @RequestMapping(
