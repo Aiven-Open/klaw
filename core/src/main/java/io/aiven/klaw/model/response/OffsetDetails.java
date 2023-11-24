@@ -1,14 +1,15 @@
 package io.aiven.klaw.model.response;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class OffsetDetails {
-  private String topicPartitionId;
+  @NotNull private String topicPartitionId;
 
-  private String currentOffset;
+  @NotNull private String currentOffset;
 
-  private String endOffset;
+  @NotNull private String endOffset;
 
-  private String lag;
+  @NotNull private String lag;
 }
