@@ -888,6 +888,10 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
+    ChangePasswordRequestModel: {
+      pwd: string;
+      repeatPwd: string;
+    };
     Env: {
       id?: string;
       /** Format: int32 */
@@ -1319,8 +1323,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      xaxes?: components["schemas"]["YAx"][];
       yaxes?: components["schemas"]["YAx"][];
+      xaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -2835,9 +2839,9 @@ export type operations = {
     };
   };
   changePwd: {
-    parameters: {
-      query: {
-        changePwd: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChangePasswordRequestModel"];
       };
     };
     responses: {

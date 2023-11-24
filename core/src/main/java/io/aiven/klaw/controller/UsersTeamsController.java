@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
@@ -200,9 +201,10 @@ public class UsersTeamsController {
   @PostMapping(
       value = "/chPwd",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> changePwd(@RequestParam("changePwd") String changePwd)
-      throws KlawException {
-    return new ResponseEntity<>(usersTeamsControllerService.changePwd(changePwd), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> changePwd(
+      @Valid @RequestBody ChangePasswordRequestModel changePwdModel) throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.changePwd(changePwdModel), HttpStatus.OK);
   }
 
   @RequestMapping(

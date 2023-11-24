@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -339,12 +340,16 @@ public class UiConfigControllerTest {
   @Order(17)
   public void changePwd() throws Exception {
     ApiResponse apiResponse = ApiResponse.SUCCESS;
+    ChangePasswordRequestModel changePasswordRequestModel = new ChangePasswordRequestModel();
+    changePasswordRequestModel.setPwd("newpasswd");
+    changePasswordRequestModel.setRepeatPwd("newpasswd");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(changePasswordRequestModel);
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
 
     mvcUserTeams
         .perform(
             MockMvcRequestBuilders.post("/chPwd")
-                .param("changePwd", "newpasswd")
+                .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
