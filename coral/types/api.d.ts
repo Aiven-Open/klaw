@@ -660,7 +660,7 @@ export type components = {
       envSelected?: string;
       aclId?: string;
     };
-    MyProfileModel: {
+    ProfileModel: {
       fullname: string;
       mailid?: string;
     };
@@ -1275,8 +1275,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1967,7 +1967,7 @@ export type operations = {
   updateProfile: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["MyProfileModel"];
+        "application/json": components["schemas"]["ProfileModel"];
       };
     };
     responses: {

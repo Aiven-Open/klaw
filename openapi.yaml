@@ -374,7 +374,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/MyProfileModel"
+                "$ref" : "#/components/schemas/ProfileModel"
               }
             }
           },
@@ -6229,7 +6229,7 @@
           }
         }
       },
-      "MyProfileModel" : {
+      "ProfileModel" : {
         "properties" : {
           "fullname" : {
             "type" : "string",
@@ -8003,10 +8003,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },

@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class MyProfileModel implements Serializable {
+public class ProfileModel implements Serializable {
 
   @NotNull(message = "Fullname cannot be null")
   @Size(min = 5, max = 50, message = "Name must be above 4 characters")
