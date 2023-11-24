@@ -558,9 +558,9 @@ export type components = {
       timestamp?: string;
     };
     UserInfoModel: {
-      username: string;
       fullname: string;
       mailid?: string;
+      username: string;
       role: string;
       userPassword: string;
       /** Format: int32 */
@@ -659,6 +659,10 @@ export type components = {
       aclType?: string;
       envSelected?: string;
       aclId?: string;
+    };
+    MyProfileModel: {
+      fullname: string;
+      mailid?: string;
     };
     KwRolesPermissionsModel: {
       /** Format: int32 */
@@ -1963,7 +1967,7 @@ export type operations = {
   updateProfile: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserInfoModel"];
+        "application/json": components["schemas"]["MyProfileModel"];
       };
     };
     responses: {
