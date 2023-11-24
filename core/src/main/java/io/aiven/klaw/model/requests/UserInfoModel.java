@@ -19,7 +19,9 @@ public class UserInfoModel extends ProfileModel implements Serializable {
 
   @NotNull private String role;
 
-  @NotNull private String userPassword;
+  @Size(min = 8, message = "Password must be atleast 8 characters")
+  @NotNull
+  private String userPassword;
 
   @NotNull private Integer teamId;
 

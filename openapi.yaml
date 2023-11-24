@@ -2028,14 +2028,16 @@
       "post" : {
         "tags" : [ "users-teams-controller" ],
         "operationId" : "changePwd",
-        "parameters" : [ {
-          "name" : "changePwd",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChangePasswordRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -5938,7 +5940,9 @@
             "type" : "string"
           },
           "userPassword" : {
-            "type" : "string"
+            "type" : "string",
+            "maxLength" : 2147483647,
+            "minLength" : 8
           },
           "teamId" : {
             "type" : "integer",
@@ -6876,6 +6880,21 @@
           }
         },
         "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
+      },
+      "ChangePasswordRequestModel" : {
+        "properties" : {
+          "pwd" : {
+            "type" : "string",
+            "maxLength" : 2147483647,
+            "minLength" : 8
+          },
+          "repeatPwd" : {
+            "type" : "string",
+            "maxLength" : 2147483647,
+            "minLength" : 8
+          }
+        },
+        "required" : [ "pwd", "repeatPwd" ]
       },
       "Env" : {
         "properties" : {
@@ -8126,13 +8145,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
