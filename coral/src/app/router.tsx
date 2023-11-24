@@ -58,6 +58,7 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 import { TeamsPage } from "src/app/pages/configuration/teams";
 import { UsersPage } from "src/app/pages/configuration/users";
 import { UserProfile } from "src/app/pages/user-information/profile";
+import { ChangePassword } from "src/app/pages/user-information/change-password";
 
 const routes: Array<RouteObject> = [
   {
@@ -257,6 +258,12 @@ const routes: Array<RouteObject> = [
             featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
             redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <UserProfile />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USER_CHANGE_PASSWORD,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <ChangePassword />,
           }),
         ],
       },
