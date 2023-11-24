@@ -41,6 +41,7 @@ import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -146,15 +147,20 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
-    log.info("updateProfile {}", updateUserObj);
+  public ApiResponse updateProfile(ProfileModel profileModel) throws KlawException {
+    log.debug("updateProfile {}", profileModel);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     UserInfo userInfo = dbHandle.getUsersInfo(getUserName());
-    userInfo.setFullname(updateUserObj.getFullname());
-    userInfo.setMailid(updateUserObj.getMailid());
+    userInfo.setFullname(profileModel.getFullname());
+    userInfo.setMailid(profileModel.getMailid());
     try {
       String result = dbHandle.updateUser(userInfo);
+      commonUtilsService.updateMetadata(
+          commonUtilsService.getTenantId(getUserName()),
+          EntityType.USERS,
+          MetadataOperationType.UPDATE,
+          userInfo.getUsername());
       return ApiResultStatus.SUCCESS.value.equals(result)
           ? ApiResponse.ok(result)
           : ApiResponse.notOk(result);
