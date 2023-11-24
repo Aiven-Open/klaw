@@ -65,8 +65,9 @@ import org.springframework.stereotype.Service;
 public class UsersTeamsControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final String MASKED_PWD = "*******";
+  public static final String MASKED_PWD = "********";
   private static final String SAAS = "saas";
+  public static final String UNUSED_PASSWD = "unusedpasswd";
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -1019,7 +1020,7 @@ public class UsersTeamsControllerService {
       if (DATABASE.value.equals(authenticationType)) {
         userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
       } else {
-        userInfo.setUserPassword("");
+        userInfo.setUserPassword(UNUSED_PASSWD);
       }
       userInfo.setMailid(registerUserInfo.getMailid());
 
