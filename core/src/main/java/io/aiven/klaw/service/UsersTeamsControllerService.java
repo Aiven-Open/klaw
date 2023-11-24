@@ -148,7 +148,7 @@ public class UsersTeamsControllerService {
   }
 
   public ApiResponse updateProfile(ProfileModel profileModel) throws KlawException {
-    log.info("updateProfile {}", profileModel);
+    log.debug("updateProfile {}", profileModel);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     UserInfo userInfo = dbHandle.getUsersInfo(getUserName());
@@ -156,6 +156,11 @@ public class UsersTeamsControllerService {
     userInfo.setMailid(profileModel.getMailid());
     try {
       String result = dbHandle.updateUser(userInfo);
+      commonUtilsService.updateMetadata(
+          commonUtilsService.getTenantId(getUserName()),
+          EntityType.USERS,
+          MetadataOperationType.UPDATE,
+          userInfo.getUsername());
       return ApiResultStatus.SUCCESS.value.equals(result)
           ? ApiResponse.ok(result)
           : ApiResponse.notOk(result);

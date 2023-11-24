@@ -28,7 +28,7 @@ public class RegisterUserInfoModel implements Serializable {
 
   private String role;
 
-  @Size(min = 5, max = 50, message = "Name must be above 4 characters")
+  @Size(min = 5, max = 50, message = "Name must be atleast 5 characters")
   @NotNull(message = "Name cannot be null")
   @Pattern(
       message = "Invalid Full name.",
