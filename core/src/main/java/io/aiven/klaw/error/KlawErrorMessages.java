@@ -477,6 +477,8 @@ public class KlawErrorMessages {
 
   public static final String TEAMS_ERR_119 = "Failure. Team already exists.";
 
+  public static final String TEAMS_ERR_120 = "Passwords don't match";
+
   // security config
   public static final String SEC_CONFIG_ERR_101 = "Please check if insert scripts are executed.";
 

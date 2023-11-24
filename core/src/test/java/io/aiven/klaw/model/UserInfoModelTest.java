@@ -83,7 +83,7 @@ public class UserInfoModelTest {
     model.setTeamId(1001);
     model.setRole("USER");
     model.setSwitchTeams(false);
-    model.setUserPassword("");
+    model.setUserPassword("password");
     return model;
   }
 }

@@ -112,11 +112,18 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             var serviceInput = {};
 
             serviceInput['pwd'] = $scope.chPwd.pwd;
-            serviceInput['repeatpwd'] = $scope.chPwd.repeatpwd;
+            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
 
-            if(!$scope.chPwd.pwd || ($scope.chPwd.pwd!=$scope.chPwd.repeatpwd))
+            if(!$scope.chPwd.pwd || ($scope.chPwd.pwd !== $scope.chPwd.repeatpwd))
             {
                 $scope.alertnote = "Passwords are not equal.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.chPwd.pwd.length < 8 || $scope.chPwd.repeatpwd < 8)
+            {
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -137,8 +144,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                             method: "POST",
                             url: "chPwd",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'changePwd' : serviceInput },
-                            data: {'changePwd' : serviceInput}
+                            data: serviceInput
                         }).success(function(output) {
                             $scope.alert = "Password changed : "+output.message;
                             if(output.success){
