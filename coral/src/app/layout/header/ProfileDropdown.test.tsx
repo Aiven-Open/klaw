@@ -39,8 +39,8 @@ const menuItems = [
   },
   {
     angularPath: "/changePwd",
-    path: "/",
-    behindFeatureFlag: false,
+    path: "/use/change-password",
+    behindFeatureFlag: true,
     name: "Change password",
   },
   {
