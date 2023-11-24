@@ -21,6 +21,8 @@ enum Routes {
   ENVIRONMENTS = "/configuration/environments",
   TEAMS = "/configuration/teams",
   USERS = "/configuration/users",
+  USER_INFORMATION = "/user",
+  USER_PROFILE = "/user/profile",
 }
 
 enum EnvironmentsTabEnum {
