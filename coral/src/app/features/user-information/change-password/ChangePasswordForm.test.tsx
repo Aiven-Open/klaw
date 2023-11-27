@@ -74,7 +74,7 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.queryByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
 
         expect(confirmModal).not.toBeInTheDocument();
@@ -122,10 +122,10 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.getByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
         const continueButton = screen.getByRole("button", {
-          name: "Continue with password change",
+          name: "Change password",
         });
         const cancelButton = screen.getByRole("button", {
           name: "Cancel password change",
@@ -169,10 +169,10 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.getByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
         const continueButton = screen.getByRole("button", {
-          name: "Continue with password change",
+          name: "Change password",
         });
         const cancelButton = screen.getByRole("button", {
           name: "Cancel password change",
@@ -239,7 +239,7 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.queryByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
 
         expect(confirmModal).not.toBeInTheDocument();
@@ -271,7 +271,7 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.queryByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
 
         expect(confirmModal).not.toBeInTheDocument();
@@ -298,10 +298,10 @@ describe("<ChangePasswordForm />", () => {
         await userEvent.click(submitButton);
 
         const confirmModal = screen.getByRole("dialog", {
-          name: "Are you sure?",
+          name: "Confirm password change?",
         });
         const continueButton = screen.getByRole("button", {
-          name: "Continue with password change",
+          name: "Change password",
         });
         const cancelButton = screen.getByRole("button", {
           name: "Cancel password change",

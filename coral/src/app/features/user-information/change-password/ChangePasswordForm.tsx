@@ -58,9 +58,9 @@ function ChangePasswordForm() {
     <>
       {showConfirmationModal && (
         <Dialog
-          title={"Are you sure?"}
+          title={"Confirm password change?"}
           primaryAction={{
-            text: "Continue with password change",
+            text: "Change password",
             onClick: () =>
               mutate({
                 pwd: form.getValues().password,
@@ -74,8 +74,8 @@ function ChangePasswordForm() {
           }}
           type={"warning"}
         >
-          Do you want to change your password? The change will take effect
-          immediately.
+          Are you sure you want to change your password? The change will take
+          effect immediately.
         </Dialog>
       )}
       <Box maxWidth={"md"}>
