@@ -121,11 +121,17 @@ function _PasswordInput<T extends FieldValues>({
 }: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
   const { errors } = form.formState;
   const error = get(errors, name)?.message as string;
+
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   return (
     <BaseInput
       {...props}
       type="password"
       {...form.register(name)}
+      {...(!isEditable && { onChange: () => null })}
       valid={error ? false : undefined}
       helperText={error}
     />
@@ -154,11 +160,17 @@ function _TextInput<T extends FieldValues>({
 }: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
   const { errors } = form.formState;
   const error = get(errors, name)?.message as string;
+
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   return (
     <BaseInput
       {...props}
       type="text"
       {...form.register(name)}
+      {...(!isEditable && { onChange: () => null })}
       valid={error ? false : undefined}
       helperText={error}
     />
@@ -186,11 +198,17 @@ function _NumberInput<T extends FieldValues>({
   ...props
 }: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
   const error = parseFieldErrorMessage(form.formState, name);
+
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   return (
     <BaseInput
       {...props}
       type="number"
       {...form.register(name)}
+      {...(!isEditable && { onChange: () => null })}
       valid={error === undefined}
       helperText={error}
     />
@@ -223,10 +241,16 @@ function _Textarea<T extends FieldValues>({
   ...props
 }: BaseTextareaProps & FormInputProps<T> & FormRegisterProps<T>) {
   const error = parseFieldErrorMessage(form.formState, name);
+
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   return (
     <BaseTextarea
       {...props}
       {...form.register(name)}
+      {...(!isEditable && { onChange: () => null })}
       valid={error === undefined}
       helperText={error}
     />
@@ -252,6 +276,10 @@ function _MultiInput<T extends FieldValues>({
   formContext: form,
   ...props
 }: BaseMultiInputProps<T> & FormInputProps<T> & FormRegisterProps<T>) {
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   // Field level error (eg "Cannot be empty")
   const error = parseFieldErrorMessage(form.formState, name);
   // Single items level error (MultiInput returns an array of errors when single items fail validation)
@@ -283,6 +311,7 @@ function _MultiInput<T extends FieldValues>({
             name={name}
             value={value}
             onChange={(value) => {
+              if (!isEditable) return;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, value as any, {
                 shouldValidate: true,
@@ -329,6 +358,10 @@ function _MultiSelect<T extends FieldValues, FieldValue>({
 }: BaseMultiSelectProps<FieldValue> &
   FormInputProps<T> &
   FormRegisterProps<T>) {
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
   return (
     <_Controller
       name={name}
@@ -342,6 +375,7 @@ function _MultiSelect<T extends FieldValues, FieldValue>({
             name={name}
             disabled={props.disabled || isSubmitting}
             onChange={(values) => {
+              if (!isEditable) return;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, values as any, {
                 shouldValidate: true,
@@ -378,6 +412,7 @@ function _NativeSelect<T extends FieldValues>({
   disabled,
   ...props
 }: BaseNativeSelectProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const isEditable = !disabled && !props.readOnly;
   return (
     <_Controller
       name={name}
@@ -400,6 +435,7 @@ function _NativeSelect<T extends FieldValues>({
             disabled={disabled || isSubmitting}
             aria-readonly={props.readOnly}
             onBlur={(option) => {
+              if (!isEditable) return;
               // Prevent from setting empty string value in form when blurring out of the component
               // Without selecting a value other than the placeholder
               // ie: clicking outside, tabbing out
@@ -418,6 +454,7 @@ function _NativeSelect<T extends FieldValues>({
               });
             }}
             onChange={(option) => {
+              if (!isEditable) return;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, option.target.value as any, {
                 shouldValidate: true,
@@ -490,7 +527,18 @@ function _RadioButton<T extends FieldValues>({
   formContext: form,
   ...props
 }: BaseRadioButtonProps & FormInputProps<T> & FormRegisterProps<T>) {
-  return <BaseRadioButton {...props} {...form.register(name)} name={name} />;
+  // if the element is readonly or disabled, we prevent the
+  // event from being handled
+  const isEditable = !props.disabled && !props.readOnly;
+
+  return (
+    <BaseRadioButton
+      {...props}
+      {...form.register(name)}
+      {...(!isEditable && { onChange: () => null })}
+      name={name}
+    />
+  );
 }
 
 const RadioButtonMemo = memo(_RadioButton, () => false) as typeof _RadioButton;
@@ -524,6 +572,8 @@ function _RadioButtonGroup<T extends FieldValues>({
             name={name}
             value={value}
             onChange={(value) => {
+              if (props.disabled) return;
+
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, value as any, {
                 shouldValidate: true,
@@ -601,6 +651,8 @@ function _ComplexNativeSelect<
 }: Omit<BaseComplexNativeSelectProps<FieldValue>, "value" | "onBlur"> &
   FormInputProps<T> &
   FormRegisterProps<T>) {
+  const isEditable = !disabled && !props.readOnly;
+
   return (
     <_Controller
       name={name}
@@ -614,6 +666,7 @@ function _ComplexNativeSelect<
             name={name}
             disabled={disabled || isSubmitting}
             onBlur={(option) => {
+              if (!isEditable) return;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, option as any, {
                 shouldValidate: true,
@@ -676,6 +729,7 @@ function _FileInput<T extends FieldValues>({
             valid={!error}
             helperText={error?.message || ""}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              if (props.disabled) return;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const file = error ? "" : (event.target?.files?.[0] as any);
               form.setValue(name, file, {
@@ -708,7 +762,13 @@ function _Checkbox<T extends FieldValues>({
   formContext: form,
   ...props
 }: BaseCheckboxProps & FormInputProps<T> & FormRegisterProps<T>) {
-  return <BaseCheckbox {...props} {...form.register(name)} />;
+  return (
+    <BaseCheckbox
+      {...props}
+      {...(!props.disabled && form.register(name))}
+      {...(props.disabled && { defaultValue: form.getValues(name) })}
+    />
+  );
 }
 
 const CheckboxMemo = memo(_Checkbox) as typeof _Checkbox;
