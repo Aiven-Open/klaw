@@ -17,9 +17,6 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const teamsUsersFeatureFlagEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_USER_TEAMS
-  );
   const userInformationFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
@@ -102,12 +99,12 @@ function MainNavigation() {
             defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
             <MainNavigationLink
-              to={teamsUsersFeatureFlagEnabled ? Routes.USERS : "/users"}
+              to={Routes.USERS}
               linkText={"Users"}
               active={pathname.startsWith(Routes.USERS)}
             />
             <MainNavigationLink
-              to={teamsUsersFeatureFlagEnabled ? Routes.TEAMS : "/teams"}
+              to={Routes.TEAMS}
               linkText={"Teams"}
               active={pathname.startsWith(Routes.TEAMS)}
             />
