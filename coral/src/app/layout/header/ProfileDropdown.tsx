@@ -56,8 +56,8 @@ function ProfileDropdown() {
     window.location.assign(`${window.origin}${path}`);
   }
 
-  function onDropdownClick(actionKey: string | number) {
-    if (actionKey === LOGOUT_KEY) {
+  function onDropdownClick(actionKey: React.Key) {
+    if (String(actionKey) === LOGOUT_KEY) {
       toast({
         id: "logout",
         message: "You are being logged out of Klaw...",
@@ -81,7 +81,7 @@ function ProfileDropdown() {
       });
       return;
     } else {
-      const selectedItem = menuItems[actionKey as number];
+      const selectedItem = menuItems[Number(actionKey)];
       // selectedItem should never be undefined, this is to support
       // developers and make sure we can not make a mistake here
       if (selectedItem === undefined) {
@@ -100,7 +100,7 @@ function ProfileDropdown() {
 
   return (
     <DropdownMenu
-      onAction={onDropdownClick}
+      onAction={(key) => onDropdownClick(key)}
       maxWidth={300}
       placement="bottom-right"
       header={

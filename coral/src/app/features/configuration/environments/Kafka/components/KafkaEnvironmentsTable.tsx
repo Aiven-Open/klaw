@@ -48,7 +48,7 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
       headerName: "Replication factor",
       UNSAFE_render: ({ replicationFactor }: KafkaEnvironmentsTableRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box.Flex flexWrap={"wrap"} gap={"2"} component={"ul"}>
             <li>
               <StatusChip
                 dense
@@ -72,7 +72,7 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
       headerName: "Partition",
       UNSAFE_render: ({ partition }: KafkaEnvironmentsTableRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box.Flex flexWrap={"wrap"} gap={"2"} component={"ul"}>
             <li>
               <StatusChip
                 dense

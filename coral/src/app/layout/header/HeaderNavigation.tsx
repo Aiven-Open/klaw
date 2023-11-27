@@ -24,8 +24,8 @@ function HeaderNavigation() {
     <Box display={"flex"} colGap={"l2"} alignItems="center">
       <DropdownMenu
         onAction={(key) => {
-          if (requestNewEntityPaths[key] !== undefined) {
-            navigate(requestNewEntityPaths[key]);
+          if (requestNewEntityPaths[Number(key)] !== undefined) {
+            navigate(requestNewEntityPaths[Number(key)]);
           }
         }}
       >
