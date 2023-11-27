@@ -51,7 +51,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );
@@ -104,7 +106,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );
@@ -150,7 +154,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );
@@ -211,7 +217,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );
@@ -241,7 +249,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );
@@ -272,7 +282,9 @@ describe("<ChangePasswordForm />", () => {
         const form = screen.getByRole("form", {
           name: "Change your password by entering a new password",
         });
-        const passwordField = within(form).getByLabelText("New password");
+        const passwordField = within(form).getByLabelText(
+          "New password Entered password should be at least 8 characters long"
+        );
         const confirmPasswordField = within(form).getByLabelText(
           "Confirm new password"
         );

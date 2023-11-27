@@ -25,7 +25,7 @@ function ChangePasswordForm() {
   });
   // This destructuring is necessary for the test to correctly register isDirty
   // If we access it inline like form.formState.isDirty, it works when using it
-  // But in the test isDirty will always be false as the moment of being checked
+  // But in the test isDirty will always be false at the moment of being checked
   const { isDirty } = form.formState;
 
   const { mutate, isLoading, isError, error, isSuccess } =
@@ -90,8 +90,9 @@ function ChangePasswordForm() {
           onSubmit={handleSubmit}
         >
           <PasswordInput<ChangePasswordFormSchema>
-            labelText="New password"
+            labelText="New password "
             name="password"
+            description="Entered password should be at least 8 characters long"
           />
           <PasswordInput<ChangePasswordFormSchema>
             labelText="Confirm new password"
