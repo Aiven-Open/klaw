@@ -36,9 +36,6 @@
     ],
     "**/*.{md, css}": [
       "prettier --check"
-    ],
-    "../openapi.yaml": [
-      "prettier --check"
     ]
   },
   "dependencies": {
