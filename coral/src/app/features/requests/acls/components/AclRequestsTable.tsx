@@ -64,7 +64,7 @@ function AclRequestsTable({
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box.Flex flexWrap={"wrap"} gap={"2"} component={"ul"}>
             {acl_ssl.map((ssl, index) => (
               <li key={`${ssl}-${index}`}>
                 <StatusChip dense status="neutral" text={ssl} />
@@ -79,7 +79,7 @@ function AclRequestsTable({
       headerName: "IP addresses",
       UNSAFE_render: ({ acl_ip }: AclRequestTableRow) => {
         return (
-          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+          <Box.Flex flexWrap={"wrap"} gap={"2"} component={"ul"}>
             {acl_ip.map((ip, index) => (
               <li key={`${ip}-${index}`}>
                 <StatusChip dense status="neutral" text={ip} />

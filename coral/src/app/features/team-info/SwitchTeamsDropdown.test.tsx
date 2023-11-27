@@ -174,7 +174,7 @@ describe("SwitchTeamsDropdown", () => {
 
       await userEvent.click(button);
 
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
 
       expect(menu).toBeVisible();
     });
@@ -182,7 +182,7 @@ describe("SwitchTeamsDropdown", () => {
     it("shows a list of teams as menu items", async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
       const menuItems = within(menu).getAllByRole("menuitem");
 
       expect(menuItems).toHaveLength(testTeams.length);
@@ -193,7 +193,7 @@ describe("SwitchTeamsDropdown", () => {
     it("shows a dialog for the user to confirm they want to switch team", async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
       const newTeamItem = within(menu).getByRole("menuitem", {
         name: testTeams[1].teamname,
       });
@@ -211,7 +211,7 @@ describe("SwitchTeamsDropdown", () => {
     it('removes modal without changes when user clicks "cancel"', async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
       const newTeamItem = within(menu).getByRole("menuitem", {
         name: testTeams[1].teamname,
       });
@@ -236,7 +236,7 @@ describe("SwitchTeamsDropdown", () => {
     it('changes teams when user clicks "Change team"', async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
       const newTeamItem = within(menu).getByRole("menuitem", {
         name: testTeams[1].teamname,
       });
@@ -293,7 +293,7 @@ describe("SwitchTeamsDropdown", () => {
     it("shows a toast notification with an error when changing teams fails", async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
-      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const menu = screen.getByRole("menu");
       const newTeamItem = within(menu).getByRole("menuitem", {
         name: testTeams[1].teamname,
       });

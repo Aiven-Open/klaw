@@ -21,6 +21,13 @@ import {
 } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
+// This is needed so that the snapshots do not get random IDs every time the test runs
+// The `react-aria` dependency is registered as a devDependency so it is not a burden on the app
+jest.mock("@react-aria/utils", () => ({
+  ...jest.requireActual("@react-aria/utils"),
+  useId: () => "test-id",
+}));
+
 describe("Form", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
