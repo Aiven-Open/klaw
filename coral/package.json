@@ -93,6 +93,7 @@
     "openapi-typescript": "^6.7.0",
     "prettier": "^3.0.3",
     "prop-types": "^15.8.1",
+    "react-aria": "^3.30.0",
     "react-test-renderer": "^18.2.0",
     "rollup-plugin-visualizer": "^5.9.2",
     "ts-jest": "^29.1.1",
