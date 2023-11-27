@@ -186,12 +186,12 @@
                 <includes>
                     <include>application.properties</include>
                 </includes>
-                    <excludes>
-                        <exclude>static</exclude>
-                        <exclude>template</exclude>
-                        <exclude>**/*.sql</exclude>
-                        <exclude>**/*.yaml</exclude>
-                    </excludes>
+                <excludes>
+                    <exclude>static</exclude>
+                    <exclude>template</exclude>
+                    <exclude>**/*.sql</exclude>
+                    <exclude>**/*.yaml</exclude>
+                </excludes>
                 <filtering>true</filtering>
             </resource>
             <resource>
@@ -251,6 +251,10 @@
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
+                                <fileset>
+                                    <directory>${basedir}/../coral/dist</directory>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
                             </filesets>
                         </configuration>
                     </execution>
@@ -265,10 +269,10 @@
                         <!-- here the phase you need -->
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/src/main/resources/templates/coral</outputDirectory>
+                            <outputDirectory>${basedir}/target/classes/templates/coral</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../coral/dist/</directory>
@@ -291,10 +295,10 @@
                         <!-- here the phase you need -->
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/src/main/resources/static/assets/coral</outputDirectory>
+                            <outputDirectory>${basedir}/target/classes/static/assets/coral</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../coral/dist/assets/coral</directory>
