@@ -104,7 +104,6 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
-  public static final int TIMEOUT_SECS = 5;
 
   static EmbeddedKafkaBroker embeddedKafkaBroker;
 
@@ -526,13 +525,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
+                    .get();
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
           }
         });
@@ -595,13 +594,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
+                    .get();
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
           }
         });
