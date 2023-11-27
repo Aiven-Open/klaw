@@ -3,6 +3,7 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subscriptions/components/TopicSubscriptionsDetailsModal";
 import {
   getAivenServiceAccountDetails,
@@ -33,12 +34,14 @@ const notOwnerTestServiceAccountData = {
   accountFound: false,
 };
 
-const testOffsetsData = {
-  topicPartitionId: "0",
-  currentOffset: "0",
-  endOffset: "0",
-  lag: "0",
-};
+const testOffsetsData = [
+  {
+    topicPartitionId: "0",
+    currentOffset: "0",
+    endOffset: "0",
+    lag: "0",
+  },
+];
 
 const testSelectedSubAiven: AclOverviewInfo = {
   req_no: "1006",
@@ -133,7 +136,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       cleanup();
     });
 
-    it("does not fetch data for consumer offset", async () => {
+    it("does not fetch data for Consumer offsets on load", async () => {
       expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 
@@ -189,13 +192,13 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
         findDefinition(defaultPropsAiven.serviceAccountData.password)
       ).toBeVisible();
 
-      expect(screen.queryByText("Consumer offset")).not.toBeInTheDocument();
+      expect(screen.queryByText("Consumer offsets")).not.toBeInTheDocument();
     });
   });
 
   describe("renders correct data in details modal (non Aiven consumer)", () => {
     beforeEach(() => {
-      mockGetConsumerOffsets.mockResolvedValue([testOffsetsData]);
+      mockGetConsumerOffsets.mockResolvedValue(testOffsetsData);
 
       customRender(
         <TopicSubscriptionsDetailsModal {...defaultPropsNonAiven} />,
@@ -209,22 +212,15 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       cleanup();
     });
 
-    it("fetches data for consumer offset", async () => {
-      expect(mockGetConsumerOffsets).toHaveBeenCalledWith({
-        consumerGroupId:
-          defaultPropsNonAiven.selectedSubscription.consumergroup,
-        env: defaultPropsNonAiven.selectedSubscription.environment,
-        topicName: defaultPropsNonAiven.selectedSubscription.topicname,
-      });
+    it("does not fetch data for Consumer offsets on load", async () => {
+      expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 
     it("does not fetch service account details from aiven", async () => {
       expect(mockGetAivenServiceAccountDetails).not.toHaveBeenCalled();
     });
 
-    it("renders correct data in details modal (non Aiven consumer)", async () => {
-      await waitForElementToBeRemoved(screen.getByTestId("offsets-skeleton"));
-
+    it("renders correct initial data in details modal (non Aiven consumer)", async () => {
       expect(findTerm("Environment")).toBeVisible();
       expect(
         findDefinition(
@@ -262,15 +258,31 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
         findDefinition(defaultPropsNonAiven.selectedSubscription.acl_ip)
       ).toBeVisible();
 
-      expect(
-        screen.getByText(
-          "Partition 0 | Current offset 0 | End offset 0 | Lag 0"
-        )
-      ).toBeVisible();
+      expect(findTerm("Consumer offsets")).toBeVisible();
+      expect(findDefinition("Fetch offsets to display data.")).toBeVisible();
 
       expect(
         screen.queryByText("Service account password")
       ).not.toBeInTheDocument();
+    });
+
+    it("fetches Consumer offsets data when Fetch offset button is clicked", async () => {
+      const fetchButton = screen.getByRole("button", {
+        name: "Fetch the consumer offsets of the current subscription",
+      });
+
+      await userEvent.click(fetchButton);
+
+      expect(mockGetConsumerOffsets).toHaveBeenCalledWith({
+        consumerGroupId:
+          defaultPropsNonAiven.selectedSubscription.consumergroup,
+        env: defaultPropsNonAiven.selectedSubscription.environment,
+        topicName: defaultPropsNonAiven.selectedSubscription.topicname,
+      });
+
+      expect(
+        findDefinition("Partition 0: Current offset 0 | End offset 0 | Lag 0")
+      ).toBeVisible();
     });
   });
 
@@ -295,7 +307,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       jest.resetAllMocks();
     });
 
-    it("does not fetch data for consumer offset", async () => {
+    it("does not fetch data for Consumer offsets on load", async () => {
       expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 
