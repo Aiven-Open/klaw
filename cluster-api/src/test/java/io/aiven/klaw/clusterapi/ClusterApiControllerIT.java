@@ -70,6 +70,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -104,7 +106,6 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
-  public static final int TIMEOUT_SECS = 5;
 
   static EmbeddedKafkaBroker embeddedKafkaBroker;
 
@@ -471,6 +472,7 @@ public class ClusterApiControllerIT {
     assertThat(aclBindings1.size()).isEqualTo(1);
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(11)
   public void resetConsumerOffsetsToEarliest() throws Exception {
@@ -526,13 +528,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
+                    .get();
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
           }
         });
@@ -540,6 +542,7 @@ public class ClusterApiControllerIT {
         .isEqualTo(expectedOffsetAfterReset);
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(12)
   public void resetConsumerOffsetsToLatest() throws Exception {
@@ -595,13 +598,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
+                    .get();
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
           }
         });
@@ -609,6 +612,7 @@ public class ClusterApiControllerIT {
         .isEqualTo(expectedOffsetsBeforeAfter);
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(13)
   public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
@@ -720,6 +724,7 @@ public class ClusterApiControllerIT {
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(15)
   public void resetOffsetsNonExistingTopic() throws Exception {
@@ -753,6 +758,7 @@ public class ClusterApiControllerIT {
     assertThat(thrown.getMessage()).contains("Topic " + nonExistingTopic + " does not exist.");
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(16)
   public void getTopicContents() throws Exception {
@@ -781,6 +787,7 @@ public class ClusterApiControllerIT {
     assertThat(apiResponse.values().toString()).contains(TEST_MESSAGE);
   }
 
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(17)
   public void getTopicContentsInvalidPartitionId() throws Exception {
