@@ -1419,6 +1419,11 @@ public class SelectDataJdbc {
         status, topicName, envId, tenantId);
   }
 
+  public boolean existsTopicRequests(String topicName, String envId, String status, int tenantId) {
+    return topicRequestsRepo.existsByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
+        status, topicName, envId, tenantId);
+  }
+
   public List<KafkaConnectorRequest> selectConnectorRequests(
       String connectorName, String envId, String status, int tenantId) {
     return kafkaConnectorRequestsRepo

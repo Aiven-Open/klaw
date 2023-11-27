@@ -316,6 +316,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsTopicRequests(String topicName, String envId, String status, int tenantId) {
+    return jdbcSelectHelper.existsTopicRequests(topicName, envId, status, tenantId);
+  }
+
+  @Override
   public List<KafkaConnectorRequest> getConnectorRequests(
       String connectorName, String envId, String status, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequests(connectorName, envId, status, tenantId);
