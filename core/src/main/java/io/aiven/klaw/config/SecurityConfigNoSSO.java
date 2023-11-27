@@ -125,29 +125,15 @@ public class SecurityConfigNoSSO {
     return new UserDetailsMapper();
   }
 
+  @Bean
   public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-    //    ActiveDirectoryLdapAuthenticationProvider provider =
-    //        new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
-    //    provider.setConvertSubErrorCodesToExceptions(true);
-    //    provider.setUseAuthenticationRequestCredentials(true);
-    //
-    //    if (adFilter != null && !adFilter.equals("")) {
-    //      provider.setSearchFilter(adFilter);
-    //    }
     ADCustomProvider provider = new ADCustomProvider(adDomain, adUrl, adFilter);
-    //   ActiveDirectoryLdapAuthenticationProvider provider =
-    //      new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
     provider.setConvertSubErrorCodesToExceptions(true);
     provider.setUseAuthenticationRequestCredentials(true);
     provider.setSearchFilter(adFilter);
     provider.setUserDetailsContextMapper(userDetailsContextMapper());
     provider.setConvertSubErrorCodesToExceptions(true);
     provider.setUseAuthenticationRequestCredentials(true);
-    /*
-        if (adFilter != null && !adFilter.equals("")) {
-          provider.setSearchFilter(adFilter);
-        }
-    */
     return provider;
   }
 

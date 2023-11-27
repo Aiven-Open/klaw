@@ -41,35 +41,12 @@ public class UserDetailsMapper extends LdapUserDetailsMapper implements UserDeta
 
     essence.setUsername(username);
 
-    // Map the roles
-    //        for (int i = 0; (this.roleAttributes != null)
-    //                && (i < this.roleAttributes.length); i++) {
-    //            String[] rolesForAttribute =
-    // ctx.getStringAttributes(this.roleAttributes[i].toLowerCase().trim());
-    //
-    //            if (rolesForAttribute == null) {
-    //                log.debug("Couldn't read role attribute '"
-    //                        + this.roleAttributes[i] + "' for user " + dn);
-    //                continue;
-    //            }
-    //
-    //            for (String role : rolesForAttribute) {
-    //                GrantedAuthority authority = createAuthority(role.toLowerCase().trim());
-    //
-    //                if (authority != null) {
-    //                    essence.addAuthority(authority);
-    //                }
-    //            }
-    //        }
-
     // Add the supplied authorities
-
     for (GrantedAuthority authority : authorities) {
       essence.addAuthority(authority);
     }
 
     // Check for PasswordPolicy data
-
     PasswordPolicyResponseControl passwordPolicyResponseControl =
         (PasswordPolicyResponseControl) ctx.getObjectAttribute(PasswordPolicyControl.OID);
 

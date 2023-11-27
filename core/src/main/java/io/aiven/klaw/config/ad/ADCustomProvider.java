@@ -65,13 +65,6 @@ public class ADCustomProvider extends AbstractLdapAuthenticationProvider {
   private final String url;
   private boolean convertSubErrorCodesToExceptions;
 
-  //  public ADCustomProvider(String adDomain, String adUrl, String rootDn) {
-  //    Assert.isTrue(StringUtils.hasText(adUrl), "AD Url cannot be empty");
-  //    this.domain = StringUtils.hasText(adDomain) ? adDomain.toLowerCase() : null;
-  //    this.url = adUrl;
-  //    this.rootDn = StringUtils.hasText(rootDn) ? rootDn.toLowerCase() : null;
-  //  }
-
   public ADCustomProvider(String adDomain, String adUrl, String adFilter) {
     Assert.isTrue(StringUtils.hasText(adUrl), "AD Url cannot be empty");
     this.domain = StringUtils.hasText(adDomain) ? adDomain.toLowerCase() : null;
