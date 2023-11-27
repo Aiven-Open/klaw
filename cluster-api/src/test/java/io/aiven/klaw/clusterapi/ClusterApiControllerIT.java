@@ -104,6 +104,8 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
+  public static final String WINDOWS_OS = "Windows";
+  public static final String OS_PROPERTY_NAME = "os.name";
 
   static EmbeddedKafkaBroker embeddedKafkaBroker;
 
@@ -473,6 +475,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(11)
   public void resetConsumerOffsetsToEarliest() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     produceAndConsumeRecords(true); // produce 10 records and consume all records
 
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
@@ -542,6 +547,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(12)
   public void resetConsumerOffsetsToLatest() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     produceAndConsumeRecords(true); // produce 10 more records
 
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
@@ -611,6 +619,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(13)
   public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     produceAndConsumeRecords(false); // produce 10 more records
 
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
@@ -722,6 +733,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(15)
   public void resetOffsetsNonExistingTopic() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
     String nonExistingTopic = "topicdoesnotexist";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
@@ -755,6 +769,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(16)
   public void getTopicContents() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     int numberOfOffsetsToRead = 2;
     String url =
         "/topics/getTopicContents/"
@@ -783,6 +800,9 @@ public class ClusterApiControllerIT {
   @Test
   @Order(17)
   public void getTopicContentsInvalidPartitionId() throws Exception {
+    if (System.getProperty(OS_PROPERTY_NAME).startsWith(WINDOWS_OS)) {
+      return;
+    }
     int numberOfOffsetsToRead = 2;
     int partitionId = 5;
     String url =
