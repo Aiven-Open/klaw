@@ -49,6 +49,8 @@ function ChangePasswordForm() {
   }, [isSuccess, isError]);
 
   const handleSubmit = () => {
+    // onSubmit will not trigger if form has errors, but will if the form is pristine
+    // We only want to show the confirm modal if form is filled and with no field error
     isDirty && setShowConfirmationModal(true);
   };
 
@@ -87,8 +89,11 @@ function ChangePasswordForm() {
           ariaLabel={"Change your password by entering a new password"}
           onSubmit={handleSubmit}
         >
-          <PasswordInput labelText="New password" name="password" />
-          <PasswordInput
+          <PasswordInput<ChangePasswordFormSchema>
+            labelText="New password"
+            name="password"
+          />
+          <PasswordInput<ChangePasswordFormSchema>
             labelText="Confirm new password"
             name="confirmPassword"
           />
