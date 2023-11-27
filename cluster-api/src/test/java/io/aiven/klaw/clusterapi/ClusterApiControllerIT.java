@@ -78,7 +78,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -95,7 +95,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestPropertySource(locations = "classpath:application.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-@EmbeddedKafka
+@EmbeddedKafka(kraft = false)
 @Slf4j
 public class ClusterApiControllerIT {
 
@@ -107,7 +107,7 @@ public class ClusterApiControllerIT {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
 
-  static EmbeddedKafkaBroker embeddedKafkaBroker;
+  static EmbeddedKafkaZKBroker embeddedKafkaBroker;
 
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
@@ -941,7 +941,11 @@ public class ClusterApiControllerIT {
   @DynamicPropertySource
   static void registerKafkaProperties(DynamicPropertyRegistry registry) {
     embeddedKafkaBroker =
-        new EmbeddedKafkaBroker(1, false, 1).brokerProperties(buildBrokerProperties());
+        new EmbeddedKafkaZKBroker(1, false, 1); // .brokerProperties(buildBrokerProperties());
+
+    for (Map.Entry<String, String> stringStringEntry : buildBrokerProperties().entrySet()) {
+      embeddedKafkaBroker.brokerProperty(stringStringEntry.getKey(), stringStringEntry.getValue());
+    }
     embeddedKafkaBroker.setAdminTimeout(100);
     embeddedKafkaBroker.afterPropertiesSet();
   }
