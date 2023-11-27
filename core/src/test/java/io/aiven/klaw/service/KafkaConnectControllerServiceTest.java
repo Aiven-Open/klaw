@@ -223,9 +223,9 @@ public class KafkaConnectControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(handleDbRequests.getConnectorRequests(
+    when(handleDbRequests.existsConnectorRequest(
             "ConnectorOne", "1", RequestStatus.CREATED.value, TENANT_ID))
-        .thenReturn(List.of(new KafkaConnectorRequest()));
+        .thenReturn(true);
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
