@@ -70,7 +70,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -105,8 +106,6 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
-  public static final String WINDOWS_OS = "Windows.*";
-  public static final String OS_PROPERTY_NAME = "os.name";
 
   static EmbeddedKafkaBroker embeddedKafkaBroker;
 
@@ -473,7 +472,7 @@ public class ClusterApiControllerIT {
     assertThat(aclBindings1.size()).isEqualTo(1);
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(11)
   public void resetConsumerOffsetsToEarliest() throws Exception {
@@ -543,7 +542,7 @@ public class ClusterApiControllerIT {
         .isEqualTo(expectedOffsetAfterReset);
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(12)
   public void resetConsumerOffsetsToLatest() throws Exception {
@@ -613,7 +612,7 @@ public class ClusterApiControllerIT {
         .isEqualTo(expectedOffsetsBeforeAfter);
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(13)
   public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
@@ -725,7 +724,7 @@ public class ClusterApiControllerIT {
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(15)
   public void resetOffsetsNonExistingTopic() throws Exception {
@@ -759,7 +758,7 @@ public class ClusterApiControllerIT {
     assertThat(thrown.getMessage()).contains("Topic " + nonExistingTopic + " does not exist.");
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(16)
   public void getTopicContents() throws Exception {
@@ -788,7 +787,7 @@ public class ClusterApiControllerIT {
     assertThat(apiResponse.values().toString()).contains(TEST_MESSAGE);
   }
 
-  @DisabledIfSystemProperty(named = OS_PROPERTY_NAME, matches = WINDOWS_OS)
+  @DisabledOnOs({OS.WINDOWS})
   @Test
   @Order(17)
   public void getTopicContentsInvalidPartitionId() throws Exception {
