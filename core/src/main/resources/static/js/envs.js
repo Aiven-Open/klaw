@@ -354,7 +354,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss !== "cancel") {
+                    if (isConfirm.value) {
                         $http({
                                 method: "POST",
                                 url: "deleteTenant",
@@ -398,14 +398,14 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             }
 
         $scope.updateTenant = function(){
-            if($scope.myTenantInfo.orgName == undefined)
+            if($scope.myTenantInfo.orgName === undefined)
                 {
                     $scope.alertnote = "Please fill in an Organization name";
                     $scope.showAlertToast();
                     return;
                 }
              var orgName = $scope.myTenantInfo.orgName.trim();
-             if(orgName.length == 0 || orgName.length > 50)
+             if(orgName.length === 0 || orgName.length > 50)
              {
                  $scope.alertnote = "Please fill in a valid Organization name with less than 50 chars.";
                  $scope.showAlertToast();
@@ -437,60 +437,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.submitTenantExtension = function(){
-             if($scope.selectedTenantExtensionPeriod == "" || $scope.selectedTenantExtensionPeriod == "selected")
-                    {
-                        $scope.alertnote = "Please select an extension period";
-                        $scope.showAlertToast();
-                        return;
-                    }
-                 var orgName = $scope.myTenantInfo.orgName.trim();
-                 if(orgName.length == 0 || orgName.length > 50)
-                 {
-                     $scope.alertnote = "Please fill in a valid Organization name with less than 50 chars.";
-                     $scope.showAlertToast();
-                     return;
-                 }
-
-                $http({
-                    method: "POST",
-                    url: "udpateTenantExtension",
-                    headers : { 'Content-Type' : 'application/json' },
-                    params: {'selectedTenantExtensionPeriod' : $scope.selectedTenantExtensionPeriod},
-                    data: {'selectedTenantExtensionPeriod' : $scope.selectedTenantExtensionPeriod}
-                }).success(function(output) {
-                        $scope.alert = "Update Tenant extension Request : "+output.message;
-                        if(output.success){
-                            swal({
-                                 title: "",
-                                 text: "Update Tenant extension Request : "+output.message + ". You will hear from us very soon. Thank you !!",
-                                 timer: 2000,
-                                 showConfirmButton: false
-                             });
-                         }else $scope.showSubmitFailed('','');
-                }).error(
-                    function(error)
-                    {
-
-                    }
-                );
-        }
-
-        $scope.getTenantExtensionPeriods = function(){
-            $http({
-                    method: "GET",
-                          url: "getExtensionPeriods",
-                          headers : { 'Content-Type' : 'application/json' }
-                      }).success(function(output) {
-                          $scope.tenantExtensionPeriods = output;
-                      }).error(
-                          function(error)
-                          {
-                              $scope.alert = error;
-                          }
-                      );
-        }
-
         $scope.getTenantInfo = function(){
             $http({
                 method: "GET",
@@ -498,13 +444,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                       headers : { 'Content-Type' : 'application/json' }
                   }).success(function(output) {
                       $scope.myTenantInfo = output;
-
-                      if(output.numberOfDays < 62)
-                            $scope.myTenantInfo.showExtension = "true";
-
-                      if(output.numberOfDays < 0)
-                            $scope.myTenantInfo.expired = "true";
-
                   }).error(
                       function(error)
                       {
@@ -601,7 +540,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.value) {
                         $http({
                                 method: "POST",
                                 url: "deleteCluster",
@@ -645,7 +584,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             		closeOnConfirm: true,
             		closeOnCancel: true
             	}).then(function(isConfirm){
-            		if (isConfirm.dismiss != "cancel") {
+            		if (isConfirm.value) {
             			$http({
                                 method: "POST",
                                 url: "deleteEnvironmentRequest",
@@ -953,9 +892,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.addNewSchemaEnv.envname.length > 10)
+                if($scope.addNewSchemaEnv.envname.length > 25)
                 {
-                    $scope.alertnote = "Environment name cannot be more than 10 characters.";
+                    $scope.alertnote = "Environment name cannot be more than 25 characters.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -1179,7 +1118,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -1203,6 +1142,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -1242,7 +1182,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;

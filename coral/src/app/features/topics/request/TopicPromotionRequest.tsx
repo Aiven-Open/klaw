@@ -35,6 +35,11 @@ import {
 } from "src/domain/topic";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import isString from "lodash/isString";
+
+function parseNumberOrUndefined(value: string | undefined): number | undefined {
+  return isString(value) ? parseInt(value, 10) : undefined;
+}
 
 function TopicPromotionRequest() {
   const { topicName } = useParams();
@@ -224,24 +229,28 @@ function TopicPromotionRequest() {
           readOnly
         />
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
                 label={"Topic partitions"}
-                max={targetEnvironment.params?.maxPartitions}
+                max={parseNumberOrUndefined(
+                  targetEnvironment.params.maxPartitions
+                )}
                 required={true}
               />
             ) : (
               <Input.Skeleton />
             )}
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             {targetEnvironment !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
                 label={"Replication factor"}
-                max={targetEnvironment.params?.maxRepFactor}
+                max={parseNumberOrUndefined(
+                  targetEnvironment.params?.maxRepFactor
+                )}
                 required={true}
               />
             ) : (
@@ -259,7 +268,7 @@ function TopicPromotionRequest() {
           <Divider />
         </Box>
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Topic description (read-only)"
@@ -267,7 +276,7 @@ function TopicPromotionRequest() {
               readOnly
             />
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"

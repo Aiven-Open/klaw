@@ -1,12 +1,12 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnectors";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Connector, getConnectors } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
 
@@ -43,6 +43,7 @@ const mockConnectors: Connector[] = [
     connectorDeletable: false,
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: false,
     connectorOwner: false,
     connectorStatus: "",
@@ -69,6 +70,7 @@ const mockConnectors: Connector[] = [
     connectorDeletable: false,
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: false,
     connectorOwner: false,
     connectorStatus: "",
@@ -92,6 +94,7 @@ const mockConnectors: Connector[] = [
     connectorDeletable: false,
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: false,
     connectorOwner: false,
     connectorStatus: "",
@@ -140,11 +143,11 @@ const mockTeams = [
 ];
 
 const mockEnvironments = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "1",
     name: "DEV",
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     id: "2",
     name: "TST",
   }),
@@ -430,7 +433,7 @@ describe("BrowseConnectors.tsx", () => {
 
     it("fetches new data when when user enters text in input", async () => {
       const search = screen.getByRole("search", {
-        name: "Search Connector name",
+        name: "Search Connector",
       });
       expect(search).toHaveValue("");
 
@@ -448,7 +451,7 @@ describe("BrowseConnectors.tsx", () => {
 
     it("enables user to navigate to search input with keyboard", async () => {
       const search = screen.getByRole("search", {
-        name: "Search Connector name",
+        name: "Search Connector",
       });
 
       expect(search).toHaveValue("");

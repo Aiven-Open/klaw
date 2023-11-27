@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.Config;
@@ -57,12 +58,14 @@ public class ConfluentCloudApiService {
   private final Environment env;
   final ClusterApiUtils clusterApiUtils;
 
+  private static boolean topicsLoadingStatus;
+
   public ConfluentCloudApiService(Environment env, ClusterApiUtils clusterApiUtils) {
     this.env = env;
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public Set<TopicConfig> listTopics(
+  public LoadTopicsResponse listTopics(
       String restApiHost, KafkaSupportedProtocol protocol, String clusterIdentification)
       throws Exception {
     RestTemplate restTemplate = getRestTemplate();
@@ -83,7 +86,10 @@ public class ConfluentCloudApiService {
 
       List<TopicConfig> topicsListUpdated = processListTopicsResponse(responseEntity);
 
-      return new HashSet<>(topicsListUpdated);
+      return LoadTopicsResponse.builder()
+          .loadingInProgress(topicsLoadingStatus)
+          .topicConfigSet(new HashSet<>(topicsListUpdated))
+          .build();
     } catch (RestClientException e) {
       log.error("Exception:", e);
       throw new Exception("Error in listing topics : " + e.getMessage());

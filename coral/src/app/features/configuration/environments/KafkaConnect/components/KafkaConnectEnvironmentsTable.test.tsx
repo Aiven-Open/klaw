@@ -1,9 +1,11 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import KafkaConnectEnvironmentsTable from "src/app/features/configuration/environments/KafkaConnect/components/KafkaConnectEnvironmentsTable";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+const TEST_UPDATE_TIME = "14-Sep-2023 12:30:38 UTC";
 
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
@@ -12,26 +14,29 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const mockEnvironments: Environment[] = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "DEV",
     id: "1",
     clusterName: "DEV_CL",
     envStatus: "ONLINE",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "TST",
     id: "2",
     clusterName: "TST_CL",
     envStatus: "OFFLINE",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     type: "kafkaconnect",
     name: "PROD",
     id: "3",
     clusterName: "PROD_CL",
     envStatus: "NOT_KNOWN",
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
 ];
 
@@ -143,13 +148,13 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
         });
         const statusText =
           environment.envStatus === "ONLINE"
-            ? "Working"
+            ? "Online"
             : environment.envStatus === "OFFLINE"
-            ? "Not working"
+            ? "Offline"
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
-          name: statusText,
+          name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,
         });
 
         expect(status).toBeVisible();

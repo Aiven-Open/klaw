@@ -211,8 +211,7 @@ const getTopicRequests = (
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =
-        property === "operationType" &&
-        (value === "ALL" || value === undefined);
+        property === "operationType" && value === undefined;
 
       return (
         omitIsMyRequest || omitSearch || omitEnv || omitRequestOperationType
@@ -231,9 +230,11 @@ const getTopicRequests = (
 const getTopicMessages = (
   params: KlawApiRequestQueryParameters<"getTopicEvents">
 ): Promise<TopicMessages | NoContent> => {
+  const queryParams = convertQueryValuesToString(params);
+
   return api.get<KlawApiResponse<"getTopicEvents">>(
     "/getTopicEvents",
-    new URLSearchParams(params)
+    new URLSearchParams(queryParams)
   );
 };
 

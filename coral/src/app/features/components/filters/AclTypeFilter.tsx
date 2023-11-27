@@ -1,6 +1,7 @@
 import { NativeSelect } from "@aivenio/aquarium";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { AclType } from "src/domain/acl";
+import upperFirst from "lodash/upperFirst";
 
 type AclTypeForFilter = AclType | "ALL";
 const aclTypesForFilter: AclTypeForFilter[] = ["ALL", "CONSUMER", "PRODUCER"];
@@ -26,7 +27,11 @@ function AclTypeFilter() {
             </option>
           );
         }
-        return <option key={type}>{type}</option>;
+        return (
+          <option key={type} value={type}>
+            {upperFirst(type.toLowerCase())}
+          </option>
+        );
       })}
     </NativeSelect>
   );

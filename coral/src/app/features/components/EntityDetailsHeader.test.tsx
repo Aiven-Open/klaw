@@ -1,6 +1,5 @@
-import { cleanup, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { cleanup, screen, within } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { EnvironmentInfo } from "src/domain/environment";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -20,6 +19,10 @@ const testEnvironments: EnvironmentInfo[] = [
 const mockSetEnvironmentId = jest.fn();
 
 const defaultTopicProps = {
+  breadcrumbs: [
+    { path: "topics", name: "Topics" },
+    { path: "my-nice-topic", name: "my-nice-topic" },
+  ],
   entity: testTopic,
   entityEditLink: "/hello/topic",
   showEditButton: true,
@@ -32,6 +35,10 @@ const defaultTopicProps = {
 };
 
 const defaultConnectorProps = {
+  breadcrumbs: [
+    { path: "connectors", name: "Connectors" },
+    { path: "my-nice-connector", name: "my-nice-connector" },
+  ],
   entity: testConnector,
   entityEditLink: "/hello/connector",
   showEditButton: true,
@@ -127,6 +134,21 @@ describe("EntityDetailsHeader", () => {
         });
 
         expect(name).toBeVisible();
+      });
+
+      it("shows breadcrumbs", () => {
+        const breadcrumbs = screen.getByRole("navigation", {
+          name: "Breadcrumbs",
+        });
+        const topicsLink = within(breadcrumbs).getByRole("link", {
+          name: "Topics",
+        });
+        const topicName = within(breadcrumbs).getByRole("link", {
+          name: testTopic.name,
+        });
+
+        expect(topicsLink).toBeVisible();
+        expect(topicName).toBeVisible();
       });
 
       it("shows a select element for environments", () => {
@@ -311,6 +333,21 @@ describe("EntityDetailsHeader", () => {
         });
 
         expect(name).toBeVisible();
+      });
+
+      it("shows breadcrumbs", () => {
+        const breadcrumbs = screen.getByRole("navigation", {
+          name: "Breadcrumbs",
+        });
+        const connectorsLink = within(breadcrumbs).getByRole("link", {
+          name: "Connectors",
+        });
+        const connectorName = within(breadcrumbs).getByRole("link", {
+          name: testConnector.name,
+        });
+
+        expect(connectorsLink).toBeVisible();
+        expect(connectorName).toBeVisible();
       });
 
       it("shows a select element for environments", () => {

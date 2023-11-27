@@ -32,6 +32,7 @@ import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
@@ -49,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -99,7 +102,7 @@ public class TopicSyncControllerService {
         reconStr = new StringBuilder();
         try {
           List<TopicSyncResponseModel> results =
-              getReconTopics(envStr, "-1", "", null, "false", false).getResultSet();
+              getReconTopics(envStr, "-1", "", null, "false", false, false).getResultSet();
 
           for (TopicSyncResponseModel topicRequestModel : results) {
             reconStr
@@ -130,13 +133,21 @@ public class TopicSyncControllerService {
       String currentPage,
       String topicNameSearch,
       String showAllTopics,
-      boolean isBulkOption)
+      boolean isBulkOption,
+      boolean resetTopicsCache)
       throws Exception {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
-    List<TopicSyncResponseModel> topicRequestModelList =
-        getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
-            .getResultSet();
+    SyncTopicsList loadTopicsResponse =
+        getSyncTopics(
+            envId,
+            pageNo,
+            currentPage,
+            topicNameSearch,
+            showAllTopics,
+            isBulkOption,
+            resetTopicsCache);
+    List<TopicSyncResponseModel> topicRequestModelList = loadTopicsResponse.getResultSet();
 
     topicRequestModelList =
         topicRequestModelList.stream()
@@ -174,6 +185,7 @@ public class TopicSyncControllerService {
     syncTopicsList.setAllTopicWarningsCount(
         Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidatedTopic()).count())
             .intValue());
+    syncTopicsList.setTopicsLoadingStatus(loadTopicsResponse.isTopicsLoadingStatus());
     return syncTopicsList;
   }
 
@@ -183,7 +195,8 @@ public class TopicSyncControllerService {
       String currentPage,
       String topicNameSearch,
       String showAllTopics,
-      boolean isBulkOption)
+      boolean isBulkOption,
+      boolean resetTopicsCache)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
     SyncTopicsList syncTopicsList = new SyncTopicsList();
@@ -196,11 +209,13 @@ public class TopicSyncControllerService {
       }
     }
 
-    List<TopicConfig> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
+    LoadTopicsResponse loadTopicsResponse =
+        getTopicsFromKafkaCluster(env, topicNameSearch, resetTopicsCache);
+    syncTopicsList.setTopicsLoadingStatus(loadTopicsResponse.isLoadingInProgress());
     List<TopicConfig> topicsList;
 
     topicsList =
-        topicFilteredList.stream()
+        loadTopicsResponse.getTopicConfigSet().stream()
             .sorted(new TopicControllerService.TopicNameSyncComparator())
             .collect(Collectors.toList());
 
@@ -704,14 +719,14 @@ public class TopicSyncControllerService {
             tmpTopicSub = tmpTopicFull.replaceAll("--PREFIXED--", "");
             if (topicInfo.getTopicname().startsWith(tmpTopicSub)
                 && topicInfo
-                    .getEnvironmentsList()
+                    .getEnvironmentsSet()
                     .contains(producerConsumerTopic.getEnvironment())) {
-              topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
               filterProducerConsumerList.add(topicInfo);
             }
           } else if (Objects.equals(producerConsumerTopic.getTopicname(), topicInfo.getTopicname())
-              && topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
-            topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
+            topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
           }
         }
@@ -764,12 +779,12 @@ public class TopicSyncControllerService {
               TopicInfo mp = new TopicInfo();
               mp.setSequence(counterInc + "");
 
-              List<String> envList = topicSOT.getEnvironmentsList();
-              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+              TreeSet<String> envSet = new TreeSet<>(Comparator.comparingInt(orderOfEnvs::indexOf));
+              envSet.addAll(topicSOT.getEnvironmentsSet());
 
               mp.setTopicid(topicSOT.getTopicid());
               mp.setEnvName(topicSOT.getEnvironment());
-              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envSet));
               mp.setTopicName(topicSOT.getTopicname());
               mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
@@ -817,11 +832,11 @@ public class TopicSyncControllerService {
       }
     } else {
       try {
-        List<TopicConfig> topicsMap =
+        LoadTopicsResponse loadTopicsResponse =
             getTopicsFromKafkaCluster(
-                syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter());
-        for (TopicConfig hashMap : topicsMap) {
-          invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
+                syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter(), false);
+        for (TopicConfig topicConfig : loadTopicsResponse.getTopicConfigSet()) {
+          invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, topicConfig);
         }
       } catch (Exception e) {
         log.error("Could not retrieve topics ", e);
@@ -861,8 +876,8 @@ public class TopicSyncControllerService {
     }
   }
 
-  private List<TopicConfig> getTopicsFromKafkaCluster(String env, String topicNameSearch)
-      throws Exception {
+  private LoadTopicsResponse getTopicsFromKafkaCluster(
+      String env, String topicNameSearch, boolean resetTopicsCache) throws Exception {
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
     }
@@ -873,27 +888,34 @@ public class TopicSyncControllerService {
             .getClusters(KafkaClustersType.KAFKA, tenantId)
             .get(envSelected.getClusterId());
 
-    List<TopicConfig> topicsList =
+    LoadTopicsResponse loadTopicsResponse =
         clusterApiService.getAllTopics(
             kwClusters.getBootstrapServers(),
             kwClusters.getProtocol(),
             kwClusters.getClusterName() + kwClusters.getClusterId(),
             kwClusters.getKafkaFlavor(),
-            tenantId);
+            tenantId,
+            resetTopicsCache);
 
     topicCounter = 0;
 
-    List<TopicConfig> topicFilteredList = topicsList;
+    Set<TopicConfig> topicFilteredList = loadTopicsResponse.getTopicConfigSet();
     // Filter topics on topic name for search
 
-    if (topicNameSearch != null && topicNameSearch.length() > 0) {
+    if (topicNameSearch != null
+        && topicNameSearch.length() > 0
+        && !loadTopicsResponse.isLoadingInProgress()) {
       final String topicSearchFilter = topicNameSearch;
       topicFilteredList =
-          topicsList.stream()
+          loadTopicsResponse.getTopicConfigSet().stream()
               .filter(topic -> topic.getTopicName().contains(topicSearchFilter))
-              .collect(Collectors.toList());
+              .collect(Collectors.toSet());
     }
-    return topicFilteredList;
+
+    return LoadTopicsResponse.builder()
+        .topicConfigSet(topicFilteredList)
+        .loadingInProgress(loadTopicsResponse.isLoadingInProgress())
+        .build();
   }
 
   private void invokeUpdateSync(

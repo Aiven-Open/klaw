@@ -1,4 +1,4 @@
-import { SetupServerApi } from "msw/node";
+import { SetupServer } from "msw/node";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from "@types/react";
 
@@ -15,7 +15,7 @@ declare module "react" {
 
 declare global {
   interface Window {
-    msw: SetupServerApi;
+    msw: SetupServer;
   }
 }
 

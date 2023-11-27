@@ -1,5 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
@@ -14,22 +15,16 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import io.aiven.klaw.service.CommonUtilsService;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
@@ -227,7 +222,7 @@ public class SelectDataJdbc {
     if (requestor != null && !requestor.isEmpty()) {
       request.setRequestor(requestor);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
@@ -344,7 +339,7 @@ public class SelectDataJdbc {
     if (userName != null && !userName.isEmpty()) {
       request.setRequestor(userName);
     }
-    if (requestOperationType != null) {
+    if (requestOperationType != null && requestOperationType != RequestOperationType.ALL) {
       request.setRequestOperationType(requestOperationType.value);
     }
 
@@ -366,23 +361,13 @@ public class SelectDataJdbc {
 
   public List<Topic> selectTopicDetails(String topic, int tenantId) {
     List<Topic> topicOpt = topicRepo.findAllByTopicnameAndTenantId(topic, tenantId);
-
-    if (topicOpt.size() > 0) {
-      return topicOpt;
-    } else {
-      return new ArrayList<>();
-    }
+    return topicOpt.isEmpty() ? Collections.emptyList() : topicOpt;
   }
 
   public List<KwKafkaConnector> selectConnectorDetails(String connectorName, int tenantId) {
     List<KwKafkaConnector> topicOpt =
         kafkaConnectorRepo.findAllByConnectorNameAndTenantId(connectorName, tenantId);
-
-    if (topicOpt.size() > 0) {
-      return topicOpt;
-    } else {
-      return new ArrayList<>();
-    }
+    return topicOpt.isEmpty() ? Collections.emptyList() : topicOpt;
   }
 
   // "All teams"
@@ -426,8 +411,7 @@ public class SelectDataJdbc {
     }
     dashboardStats.setConsumerCount(countConsumers);
 
-    List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardStats.setTeamMembersCount(allUsers.size());
+    dashboardStats.setTeamMembersCount(userInfoRepo.countByTeamIdAndTenantId(teamId, tenantId));
 
     return dashboardStats;
   }
@@ -445,9 +429,9 @@ public class SelectDataJdbc {
 
     List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
-    Map<String, List<String>> topicEnvMap = new HashMap<>();
+    Map<String, Set<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
-    List<String> envList;
+    Set<String> envSet;
 
     for (Acl acl : acls) {
       t = new Topic();
@@ -461,22 +445,22 @@ public class SelectDataJdbc {
       t.setTopicname(tmpTopicName);
 
       if (topicEnvMap.containsKey(tmpTopicName)) {
-        envList = topicEnvMap.get(tmpTopicName);
-        if (!envList.contains(acl.getEnvironment())) {
-          envList.add(acl.getEnvironment());
-          topicEnvMap.put(tmpTopicName, envList);
+        envSet = topicEnvMap.get(tmpTopicName);
+        if (!envSet.contains(acl.getEnvironment())) {
+          envSet.add(acl.getEnvironment());
+          topicEnvMap.put(tmpTopicName, envSet);
         }
       } else {
-        envList = new ArrayList<>();
-        envList.add(acl.getEnvironment());
-        topicEnvMap.put(tmpTopicName, envList);
+        envSet = new HashSet<>();
+        envSet.add(acl.getEnvironment());
+        topicEnvMap.put(tmpTopicName, envSet);
       }
 
       topics.add(t);
     }
 
     for (Topic topic : topics) {
-      topic.setEnvironmentsList(topicEnvMap.get(topic.getTopicname()));
+      topic.setEnvironmentsSet(topicEnvMap.get(topic.getTopicname()));
     }
 
     topics =
@@ -563,7 +547,9 @@ public class SelectDataJdbc {
                           topicRequest.getRequestOperationType()))
               .collect(Collectors.toList());
 
-      if (requestOperationType == null || requestOperationType.equals(RequestOperationType.CLAIM)) {
+      if (requestOperationType == null
+          || requestOperationType.equals(RequestOperationType.CLAIM)
+          || requestOperationType.equals(RequestOperationType.ALL)) {
         // Team Name is null here as it is the team who created the requested
         // Approving Team includes the teamId as that is how Claim topics know who is the owning
         // team.
@@ -663,7 +649,7 @@ public class SelectDataJdbc {
    * Query the TopicRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -673,7 +659,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<TopicRequest> findTopicRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -684,8 +670,9 @@ public class SelectDataJdbc {
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -812,7 +799,7 @@ public class SelectDataJdbc {
    * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
    * parameters will be utilised in the search.
    *
-   * @param requestType The type of topic request Create/claim etc
+   * @param requestOperationType The type of topic request Create/claim etc
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
@@ -821,7 +808,7 @@ public class SelectDataJdbc {
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
-      String requestType,
+      String requestOperationType,
       Integer teamId,
       String environment,
       String status,
@@ -832,8 +819,9 @@ public class SelectDataJdbc {
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
 
-    if (requestType != null) {
-      request.setRequestOperationType(requestType);
+    if (requestOperationType != null
+        && !requestOperationType.equals(RequestOperationType.ALL.value)) {
+      request.setRequestOperationType(requestOperationType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -898,6 +886,10 @@ public class SelectDataJdbc {
     return teamRepo.findAllByTenantId(tenantId);
   }
 
+  public List<Team> selectAllTeamsByTenantIdAndTeamId(int tenantId, int teamId) {
+    return teamRepo.findAllByTenantIdAndTeamId(tenantId, teamId);
+  }
+
   public AclRequests selectAcl(int req_no, int tenantId) {
     log.debug("selectAcl {}", req_no);
     AclRequestID aclRequestID = new AclRequestID();
@@ -941,6 +933,17 @@ public class SelectDataJdbc {
     return env.orElse(null);
   }
 
+  public Iterable<Env> selectEnvsDetails(Collection<String> envIds, int tenantId) {
+    List<EnvID> ids = new ArrayList<>(envIds.size());
+    for (var env : envIds) {
+      EnvID envID = new EnvID();
+      envID.setId(env);
+      envID.setTenantId(tenantId);
+      ids.add(envID);
+    }
+    return envRepo.findAllById(ids);
+  }
+
   public UserInfo selectUserInfo(String username) {
     Optional<UserInfo> userRec = userInfoRepo.findByUsernameIgnoreCase(username);
     return userRec.orElse(null);
@@ -976,26 +979,17 @@ public class SelectDataJdbc {
   }
 
   public List<Team> selectTeamsOfUsers(String username, int tenantId) {
-    log.debug("selectTeamsOfUsers {}", username);
-    List<Team> allTeams = selectAllTeams(tenantId);
 
-    List<Team> teamList = new ArrayList<>();
-    List<UserInfo> userInfoList = Lists.newArrayList(userInfoRepo.findAllByTenantId(tenantId));
-    Integer teamId;
-
-    for (UserInfo row : userInfoList) {
-      teamId = row.getTeamId();
-
-      Integer finalTeamId = teamId;
-      Optional<Team> teamSel =
-          allTeams.stream().filter(a -> Objects.equals(a.getTeamId(), finalTeamId)).findFirst();
-
-      if (Objects.equals(username, row.getUsername())) {
-        teamSel.ifPresent(teamList::add);
-      }
+    Optional<UserInfo> userInfoOpt =
+        userInfoRepo.findFirstByTenantIdAndUsername(tenantId, username);
+    if (userInfoOpt.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    return teamList;
+    Integer teamId = userInfoOpt.get().getTeamId();
+
+    log.debug("selectTeamsOfUsers {}", username);
+    return selectAllTeamsByTenantIdAndTeamId(tenantId, teamId);
   }
 
   public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
@@ -1059,6 +1053,10 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
   }
 
+  public int countRegisterUsersInfoForTenant(int tenantId) {
+    return registerInfoRepo.countByStatusAndTenantId("PENDING", tenantId);
+  }
+
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
@@ -1091,52 +1089,77 @@ public class SelectDataJdbc {
     return teamRepo.findFirstByTenantIdAndTeamnameOrderByTenantId(tenantId, teamName);
   }
 
-  public List<Map<String, String>> selectActivityLogByTeam(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
     try {
-      return gatherActivityList(
-          activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
+      List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
+      List<Pair<String, Integer>> fromDb =
+          gatherActivityList(
+              activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
+      }
+      return res;
     } catch (Exception e) {
       log.error("Error selectActivityLogForLastDays ", e);
     }
     return Collections.emptyList();
   }
 
-  public List<Map<String, String>> selectActivityLogForLastDays(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId) {
     try {
-      return gatherActivityList(
-          activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
+      List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
+      List<Pair<String, Integer>> fromDb =
+          gatherActivityList(
+              activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
+      for (Pair<String, Integer> elem : fromDb) {
+        res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
+      }
+      return res;
     } catch (Exception e) {
       log.error("Error selectActivityLogForLastDays ", e);
     }
     return Collections.emptyList();
   }
 
-  private List<Map<String, String>> gatherActivityList(List<Object[]> activityCount) {
-    final List<Map<String, String>> totalActivityLogCount = new ArrayList<>(activityCount.size());
-    Map<String, String> hashMap;
-    for (Object[] activity : activityCount) {
-      hashMap = new HashMap<>(activity.length);
-      hashMap.put("dateofactivity", "" + activity[0]);
-      hashMap.put("activitycount", "" + ((Long) activity[1]).intValue());
-      totalActivityLogCount.add(hashMap);
+  static class ActivityCountItem {
+    private String dateOfActivity;
+    private int activityCount;
+
+    private ActivityCountItem(String dateOfActivity, int activityCount) {
+      this.dateOfActivity = dateOfActivity;
+      this.activityCount = activityCount;
     }
-    return totalActivityLogCount;
+
+    public static ActivityCountItem of(String dateOfActivity, int activityCount) {
+      return new ActivityCountItem(dateOfActivity, activityCount);
+    }
   }
 
-  public List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId) {
-    List<Map<String, String>> totalTopicCount = new ArrayList<>();
+  private List<Pair<String, Integer>> gatherActivityList(List<Object[]> activityCount) {
+    List<Pair<String, Integer>> res = new ArrayList<>(activityCount.size());
+    for (Object[] activity : activityCount) {
+
+      res.add(
+          new ImmutablePair<>(
+              DATE_DDMMMYYYY_FORMATTER.format(((java.sql.Date) activity[0]).toLocalDate()),
+              ((Long) activity[1]).intValue()));
+    }
+    return res;
+  }
+
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectTopicsCountByEnv(
+      Integer tenantId) {
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> totalTopicCount =
+        new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsGroupByEnv(tenantId);
 
-      Map<String, String> hashMap;
       for (Object[] topic : topics) {
-        hashMap = new HashMap<>();
-        hashMap.put("cluster", (String) topic[0]);
-        hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
-
-        totalTopicCount.add(hashMap);
+        totalTopicCount.add(
+            CommonUtilsService.ChartsOverviewItem.of(
+                (String) topic[0], ((Long) topic[1]).intValue()));
       }
     } catch (Exception e) {
       log.error("Error selectTopicsCountByEnv ", e);
@@ -1144,8 +1167,10 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId) {
-    List<Map<String, String>> totalPartitionsCount = new ArrayList<>();
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectPartitionsCountByEnv(
+      Integer teamId, Integer tenantId) {
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> totalPartitionsCount =
+        new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) {
@@ -1154,13 +1179,10 @@ public class SelectDataJdbc {
         topics = topicRepo.findAllPartitionsGroupByEnv(tenantId);
       }
 
-      Map<String, String> hashMap;
       for (Object[] topic : topics) {
-        hashMap = new HashMap<>();
-        hashMap.put("cluster", (String) topic[0]);
-        hashMap.put("partitionscount", "" + topic[1]);
-
-        totalPartitionsCount.add(hashMap);
+        totalPartitionsCount.add(
+            CommonUtilsService.ChartsOverviewItem.of(
+                String.valueOf(topic[0]), ((Long) topic[1]).intValue()));
       }
     } catch (Exception e) {
       log.error("Error from selectPartitionsCountByEnv ", e);
@@ -1168,8 +1190,9 @@ public class SelectDataJdbc {
     return totalPartitionsCount;
   }
 
-  public List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
-    List<Map<String, String>> totalAclsCount = new ArrayList<>();
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectAclsCountByEnv(
+      Integer teamId, Integer tenantId) {
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> totalAclsCount = new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) {
@@ -1178,13 +1201,9 @@ public class SelectDataJdbc {
         topics = aclRepo.findAllAclsGroupByEnv(tenantId);
       }
 
-      Map<String, String> hashMap;
       for (Object[] topic : topics) {
-        hashMap = new HashMap<>();
-        hashMap.put("cluster", (String) topic[0]);
-        hashMap.put("aclscount", "" + ((Long) topic[1]).intValue());
-
-        totalAclsCount.add(hashMap);
+        totalAclsCount.add(
+            CommonUtilsService.ChartsOverviewItem.of((String) topic[0], (Integer) topic[1]));
       }
     } catch (Exception e) {
       log.error("Error selectAclsCountByEnv", e);
@@ -1192,8 +1211,10 @@ public class SelectDataJdbc {
     return totalAclsCount;
   }
 
-  public List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
-    List<Map<String, String>> totalTopicCount = new ArrayList<>();
+  public List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> selectTopicsCountByTeams(
+      Integer teamId, int tenantId) {
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> totalTopicCount =
+        new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) {
@@ -1202,18 +1223,15 @@ public class SelectDataJdbc {
         topics = topicRepo.findAllTopicsGroupByTeamId(tenantId);
       }
 
-      Map<String, String> hashMap;
       for (Object[] topic : topics) {
-        hashMap = new HashMap<>();
-        if (teamId != null) {
-          hashMap.put("teamid", "" + teamId);
-          hashMap.put("topicscount", "" + ((Long) topic[0]).intValue());
+        if (teamId == null) {
+          totalTopicCount.add(
+              CommonUtilsService.ChartsOverviewItem.of(
+                  (Integer) topic[0], ((Long) topic[1]).intValue()));
         } else {
-          hashMap.put("teamid", "" + topic[0]);
-          hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
+          totalTopicCount.add(
+              CommonUtilsService.ChartsOverviewItem.of(teamId, ((Long) topic[0]).intValue()));
         }
-
-        totalTopicCount.add(hashMap);
       }
     } catch (Exception e) {
       log.error("Error from selectTopicsCountByTeams ", e);
@@ -1221,9 +1239,9 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<Map<String, String>> selectAclsCountByTeams(
+  public List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> selectAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId) {
-    List<Map<String, String>> totalAclCount = new ArrayList<>();
+    List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> totalAclCount = new ArrayList<>();
     try {
       List<Object[]> acls;
       if (AclType.PRODUCER.value.equals(aclType)) {
@@ -1239,19 +1257,15 @@ public class SelectDataJdbc {
           acls = aclRepo.findAllConsumerAclsGroupByTeamId(tenantId);
         }
       }
-
-      Map<String, String> hashMap;
       for (Object[] topic : acls) {
-        hashMap = new HashMap<>();
-        if (teamId != null) {
-          hashMap.put("teamid", "" + teamId);
-          hashMap.put("aclscount", "" + ((Long) topic[0]).intValue());
+        if (teamId == null) {
+          totalAclCount.add(
+              CommonUtilsService.ChartsOverviewItem.of(
+                  ((Long) topic[0]).intValue(), ((Long) topic[1]).intValue()));
         } else {
-          hashMap.put("teamid", "" + topic[0]);
-          hashMap.put("aclscount", "" + ((Long) topic[1]).intValue());
+          totalAclCount.add(
+              CommonUtilsService.ChartsOverviewItem.of(teamId, ((Long) topic[0]).intValue()));
         }
-
-        totalAclCount.add(hashMap);
       }
     } catch (Exception e) {
       log.error("Error from selectAclsCountByTeams ", e);
@@ -1259,20 +1273,27 @@ public class SelectDataJdbc {
     return totalAclCount;
   }
 
-  public List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
-    List<Map<String, String>> totalTopicCount = new ArrayList<>();
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>>
+      selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> totalTopicCount =
+        new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsForTeamGroupByEnv(teamId, tenantId);
+      Map<String, Integer> envIds =
+          topics.stream()
+              .collect(Collectors.toMap(e -> (String) e[0], e -> ((Long) e[1]).intValue()));
 
-      Map<String, String> hashMap;
-      for (Object[] topic : topics) {
-        hashMap = new HashMap<>();
-        if (selectEnvDetails((String) topic[0], tenantId) != null) {
-          hashMap.put("cluster", selectEnvDetails((String) topic[0], tenantId).getName());
-          hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
-          totalTopicCount.add(hashMap);
+      Map<String, Env> name2envsFromDb =
+          StreamSupport.stream(selectEnvsDetails(envIds.keySet(), tenantId).spliterator(), false)
+              .collect(Collectors.toMap(Env::getId, Function.identity()));
+
+      for (var envIdEntry : envIds.entrySet()) {
+        if (!name2envsFromDb.containsKey(envIdEntry.getKey())) {
+          log.error("Error: Environment not found for env {}", envIdEntry.getKey());
         } else {
-          log.error("Error: Environment not found for env {}", topic[0]);
+          totalTopicCount.add(
+              CommonUtilsService.ChartsOverviewItem.of(
+                  name2envsFromDb.get(envIdEntry.getKey()).getName(), envIdEntry.getValue()));
         }
       }
     } catch (Exception e) {
@@ -1281,19 +1302,17 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<Map<String, String>> selectAllMetrics(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectAllMetrics(
       String metricsType, String metricsName, String env) {
-    List<Map<String, String>> metricsCount = new ArrayList<>();
+    List<CommonUtilsService.ChartsOverviewItem<String, Integer>> metricsCount = new ArrayList<>();
     try {
       List<Object[]> metrics =
           kwMetricsRepo.findAllByEnvAndMetricsTypeAndMetricsName(env, metricsType, metricsName);
 
-      Map<String, String> hashMap;
       for (Object[] kwMetrics : metrics) {
-        hashMap = new HashMap<>();
-        hashMap.put("datetime", (String) kwMetrics[0]);
-        hashMap.put("messagescount", (String) kwMetrics[1]);
-        metricsCount.add(hashMap);
+        metricsCount.add(
+            CommonUtilsService.ChartsOverviewItem.of(
+                (String) kwMetrics[0], Integer.parseInt(kwMetrics[1].toString())));
       }
     } catch (Exception e) {
       log.error("Error from selectAllMetrics ", e);
@@ -1379,6 +1398,10 @@ public class SelectDataJdbc {
     } else {
       return kwClusterRepo.findAllByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
     }
+  }
+
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return kwClusterRepo.existsByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
   }
 
   public KwClusters getClusterDetails(int id, int tenantId) {
@@ -1567,7 +1590,7 @@ public class SelectDataJdbc {
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return topicRepo.findAllTopicsCount();
   }
 
   // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except
@@ -1913,6 +1936,17 @@ public class SelectDataJdbc {
     return kafkaConnectorRequestsRepo
         .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
             tenantId, env, requestStatus, requestOperationType, connectorName);
+  }
+
+  public boolean existsConnectorRequestOnAnyEnv(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo.existsByTenantIdAndRequestStatusAndConnectorName(
+        tenantId, requestStatus, connectorName);
+  }
+
+  public boolean existsTopicRequestOnAnyEnv(String topicName, String requestStatus, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndTopicname(
+        tenantId, requestStatus, topicName);
   }
 
   public boolean existsClaimConnectorRequest(

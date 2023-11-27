@@ -1,4 +1,4 @@
-import { Alert, Box, Flexbox } from "@aivenio/aquarium";
+import { Alert, Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -24,28 +24,26 @@ function TableLayout(props: TableLayoutProps) {
 
   return (
     <>
-      <Box
-        display={"flex"}
+      <Box.Flex
         flexDirection={"row"}
         flexWrap={"wrap"}
         alignItems={"center"}
-        justifyContent={"stretch"}
+        justifyContent={"space-between"}
         colGap={"l1"}
         marginY={"l1"}
       >
         {filters.map((element) => {
           return (
-            <Box
+            <Box.Flex
               key={element.key}
-              grow={1}
-              display={"flex"}
               flexDirection={"column"}
+              flex={"1 0 auto"}
             >
               {element}
-            </Box>
+            </Box.Flex>
           );
         })}
-      </Box>
+      </Box.Flex>
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
         <Alert type={"error"}>
@@ -62,7 +60,7 @@ function TableLayout(props: TableLayoutProps) {
           >
             <Box className={"a11y-enhancement-data-table"}>{table}</Box>
           </Box>
-          <Flexbox justifyContent={"center"}>{pagination}</Flexbox>
+          <Box.Flex justifyContent={"center"}>{pagination}</Box.Flex>
         </>
       )}
     </>

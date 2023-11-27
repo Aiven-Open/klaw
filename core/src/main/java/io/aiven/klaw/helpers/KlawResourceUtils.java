@@ -3,13 +3,19 @@ package io.aiven.klaw.helpers;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class KlawResourceUtils {
 
-  public static List<EnvIdInfo> getConvertedEnvs(List<Env> allEnvs, List<String> selectedEnvs) {
+  private static final LinkedHashSet<String> EMPTY_LINKED_HASH_SET = new LinkedHashSet<>(0);
+
+  public static List<EnvIdInfo> getConvertedEnvs(
+      List<Env> allEnvs, Collection<String> selectedEnvs) {
     List<EnvIdInfo> newEnvList = new ArrayList<>();
     for (String env : selectedEnvs) {
       for (Env env1 : allEnvs) {
@@ -23,12 +29,10 @@ public class KlawResourceUtils {
     return newEnvList;
   }
 
-  public static List<String> getOrderedEnvsList(String orderOfEnvs) {
-    List<String> orderOfEnvsArrayList = new ArrayList<>();
-    if (orderOfEnvs != null && !orderOfEnvs.equals("")) {
-      String[] orderOfEnvsList = orderOfEnvs.split(",");
-      orderOfEnvsArrayList = Arrays.asList(orderOfEnvsList);
+  public static LinkedHashSet<String> getOrderedEnvsSet(String orderOfEnvs) {
+    if (orderOfEnvs == null || orderOfEnvs.isEmpty()) {
+      return EMPTY_LINKED_HASH_SET;
     }
-    return orderOfEnvsArrayList;
+    return Stream.of(orderOfEnvs.split(",")).collect(Collectors.toCollection(LinkedHashSet::new));
   }
 }

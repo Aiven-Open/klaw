@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -513,6 +504,33 @@
 											</td>
 										</tr>
 									</table>
+									<div class="col-lg-12">
+										<div class="form-actions">
+
+											<table>
+												<tr>
+													<td>
+														<text class="info">Note : Topics Cache reset happens at a scheduled interval, but if you would like to retrieve current state of topics,
+														select this checkbox.</text>
+													</td>
+												</tr>
+											</table>
+											<br>
+											<table width = "25%">
+												<tr>
+													<td><h6>Reset Topics Cache.</h6></td>
+													<td>
+														<label class="custom-control custom-checkbox">
+															<input type="checkbox" value="false" ng-click="resetTopicCacheCheck(resetTopicsCache);"
+																   ng-init="false" ng-model="resetTopicsCache" class="custom-control-input">
+															<span class="custom-control-label"></span>
+														</label>
+													</td>
+												</tr>
+
+											</table>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -680,6 +698,33 @@
 											</td>
 										</tr>
 									</table>
+									<div class="col-lg-12">
+										<div class="form-actions">
+
+											<table>
+												<tr>
+													<td>
+														<text class="info">Note : Topics Cache reset happens at a scheduled interval, but if you would like to retrieve current state of topics,
+															select this checkbox.</text>
+													</td>
+												</tr>
+											</table>
+											<br>
+											<table width = "25%">
+												<tr>
+													<td><h6>Reset Topics Cache.</h6></td>
+													<td>
+														<label class="custom-control custom-checkbox">
+															<input type="checkbox" value="false" ng-click="resetBulkTopicCacheCheck(resetTopicsCache);"
+																   ng-init="false" ng-model="resetTopicsCache" class="custom-control-input">
+															<span class="custom-control-label"></span>
+														</label>
+													</td>
+												</tr>
+
+											</table>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

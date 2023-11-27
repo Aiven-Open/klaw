@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
 import {
   approveAclRequest,
@@ -18,8 +18,7 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -104,8 +103,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
       "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
   },
 ];
-const mockGetEnvironmentResponse: Environment[] =
-  transformEnvironmentApiResponse(mockedEnvironmentResponse);
+const mockGetEnvironmentResponse: Environment[] = mockedEnvironmentResponse;
 
 const mockGetAclRequestsForApproverResponse = transformAclRequestApiResponse(
   mockedAclRequestsForApproverApiResponse
@@ -126,6 +124,7 @@ describe("AclApprovals", () => {
     env: "ALL",
     pageNo: "1",
     requestStatus: "CREATED",
+    operationType: "ALL",
     search: "",
   };
 
@@ -309,7 +308,7 @@ describe("AclApprovals", () => {
     });
 
     it("renders a search field for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -358,14 +357,15 @@ describe("AclApprovals", () => {
       const select = screen.getByLabelText("Filter by ACL type");
 
       const option = within(select).getByRole("option", {
-        name: "PRODUCER",
+        name: "Producer",
       });
 
       expect(option).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveDisplayValue("PRODUCER");
+      expect(select).toHaveDisplayValue("Producer");
+      expect(select).toHaveValue("PRODUCER");
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
@@ -376,7 +376,7 @@ describe("AclApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeEnabled();
 
@@ -416,13 +416,15 @@ describe("AclApprovals", () => {
     it("filters by several fields", async () => {
       const select = screen.getByLabelText("Filter by ACL type");
       const option = within(select).getByRole("option", {
-        name: "PRODUCER",
+        name: "Producer",
       });
       expect(option).toBeEnabled();
       await userEvent.selectOptions(select, option);
-      expect(select).toHaveDisplayValue("PRODUCER");
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      expect(select).toHaveValue("PRODUCER");
+      expect(select).toHaveDisplayValue("Producer");
+
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");

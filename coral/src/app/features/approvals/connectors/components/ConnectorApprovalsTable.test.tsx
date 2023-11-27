@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import ConnectorApprovalsTable from "src/app/features/approvals/connectors/components/ConnectorApprovalsTable";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
@@ -39,7 +39,7 @@ const mockedConnectorRequests: ConnectorRequest[] = [
     environmentName: "TST",
     requestor: "miketest",
     teamId: 1003,
-    teamname: "Ospo",
+    teamname: "Ospo2",
     requestOperationType: "CREATE",
     requestStatus: "APPROVED",
     requesttime: "2023-04-04T13:12:32.970+00:00",
@@ -48,7 +48,7 @@ const mockedConnectorRequests: ConnectorRequest[] = [
     totalNoPages: "1",
     allPageNos: ["1"],
     approvingTeamDetails:
-      "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,amathieu,aindriul,roopek,harshini,mischa,",
+      "Team : Ospo2, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,amathieu,aindriul,roopek,harshini,mischa,",
     connectorName: "Mirjam-7",
     description: "Mirjam-7",
     connectorConfig:
@@ -71,6 +71,7 @@ describe("ConnectorApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Connector name", relatedField: "connectorName" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Requested by", relatedField: "requestor" },

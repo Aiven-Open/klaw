@@ -52,6 +52,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 $scope.topicSuffix = null;
                 $scope.topicRegex = null;
                 $scope.applyRegex = null;
+
              	    $http({
                             method: "GET",
                             url: "getEnvParams",
@@ -70,9 +71,12 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                                 $scope.addTopic.description = "Topic Update";
                             }else if(reqType != null && reqType === 'promote'){
                                 $scope.requestType = 'PromoteTopic';
-                                $scope.requestTitle = "Topic Promotion Request"
+                                $scope.requestTitle = "Topic Promotion Request";
                                 $scope.addTopic.envNameToDisplay = envName;
                                 $scope.addTopic.description = "Topic Promotion";
+                            }else if(reqType != null && reqType === 'CreateTopic'){
+                            $scope.addTopic.topicpartitions = $scope.envTopicMap.defaultPartitions  + " (default)";
+                            $scope.addTopic.replicationfactor = $scope.envTopicMap.defaultRepFactor + " (default)";
                             }
 
                             }
@@ -274,7 +278,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 }
 
                 if($scope.addTopic.topicname.length < 5){
-                    $scope.alertnote = "Topic name should be atleast 5 characters.";
+                    $scope.alertnote = "Topic name should be at least 5 characters.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -379,7 +383,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                          } else {
                                serviceInput['remarks'] += " Warning To decrease partitions of a topic the topic has to be deleted";
                          }
-                             if (isConfirm.dismiss !== "cancel") {
+                             if (isConfirm.value) {
                                  $scope.httpCreateUpdateTopicReq(serviceInput);
                              }
                          });
@@ -577,7 +581,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -601,6 +605,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -640,7 +645,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;

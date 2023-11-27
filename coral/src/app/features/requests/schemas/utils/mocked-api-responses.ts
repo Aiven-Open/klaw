@@ -1,7 +1,6 @@
 import { SchemaRequest } from "src/domain/schema-request";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 
 const mockedApiResponses: SchemaRequest[] = [
@@ -89,14 +88,15 @@ const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
   transformGetSchemaRequests(mockedApiResponses);
 
 const mockedEnvironments = [
-  { name: "DEV", id: "1" },
-  { name: "TST", id: "2" },
+  { name: "DEV", id: "1", associatedEnv: { name: "DEV_SCH", id: "111" } },
+  { name: "TST", id: "2", associatedEnv: { name: "TST_SCH", id: "222" } },
+  { name: "RANDOM", id: "2" },
 ];
 
-const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+const mockedEnvironmentResponse = [
   createMockEnvironmentDTO(mockedEnvironments[0]),
   createMockEnvironmentDTO(mockedEnvironments[1]),
-]);
+];
 
 export {
   mockedApiResponses,

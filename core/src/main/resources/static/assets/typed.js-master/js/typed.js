@@ -163,7 +163,7 @@
 				var charPause = 0;
 				var substr = curString.substr(curStrPos);
 				if (substr.charAt(0) === '^') {
-					var skip = 1; // skip atleast 1
+					var skip = 1; // skip at least 1
 					if (/^\^\d+/.test(substr)) {
 						substr = /\d+/.exec(substr)[0];
 						skip += substr.length;

@@ -4,15 +4,15 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import {
-  requestTopicClaim,
   getSchemaOfTopic,
   getTopicOverview,
+  requestTopicClaim,
 } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -68,6 +68,7 @@ const testTopicOverview: TopicOverview = {
     hasOpenACLRequest: false,
     hasOpenClaimRequest: false,
     hasOpenSchemaRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: true,
     hasOpenRequest: false,
     hasSchema: false,
@@ -248,6 +249,34 @@ describe("TopicDetails", () => {
       await user.selectOptions(
         select,
         testTopicOverview.availableEnvironments[1].name
+      );
+
+      await waitFor(() =>
+        expect(mockGetTopicOverview).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          environmentId: testTopicOverview.availableEnvironments[1].id,
+        })
+      );
+      // This is a dependent query relying on mockGetTopicOverview to have finished fetching
+      // So we need to await
+      await waitFor(() => {
+        expect(mockGetSchemaOfTopic).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          kafkaEnvId: testTopicOverview.availableEnvironments[1].id,
+        });
+      });
+    });
+
+    it("fetches the correct data when URL has env search param", async () => {
+      customRender(
+        <AquariumContext>
+          <TopicDetails topicName={testTopicName} />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+          customRoutePath: "/?env=2",
+        }
       );
 
       await waitFor(() =>

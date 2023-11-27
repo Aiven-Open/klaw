@@ -1,9 +1,9 @@
 import {
-  getAuthUserMockForLogin,
   getAuth,
   logoutUser,
+  isSuperAdmin,
 } from "src/domain/auth-user/auth-user-api";
 import { AuthUser } from "src/domain/auth-user/auth-user-types";
 
-export { getAuthUserMockForLogin, getAuth, logoutUser };
+export { getAuth, logoutUser, isSuperAdmin };
 export type { AuthUser };

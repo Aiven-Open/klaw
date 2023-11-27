@@ -1,9 +1,11 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import KafkaEnvironmentsTable from "src/app/features/configuration/environments/Kafka/components/KafkaEnvironmentsTable";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+const TEST_UPDATE_TIME = "${TEST_UPDATE_TIME}";
 
 const mockedUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
@@ -12,41 +14,44 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const mockEnvironments: Environment[] = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "DEV",
     id: "1",
     clusterName: "DEV_CL",
     envStatus: "ONLINE",
     params: {
-      defaultPartitions: 1,
-      defaultRepFactor: 2,
-      maxPartitions: 3,
-      maxRepFactor: 4,
+      defaultPartitions: "1",
+      defaultRepFactor: "2",
+      maxPartitions: "3",
+      maxRepFactor: "4",
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "TST",
     id: "2",
     clusterName: "TST_CL",
     envStatus: "OFFLINE",
     params: {
-      defaultPartitions: 2,
-      defaultRepFactor: 4,
-      maxPartitions: 3,
-      maxRepFactor: 5,
+      defaultPartitions: "2",
+      defaultRepFactor: "4",
+      maxPartitions: "3",
+      maxRepFactor: "5",
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "PROD",
     id: "3",
     clusterName: "PROD_CL",
     envStatus: "NOT_KNOWN",
     params: {
-      defaultPartitions: 5,
-      defaultRepFactor: 7,
-      maxPartitions: 6,
-      maxRepFactor: 8,
+      defaultPartitions: "5",
+      defaultRepFactor: "7",
+      maxPartitions: "6",
+      maxRepFactor: "8",
     },
+    envStatusTimeString: TEST_UPDATE_TIME,
   }),
 ];
 
@@ -192,13 +197,13 @@ describe("KafkaEnvironmentsTable.tsx", () => {
         });
         const statusText =
           environment.envStatus === "ONLINE"
-            ? "Working"
+            ? "Online"
             : environment.envStatus === "OFFLINE"
-            ? "Not working"
+            ? "Offline"
             : "Unknown";
 
         const status = within(row).getByRole("cell", {
-          name: statusText,
+          name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,
         });
 
         expect(status).toBeVisible();

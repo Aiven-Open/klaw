@@ -15,6 +15,7 @@ import TopicProducerForm, {
 } from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api");
@@ -27,37 +28,45 @@ const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const mockedEnvironments: ExtendedEnvironment[] = [
   {
-    name: "DEV",
-    id: "1",
+    ...createMockEnvironmentDTO({
+      name: "DEV",
+      id: "1",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: ["hello", "there"],
     isAivenCluster: true,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
   },
   {
-    name: "TST",
-    id: "2",
+    ...createMockEnvironmentDTO({
+      name: "TST",
+      id: "2",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: ["hello", "there", "general"],
-    isAivenCluster: false,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
+    isAivenCluster: true,
   },
   {
-    name: "NOTOPIC",
-    id: "3",
+    ...createMockEnvironmentDTO({
+      name: "NOTOPIC",
+      id: "3",
+      type: "kafka",
+      clusterName: "DEV",
+      tenantName: "default",
+      envStatus: "ONLINE",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
+    }),
     topicNames: [],
     isAivenCluster: true,
-    type: "kafka",
-    clusterName: "DEV",
-    tenantName: "default",
-    envStatus: "ONLINE",
   },
 ];
-
 const baseProps = {
   topicNames: ["hello", "aiventopic2", "othertopic"],
   environments: mockedEnvironments,

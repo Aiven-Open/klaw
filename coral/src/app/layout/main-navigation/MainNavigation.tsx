@@ -5,6 +5,7 @@ import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
+import person from "@aivenio/aquarium/dist/src/icons/person";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
@@ -16,8 +17,11 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const configurationLinksEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_CONFIGURATIONS
+  const teamsUsersFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_TEAMS
+  );
+  const userInformationFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
 
   return (
@@ -97,13 +101,48 @@ function MainNavigation() {
             text={"Configuration"}
             defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
-            <MainNavigationLink to={`/users`} linkText={"Users"} />
-            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
             <MainNavigationLink
-              to={configurationLinksEnabled ? Routes.ENVIRONMENTS : `/envs`}
+              to={teamsUsersFeatureFlagEnabled ? Routes.USERS : "/users"}
+              linkText={"Users"}
+              active={pathname.startsWith(Routes.USERS)}
+            />
+            <MainNavigationLink
+              to={teamsUsersFeatureFlagEnabled ? Routes.TEAMS : "/teams"}
+              linkText={"Teams"}
+              active={pathname.startsWith(Routes.TEAMS)}
+            />
+            <MainNavigationLink
+              to={Routes.ENVIRONMENTS}
               linkText={"Environments"}
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
+          </MainNavigationSubmenuList>
+        </li>
+        <li>
+          <MainNavigationSubmenuList
+            icon={person}
+            text={"User information"}
+            defaultExpanded={pathname.startsWith(Routes.USER_INFORMATION)}
+          >
+            <MainNavigationLink
+              to={
+                userInformationFeatureFlagEnabled
+                  ? Routes.USER_PROFILE
+                  : "/myProfile"
+              }
+              linkText={"User profile"}
+              active={pathname.startsWith(Routes.USER_PROFILE)}
+            />
+            <MainNavigationLink
+              to={
+                userInformationFeatureFlagEnabled
+                  ? Routes.USER_CHANGE_PASSWORD
+                  : "/changePwd"
+              }
+              linkText={"Change password"}
+              active={pathname.startsWith(Routes.USER_CHANGE_PASSWORD)}
+            />
+            <MainNavigationLink to={"/tenantInfo"} linkText={"Tenant"} />
           </MainNavigationSubmenuList>
         </li>
       </ul>

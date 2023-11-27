@@ -23,8 +23,6 @@ import {
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 
-const defaultType = "ALL";
-
 function ConnectorApprovals() {
   const queryClient = useQueryClient();
 
@@ -72,7 +70,7 @@ function ConnectorApprovals() {
         pageNo: currentPage.toString(),
         env: environment,
         search: search,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
@@ -266,7 +264,7 @@ function ConnectorApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getAllEnvironmentsForConnector"}
+            environmentsFor={"CONNECTOR"}
           />,
           <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,

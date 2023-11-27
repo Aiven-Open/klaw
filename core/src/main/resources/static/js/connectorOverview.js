@@ -134,7 +134,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -158,6 +158,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -197,7 +198,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
@@ -245,7 +246,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.value) {
                         $http({
                                 method: "POST",
                                 url: "createConnectorDeleteRequest",
@@ -294,7 +295,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createClaimConnectorRequest",
@@ -362,7 +363,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createConnector",
@@ -451,7 +452,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "saveConnectorDocumentation",

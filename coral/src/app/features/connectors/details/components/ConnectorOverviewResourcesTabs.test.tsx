@@ -1,6 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
 import { ConnectorOverviewTabEnum } from "src/app/router_utils";
 import { ConnectorOverview } from "src/domain/connector";
@@ -43,6 +42,7 @@ const testConnectorOverview: ConnectorOverview = {
     connectorDeletable: true,
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
+    hasOpenRequestOnAnyEnv: false,
     highestEnv: false,
     connectorOwner: false,
     connectorConfig:
@@ -252,17 +252,6 @@ describe("ConnectorOverviewResourceTabs", () => {
       const tab = screen.getByRole("tab", { selected: true });
 
       expect(tab).toHaveAccessibleName("Overview");
-    });
-
-    it("shows a preview banner to enables users to go back to original app", () => {
-      const banner = screen.getByRole("region", { name: "Preview disclaimer" });
-      const link = within(banner).getByRole("link", { name: "old interface" });
-
-      expect(banner).toBeVisible();
-      expect(link).toHaveAttribute(
-        "href",
-        `/connectorOverview?connectorName=${testConnectorName}`
-      );
     });
   });
 

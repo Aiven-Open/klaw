@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import SchemaRegistryEnvironments from "src/app/features/configuration/environments/SchemaRegistry/SchemaRegistryEnvironments";
 import { getPaginatedEnvironmentsForSchema } from "src/domain/environment";
 import { transformPaginatedEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
@@ -38,6 +38,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "TST_SCHEMA",
       envStatus: "ONLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       showDeleteEnv: false,
       totalNoPages: "1",
       currentPage: "1",
@@ -59,6 +61,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "DEV_CLS",
       envStatus: "ONLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       showDeleteEnv: false,
       totalNoPages: "1",
       currentPage: "1",

@@ -4,16 +4,16 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import Topics from "src/app/pages/topics";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
+import { mockedResponseTransformed } from "src/domain/topic/topic-test-helper";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
-import { mockedResponseTransformed } from "src/domain/topic/topic-api.msw";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({

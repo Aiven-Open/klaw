@@ -128,7 +128,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -152,6 +152,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -191,7 +192,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
@@ -290,7 +291,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
 
 		var topicFilter = $scope.getTopics.topicnamesearch;
 		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
-		    alert("Please enter atleast 3 characters of the topic name.");
+		    alert("Please enter at least 3 characters of the topic name.");
 		        return;
 		    }
 
@@ -399,7 +400,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss !== "cancel") {
+        		if (isConfirm.value) {
 
         		    $scope.ShowSpinnerStatus = true;
 

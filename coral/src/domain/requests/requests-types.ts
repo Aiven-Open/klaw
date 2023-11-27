@@ -6,7 +6,8 @@ type RequestOperationType =
   | "UPDATE"
   | "PROMOTE"
   | "CLAIM"
-  | "DELETE";
+  | "DELETE"
+  | "ALL";
 type RequestStatus = "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
 type RequestVerdict = components["schemas"]["RequestVerdict"];
 type RequestEntityType =

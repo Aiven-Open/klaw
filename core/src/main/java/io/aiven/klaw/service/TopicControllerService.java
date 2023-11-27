@@ -15,8 +15,10 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -44,18 +46,7 @@ import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.enums.AclPatternType;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.MailType;
-import io.aiven.klaw.model.enums.MetadataOperationType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
@@ -72,6 +63,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +78,7 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String CUSTOM_OFFSET_SELECTION = "custom";
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -595,7 +588,7 @@ public class TopicControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     int tenantId = commonUtilsService.getTenantId(userName);
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
@@ -667,7 +660,7 @@ public class TopicControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
@@ -819,6 +812,7 @@ public class TopicControllerService {
           TOPIC_REQUEST_APPROVED,
           commonUtilsService.getLoginUrl());
     }
+    updateEnvStatus(response, manageDatabase, tenantId, topicRequest.getEnvironment());
     return updateTopicReqStatus;
   }
 
@@ -1161,12 +1155,12 @@ public class TopicControllerService {
               TopicInfo mp = new TopicInfo();
               mp.setSequence(counterInc + "");
 
-              List<String> envList = topicSOT.getEnvironmentsList();
-              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+              TreeSet<String> envSet = new TreeSet<>(Comparator.comparingInt(orderOfEnvs::indexOf));
+              envSet.addAll(topicSOT.getEnvironmentsSet());
 
               mp.setTopicid(topicSOT.getTopicid());
               mp.setEnvId(topicSOT.getEnvironment());
-              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envSet));
               mp.setTopicName(topicSOT.getTopicname());
               mp.setTeamId(topicSOT.getTeamId());
               mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
@@ -1237,14 +1231,14 @@ public class TopicControllerService {
                 tmpTopicFull.replaceAll(prefixVar + AclPatternType.PREFIXED + prefixVar, "");
             if (topicInfo.getTopicname().startsWith(tmpTopicSub)
                 && topicInfo
-                    .getEnvironmentsList()
+                    .getEnvironmentsSet()
                     .contains(producerConsumerTopic.getEnvironment())) {
-              topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
               filterProducerConsumerList.add(topicInfo);
             }
           } else if (Objects.equals(producerConsumerTopic.getTopicname(), topicInfo.getTopicname())
-              && topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
-            topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+              && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
+            topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
           }
         }
@@ -1300,7 +1294,12 @@ public class TopicControllerService {
   }
 
   public Map<String, String> getTopicEvents(
-      String envId, String consumerGroupId, String topicName, String offsetId) {
+      String envId,
+      String consumerGroupId,
+      String topicName,
+      String offsetId,
+      Integer selectedPartitionId,
+      Integer selectedNumberOfOffsets) {
     Map<String, String> topicEvents = new TreeMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
@@ -1308,6 +1307,14 @@ public class TopicControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId).getClusterId());
+      if (offsetId != null && offsetId.equals(CUSTOM_OFFSET_SELECTION)) {
+        if (selectedPartitionId == null
+            || selectedNumberOfOffsets == null
+            || selectedPartitionId < 0
+            || selectedNumberOfOffsets <= 0) {
+          throw new KlawException(TOPICS_ERR_115);
+        }
+      }
       topicEvents =
           clusterApiService.getTopicEvents(
               kwClusters.getBootstrapServers(),
@@ -1315,6 +1322,8 @@ public class TopicControllerService {
               kwClusters.getClusterName() + kwClusters.getClusterId(),
               topicName,
               offsetId,
+              selectedPartitionId,
+              selectedNumberOfOffsets,
               consumerGroupId,
               tenantId);
     } catch (Exception e) {

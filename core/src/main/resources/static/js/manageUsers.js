@@ -112,11 +112,18 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             var serviceInput = {};
 
             serviceInput['pwd'] = $scope.chPwd.pwd;
-            serviceInput['repeatpwd'] = $scope.chPwd.repeatpwd;
+            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
 
-            if(!$scope.chPwd.pwd || ($scope.chPwd.pwd!=$scope.chPwd.repeatpwd))
+            if(!$scope.chPwd.pwd || ($scope.chPwd.pwd !== $scope.chPwd.repeatpwd))
             {
                 $scope.alertnote = "Passwords are not equal.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.chPwd.pwd.length < 8 || $scope.chPwd.repeatpwd < 8)
+            {
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -132,13 +139,12 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             		closeOnConfirm: true,
             		closeOnCancel: true
             	}).then(function(isConfirm){
-            		if (isConfirm.dismiss != "cancel") {
+            		if (isConfirm.value) {
             			$http({
                             method: "POST",
                             url: "chPwd",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'changePwd' : serviceInput },
-                            data: {'changePwd' : serviceInput}
+                            data: serviceInput
                         }).success(function(output) {
                             $scope.alert = "Password changed : "+output.message;
                             if(output.success){
@@ -175,7 +181,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss != "cancel") {
+        		if (isConfirm.value) {
         			$http({
                             method: "POST",
                             url: "deleteTeamRequest",
@@ -220,7 +226,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss != "cancel") {
+        		if (isConfirm.value) {
         			$http({
                         method: "POST",
                         url: "deleteUserRequest",
@@ -309,7 +315,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.username.length < 6)
             {
-                $scope.alertnote = "Username should be atleast 6 characters.";
+                $scope.alertnote = "Username should be at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -323,7 +329,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.fullname.length < 6)
             {
-                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.alertnote = "Please enter Full Name at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -337,7 +343,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.pwd.length < 8)
             {
-                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -386,7 +392,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if($scope.addNewUser.canswitchteams){
                 $scope.getUpdatedListOfSwitchTeams();
                 if($scope.updatedTeamsSwitchList.length < 2){
-                    $scope.alertnote = "Please select atleast 2 teams, to switch between.";
+                    $scope.alertnote = "Please select at least 2 teams, to switch between.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -442,7 +448,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.fullname.length < 6)
             {
-                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.alertnote = "Please enter Full Name at least 6 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -456,7 +462,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addNewUser.pwd.length < 8)
             {
-                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -848,7 +854,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -872,6 +878,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -911,7 +918,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;

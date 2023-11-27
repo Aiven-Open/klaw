@@ -13,9 +13,12 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
+const mockToast = jest.fn();
+const mockDismiss = jest.fn();
+
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
-  useToast: () => jest.fn(),
+  useToastContext: () => [mockToast, mockDismiss],
 }));
 
 const quickLinksNavItems = [

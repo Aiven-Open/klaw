@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
@@ -160,7 +161,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<EnvParams> getEnvParams(
-      @RequestParam(value = "envSelected") String envSelected) {
+      @RequestParam(value = "envSelected") Integer envSelected) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvParams(envSelected), HttpStatus.OK);
   }
@@ -229,15 +230,6 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
-      value = "/getEnvsForSchemaRequests",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModelResponse>> getEnvsForSchemaRequests() {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getEnvsForSchemaRequests(), HttpStatus.OK);
-  }
-
-  @RequestMapping(
       value = "/getKafkaConnectEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -301,15 +293,6 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getStandardEnvNames(), HttpStatus.OK);
   }
 
-  @RequestMapping(
-      value = "/getExtensionPeriods",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<String>> getExtensionPeriods() {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getExtensionPeriods(), HttpStatus.OK);
-  }
-
   @PostMapping(
       value = "/addTenantId",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -336,16 +319,6 @@ public class EnvsClustersTenantsController {
       throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
-  }
-
-  @PostMapping(
-      value = "/udpateTenantExtension",
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> udpateTenantExtension(
-      @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.udpateTenantExtension(selectedTenantExtensionPeriod),
-        HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -388,7 +361,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<EnvUpdatedStatus> getUpdateEnvStatus(
-      @RequestParam(value = "envId") String envId) throws KlawException {
+      @RequestParam(value = "envId") String envId) throws KlawBadRequestException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getUpdateEnvStatus(envId), HttpStatus.OK);
   }

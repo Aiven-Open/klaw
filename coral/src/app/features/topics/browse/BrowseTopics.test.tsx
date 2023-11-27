@@ -1,20 +1,19 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
 import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
-import { getTeams } from "src/domain/team";
-import { AllTeams } from "src/domain/team/team-types";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
+import { getTeams, Team } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
 import {
-  mockedResponseMultiplePageTransformed,
   mockedResponseTransformed,
-} from "src/domain/topic/topic-api.msw";
+  mockedResponseMultiplePageTransformed,
+} from "src/domain/topic/topic-test-helper";
+
 import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -38,9 +37,8 @@ const mockedGetTopicsResponseSinglePage: TopicApiResponse =
   mockedResponseTransformed;
 const mockedGetTopicsResponseMultiplePages: TopicApiResponse =
   mockedResponseMultiplePageTransformed;
-const mockGetEnvironmentResponse: Environment[] =
-  transformEnvironmentApiResponse(mockedEnvironmentResponse);
-const mockGetTeamsResponse: AllTeams = [
+const mockGetEnvironmentResponse: Environment[] = mockedEnvironmentResponse;
+const mockGetTeamsResponse: Team[] = [
   {
     teamname: "TEST_TEAM_01",
     teamphone: "000",
@@ -340,7 +338,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toHaveValue("");
 
       await userEvent.type(search, testSearchInput);
@@ -356,7 +354,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("can navigate to search input with keyboard", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toHaveValue("");
 

@@ -1,6 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
 import {
   ConnectorOverview,
@@ -42,6 +42,7 @@ const testConnectorInfo: KlawApiModel<"KafkaConnectorModelResponse"> = {
   highestEnv: true,
   hasOpenRequest: false,
   hasOpenClaimRequest: false,
+  hasOpenRequestOnAnyEnv: false,
   connectorConfig:
     '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "release240",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
   environmentName: "DEV",

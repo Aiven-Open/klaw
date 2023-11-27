@@ -13,6 +13,8 @@ import {
   RadioButtonProps as BaseRadioButtonProps,
   Textarea as BaseTextarea,
   TextareaProps as BaseTextareaProps,
+  Checkbox as BaseCheckbox,
+  CheckboxProps as BaseCheckboxProps,
   Option,
   OptionType,
   Button,
@@ -699,3 +701,24 @@ export const FileInput = <T extends FieldValues>(
   const ctx = useFormContext<T>();
   return <FileInputMemo formContext={ctx} {...props} />;
 };
+
+// <Checkbox
+function _Checkbox<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseCheckboxProps & FormInputProps<T> & FormRegisterProps<T>) {
+  return <BaseCheckbox {...props} {...form.register(name)} />;
+}
+
+const CheckboxMemo = memo(_Checkbox) as typeof _Checkbox;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const Checkbox = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseCheckboxProps
+): React.ReactElement<FormInputProps<T> & BaseCheckboxProps> => {
+  const ctx = useFormContext<T>();
+  return <CheckboxMemo formContext={ctx} {...props} />;
+};
+
+TextInput.Skeleton = BaseInput.Skeleton;

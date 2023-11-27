@@ -1,5 +1,6 @@
-import { Box, Card, Grid, GridItem } from "@aivenio/aquarium";
+import { Box, Card, Grid } from "@aivenio/aquarium";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import upperFirst from "lodash/upperFirst";
 
 type SchemaStatsProps = {
   version: number;
@@ -21,7 +22,7 @@ function SchemaStats({
       style={{ gridTemplateRows: "auto" }}
       marginTop={"l2"}
     >
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Card title="" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
             <StatsDisplay
@@ -32,12 +33,15 @@ function SchemaStats({
             <StatsDisplay isLoading={isLoading} amount={id} entity={"ID"} />
             <StatsDisplay
               isLoading={isLoading}
-              chip={{ status: "info", text: compatibility }}
+              chip={{
+                status: "info",
+                text: upperFirst(compatibility.toLowerCase()),
+              }}
               entity={"Compatibility"}
             />
           </Box.Flex>
         </Card>
-      </GridItem>
+      </Grid.Item>
     </Grid>
   );
 }

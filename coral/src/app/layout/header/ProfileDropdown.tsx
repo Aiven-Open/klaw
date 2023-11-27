@@ -3,36 +3,55 @@ import {
   DropdownMenu,
   Typography,
   Icon,
-  useToast,
+  useToastContext,
 } from "@aivenio/aquarium";
 import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
 import { logoutUser } from "src/domain/auth-user";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 type MenuItem = {
+  angularPath: string;
   path: string;
   name: string;
+  behindFeatureFlag: boolean;
 };
 
 const menuItems: MenuItem[] = [
   {
-    path: "/myProfile",
-    name: "My profile",
+    angularPath: "/myProfile",
+    path: "/user/profile",
+    behindFeatureFlag: true,
+    name: "User profile",
   },
   {
-    path: "/tenantInfo",
-    name: "My tenant info",
-  },
-  {
-    path: "/changePwd",
+    angularPath: "/changePwd",
+    path: "/user/change-password",
+    behindFeatureFlag: true,
     name: "Change password",
+  },
+  {
+    angularPath: "/tenantInfo",
+    path: "/",
+    behindFeatureFlag: false,
+    name: "Tenant",
   },
 ];
 
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
-  const toast = useToast();
+  const userInformationFeatureFlagEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
+  );
+
+  const navigate = useNavigate();
+  const authUser = useAuthContext();
+  const [toast, dismiss] = useToastContext();
+
   function navigateToAngular(path: string) {
     window.location.assign(`${window.origin}${path}`);
   }
@@ -40,13 +59,15 @@ function ProfileDropdown() {
   function onDropdownClick(actionKey: string | number) {
     if (actionKey === LOGOUT_KEY) {
       toast({
+        id: "logout",
         message: "You are being logged out of Klaw...",
         position: "bottom-left",
         variant: "default",
-        duration: 30 * 1000,
       });
       logoutUser().catch((error) => {
+        // dismiss toast in case logout fails
         if (error.status !== 401) {
+          dismiss("logout");
           toast({
             message:
               "Something went wrong in the log out process. Please try again or contact your administrator.",
@@ -58,7 +79,6 @@ function ProfileDropdown() {
           window.location.assign(`${window.origin}/login`);
         }
       });
-
       return;
     } else {
       const selectedItem = menuItems[actionKey as number];
@@ -66,9 +86,15 @@ function ProfileDropdown() {
       // developers and make sure we can not make a mistake here
       if (selectedItem === undefined) {
         console.error(`No item with index ${actionKey} found.`);
-      } else {
-        navigateToAngular(selectedItem.path);
+        return;
       }
+
+      if (selectedItem.behindFeatureFlag && userInformationFeatureFlagEnabled) {
+        navigate(selectedItem.path);
+        return;
+      }
+
+      navigateToAngular(selectedItem.angularPath);
     }
   }
 
@@ -81,9 +107,11 @@ function ProfileDropdown() {
         <Box.Flex backgroundColor={"primary-10"} paddingLeft={"l1"}>
           <Box paddingTop={"l1"} className={"profile-dropdown-header"}>
             <Typography.Large color="grey-90" className="panel-header-title">
-              User name
+              {authUser?.username}
             </Typography.Large>
-            <Typography.Caption color="grey-50">Team</Typography.Caption>
+            <Typography.Caption color="grey-50">
+              {authUser?.teamname}
+            </Typography.Caption>
           </Box>
           <Icon
             color={"primary-30"}

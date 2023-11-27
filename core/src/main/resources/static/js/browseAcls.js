@@ -144,7 +144,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 closeOnConfirm: true,
                 closeOnCancel: true
             }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
+                if (isConfirm.value) {
                     $http({
                         method: "POST",
                         url: "user/updateTeam",
@@ -168,6 +168,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
                 } else {
+                    $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
                     return;
                 }
             });
@@ -207,7 +208,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 						closeOnConfirm: true,
 						closeOnCancel: true
 					}).then(function(isConfirm){
-						if (isConfirm.dismiss != "cancel") {
+						if (isConfirm.value) {
 							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
 						} else {
 							return;
@@ -260,7 +261,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss !== "cancel") {
+                    if (isConfirm.value) {
                         swal({
                             title: "Delete schema ?",
                             text: "Delete associated schema (all versions) of this topic, if it exists ?",
@@ -272,7 +273,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                             closeOnConfirm: true,
                             closeOnCancel: true
                         }).then(function(isConfirm){
-                            if (isConfirm.dismiss !== "cancel") {
+                            if (isConfirm.value) {
                                 $scope.createTopicDeleteRequestHttpCall(env, true); // delete schema
                             } else {
                                 $scope.createTopicDeleteRequestHttpCall(env, false); // don't delete schema
@@ -330,7 +331,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createClaimTopicRequest",
@@ -390,7 +391,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "createDeleteAclSubscriptionRequest",
@@ -454,7 +455,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
              }
 
              if($scope.schema.forceRegister === true) {
-             remarks += " Force Register Schema option overriding schema compatibility has been selected."
+             remarks += " Force register for schema selected. This overrides standard schema compatibility."
              }
 
             var promoteSchemaReq = {};
@@ -543,7 +544,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss !== "cancel") {
+                        if (isConfirm.value) {
                             $http({
                                     method: "POST",
                                     url: "saveTopicDocumentation",
@@ -825,17 +826,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.showTopicEvents = function() {
                 $scope.topiccontents = null;
 
-                if(!$scope.topicEventsSelectedEnv || $scope.topicEventsSelectedEnv === ""){
-                    swal({
-                         title: "",
-                         text: "Please select an Environment !!",
-                         timer: 2000,
-                         showConfirmButton: false
-                         });
-                    return;
-                }
-
-
                 if(!$scope.topicOffsetsVal || $scope.topicOffsetsVal === ""){
                     swal({
                          title: "",
@@ -846,14 +836,50 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
+                if($scope.topicOffsetsVal === 'custom'){
+                    if($scope.selectedPartitionId === ""){
+                        $scope.alert = "Please fill in a partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if($scope.selectedPartitionId < 0 || isNaN($scope.selectedPartitionId))
+                    {
+                        $scope.alert = "Please fill in a valid partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if(!$scope.selectedNumberOfOffsets || $scope.selectedNumberOfOffsets === ""){
+                        $scope.alert = "Please fill how many events/offsets to be displayed";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if($scope.selectedNumberOfOffsets <= 0 || isNaN($scope.selectedNumberOfOffsets))
+                    {
+                        $scope.alert = "Please fill in a valid number of offset events to display.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+                }else{
+                    $scope.selectedPartitionId = 0;
+                    $scope.selectedNumberOfOffsets = 0;
+                }
+
                 $scope.ShowSpinnerStatus = true;
 
                 $http({
                     method: "GET",
                     url: "getTopicEvents",
                     headers : { 'Content-Type' : 'application/json' },
-                    params : {'topicName' : $scope.topicSelectedParam, 'offsetId' : $scope.topicOffsetsVal,
-                     'envId' : $scope.topicEventsSelectedEnv, 'consumerGroupId': "notdefined"}
+                    params : {'topicName' : $scope.topicSelectedParam,
+                        'offsetId' : $scope.topicOffsetsVal,
+                        'selectedPartitionId' : $scope.selectedPartitionId,
+                        'selectedNumberOfOffsets' : $scope.selectedNumberOfOffsets,
+                        'envId' : $scope.topicOverview[0].envId,
+                        'consumerGroupId': "notdefined"
+                    }
                 }).success(function(output) {
                     $scope.ShowSpinnerStatus = false;
                     if(output.status != null && output.status === "false"){

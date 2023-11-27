@@ -1,10 +1,9 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getTeams } from "src/domain/team/team-api";
 import { TopicRequest } from "src/domain/topic";
 import {
@@ -128,9 +127,7 @@ const mockedTeamsResponse = [
 
 const mockedApiResponse: TopicRequestApiResponse =
   transformGetTopicRequestsResponse(mockedTopicRequestsResponse);
-const mockGetEnvironmentResponse = transformEnvironmentApiResponse(
-  mockedEnvironmentResponse
-);
+const mockGetEnvironmentResponse = mockedEnvironmentResponse;
 
 const mockApproveTopicRequest = approveTopicRequest as jest.MockedFunction<
   typeof approveSchemaRequest
@@ -145,6 +142,7 @@ describe("TopicApprovals", () => {
     pageNo: "1",
     requestStatus: "CREATED",
     search: "",
+    operationType: "ALL",
   };
   beforeAll(() => {
     mockIntersectionObserver();
@@ -255,7 +253,7 @@ describe("TopicApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -422,6 +420,7 @@ describe("TopicApprovals", () => {
         requestStatus: "CREATED",
         search: "",
         teamId: undefined,
+        operationType: "ALL",
       });
     });
   });
@@ -545,7 +544,7 @@ describe("TopicApprovals", () => {
       expect(screen.getByLabelText("Filter by status")).toBeVisible();
       expect(screen.getByLabelText("Filter by team")).toBeVisible();
       expect(
-        screen.getByRole("search", { name: "Search Topic name" })
+        screen.getByRole("search", { name: "Search Topic" })
       ).toBeVisible();
     });
 
@@ -632,7 +631,7 @@ describe("TopicApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
 
       expect(search).toBeEnabled();
 
@@ -657,7 +656,7 @@ describe("TopicApprovals", () => {
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("Ospo");
 
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");

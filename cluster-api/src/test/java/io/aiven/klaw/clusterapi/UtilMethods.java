@@ -5,6 +5,7 @@ import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.LoadTopicsResponse;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
@@ -65,7 +66,7 @@ public class UtilMethods {
     return aclsSet;
   }
 
-  public Set<TopicConfig> getTopics() {
+  public LoadTopicsResponse getTopics() {
     Set<TopicConfig> topicsSet = new HashSet<>();
     TopicConfig hashMap = new TopicConfig();
     hashMap.setTopicName("testtopic1");
@@ -73,7 +74,7 @@ public class UtilMethods {
     hashMap.setPartitions("2");
     hashMap.setReplicationFactor("1");
     topicsSet.add(hashMap);
-    return topicsSet;
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(topicsSet).build();
   }
 
   public MultiValueMap<String, String> getMappedValuesTopic() {

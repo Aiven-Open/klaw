@@ -9,6 +9,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
@@ -29,20 +30,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.AclIPPrincipleType;
-import io.aiven.klaw.model.enums.AclPatternType;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.KafkaFlavors;
-import io.aiven.klaw.model.enums.MailType;
-import io.aiven.klaw.model.enums.MetadataOperationType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
@@ -343,7 +331,7 @@ public class AclControllerService {
     List<AclRequestsResponseModel> aclRequestsModels = new ArrayList<>();
     AclRequestsResponseModel aclRequestsModel;
 
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("SUBSCRIPTIONS", tenantId);
 
     if (aclReqs != null)
@@ -391,7 +379,7 @@ public class AclControllerService {
       String topicName,
       RequestOperationType requestOperationType,
       Integer team,
-      List<String> approverRoles,
+      Set<String> approverRoles,
       String requester,
       int tenantId) {
     List<Topic> topicTeamsList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
@@ -763,6 +751,8 @@ public class AclControllerService {
         }
       }
     }
+
+    updateEnvStatus(response, manageDatabase, tenantId, aclReq.getEnvironment());
 
     return response;
   }

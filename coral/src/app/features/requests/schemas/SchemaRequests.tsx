@@ -64,7 +64,7 @@ function SchemaRequests() {
         requestStatus: status !== "ALL" ? status : undefined,
         search: search,
         isMyRequest: showOnlyMyRequests,
-        operationType: requestType !== "ALL" ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
@@ -160,10 +160,7 @@ function SchemaRequests() {
       {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environments"}
-            environmentEndpoint={"getAllEnvironmentsForSchema"}
-          />,
+          <EnvironmentFilter key={"environments"} environmentsFor={"SCHEMA"} />,
           <StatusFilter key={"request-status"} />,
           <RequestTypeFilter key={"request-type"} />,
           <SearchTopicFilter key={"topic"} />,

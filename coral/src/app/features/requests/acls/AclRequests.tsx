@@ -79,7 +79,7 @@ function AclRequests() {
         env: environment,
         aclType,
         requestStatus: status,
-        operationType: requestType === "ALL" ? undefined : requestType,
+        operationType: requestType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
@@ -170,7 +170,7 @@ function AclRequests() {
         filters={[
           <EnvironmentFilter
             key="environment"
-            environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+            environmentsFor={"TOPIC_AND_ACL"}
           />,
           <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" />,

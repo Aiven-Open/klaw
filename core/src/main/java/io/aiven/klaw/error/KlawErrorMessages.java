@@ -296,6 +296,15 @@ public class KlawErrorMessages {
 
   public static final String SCHEMA_ERR_107 = "Failure. A request already exists for this topic.";
 
+  public static final String SCHEMA_ERR_108 = "Failure. There is no associated schema environment.";
+
+  public static final String SCHEMA_ERR_109 =
+      "Failure. Request Schema environments not configured Settings - tenant config";
+
+  public static final String SCHEMA_ERR_110 = "Failure. Schema request is not in CREATED state";
+
+  public static final String SCHEMA_ERR_111 = "Failure. Schema request is not owned by you.";
+
   public static final String SERVER_CONFIG_ERR_101 =
       "Failure. Invalid json / incorrect name values. Check tenant and env details.";
 
@@ -338,7 +347,7 @@ public class KlawErrorMessages {
       "There are no topics found with this prefix. You may synchronize metadata.";
 
   public static final String TOPICS_ERR_110 =
-      "There are atleast two topics with same prefix owned by different teams.";
+      "There are at least two topics with same prefix owned by different teams.";
 
   public static final String TOPICS_ERR_111 = "No team found";
 
@@ -348,6 +357,9 @@ public class KlawErrorMessages {
   public static final String TOPICS_ERR_113 = "Topic does not exist.";
 
   public static final String TOPICS_ERR_114 = "Sorry, your team does not own the topic !!";
+
+  public static final String TOPICS_ERR_115 =
+      "PartitionId cannot be empty or less than zero. Number of Offsets cannot be less than zero.";
 
   // Topic Validation
   public static final String TOPICS_VLD_ERR_101 =
@@ -409,6 +421,9 @@ public class KlawErrorMessages {
   public static final String TOPICS_VLD_ERR_123 =
       "Failure. This topic request cannot be edited, as it's not in CREATED state.";
 
+  public static final String TOPICS_VLD_ERR_124 =
+      "Failure. This topic does not exist in the cluster.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
@@ -459,7 +474,7 @@ public class KlawErrorMessages {
 
   public static final String TEAMS_ERR_111 = "Unable to create the user.";
 
-  public static final String TEAMS_ERR_112 = "Please make sure atleast 2 teams are selected.";
+  public static final String TEAMS_ERR_112 = "Please make sure at least 2 teams are selected.";
 
   public static final String TEAMS_ERR_113 =
       "Please select your own team, in the switch teams list.";
@@ -476,6 +491,8 @@ public class KlawErrorMessages {
   public static final String TEAMS_ERR_118 = "Failure. Something went wrong. Please try later.";
 
   public static final String TEAMS_ERR_119 = "Failure. Team already exists.";
+
+  public static final String TEAMS_ERR_120 = "Passwords don't match";
 
   // security config
   public static final String SEC_CONFIG_ERR_101 = "Please check if insert scripts are executed.";

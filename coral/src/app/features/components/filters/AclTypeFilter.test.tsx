@@ -1,9 +1,10 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import upperFirst from "lodash/upperFirst";
 
 const aclTypesForFilter = ["ALL", "CONSUMER", "PRODUCER"];
 
@@ -30,16 +31,11 @@ describe("AclTypeFilter.tsx", () => {
 
     it("renders a list of options for ACL type", () => {
       aclTypesForFilter.forEach((acl) => {
-        if (acl === "ALL") {
-          const option = screen.getByRole("option", {
-            name: "All ACL types",
-          });
-          expect(option).toBeEnabled();
-          return;
-        }
+        const aclNameFormatted =
+          acl === "ALL" ? "All ACL types" : upperFirst(acl.toLowerCase());
 
         const option = screen.getByRole("option", {
-          name: acl,
+          name: aclNameFormatted,
         });
         expect(option).toBeEnabled();
       });
@@ -70,9 +66,10 @@ describe("AclTypeFilter.tsx", () => {
       cleanup();
     });
 
-    it(`shows CONSUMER name as the active option one`, async () => {
+    it(`shows Consumer name as the active option one`, async () => {
+      const aclNameFormatted = upperFirst(consumerAcl.toLowerCase());
       const option = await screen.findByRole("option", {
-        name: consumerAcl,
+        name: aclNameFormatted,
         selected: true,
       });
       expect(option).toBeVisible();
@@ -95,11 +92,12 @@ describe("AclTypeFilter.tsx", () => {
     });
 
     it("sets the ACL type the user choose as active option", async () => {
+      const aclNameFormatted = upperFirst(producerAcl.toLowerCase());
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
       const option = screen.getByRole("option", {
-        name: producerAcl,
+        name: aclNameFormatted,
       });
 
       await userEvent.selectOptions(select, option);
@@ -110,6 +108,7 @@ describe("AclTypeFilter.tsx", () => {
 
   describe("updates the search param to preserve ACL type in url", () => {
     const consumerAcl = "CONSUMER";
+    const consumerAclFormatted = upperFirst(consumerAcl.toLowerCase());
 
     beforeEach(async () => {
       customRender(<WrappedAclTypeFilter />, {
@@ -134,7 +133,7 @@ describe("AclTypeFilter.tsx", () => {
       });
 
       const option = screen.getByRole("option", {
-        name: consumerAcl,
+        name: consumerAclFormatted,
       });
 
       await userEvent.selectOptions(select, option);

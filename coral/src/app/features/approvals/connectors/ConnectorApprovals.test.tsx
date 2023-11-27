@@ -1,6 +1,6 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import ConnectorApprovals from "src/app/features/approvals/connectors/ConnectorApprovals";
 import {
   ConnectorRequest,
@@ -11,7 +11,6 @@ import {
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -51,10 +50,10 @@ const mockedEnvironments = [
   },
 ];
 
-const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+const mockedEnvironmentResponse = [
   createMockEnvironmentDTO(mockedEnvironments[0]),
   createMockEnvironmentDTO(mockedEnvironments[1]),
-]);
+];
 
 const mockedConnectorRequests: ConnectorRequest[] = [
   {
@@ -115,6 +114,7 @@ describe("ConnectorApprovals", () => {
     requestStatus: "CREATED",
     env: "ALL",
     search: "",
+    operationType: "ALL",
   };
 
   beforeAll(() => {
@@ -221,7 +221,7 @@ describe("ConnectorApprovals", () => {
 
     it("shows a search input to search for topic names", () => {
       const search = screen.getByRole("search", {
-        name: "Search Connector name",
+        name: "Search Connector",
       });
 
       expect(search).toBeVisible();

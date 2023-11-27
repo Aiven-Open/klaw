@@ -11,8 +11,6 @@ import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
-import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
-import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
@@ -29,6 +27,7 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
@@ -59,9 +58,9 @@ import io.aiven.klaw.model.response.TenantInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -95,9 +94,6 @@ public class EnvsClustersTenantsControllerService {
 
   @Value("${klaw.saas.plaintext.aclcommand:acl}")
   private String aclCommandPlaintext;
-
-  @Value("${klaw.prizelist.pertenant}")
-  private String extensionPeriods;
 
   @Value("${klaw.saas.ssl.pubkey:pubkey.zip}")
   private String kwPublicKey;
@@ -462,10 +458,8 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public EnvParams getEnvParams(String targetEnv) {
-    return manageDatabase
-        .getEnvParamsMap(commonUtilsService.getTenantId(getUserName()))
-        .get(targetEnv);
+  public EnvParams getEnvParams(Integer targetEnv) {
+    return manageDatabase.getEnvParams(commonUtilsService.getTenantId(getUserName()), targetEnv);
   }
 
   public List<EnvModelResponse> getSchemaRegEnvs() {
@@ -491,28 +485,6 @@ public class EnvsClustersTenantsControllerService {
           });
     }
 
-    return envModelList;
-  }
-
-  public List<EnvModelResponse> getEnvsForSchemaRequests() {
-    int tenantId = getUserDetails(getUserName()).getTenantId();
-
-    String requestSchemasEnvs =
-        commonUtilsService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
-    if (requestSchemasEnvs == null) {
-      return new ArrayList<>();
-    }
-    String orderOfEnvs = commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId);
-    String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
-    List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
-    List<EnvModelResponse> envModelList =
-        getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
-    log.debug("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
-    envModelList = filterEnvironmentModelList(reqSchemaEnvs, envModelList);
-    if (orderOfEnvs == null) {
-      return envModelList;
-    }
-    envModelList.sort(Comparator.comparingInt(schemaEnv -> orderOfEnvs.indexOf(schemaEnv.getId())));
     return envModelList;
   }
 
@@ -608,7 +580,9 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), tenantId);
-      newEnv.setId(String.valueOf(id));
+      if (id != null) {
+        newEnv.setId(String.valueOf(id));
+      }
     } else {
       // modify env
       envActualList =
@@ -641,8 +615,7 @@ public class EnvsClustersTenantsControllerService {
       env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE, null);
+        manageDatabase.addEnvToCache(tenantId, env, false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -853,8 +826,7 @@ public class EnvsClustersTenantsControllerService {
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE, null);
+        manageDatabase.removeEnvFromCache(tenantId, Integer.valueOf(envId), false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -871,7 +843,7 @@ public class EnvsClustersTenantsControllerService {
     if (KafkaClustersType.KAFKA.value.equals(envType)
         || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
       Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
-      if (env.getAssociatedEnv() != null) {
+      if (env != null && env.getAssociatedEnv() != null) {
         Env linkedEnv =
             manageDatabase
                 .getHandleDbRequests()
@@ -926,6 +898,8 @@ public class EnvsClustersTenantsControllerService {
               .getEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
       linkedEnv.setAssociatedEnv(null);
       manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+      // add to cache
+      manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
     }
   }
 
@@ -943,6 +917,8 @@ public class EnvsClustersTenantsControllerService {
     }
     linkedEnv.setAssociatedEnv(new EnvTag(envId, envName));
     manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+    // add update to cache
+    manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
   }
 
   private String getUserName() {
@@ -976,9 +952,7 @@ public class EnvsClustersTenantsControllerService {
           kwTenantModel.setEmailId(userFound.get().getMailid());
         }
 
-        kwTenantModel.setLicenseExpiryDate(tenant.getLicenseExpiry() + "");
         kwTenantModel.setActiveTenant(Boolean.parseBoolean(tenant.getIsActive()));
-        kwTenantModel.setInTrialPhase(Boolean.parseBoolean(tenant.getInTrial()));
 
         tenantModels.add(kwTenantModel);
       }
@@ -1031,7 +1005,6 @@ public class EnvsClustersTenantsControllerService {
     KwTenants kwTenants = new KwTenants();
     kwTenants.setTenantName(kwTenantModel.getTenantName());
     kwTenants.setTenantDesc(kwTenantModel.getTenantDesc());
-    kwTenants.setInTrial(kwTenantModel.isInTrialPhase() + "");
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
     kwTenants.setOrgName(ENV_CLUSTER_TNT_109);
     if (isExternal) {
@@ -1042,15 +1015,6 @@ public class EnvsClustersTenantsControllerService {
       kwTenants.setIsActive("true");
     } else {
       kwTenants.setIsActive("false");
-    }
-
-    if ("saas".equals(kwInstallationType)) {
-      kwTenants.setLicenseExpiry(
-          new Timestamp(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_TRIAL_PERIOD)));
-    } else {
-      kwTenants.setLicenseExpiry(
-          new Timestamp(
-              System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_EXPIRY_DEFAULT_TENANT)));
     }
 
     try {
@@ -1097,19 +1061,7 @@ public class EnvsClustersTenantsControllerService {
     KwTenantModel kwTenantModel = new KwTenantModel();
     if (tenant.isPresent()) {
       kwTenantModel.setTenantName(tenant.get().getTenantName());
-      kwTenantModel.setLicenseExpiryDate(
-          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(tenant.get().getLicenseExpiry().toInstant()));
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
-      kwTenantModel.setInTrialPhase("true".equals(tenant.get().getInTrial()));
-      long timeInMilliSeconds =
-          tenant.get().getLicenseExpiry().getTime() - System.currentTimeMillis();
-      long hours = TimeUnit.MILLISECONDS.toHours(timeInMilliSeconds);
-
-      int days = (int) (hours / 24);
-      int hoursN = (int) hours % 24;
-
-      kwTenantModel.setNumberOfDays("" + days);
-      kwTenantModel.setNumberOfHours("" + hoursN);
       kwTenantModel.setActiveTenant("true".equals(tenant.get().getIsActive()));
       kwTenantModel.setOrgName(tenant.get().getOrgName());
 
@@ -1189,34 +1141,6 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public List<String> getExtensionPeriods() {
-    return Arrays.asList(extensionPeriods.split(","));
-    // return Arrays.asList("1 month (7$)", "2 months (14$)", "3 months (20$)", "6 months", "1
-    // year", "2 years", "3 years", "5 years");
-  }
-
-  public ApiResponse udpateTenantExtension(String selectedTenantExtensionPeriod) {
-    // send mail
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      return ApiResponse.NOT_AUTHORIZED;
-    }
-
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    log.info("Into tenant extension : " + tenantId + "  from " + getUserName());
-
-    String result =
-        mailService.sendMailToSaasAdmin(
-            tenantId,
-            getUserName(),
-            selectedTenantExtensionPeriod,
-            commonUtilsService.getLoginUrl());
-
-    return ApiResultStatus.SUCCESS.value.equals(result)
-        ? ApiResponse.ok(result)
-        : ApiResponse.notOk(result);
-  }
-
   public AclCommands getAclCommands() {
     AclCommands aclCommands = new AclCommands();
     aclCommands.setResult(ApiResultStatus.SUCCESS.value);
@@ -1245,24 +1169,33 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKey;
   }
 
-  public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawException {
+  public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawBadRequestException {
+
     EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
+    List<Env> allEnvs = manageDatabase.getAllEnvList(tenantId);
+    Optional<Env> env =
+        allEnvs.stream()
+            .filter(e -> e.getId().equals(envId) && e.getTenantId().equals(tenantId))
+            .findFirst();
+
+    if (env.isEmpty()) {
+      throw new KlawBadRequestException("No Such environment.");
+    }
 
     ClusterStatus status;
     KwClusters kwClusters = null;
     kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.of(env.getType()), tenantId)
-            .get(env.getClusterId());
+            .getClusters(KafkaClustersType.of(env.get().getType()), tenantId)
+            .get(env.get().getClusterId());
     try {
       status =
           clusterApiService.getKafkaClusterStatus(
               kwClusters.getBootstrapServers(),
               kwClusters.getProtocol(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
-              env.getType(),
+              env.get().getType(),
               kwClusters.getKafkaFlavor(),
               tenantId);
 
@@ -1270,14 +1203,22 @@ public class EnvsClustersTenantsControllerService {
       status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
-    env.setEnvStatus(status);
+    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
+    env.get().setEnvStatus(status);
+    env.get().setEnvStatusTime(statusTime);
+    env.get().setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
+
+    // Is this required can we remove it?
     kwClusters.setClusterStatus(status);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
-    manageDatabase.getHandleDbRequests().addNewEnv(env);
-    manageDatabase.loadEnvMapForOneTenant(tenantId);
+
+    manageDatabase.addEnvToCache(tenantId, env.get(), false);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);
+    envUpdatedStatus.setEnvStatusTime(statusTime);
+    envUpdatedStatus.setEnvStatusTimeString(
+        DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
 
     return envUpdatedStatus;
   }

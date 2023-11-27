@@ -16,7 +16,7 @@ import lombok.ToString;
 public class EnvModel implements Serializable {
 
   @NotNull
-  @Size(min = 2, max = 10, message = "Please fill in a valid name")
+  @Size(min = 2, max = 25, message = "Please fill in a valid name")
   @Pattern(message = "Invalid environment name !!", regexp = "^[a-zA-Z0-9_.-]{3,}$")
   private String name;
 

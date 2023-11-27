@@ -22,6 +22,7 @@ import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.charts.Title;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
@@ -43,6 +44,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
@@ -107,6 +109,14 @@ public class UtilMethods {
     listMSchemas.add(mSchema);
 
     return listMSchemas;
+  }
+
+  public ProfileModel getUserInfoToUpdateMock() {
+    ProfileModel userInfo = new ProfileModel();
+    userInfo.setMailid("test@test.com");
+    userInfo.setFullname("My full name");
+
+    return userInfo;
   }
 
   public UserInfoModel getUserInfoMock() {
@@ -244,7 +254,7 @@ public class UtilMethods {
       t.setTopicid(i);
       t.setEnvironment(env);
       t.setTeamId(teamId);
-      t.setEnvironmentsList(new ArrayList<>());
+      t.setEnvironmentsSet(new HashSet<>());
 
       listTopics.add(t);
     }
@@ -780,8 +790,8 @@ public class UtilMethods {
     return aclRequest;
   }
 
-  public List<TopicConfig> getClusterApiTopics(String topicPrefix, int size) {
-    List<TopicConfig> listTopics = new ArrayList<>();
+  public LoadTopicsResponse getClusterApiTopics(String topicPrefix, int size) {
+    Set<TopicConfig> listTopics = new HashSet<>();
     TopicConfig hashMap;
     for (int i = 0; i < size; i++) {
       hashMap = new TopicConfig();
@@ -790,7 +800,7 @@ public class UtilMethods {
       hashMap.setPartitions("2");
       listTopics.add(hashMap);
     }
-    return listTopics;
+    return LoadTopicsResponse.builder().loadingInProgress(false).topicConfigSet(listTopics).build();
   }
 
   public List<SyncTopicUpdates> getSyncTopicUpdates() {

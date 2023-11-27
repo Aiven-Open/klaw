@@ -1,8 +1,8 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import ConnectorRequest from "src/app/features/connectors/request/ConnectorRequest";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { requestConnectorCreation } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
@@ -49,9 +49,9 @@ describe("<ConnectorRequest />", () => {
     describe("renders all necessary elements by default", () => {
       beforeEach(() => {
         mockGetConnectorEnvironmentRequest.mockResolvedValue([
-          createEnvironment({ id: "1", name: "DEV" }),
-          createEnvironment({ id: "2", name: "TST" }),
-          createEnvironment({ id: "3", name: "PROD" }),
+          createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+          createMockEnvironmentDTO({ id: "2", name: "TST" }),
+          createMockEnvironmentDTO({ id: "3", name: "PROD" }),
         ]);
         customRender(
           <AquariumContext>
@@ -105,9 +105,9 @@ describe("<ConnectorRequest />", () => {
     describe("when field is clicked", () => {
       beforeEach(() => {
         mockGetConnectorEnvironmentRequest.mockResolvedValue([
-          createEnvironment({ id: "1", name: "DEV" }),
-          createEnvironment({ id: "2", name: "TST" }),
-          createEnvironment({ id: "3", name: "PROD" }),
+          createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+          createMockEnvironmentDTO({ id: "2", name: "TST" }),
+          createMockEnvironmentDTO({ id: "3", name: "PROD" }),
         ]);
         customRender(
           <AquariumContext>
@@ -164,9 +164,9 @@ describe("<ConnectorRequest />", () => {
   describe("Connector name", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
       customRender(
         <AquariumContext>
@@ -193,9 +193,9 @@ describe("<ConnectorRequest />", () => {
   describe("Configuration", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
       customRender(
         <AquariumContext>
@@ -284,9 +284,9 @@ describe("<ConnectorRequest />", () => {
   describe("Connector description", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
       customRender(
         <AquariumContext>
@@ -314,9 +314,9 @@ describe("<ConnectorRequest />", () => {
   describe("Message for approval", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
       customRender(
         <AquariumContext>
@@ -339,9 +339,9 @@ describe("<ConnectorRequest />", () => {
   describe("form submission", () => {
     beforeEach(async () => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
       customRender(
         <AquariumContext>
@@ -487,9 +487,9 @@ describe("<ConnectorRequest />", () => {
   describe("enables user to cancel the form input", () => {
     beforeEach(async () => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
-        createEnvironment({ id: "1", name: "DEV" }),
-        createEnvironment({ id: "2", name: "TST" }),
-        createEnvironment({ id: "3", name: "PROD" }),
+        createMockEnvironmentDTO({ id: "1", name: "DEV" }),
+        createMockEnvironmentDTO({ id: "2", name: "TST" }),
+        createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
 
       customRender(

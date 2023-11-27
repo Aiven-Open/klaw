@@ -20,6 +20,7 @@ import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.ClusterStatus;
@@ -178,8 +179,10 @@ public class ClusterApiServiceTest {
   @Test
   @Order(5)
   public void getAllTopicsSuccess() throws Exception {
-    Set<String> topicsList = getTopics();
-    ResponseEntity response = new ResponseEntity<>(topicsList, HttpStatus.OK);
+    Set<TopicConfig> topicsList = getTopics();
+    LoadTopicsResponse loadTopicsResponse =
+        LoadTopicsResponse.builder().topicConfigSet(topicsList).build();
+    ResponseEntity response = new ResponseEntity<>(loadTopicsResponse, HttpStatus.OK);
 
     when(restTemplate.exchange(
             Mockito.anyString(),
@@ -188,9 +191,11 @@ public class ClusterApiServiceTest {
             (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
-    List<TopicConfig> result =
-        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
-    assertThat(result).isEqualTo(new ArrayList<>(topicsList));
+    Set<TopicConfig> result =
+        clusterApiService
+            .getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1, false)
+            .getTopicConfigSet();
+    assertThat(result).isEqualTo(topicsList);
   }
 
   @Test
@@ -202,7 +207,9 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(
-            () -> clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1))
+            () ->
+                clusterApiService.getAllTopics(
+                    "", KafkaSupportedProtocol.PLAINTEXT, "", "", 1, false))
         .isInstanceOf(KlawException.class);
   }
 
@@ -474,6 +481,7 @@ public class ClusterApiServiceTest {
             "1",
             "",
             "1",
+            "2",
             101);
     assertThat(Objects.requireNonNull(response1)).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -507,14 +515,20 @@ public class ClusterApiServiceTest {
             "1",
             "",
             "1",
+            "2",
             101);
     assertThat(Objects.requireNonNull(response1)).isEqualTo(FAILED_TO_EXECUTE_SUCCESSFULLY);
   }
 
-  private Set<String> getTopics() {
-    Set<String> topicsList = new HashSet<>();
-    topicsList.add("topic1");
-    topicsList.add("topic2");
+  private Set<TopicConfig> getTopics() {
+    Set<TopicConfig> topicsList = new HashSet<>();
+    TopicConfig tc1 = new TopicConfig();
+    tc1.setTopicName("topic1");
+    topicsList.add(tc1);
+
+    TopicConfig tc2 = new TopicConfig();
+    tc2.setTopicName("topic2");
+    topicsList.add(tc2);
 
     return topicsList;
   }

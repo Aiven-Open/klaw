@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -482,14 +473,14 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label class="control-label">Password</label>
-												<input type="password" class="form-control" required ng-model="chPwd.pwd">
+												<input type="password" class="form-control" minlength="8" required ng-model="chPwd.pwd">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label class="control-label">Confirm Password</label>
-												<input type="password" class="form-control" required ng-model="chPwd.repeatpwd">
+												<input type="password" class="form-control" minlength="8" required ng-model="chPwd.repeatpwd">
 											</div>
 										</div>
 										<!--/span-->

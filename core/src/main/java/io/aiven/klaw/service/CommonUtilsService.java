@@ -25,7 +25,6 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
-import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +37,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +46,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.env.Environment;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,9 +70,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Service
 @Slf4j
 public class CommonUtilsService {
-
-  public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
-  public static final String BASE_URL_NAME = "BASE_URL_NAME";
 
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
@@ -109,14 +103,9 @@ public class CommonUtilsService {
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
-  @Autowired Environment environment;
-
   @Autowired ManageDatabase manageDatabase;
 
-  private static Map<String, String> baseUrlsMap;
-
-  private static HttpComponentsClientHttpRequestFactory requestFactory =
-      ClusterApiService.requestFactory;
+  @Autowired HARestMessagingService HARestMessagingService;
 
   @Value("${klaw.uiapi.servers:server1,server2}")
   private String uiApiServers;
@@ -128,8 +117,7 @@ public class CommonUtilsService {
   private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   private RestTemplate getRestTemplate() {
-    if (uiApiServers.toLowerCase().startsWith("https")) return new RestTemplate(requestFactory);
-    else return new RestTemplate();
+    return HARestMessagingService.getRestTemplate();
   }
 
   public Authentication getAuthentication() {
@@ -203,37 +191,64 @@ public class CommonUtilsService {
     }
   }
 
-  public ChartsJsOverview getChartsJsOverview(
-      List<Map<String, String>> activityCountList,
+  public static class ChartsOverviewItem<X, Y> {
+    private final X xValue;
+    private final Y yValue;
+
+    private ChartsOverviewItem(X xValue, Y yValue) {
+      this.xValue = xValue;
+      this.yValue = yValue;
+    }
+
+    public X getxValue() {
+      return xValue;
+    }
+
+    public Y getyValue() {
+      return yValue;
+    }
+
+    public ChartsOverviewItem<X, Y> transformX(Function<X, X> function) {
+      return new ChartsOverviewItem<>(function.apply(this.xValue), yValue);
+    }
+
+    public static <X, Y> ChartsOverviewItem<X, Y> of(X xValue, Y yValue) {
+      return new ChartsOverviewItem<X, Y>(xValue, yValue);
+    }
+  }
+
+  public <X> ChartsJsOverview getChartsJsOverview(
+      List<ChartsOverviewItem<X, Integer>> activityCountList,
       String title,
-      String yaxisCount,
       String xaxisLabel,
       String xAxisLabelConstant,
       String yAxisLabelConstant,
       int tenantId) {
     ChartsJsOverview chartsJsOverview = new ChartsJsOverview();
-    List<Integer> data = new ArrayList<>();
-    List<String> labels = new ArrayList<>();
-    List<String> colors = new ArrayList<>();
+    final int size = activityCountList == null ? 0 : activityCountList.size();
+    List<Integer> data = new ArrayList<>(size);
+    List<String> labels = new ArrayList<>(size);
+    List<String> colors = new ArrayList<>(size);
 
-    data.add(0);
-    labels.add("");
+    if (activityCountList.isEmpty()) {
+      data.add(0);
+      labels.add("");
+    }
 
     int totalCount = 0;
 
     if (activityCountList != null) {
-      for (Map<String, String> hashMap : activityCountList) {
-        totalCount += Integer.parseInt(hashMap.get(yaxisCount));
-        data.add(Integer.parseInt(hashMap.get(yaxisCount)));
-
-        if ("teamid".equals(xaxisLabel)) {
+      final boolean isTeamId = "teamid".equals(xaxisLabel);
+      for (ChartsOverviewItem<X, Integer> item : activityCountList) {
+        totalCount += item.yValue;
+        data.add(item.yValue);
+        if (isTeamId) {
           labels.add(
               manageDatabase.getTeamNameFromTeamId(
-                  tenantId, Integer.parseInt(hashMap.get(xaxisLabel))));
+                  tenantId, Integer.parseInt(item.xValue.toString())));
         } else {
-          labels.add(hashMap.get(xaxisLabel));
+          labels.add(item.xValue.toString());
         }
-
         colors.add("Green");
       }
     }
@@ -417,21 +432,6 @@ public class CommonUtilsService {
           + kwContextPath;
   }
 
-  public Map<String, String> getBaseIpUrlFromEnvironment() {
-    if (baseUrlsMap != null && !baseUrlsMap.isEmpty()) {
-      return baseUrlsMap;
-    } else {
-      baseUrlsMap = new HashMap<>();
-      String hostAddress = InetAddress.getLoopbackAddress().getHostAddress();
-      String hostName = InetAddress.getLoopbackAddress().getHostName();
-      int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("server.port")));
-
-      baseUrlsMap.put(BASE_URL_ADDRESS, hostAddress + ":" + port);
-      baseUrlsMap.put(BASE_URL_NAME, hostName + ":" + port);
-      return baseUrlsMap;
-    }
-  }
-
   public void resetCacheOnOtherServers(KwMetadataUpdates kwMetadataUpdates) {
     log.info("invokeResetEndpoints");
     try {
@@ -446,18 +446,9 @@ public class CommonUtilsService {
             basePath = server + "/" + kwContextPath;
           }
 
-          Map<String, String> baseUrlsFromEnv = getBaseIpUrlFromEnvironment();
-
           // ignore metadata cache reset on local.
-          if (baseUrlsFromEnv != null && !baseUrlsFromEnv.isEmpty()) {
-            if (baseUrlsFromEnv.containsKey(BASE_URL_ADDRESS)
-                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_ADDRESS))) {
-              continue;
-            }
-            if (baseUrlsFromEnv.containsKey(BASE_URL_NAME)
-                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME))) {
-              continue;
-            }
+          if (HARestMessagingService.isLocalServerUrl(basePath)) {
+            continue;
           }
 
           if (kwMetadataUpdates.getEntityValue() == null) {
@@ -542,11 +533,11 @@ public class CommonUtilsService {
     groupedList.forEach(
         (k, v) -> {
           Topic t = v.get(0);
-          List<String> tmpEnvList = new ArrayList<>();
+          Set<String> tmpEnvSet = new HashSet<>();
           for (Topic topic : v) {
-            tmpEnvList.add(topic.getEnvironment());
+            tmpEnvSet.add(topic.getEnvironment());
           }
-          t.setEnvironmentsList(tmpEnvList);
+          t.setEnvironmentsSet(tmpEnvSet);
           tmpTopicList.add(t);
         });
     return tmpTopicList;
@@ -584,12 +575,6 @@ public class CommonUtilsService {
           List<String> requestConn = tenantModel.getRequestConnectorsEnvironmentsList();
           if (requestConn != null && !requestConn.isEmpty()) {
             requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-        }
-        case "REQUEST_SCHEMA_OF_ENVS" -> {
-          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
-          if (requestSchema != null && !requestSchema.isEmpty()) {
-            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           }
         }
       }
@@ -764,17 +749,22 @@ public class CommonUtilsService {
 
   public boolean isCreateNewSchemaAllowed(String schemaEnvId, int tenantId) {
     KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
-    List<String> reqSchemaEnvs =
-        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
+    List<String> topicReqsEnvList =
+        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestTopicsEnvironmentsList();
 
-    return reqSchemaEnvs != null ? reqSchemaEnvs.contains(schemaEnvId) : false;
+    for (String id : topicReqsEnvList) {
+      Optional<Env> kafkaEnv = manageDatabase.getEnv(tenantId, Integer.valueOf(id));
+      if (kafkaEnv.isPresent()
+          && kafkaEnv.get().getAssociatedEnv() != null
+          && kafkaEnv.get().getAssociatedEnv().getId().equals(schemaEnvId)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
-    Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.orElse(null);
+    return manageDatabase.getKafkaEnv(tenantId, Integer.valueOf(envId)).orElse(null);
   }
 }

@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,7 +165,8 @@ public abstract class BaseOverviewService {
         if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
           producerIp = initializeAclInfo(producerIp, info);
           producerIp.getAcl_ips().add(info.getAcl_ip());
-        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+        }
+        if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
           producerPrincipal = initializeAclInfo(producerPrincipal, info);
           producerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
         }
@@ -174,7 +174,8 @@ public abstract class BaseOverviewService {
         if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
           consumerIp = initializeAclInfo(consumerIp, info);
           consumerIp.getAcl_ips().add(info.getAcl_ip());
-        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+        }
+        if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
           consumerPrincipal = initializeAclInfo(consumerPrincipal, info);
           consumerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
         }
@@ -326,10 +327,6 @@ public abstract class BaseOverviewService {
   }
 
   protected Env getEnvDetails(String envId, int tenantId) {
-    Optional<Env> envFound =
-        manageDatabase.getAllEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.orElse(null);
+    return manageDatabase.getEnv(tenantId, Integer.valueOf(envId)).orElse(null);
   }
 }

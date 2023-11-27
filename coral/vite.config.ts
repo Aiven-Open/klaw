@@ -125,6 +125,7 @@ export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
   const usesNodeProxy = mode === "local-api";
 
+  console.log("mode", mode);
   return {
     plugins: getPlugins(environment),
     define: {
@@ -137,17 +138,10 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         ROUTER_BASENAME: getRouterBasename(environment),
         API_BASE_URL: getApiBaseUrl(environment),
-        FEATURE_FLAG_CONNECTOR_OVERVIEW: [
-          "development",
-          "remote-api",
-          "local-api",
-        ]
+        FEATURE_FLAG_USER_TEAMS: ["development", "remote-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_EDIT_CONNECTOR: ["development", "remote-api", "local-api"]
-          .includes(mode)
-          .toString(),
-        FEATURE_FLAG_CONFIGURATIONS: ["development", "remote-api", "local-api"]
+        FEATURE_FLAG_USER_INFORMATION: ["development", "remote-api"]
           .includes(mode)
           .toString(),
       },

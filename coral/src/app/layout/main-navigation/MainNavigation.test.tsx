@@ -1,5 +1,5 @@
 import { cleanup, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
@@ -44,12 +44,30 @@ const submenuItems = [
     name: "Configuration",
     links: [
       { name: "Users", linkTo: "/users" },
-      { name: "Teams", linkTo: "/teams" },
+      {
+        name: "Teams",
+        linkTo: isFeatureFlagActiveMock() ? `/configuration/teams` : `/teams`,
+      },
       {
         name: "Environments",
-        linkTo: isFeatureFlagActiveMock()
-          ? `/configuration/environments`
-          : `/envs`,
+        linkTo: "/configuration/environments",
+      },
+    ],
+  },
+  {
+    name: "User information",
+    links: [
+      {
+        name: "User profile",
+        linkTo: isFeatureFlagActiveMock() ? `/user/profile` : `/myProfile`,
+      },
+      {
+        name: "Change password",
+        linkTo: "/changePwd",
+      },
+      {
+        name: "Tenant",
+        linkTo: "/tenantInfo",
       },
     ],
   },
@@ -63,6 +81,7 @@ const navOrderFirstLevel = [
   { name: "My team's requests", isSubmenu: false },
   { name: "Audit log", isSubmenu: false },
   { name: "Configuration", isSubmenu: true },
+  { name: "User information", isSubmenu: true },
 ];
 
 describe("MainNavigation.tsx", () => {
@@ -139,6 +158,149 @@ describe("MainNavigation.tsx", () => {
     });
   });
 
+  describe("renders links to teams behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Teams" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/teams");
+    });
+
+    it("renders a link to the teams page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      isFeatureFlagActiveMock.mockReturnValue(false);
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Teams" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/configuration/teams");
+    });
+  });
+
+  describe("renders links to users behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Users" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/users");
+    });
+
+    it("renders a link to the users page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: `Configuration submenu`,
+      });
+
+      const link = within(list).getByRole("link", { name: "Users" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/configuration/users");
+    });
+  });
+
+  describe("renders links to profile behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("User information", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "User information submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "User profile" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/myProfile");
+    });
+
+    it("renders a link to the profile page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("User information", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "User information submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "User profile" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/user/profile");
+    });
+  });
+
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {
@@ -184,16 +346,6 @@ describe("MainNavigation.tsx", () => {
             name: `${submenu.name} submenu`,
           });
 
-          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === true
-          isFeatureFlagActiveMock.mockReturnValue(true);
-          submenu.links.forEach(({ name, linkTo }) => {
-            const link = within(list).getByRole("link", { name });
-            expect(link).toBeVisible();
-            expect(link).toHaveAttribute("href", linkTo);
-          });
-
-          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === false
-          isFeatureFlagActiveMock.mockReturnValue(false);
           submenu.links.forEach(({ name, linkTo }) => {
             const link = within(list).getByRole("link", { name });
             expect(link).toBeVisible();

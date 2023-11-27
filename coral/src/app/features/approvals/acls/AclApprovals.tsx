@@ -25,8 +25,6 @@ import {
 import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
-const defaultType = "ALL";
-
 function AclApprovals() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -80,7 +78,7 @@ function AclApprovals() {
         requestStatus: status,
         aclType,
         search: search,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
@@ -242,7 +240,7 @@ function AclApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+            environmentsFor={"TOPIC_AND_ACL"}
           />,
           <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,

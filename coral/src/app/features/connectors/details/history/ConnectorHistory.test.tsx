@@ -41,6 +41,7 @@ const testConnectorOverview: ConnectorOverview = {
     hasOpenRequest: false,
     hasOpenClaimRequest: false,
     highestEnv: false,
+    hasOpenRequestOnAnyEnv: false,
     connectorOwner: false,
     connectorConfig:
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "my-connector",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',

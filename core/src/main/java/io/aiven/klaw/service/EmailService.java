@@ -28,6 +28,36 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailService {
 
+  private static final String KW_LOGO_PNG =
+      "https://klaw-project.io/wp-content/uploads/2021/01/KW-logo-gold-sm.png";
+
+  private static String headerString =
+      "<html><table style=\"height:40px;width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "\t<tr>\n"
+          + "\t\t\n"
+          + "\t\t<td>\n"
+          + "\t\t\t<img src=\""
+          + "LOGO"
+          + "\"></img>\n"
+          + "\t\t</td>\n"
+          + "\t</tr>\n"
+          + "</table><br>\n"
+          + "\n"
+          + "<table style=\"width:60%;color:#016BA7;text-align:left;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "\t<tr>\n"
+          + "\t\t<td>";
+
+  private static final String footerString =
+      "<br>\n"
+          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "\t<tr>\n"
+          + "\t\t<td>\n"
+          + "\t\t\t© 2023 <a href=\"https://klaw-project.io\" style=\"color:white;\">www.klaw-project.io</a>\n"
+          + "\t\t</td>\n"
+          + "\t</tr>\n"
+          + "</table>\n"
+          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "</table></html>";
   @Autowired private JavaMailSender emailSender;
 
   @Autowired ManageDatabase manageDatabase;
@@ -40,36 +70,16 @@ public class EmailService {
   @Value("${spring.mail.noreplymailid:info@klaw-project.io}")
   private String noReplyMailId;
 
-  private String headerString =
-      "<html><table style=\"height:40px;width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
-          + "\t<tr>\n"
-          + "\t\t\n"
-          + "\t\t<td>\n"
-          + "\t\t\t<img src=\"https://klaw-project.io/wp-content/uploads/2021/01/KW-logo-gold-sm.png\"></img>\n"
-          + "\t\t</td>\n"
-          + "\t</tr>\n"
-          + "</table><br>\n"
-          + "\n"
-          + "<table style=\"width:60%;color:#016BA7;text-align:left;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
-          + "\t<tr>\n"
-          + "\t\t<td>";
+  @Value("${spring.mail.noreplymailid.display:'Klaw No Reply'}")
+  private String noReplyMailIdDisplay;
 
-  private String footerString =
-      "<br>\n"
-          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
-          + "\t<tr>\n"
-          + "\t\t<td>\n"
-          + "\t\t\t© 2023 <a href=\"https://klaw-project.io\" style=\"color:white;\">www.klaw-project.io</a>\n"
-          + "\t\t</td>\n"
-          + "\t</tr>\n"
-          + "</table>\n"
-          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
-          + "</table></html>";
+  @Value("${klaw.notification.header.logo:http://yourcompany/logo.png}")
+  private String notificationHeaderLogo;
 
   public void sendSimpleMessage(
       String to, String cc, String subject, String text, int tenantId, String loginUrl) {
-    List toList = new ArrayList<>();
-    List ccList = new ArrayList<>();
+    List<String> toList = new ArrayList<>();
+    List<String> ccList = new ArrayList<>();
     CollectionUtils.addIgnoreNull(toList, to);
     CollectionUtils.addIgnoreNull(ccList, cc);
     sendSimpleMessage(toList, ccList, null, subject, text, tenantId, loginUrl);
@@ -95,7 +105,7 @@ public class EmailService {
       message.setSubject(subject);
       Address address = new InternetAddress(noReplyMailId);
       message.setReplyTo(new Address[] {address});
-      message.setFrom(new InternetAddress(fromMailId, "Klaw NoReply"));
+      message.setFrom(new InternetAddress(fromMailId, noReplyMailIdDisplay));
 
       text = text.replaceAll("\\\\n", "<br>");
 
@@ -142,5 +152,17 @@ public class EmailService {
         message.addRecipients(recipientType, address);
       }
     }
+  }
+
+  public void updateHeaderText() {
+    if (notificationHeaderLogo != null) {
+      if (notificationHeaderLogo.equals("http://yourcompany/logo.png")) {
+        notificationHeaderLogo = KW_LOGO_PNG;
+      }
+    } else {
+      notificationHeaderLogo = KW_LOGO_PNG;
+    }
+
+    headerString = headerString.replace("LOGO", notificationHeaderLogo);
   }
 }

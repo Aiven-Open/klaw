@@ -2,8 +2,8 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
+import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
@@ -18,6 +18,7 @@ import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
 import io.aiven.klaw.model.cluster.ConnectorsStatus;
+import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.cluster.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -32,7 +33,6 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
-import io.aiven.klaw.model.response.TopicConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -63,6 +63,7 @@ import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -97,10 +98,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class ClusterApiService {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String URL_DELIMITER = "/";
   public static final String URI_CONNECTOR_STATUS = "?connectorStatus=";
+  public static final String TOPICS_NATIVE_TYPE = "topicsNativeType";
+  public static final String RESET_CACHE = "resetCache";
+  public static final String PARTITION_ID = "partitionId";
+  public static final String SELECTED_NUMBER_OF_OFFSETS = "selectedNumberOfOffsets";
 
   @Autowired private ManageDatabase manageDatabase;
 
@@ -127,8 +130,11 @@ public class ClusterApiService {
     this.manageDatabase = manageDatabase;
   }
 
-  private RestTemplate getRestTemplate() {
-    if (clusterConnUrl.toLowerCase().startsWith("https")) {
+  private RestTemplate getRestTemplate(String clusterConnectivityUrl) {
+    if (StringUtils.isEmpty(clusterConnectivityUrl)) {
+      clusterConnectivityUrl = clusterConnUrl;
+    }
+    if (clusterConnectivityUrl.toLowerCase().startsWith("https")) {
       if (this.httpsRestTemplate == null) {
         this.httpsRestTemplate = new RestTemplate(requestFactory);
       }
@@ -157,14 +163,17 @@ public class ClusterApiService {
     try {
       String uriClusterApiStatus = URI_CLUSTER_API;
       String uri;
+      RestTemplate restTemplate;
       if (testConnection) {
         uri = clusterApiUrl + uriClusterApiStatus;
+        restTemplate = getRestTemplate(clusterApiUrl);
       } else {
         uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
+        restTemplate = getRestTemplate(clusterConnUrl);
       }
 
       ResponseEntity<ClusterStatus> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+          restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
       return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
@@ -197,7 +206,7 @@ public class ClusterApiService {
                   kafkaFlavor);
 
       ResponseEntity<ClusterStatus> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+          getRestTemplate(null).exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
       return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getKafkaClusterStatus ", e);
@@ -227,7 +236,7 @@ public class ClusterApiService {
                   URL_DELIMITER, protocol.getName(), clusterIdentification, consumerGroupId, topic);
 
       ResponseEntity<List<OffsetDetails>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
@@ -245,11 +254,11 @@ public class ClusterApiService {
       String clusterIdentification,
       String topic,
       String offsetId,
+      Integer selectedPartitionId,
+      Integer selectedNumberOfOffsets,
       String consumerGroupId,
       int tenantId)
       throws KlawException {
-    log.info(
-        "getTopicEvents {} {} {} {} {}", bootstrapHost, protocol, topic, offsetId, consumerGroupId);
     getClusterApiProperties(tenantId);
     Map<String, String> eventsMap;
     try {
@@ -262,14 +271,17 @@ public class ClusterApiService {
               + String.join(
                   URL_DELIMITER,
                   protocol.getName(),
-                  clusterIdentification,
                   consumerGroupId,
                   topic,
                   offsetId,
+                  PARTITION_ID,
+                  String.valueOf(selectedPartitionId),
+                  SELECTED_NUMBER_OF_OFFSETS,
+                  String.valueOf(selectedNumberOfOffsets),
                   clusterIdentification);
 
       ResponseEntity<Map<String, String>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
@@ -340,7 +352,7 @@ public class ClusterApiService {
       }
 
       ResponseEntity<Set<Map<String, String>>> resultBody =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uri, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
       aclListOriginal = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
@@ -351,16 +363,18 @@ public class ClusterApiService {
     return aclListOriginal;
   }
 
-  public List<TopicConfig> getAllTopics(
+  public LoadTopicsResponse getAllTopics(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
       String kafkaFlavors,
-      int tenantId)
+      int tenantId,
+      boolean resetTopicsCache)
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
-    List<TopicConfig> topicsList;
+
+    LoadTopicsResponse loadTopicsResponse;
     String aclsNativeType = AclsNativeType.NATIVE.value;
 
     if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
@@ -376,21 +390,23 @@ public class ClusterApiService {
                   URL_DELIMITER,
                   protocol.getName(),
                   clusterIdentification,
-                  "topicsNativeType",
-                  aclsNativeType);
+                  TOPICS_NATIVE_TYPE,
+                  aclsNativeType,
+                  RESET_CACHE,
+                  String.valueOf(resetTopicsCache));
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<Set<TopicConfig>> s =
-          getRestTemplate()
+      ResponseEntity<LoadTopicsResponse> s =
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
-      topicsList = new ArrayList<>(Objects.requireNonNull(s.getBody()));
+      loadTopicsResponse = Objects.requireNonNull(s.getBody());
     } catch (Exception e) {
       log.error("Error from getAllTopics", e);
       throw new KlawException(CLUSTER_API_ERR_104);
     }
 
-    return topicsList;
+    return loadTopicsResponse;
   }
 
   public String approveConnectorRequests(
@@ -400,6 +416,7 @@ public class ClusterApiService {
       String connectorConfig,
       String kafkaConnectHost,
       String clusterIdentification,
+      String environemt,
       int tenantId)
       throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
@@ -431,9 +448,9 @@ public class ClusterApiService {
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
-
+      updateEnvStatus(response, manageDatabase, tenantId, environemt);
       ApiResponse apiResponse = response.getBody();
       if (apiResponse != null) {
         if (apiResponse.isSuccess()) {
@@ -550,7 +567,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
       return throwCommonErrors(e, CLUSTER_API_ERR_106);
@@ -655,7 +672,7 @@ public class ClusterApiService {
 
       HttpEntity<ClusterAclRequest> request = new HttpEntity<>(clusterAclRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
       return response;
     } catch (Exception e) {
@@ -682,7 +699,7 @@ public class ClusterApiService {
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<ServiceAccountDetails> apiResponseResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetServiceAccountDetails,
                   HttpMethod.GET,
@@ -707,7 +724,7 @@ public class ClusterApiService {
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<ApiResponse> apiResponseResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetServiceAccounts,
                   HttpMethod.GET,
@@ -765,7 +782,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("deleteSchema {}", topicName, e);
       return throwCommonErrors(e, CLUSTER_API_ERR_123);
@@ -814,7 +831,7 @@ public class ClusterApiService {
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
@@ -858,7 +875,7 @@ public class ClusterApiService {
 
         HttpHeaders headers = createHeaders(clusterApiUser);
         HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-        response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+        response = getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
       }
     } catch (Exception e) {
       log.error("Error from resetCache ", e);
@@ -898,7 +915,7 @@ public class ClusterApiService {
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
-      return getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      return getRestTemplate(null).postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from Validating Schema. ", e);
       throw new KlawException(CLUSTER_API_ERR_112);
@@ -925,7 +942,7 @@ public class ClusterApiService {
               + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, topicName);
 
       ResponseEntity<TreeMap<String, Map<String, Object>>> treeMapResponseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull,
                   HttpMethod.GET,
@@ -968,7 +985,7 @@ public class ClusterApiService {
                   clusterIdentification);
 
       ResponseEntity<SchemasInfoOfClusterResponse> responseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetTopicsFull,
                   HttpMethod.GET,
@@ -1003,7 +1020,7 @@ public class ClusterApiService {
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<Map<String, Object>> s =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetConnectorsFull,
                   HttpMethod.GET,
@@ -1039,7 +1056,7 @@ public class ClusterApiService {
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ConnectorsStatus> responseEntity =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriGetConnectorsFull,
                   HttpMethod.GET,
@@ -1084,7 +1101,7 @@ public class ClusterApiService {
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriPostConnectorsFull,
                   HttpMethod.POST,
@@ -1109,7 +1126,7 @@ public class ClusterApiService {
       params.add("objectName", objectName);
 
       String uriGetTopicsFull = clusterConnUrl + URI_GET_METRICS;
-      RestTemplate restTemplate = getRestTemplate();
+      RestTemplate restTemplate = getRestTemplate(null);
 
       HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -1157,13 +1174,13 @@ public class ClusterApiService {
       HttpEntity<ResetConsumerGroupOffsetsRequest> request =
           new HttpEntity<>(resetConsumerGroupOffsetsRequest, headers);
       response =
-          getRestTemplate()
+          getRestTemplate(null)
               .exchange(
                   uriResetConsumerOffsets,
                   HttpMethod.POST,
                   request,
                   new ParameterizedTypeReference<>() {});
-
+      updateEnvStatus(response, manageDatabase, tenantId, environmentId);
       return response.getBody();
 
     } catch (Exception e) {
@@ -1245,10 +1262,10 @@ public class ClusterApiService {
 
     return Jwts.builder()
         .claim("name", username)
-        .setSubject(username)
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(Date.from(now))
-        .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .subject(username)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
         .signWith(hmacKey)
         .compact();
   }

@@ -1,38 +1,63 @@
 import { SchemaRequest } from "src/domain/schema-request";
-import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Grid, StatusChip, Typography } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 
 type DetailsModalContentProps = {
   request?: SchemaRequest;
 };
 
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <dt className="inline-block mb-2 typography-small-strong text-grey-60">
-    {children}
-  </dt>
-);
+const Label = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <dt className="inline-block mb-2 typography-small-strong text-grey-60">
+      {children}
+    </dt>
+  );
+};
+
 function SchemaRequestDetails(props: DetailsModalContentProps) {
   const { request } = props;
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Flexbox direction={"column"}>
+      <Grid.Item>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Grid.Item>
+      <Grid.Item>
         <Label>Topic name</Label>
         <dd>{request.topicname}</dd>
-      </Flexbox>
+      </Grid.Item>
 
-      <GridItem colSpan={"span-2"}>
+      <Grid.Item xs={2}>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
-      </GridItem>
-      <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+      </Grid.Item>
+      {request.forceRegister && (
+        <Grid.Item xs={2}>
+          <Label>Force register applied</Label>
+          <dd>
+            {" "}
+            <Typography.Small>
+              Warning: This schema is being force registered. This will override
+              standard validation process of the schema registry.{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={
+                  "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
+                }
+              >
+                Learn more
+              </a>
+            </Typography.Small>
+          </dd>
+        </Grid.Item>
+      )}
+
+      <Grid.Item xs={2}>
+        <Grid.Item>
           <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
@@ -54,24 +79,24 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </Flexbox>
-      </GridItem>
+        </Grid.Item>
+      </Grid.Item>
 
-      <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+      <Grid.Item xs={2}>
+        <Grid.Item>
           <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </Flexbox>
-      </GridItem>
+        </Grid.Item>
+      </Grid.Item>
 
-      <Flexbox direction={"column"}>
+      <Grid.Item>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Grid.Item>
+      <Grid.Item>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </Flexbox>
+      </Grid.Item>
     </Grid>
   );
 }

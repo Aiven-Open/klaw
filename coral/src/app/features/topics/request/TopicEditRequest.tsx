@@ -23,11 +23,13 @@ import {
 } from "src/app/components/Form";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
-import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
+import type {
+  EnvironmentForTopicForm,
+  Schema,
+} from "src/app/features/topics/request/form-schemas/topic-request-form";
 import formSchema from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
 import { Routes } from "src/app/router_utils";
-import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {
   TopicDetailsPerEnv,
@@ -36,6 +38,11 @@ import {
 } from "src/domain/topic";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import isString from "lodash/isString";
+
+function parseNumberOrUndefined(value: string | undefined): number | undefined {
+  return isString(value) ? parseInt(value, 10) : undefined;
+}
 
 function TopicEditRequest() {
   const { topicName } = useParams();
@@ -48,13 +55,16 @@ function TopicEditRequest() {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const { data: environments, isFetched: environmentIsFetched } = useQuery<
-    Environment[],
+    EnvironmentForTopicForm[],
     HTTPError
   >(
     ["getAllEnvironmentsForTopicAndAcl", env],
     getAllEnvironmentsForTopicAndAcl,
     {
-      select: (environments) => environments?.filter(({ id }) => id === env),
+      select: (environments) =>
+        environments
+          ?.filter(({ id }) => id === env)
+          .map(({ name, id, params }) => ({ name, id, params })),
     }
   );
 
@@ -126,7 +136,13 @@ function TopicEditRequest() {
           )
         : "{\n}";
       form.reset({
-        environment: currentEnvironment,
+        environment: !currentEnvironment
+          ? undefined
+          : {
+              name: currentEnvironment.name,
+              id: currentEnvironment.id,
+              params: currentEnvironment.params,
+            },
         topicpartitions: String(
           topicDetailsForEnv.topicContents?.noOfPartitions
         ),
@@ -252,24 +268,28 @@ function TopicEditRequest() {
           readOnly
         />
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
-            {currentEnvironment !== undefined ? (
+          <Box width={"1/2"}>
+            {currentEnvironment?.params.maxPartitions !== undefined ? (
               <SelectOrNumberInput
                 name={"topicpartitions"}
                 label={"Topic partitions"}
-                max={currentEnvironment.params?.maxPartitions}
+                max={parseNumberOrUndefined(
+                  currentEnvironment.params.maxPartitions
+                )}
                 required={true}
               />
             ) : (
               <Input.Skeleton />
             )}
           </Box>
-          <Box grow={1} width={"1/2"}>
-            {currentEnvironment !== undefined ? (
+          <Box width={"1/2"}>
+            {currentEnvironment?.params.maxRepFactor !== undefined ? (
               <SelectOrNumberInput
                 name={"replicationfactor"}
                 label={"Replication factor"}
-                max={currentEnvironment.params?.maxRepFactor}
+                max={parseNumberOrUndefined(
+                  currentEnvironment.params?.maxRepFactor
+                )}
                 required={true}
               />
             ) : (
@@ -287,7 +307,7 @@ function TopicEditRequest() {
           <Divider />
         </Box>
         <Box.Flex gap={"l1"}>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="description"
               labelText="Topic description"
@@ -295,7 +315,7 @@ function TopicEditRequest() {
               required={true}
             />
           </Box>
-          <Box grow={1} width={"1/2"}>
+          <Box width={"1/2"}>
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"

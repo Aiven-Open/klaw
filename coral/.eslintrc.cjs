@@ -98,6 +98,8 @@ module.exports = {
         "import/exports-last": "error",
         "import/no-anonymous-default-export": "error",
         "import/group-exports": "error",
-        "lodash/import-scope": "error"
+        "lodash/import-scope": "error",
+        "react/prop-types": 0,
+        "import/no-named-as-default": "error"
 }
 }

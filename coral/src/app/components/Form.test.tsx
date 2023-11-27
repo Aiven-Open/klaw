@@ -1,6 +1,6 @@
 import { RadioButton as BaseRadioButton } from "@aivenio/aquarium";
 import { cleanup, RenderResult, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import {
   ComplexNativeSelect,
   FileInput,
@@ -13,6 +13,7 @@ import {
   RadioButtonGroup,
   Textarea,
   TextInput,
+  Checkbox,
 } from "src/app/components/Form";
 import {
   renderForm,
@@ -47,7 +48,7 @@ describe("Form", () => {
   };
 
   const assertSubmitted = (
-    data: Record<string, string | number | string[]>
+    data: Record<string, string | number | string[] | boolean>
   ) => {
     expect(onSubmit).toHaveBeenCalledWith(data, expect.anything());
   };
@@ -927,6 +928,41 @@ describe("Form", () => {
       expect(onSubmit).not.toHaveBeenCalled();
 
       expect(errorMessage).toBeVisible();
+    });
+  });
+
+  describe("<Checkbox>", () => {
+    const schema = z.object({
+      areYouForReal: z.boolean(),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <Checkbox<Schema> name={"areYouForReal"}>Are you sure?</Checkbox>,
+        { schema, onSubmit, onError }
+      );
+    });
+
+    it("should render a Checkbox with correct label", () => {
+      const checkbox = screen.getByRole("checkbox", { name: "Are you sure?" });
+      expect(checkbox).toBeEnabled();
+    });
+
+    it("should default to Checkbox being unchecked when no default values are provided", async () => {
+      const checkbox = screen.getByRole("checkbox", { name: "Are you sure?" });
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it("should sync value to form state when clicking Checkbox", async () => {
+      const checkbox = screen.getByRole("checkbox", { name: "Are you sure?" });
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(checkbox);
+      expect(checkbox).toBeChecked();
+
+      await submit();
+      assertSubmitted({ areYouForReal: true });
     });
   });
 });

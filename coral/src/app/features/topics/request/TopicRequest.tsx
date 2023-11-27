@@ -1,14 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
-import {
-  Alert,
-  Box,
-  Button,
-  Divider,
-  Flexbox,
-  FlexboxItem,
-  useToast,
-} from "@aivenio/aquarium";
+import { Alert, Box, Button, Divider, useToast } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -19,11 +11,11 @@ import {
   ComplexNativeSelect,
 } from "src/app/components/Form";
 import formSchema, {
+  EnvironmentForTopicForm,
   useExtendedFormValidationAndTriggers,
 } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
-import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTopicRequest } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopicCreation } from "src/domain/topic/topic-api";
@@ -32,6 +24,11 @@ import { generateTopicNameDescription } from "src/app/features/topics/request/ut
 import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import isString from "lodash/isString";
+
+function parseNumberOrUndefined(value: string | undefined): number | undefined {
+  return isString(value) ? parseInt(value, 10) : undefined;
+}
 
 function TopicRequest() {
   const navigate = useNavigate();
@@ -39,9 +36,13 @@ function TopicRequest() {
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
-  const { data: environments } = useQuery<Environment[], Error>(
+  const { data: environments } = useQuery<EnvironmentForTopicForm[], Error>(
     ["environments-for-team"],
-    getEnvironmentsForTopicRequest
+    {
+      queryFn: getEnvironmentsForTopicRequest,
+      select: (data) =>
+        data.map(({ name, id, params }) => ({ name, id, params })),
+    }
   );
 
   const defaultValues = Array.isArray(environments)
@@ -119,7 +120,7 @@ function TopicRequest() {
         >
           <Box width={"full"}>
             {Array.isArray(environments) ? (
-              <ComplexNativeSelect<Schema, Environment>
+              <ComplexNativeSelect<Schema, EnvironmentForTopicForm>
                 name="environment"
                 labelText={"Environment"}
                 placeholder={"-- Please select --"}
@@ -144,24 +145,28 @@ function TopicRequest() {
               )}
               required={true}
             />
-            <Box component={Flexbox} gap={"l1"}>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+            <Box.Flex gap={"l1"}>
+              <Box width={"1/2"}>
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
-                  max={selectedEnvironment?.params?.maxPartitions}
+                  max={parseNumberOrUndefined(
+                    selectedEnvironment?.params.maxPartitions
+                  )}
                   required={true}
                 />
               </Box>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
-                  max={selectedEnvironment?.params?.maxRepFactor}
+                  max={parseNumberOrUndefined(
+                    selectedEnvironment?.params.maxRepFactor
+                  )}
                   required={true}
                 />
               </Box>
-            </Box>
+            </Box.Flex>
           </Box>
           <Box>
             <Box paddingY={"l1"}>
@@ -174,8 +179,8 @@ function TopicRequest() {
             <Box paddingY={"l1"}>
               <Divider />
             </Box>
-            <Box component={Flexbox} gap={"l1"}>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+            <Box.Flex gap={"l1"}>
+              <Box width={"1/2"}>
                 <Textarea<Schema>
                   name="description"
                   labelText="Topic description"
@@ -183,7 +188,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Box width={"1/2"}>
                 {" "}
                 <Textarea<Schema>
                   name="remarks"
@@ -192,7 +197,7 @@ function TopicRequest() {
                   rows={5}
                 />
               </Box>
-            </Box>
+            </Box.Flex>
           </Box>
 
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>

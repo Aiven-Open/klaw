@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 
 import { ClaimBanner } from "src/app/features/components/ClaimBanner";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 
 const mockClaimEntity = jest.fn();
 
@@ -12,7 +12,7 @@ const testProps = {
   claimEntity: mockClaimEntity,
   isError: false,
   hasOpenClaimRequest: false,
-  hasOpenRequest: false,
+  hasOpenRequestOnAnyEnv: false,
   entityOwner: "teamname",
 };
 
@@ -70,7 +70,7 @@ describe("ClaimBanner", () => {
           <ClaimBanner
             {...testProps}
             entityType={"topic"}
-            hasOpenRequest={true}
+            hasOpenRequestOnAnyEnv={true}
           />
         );
       });
@@ -92,7 +92,7 @@ describe("ClaimBanner", () => {
           <ClaimBanner
             {...testProps}
             entityType={"connector"}
-            hasOpenRequest={true}
+            hasOpenRequestOnAnyEnv={true}
           />
         );
       });
@@ -115,7 +115,7 @@ describe("ClaimBanner", () => {
             {...testProps}
             entityType={"topic"}
             hasOpenClaimRequest={true}
-            hasOpenRequest={true}
+            hasOpenRequestOnAnyEnv={true}
           />,
           {
             memoryRouter: true,
@@ -151,7 +151,7 @@ describe("ClaimBanner", () => {
             {...testProps}
             entityType={"connector"}
             hasOpenClaimRequest={true}
-            hasOpenRequest={true}
+            hasOpenRequestOnAnyEnv={true}
           />,
           {
             memoryRouter: true,

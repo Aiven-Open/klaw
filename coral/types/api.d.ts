@@ -53,9 +53,6 @@ export type paths = {
   "/udpateTenant": {
     post: operations["udpateTenant"];
   };
-  "/udpateTenantExtension": {
-    post: operations["udpateTenantExtension"];
-  };
   "/sendMessageToAdmin": {
     post: operations["sendMessageToAdmin"];
   };
@@ -83,21 +80,21 @@ export type paths = {
   };
   "/request/delete": {
     /**
-     * Delete a Request 
+     * Delete a Request
      * @description Updates the Status of a request to Deleted
      */
     post: operations["deleteRequest"];
   };
   "/request/decline": {
     /**
-     * Decline a Request 
+     * Decline a Request
      * @description Updates the Status of a request to Declined
      */
     post: operations["declineRequest"];
   };
   "/request/approve": {
     /**
-     * Approve a Request 
+     * Approve a Request
      * @description Updates the Status of a request to Approved and provisions the request
      */
     post: operations["approveRequest"];
@@ -216,6 +213,9 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
+  "/cache/tenant/{tenantId}/entityType/environment": {
+    post: operations["addEnvToCache"];
+  };
   "/addTenantId": {
     post: operations["addTenantId"];
   };
@@ -251,6 +251,9 @@ export type paths = {
   };
   "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
     get: operations["getSchemaOfTopicFromSource"];
+  };
+  "/schema/request/{schemaReqId}": {
+    get: operations["getSchemaRequest"];
   };
   "/resetCache": {
     get: operations["resetCache"];
@@ -385,17 +388,11 @@ export type paths = {
   "/getKafkaConnectEnvs": {
     get: operations["getKafkaConnectEnvs"];
   };
-  "/getExtensionPeriods": {
-    get: operations["getExtensionPeriods"];
-  };
   "/getEnvs": {
     get: operations["getEnvs"];
   };
   "/getEnvsPaginated": {
     get: operations["getEnvsPaginated"];
-  };
-  "/getEnvsForSchemaRequests": {
-    get: operations["getEnvsForSchemaRequests"];
   };
   "/getEnvsBaseCluster": {
     get: operations["getEnvsBaseCluster"];
@@ -526,6 +523,9 @@ export type paths = {
   "/acl/request/{aclRequestId}": {
     get: operations["getAclRequest"];
   };
+  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+    delete: operations["removeEnvFromCache"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -534,7 +534,7 @@ export type components = {
   schemas: {
     SchemaRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -558,16 +558,16 @@ export type components = {
       timestamp?: string;
     };
     UserInfoModel: {
-      username: string;
       fullname: string;
       mailid?: string;
+      username: string;
       role: string;
       userPassword: string;
       /** Format: int32 */
       teamId: number;
       switchTeams: boolean;
-      switchAllowedTeamIds?: (number)[];
-      switchAllowedTeamNames?: (string)[];
+      switchAllowedTeamIds?: number[];
+      switchAllowedTeamNames?: string[];
       /** Format: int32 */
       tenantId?: number;
     };
@@ -577,7 +577,7 @@ export type components = {
     };
     TopicUpdateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -589,7 +589,7 @@ export type components = {
       topicpartitions: number;
       replicationfactor: string;
       description: string;
-      advancedTopicConfigEntries?: (components["schemas"]["TopicConfigEntry"])[];
+      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
       /** Format: int32 */
       teamId?: number;
       approvingTeamId?: string;
@@ -608,7 +608,7 @@ export type components = {
       app?: string;
       showDeleteTeam?: boolean;
       tenantName?: string;
-      envList?: (string)[];
+      envList?: string[];
     };
     SyncTopicUpdates: {
       sequence?: string;
@@ -621,11 +621,11 @@ export type components = {
       envSelected?: string;
     };
     SyncTopicsBulk: {
-      topicNames?: (string)[];
+      topicNames?: string[];
       sourceEnv?: string;
       selectedTeam?: string;
       typeOfSync?: string;
-      topicDetails?: (Record<string, never>)[];
+      topicDetails?: Record<string, never>[];
       topicSearchFilter?: string;
     };
     SyncConnectorUpdates: {
@@ -637,13 +637,13 @@ export type components = {
       envSelected?: string;
     };
     SyncBackTopics: {
-      topicIds?: (string)[];
+      topicIds?: string[];
       sourceEnv?: string;
       targetEnv?: string;
       typeOfSync?: string;
     };
     SyncBackAcls: {
-      aclIds?: (string)[];
+      aclIds?: string[];
       sourceEnv?: string;
       targetEnv?: string;
       typeOfSync?: string;
@@ -660,6 +660,10 @@ export type components = {
       envSelected?: string;
       aclId?: string;
     };
+    ProfileModel: {
+      fullname: string;
+      mailid?: string;
+    };
     KwRolesPermissionsModel: {
       /** Format: int32 */
       id?: number;
@@ -675,8 +679,8 @@ export type components = {
       kwDesc?: string;
     };
     SyncSchemaUpdates: {
-      topicList?: (string)[];
-      topicListForRemoval?: (string)[];
+      topicList?: string[];
+      topicListForRemoval?: string[];
       sourceKafkaEnvSelected?: string;
       targetKafkaEnvSelected?: string;
       topicsSelectionType?: string;
@@ -697,7 +701,7 @@ export type components = {
       noOfReplicas: string;
       description: string;
       advancedTopicConfiguration?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       teamname: string;
       /** Format: int32 */
@@ -710,10 +714,10 @@ export type components = {
       /** Format: int32 */
       topicid: number;
       sequence: string;
-      environmentsList: (components["schemas"]["EnvIdInfo"])[];
+      environmentsList: components["schemas"]["EnvIdInfo"][];
       totalNoPages: string;
       currentPage: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       documentation?: string;
     };
     KafkaConnectorModel: {
@@ -737,7 +741,7 @@ export type components = {
       reason?: string;
       /** @enum {string} */
       requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      reqIds: (string)[];
+      reqIds: string[];
     };
     RegisterUserInfoModel: {
       username: string;
@@ -798,7 +802,7 @@ export type components = {
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -810,7 +814,7 @@ export type components = {
       topicpartitions: number;
       replicationfactor: string;
       description: string;
-      advancedTopicConfigEntries?: (components["schemas"]["TopicConfigEntry"])[];
+      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
       /** Format: int32 */
       teamId?: number;
       approvingTeamId?: string;
@@ -827,7 +831,7 @@ export type components = {
     };
     KafkaConnectorRequestModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -855,7 +859,7 @@ export type components = {
     };
     AclRequestsModel: {
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -864,8 +868,8 @@ export type components = {
       requestId?: number;
       topicname: string;
       consumergroup?: string;
-      acl_ip?: (string)[];
-      acl_ssl?: (string)[];
+      acl_ip?: string[];
+      acl_ssl?: string[];
       aclPatternType: string;
       transactionalId?: string;
       /** Format: int32 */
@@ -884,16 +888,51 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
+    ChangePasswordRequestModel: {
+      pwd: string;
+      repeatPwd: string;
+    };
+    Env: {
+      id?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      name?: string;
+      stretchCode?: string;
+      /** Format: int32 */
+      clusterId?: number;
+      type?: string;
+      otherParams?: string;
+      envExists?: string;
+      /** @enum {string} */
+      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime?: string;
+      envStatusTimeString?: string;
+      associatedEnv?: components["schemas"]["EnvTag"];
+      params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: string[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: string[];
+      topicPrefix?: string[];
+      topicSuffix?: string[];
+      topicRegex?: string[];
+      applyRegex?: boolean;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
     KwTenantModel: {
       tenantName: string;
       tenantDesc: string;
       /** Format: int32 */
       tenantId?: number;
-      licenseExpiryDate?: string;
       contactPerson?: string;
-      inTrialPhase?: boolean;
-      numberOfDays?: string;
-      numberOfHours?: string;
       orgName?: string;
       authorizedToDelete?: boolean;
       emailId?: string;
@@ -910,22 +949,6 @@ export type components = {
       /** Format: int32 */
       tenantId?: number;
       params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: (string)[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
-      topicRegex?: (string)[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
     };
     KwClustersModel: {
       /** Format: int32 */
@@ -944,7 +967,7 @@ export type components = {
     ServiceAccounts: {
       /** Format: int32 */
       numberOfAllowedAccounts?: number;
-      serviceAccountsList?: (string)[];
+      serviceAccountsList?: string[];
     };
     TeamModelResponse: {
       teamname: string;
@@ -959,7 +982,7 @@ export type components = {
       serviceAccounts?: components["schemas"]["ServiceAccounts"];
       app?: string;
       teammail?: string;
-      envList?: (string)[];
+      envList?: string[];
     };
     TopicRequestsResponseModel: {
       environment: string;
@@ -969,7 +992,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -977,7 +1000,7 @@ export type components = {
       requesttimestring: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       approvingTeamDetails: string;
       approver?: string;
       /** Format: date-time */
@@ -993,10 +1016,10 @@ export type components = {
       /** Format: int32 */
       topicid: number;
       deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
+      advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
       approvingTeamId?: string;
       sequence?: string;
-      possibleTeams?: (string)[];
+      possibleTeams?: string[];
       deletable?: boolean;
       editable?: boolean;
     };
@@ -1016,26 +1039,26 @@ export type components = {
       /** Format: int32 */
       tenantId: number;
       userPassword?: string;
-      switchAllowedTeamIds?: (number)[];
-      switchAllowedTeamNames?: (string)[];
+      switchAllowedTeamIds?: number[];
+      switchAllowedTeamNames?: string[];
       totalNoPages?: string;
-      allPageNos?: (string)[];
+      allPageNos?: string[];
     };
     SchemaSubjectInfoResponse: {
       topic?: string;
-      schemaVersions?: (number)[];
+      schemaVersions?: number[];
       teamname?: string;
       /** Format: int32 */
       teamId?: number;
-      possibleTeams?: (string)[];
+      possibleTeams?: string[];
       remarks?: string;
       envId?: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
     };
     SyncSchemasList: {
-      schemaSubjectInfoResponseList?: (components["schemas"]["SchemaSubjectInfoResponse"])[];
+      schemaSubjectInfoResponseList?: components["schemas"]["SchemaSubjectInfoResponse"][];
       /** Format: int32 */
       allTopicsCount?: number;
     };
@@ -1045,11 +1068,44 @@ export type components = {
       schemaVersion?: string;
       envName?: string;
     };
+    SchemaRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: string[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      topicname: string;
+      schemafull: string;
+      /** Format: int32 */
+      req_no: number;
+      forceRegister: boolean;
+      schemaversion?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      requestStatusCountSet?: (components["schemas"]["RequestStatusCount"])[];
-      requestsOperationTypeCountSet?: (components["schemas"]["RequestsOperationTypeCount"])[];
+      requestStatusCountSet?: components["schemas"]["RequestStatusCount"][];
+      requestsOperationTypeCountSet?: components["schemas"]["RequestsOperationTypeCount"][];
     };
     RequestStatusCount: {
       /** @enum {string} */
@@ -1058,11 +1114,11 @@ export type components = {
       count?: number;
     };
     RequestsCountOverview: {
-      requestEntityStatistics?: (components["schemas"]["RequestEntityStatusCount"])[];
+      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
     };
     RequestsOperationTypeCount: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** Format: int64 */
       count?: number;
     };
@@ -1090,7 +1146,7 @@ export type components = {
       requesttimestring: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       approvingTeamDetails: string;
       approver?: string;
       /** Format: date-time */
@@ -1100,7 +1156,7 @@ export type components = {
       otherParams?: string;
       approvingTeamId?: string;
       sequence?: string;
-      possibleTeams?: (string)[];
+      possibleTeams?: string[];
       deletable?: boolean;
       editable?: boolean;
     };
@@ -1126,6 +1182,9 @@ export type components = {
       result: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1153,8 +1212,8 @@ export type components = {
       topictype: string;
       acl_ip?: string;
       acl_ssl?: string;
-      acl_ips?: (string)[];
-      acl_ssls?: (string)[];
+      acl_ips?: string[];
+      acl_ssls?: string[];
       consumergroup?: string;
       transactionalId?: string;
     };
@@ -1182,13 +1241,13 @@ export type components = {
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       createSchemaAllowed: boolean;
-      topicInfoList: (components["schemas"]["TopicOverviewInfo"])[];
-      aclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
-      prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
-      transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
-      topicHistoryList?: (components["schemas"]["ResourceHistory"])[];
+      topicInfoList: components["schemas"]["TopicOverviewInfo"][];
+      aclInfoList?: components["schemas"]["AclOverviewInfo"][];
+      prefixedAclInfoList?: components["schemas"]["AclOverviewInfo"][];
+      transactionalAclInfoList?: components["schemas"]["AclOverviewInfo"][];
+      topicHistoryList?: components["schemas"]["ResourceHistory"][];
       topicPromotionDetails: components["schemas"]["PromotionStatus"];
-      availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
+      availableEnvironments: components["schemas"]["EnvIdInfo"][];
       topicDocumentation?: string;
       /** Format: int32 */
       topicIdForDocumentation: number;
@@ -1200,7 +1259,7 @@ export type components = {
       noOfReplicas: string;
       description: string;
       advancedTopicConfiguration?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       teamname: string;
       /** Format: int32 */
@@ -1215,6 +1274,7 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasOpenSchemaRequest: boolean;
       hasOpenClaimRequest: boolean;
+      hasOpenRequestOnAnyEnv: boolean;
       hasACL: boolean;
       hasSchema: boolean;
       /** Format: int32 */
@@ -1229,7 +1289,7 @@ export type components = {
       noOfReplicas: string;
       description: string;
       advancedTopicConfiguration?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     TopicDetailsPerEnv: {
@@ -1249,11 +1309,11 @@ export type components = {
       topics?: number;
     };
     ChartsJsOverview: {
-      data?: (number)[];
-      labels?: (string)[];
-      colors?: (string)[];
+      data?: number[];
+      labels?: string[];
+      colors?: string[];
       options?: components["schemas"]["Options"];
-      series?: (string)[];
+      series?: string[];
       titleForReport?: string;
       xaxisLabel?: string;
       yaxisLabel?: string;
@@ -1263,8 +1323,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      yaxes?: (components["schemas"]["YAx"])[];
-      xaxes?: (components["schemas"]["YAx"])[];
+      yaxes?: components["schemas"]["YAx"][];
+      xaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -1292,11 +1352,12 @@ export type components = {
       position?: string;
     };
     SyncTopicsList: {
-      resultSet?: (components["schemas"]["TopicSyncResponseModel"])[];
+      resultSet?: components["schemas"]["TopicSyncResponseModel"][];
       /** Format: int32 */
       allTopicsCount?: number;
       /** Format: int32 */
       allTopicWarningsCount?: number;
+      topicsLoadingStatus?: boolean;
     };
     TopicSyncResponseModel: {
       environment: string;
@@ -1306,7 +1367,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1314,7 +1375,7 @@ export type components = {
       requesttimestring: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       approvingTeamDetails: string;
       approver?: string;
       /** Format: date-time */
@@ -1330,10 +1391,10 @@ export type components = {
       /** Format: int32 */
       topicid: number;
       deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
+      advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
       approvingTeamId?: string;
       sequence?: string;
-      possibleTeams?: (string)[];
+      possibleTeams?: string[];
       validationStatus?: string;
       validatedTopic?: boolean;
       deletable?: boolean;
@@ -1361,11 +1422,12 @@ export type components = {
       highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenClaimRequest: boolean;
-      allPageNos?: (string)[];
+      hasOpenRequestOnAnyEnv: boolean;
+      allPageNos?: string[];
       totalNoPages?: string;
       currentPage?: string;
-      environmentsList?: (components["schemas"]["EnvIdInfo"])[];
-      possibleTeams?: (string)[];
+      environmentsList?: components["schemas"]["EnvIdInfo"][];
+      possibleTeams?: string[];
       connectorConfig?: string;
       environmentName?: string;
       remarks?: string;
@@ -1384,11 +1446,14 @@ export type components = {
       clusterName: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
+      envStatusTimeString: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
       currentPage: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       /** Format: int32 */
       totalRecs: number;
       associatedEnv?: components["schemas"]["EnvTag"];
@@ -1401,8 +1466,8 @@ export type components = {
       req_no?: string;
       acl_ip?: string;
       acl_ssl?: string;
-      acl_ips?: (string)[];
-      acl_ssls?: (string)[];
+      acl_ips?: string[];
+      acl_ssls?: string[];
       topicname?: string;
       topictype?: string;
       consumergroup?: string;
@@ -1417,46 +1482,13 @@ export type components = {
       aclPatternType?: string;
       aclId?: string;
       totalNoPages?: string;
-      allPageNos?: (string)[];
-      possibleTeams?: (string)[];
+      allPageNos?: string[];
+      possibleTeams?: string[];
       currentPage?: string;
       showDeleteAcl?: boolean;
       /** @enum {string} */
       kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
       remarks?: string;
-    };
-    SchemaRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: (string)[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      schemafull: string;
-      /** Format: int32 */
-      req_no: number;
-      forceRegister: boolean;
-      schemaversion?: string;
-      deletable?: boolean;
-      editable?: boolean;
     };
     SchemaDetailsPerEnv: {
       /** Format: int32 */
@@ -1480,7 +1512,7 @@ export type components = {
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       createSchemaAllowed: boolean;
-      allSchemaVersions?: (number)[];
+      allSchemaVersions?: number[];
       /** Format: int32 */
       latestVersion?: number;
       schemaPromotionDetails: components["schemas"]["PromotionStatus"];
@@ -1506,10 +1538,10 @@ export type components = {
       teamMembersCount?: number;
     };
     OffsetDetails: {
-      topicPartitionId?: string;
-      currentOffset?: string;
-      endOffset?: string;
-      lag?: string;
+      topicPartitionId: string;
+      currentOffset: string;
+      endOffset: string;
+      lag: string;
     };
     KafkaConnectorRequestsResponseModel: {
       environment: string;
@@ -1519,7 +1551,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1527,7 +1559,7 @@ export type components = {
       requesttimestring: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       approvingTeamDetails: string;
       approver?: string;
       /** Format: date-time */
@@ -1540,17 +1572,17 @@ export type components = {
       connectorConfig: string;
       /** Format: int32 */
       connectorId: number;
-      possibleTeams?: (string)[];
+      possibleTeams?: string[];
       approvingTeamId?: string;
       deletable?: boolean;
       editable?: boolean;
     };
     ConnectorOverview: {
-      connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
-      connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
+      connectorInfoList: components["schemas"]["KafkaConnectorModelResponse"][];
+      connectorHistoryList?: components["schemas"]["ResourceHistory"][];
       promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
       connectorExists: boolean;
-      availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
+      availableEnvironments: components["schemas"]["EnvIdInfo"][];
       connectorDocumentation?: string;
       /** Format: int32 */
       connectorIdForDocumentation: number;
@@ -1583,7 +1615,7 @@ export type components = {
       kafkaFlavor: string;
       showDeleteCluster: boolean;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       /** @enum {string} */
       clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       associatedServers?: string;
@@ -1648,6 +1680,7 @@ export type components = {
       addDeleteEditClusters: string;
       addDeleteEditEnvs: string;
       coralEnabled: string;
+      coralAvailableForUser: string;
       adAuthRoleEnabled: string;
       supportlink: string;
       myteamtopics: string;
@@ -1687,7 +1720,7 @@ export type components = {
       team?: string;
       totalNoPages?: string;
       currentPage?: string;
-      allPageNos?: (string)[];
+      allPageNos?: string[];
     };
     AclsCountPerEnv: {
       status?: string;
@@ -1701,7 +1734,7 @@ export type components = {
       teamId: number;
       teamname: string;
       /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
       /** @enum {string} */
       requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: date-time */
@@ -1709,7 +1742,7 @@ export type components = {
       requesttimestring: string;
       currentPage: string;
       totalNoPages: string;
-      allPageNos: (string)[];
+      allPageNos: string[];
       approvingTeamDetails: string;
       approver?: string;
       /** Format: date-time */
@@ -1729,8 +1762,8 @@ export type components = {
       requestingteam: number;
       requestingTeamName: string;
       consumergroup: string;
-      acl_ip: (string)[];
-      acl_ssl: (string)[];
+      acl_ip: string[];
+      acl_ssl: string[];
       transactionalId?: string;
       aclResourceType?: string;
       deletable?: boolean;
@@ -1748,6 +1781,8 @@ export type components = {
   headers: never;
   pathItems: never;
 };
+
+export type $defs = Record<string, never>;
 
 export type external = Record<string, never>;
 
@@ -1846,7 +1881,7 @@ export type operations = {
   updateSyncTopics: {
     requestBody: {
       content: {
-        "application/json": (components["schemas"]["SyncTopicUpdates"])[];
+        "application/json": components["schemas"]["SyncTopicUpdates"][];
       };
     };
     responses: {
@@ -1876,7 +1911,7 @@ export type operations = {
   updateSyncConnectors: {
     requestBody: {
       content: {
-        "application/json": (components["schemas"]["SyncConnectorUpdates"])[];
+        "application/json": components["schemas"]["SyncConnectorUpdates"][];
       };
     };
     responses: {
@@ -1921,7 +1956,7 @@ export type operations = {
   updateSyncAcls: {
     requestBody: {
       content: {
-        "application/json": (components["schemas"]["SyncAclUpdates"])[];
+        "application/json": components["schemas"]["SyncAclUpdates"][];
       };
     };
     responses: {
@@ -1936,7 +1971,7 @@ export type operations = {
   updateProfile: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserInfoModel"];
+        "application/json": components["schemas"]["ProfileModel"];
       };
     };
     responses: {
@@ -1951,7 +1986,7 @@ export type operations = {
   updatePermissions: {
     requestBody: {
       content: {
-        "application/json": (components["schemas"]["KwRolesPermissionsModel"])[];
+        "application/json": components["schemas"]["KwRolesPermissionsModel"][];
       };
     };
     responses: {
@@ -1982,21 +2017,6 @@ export type operations = {
     parameters: {
       query: {
         orgName: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  udpateTenantExtension: {
-    parameters: {
-      query: {
-        selectedTenantExtensionPeriod: string;
       };
     };
     responses: {
@@ -2153,7 +2173,7 @@ export type operations = {
     };
   };
   /**
-   * Delete a Request 
+   * Delete a Request
    * @description Updates the Status of a request to Deleted
    */
   deleteRequest: {
@@ -2166,31 +2186,31 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
     };
   };
   /**
-   * Decline a Request 
+   * Decline a Request
    * @description Updates the Status of a request to Declined
    */
   declineRequest: {
@@ -2203,31 +2223,31 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
     };
   };
   /**
-   * Approve a Request 
+   * Approve a Request
    * @description Updates the Status of a request to Approved and provisions the request
    */
   approveRequest: {
@@ -2240,25 +2260,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": (components["schemas"]["ApiResponse"])[];
+          "application/json": components["schemas"]["ApiResponse"][];
         };
       };
     };
@@ -2377,7 +2397,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
@@ -2819,9 +2839,32 @@ export type operations = {
     };
   };
   changePwd: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChangePasswordRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addEnvToCache: {
     parameters: {
-      query: {
-        changePwd: string;
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Env"];
       };
     };
     responses: {
@@ -2933,7 +2976,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TeamModelResponse"])[];
+          "application/json": components["schemas"]["TeamModelResponse"][];
         };
       };
     };
@@ -2971,12 +3014,14 @@ export type operations = {
   shutdownApp: {
     responses: {
       /** @description OK */
-      200: never;
+      200: {
+        content: never;
+      };
     };
   };
   showUsers: {
     parameters: {
-      query: {
+      query?: {
         teamName?: string;
         pageNo?: string;
         searchUserParam?: string;
@@ -2986,7 +3031,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["UserInfoModelResponse"])[];
+          "application/json": components["schemas"]["UserInfoModelResponse"][];
         };
       };
     };
@@ -3009,13 +3054,28 @@ export type operations = {
       };
     };
   };
+  getSchemaRequest: {
+    parameters: {
+      path: {
+        schemaReqId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaRequestsResponseModel"];
+        };
+      };
+    };
+  };
   resetCache: {
     responses: {
       /** @description OK */
       200: {
         content: {
           "application/json": {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
@@ -3059,7 +3119,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
+          "application/json": components["schemas"]["OperationalRequestsResponseModel"][];
         };
       };
     };
@@ -3141,7 +3201,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ((components["schemas"]["TopicInfo"])[])[];
+          "application/json": components["schemas"]["TopicInfo"][][];
         };
       };
     };
@@ -3161,14 +3221,14 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TopicInfo"])[];
+          "application/json": components["schemas"]["TopicInfo"][];
         };
       };
     };
   };
   getTopicsOnly: {
     parameters: {
-      query: {
+      query?: {
         isMyTeamTopics?: string;
         envSelected?: string;
       };
@@ -3177,7 +3237,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -3220,7 +3280,7 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
@@ -3230,7 +3290,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TopicRequestsResponseModel"])[];
+          "application/json": components["schemas"]["TopicRequestsResponseModel"][];
         };
       };
     };
@@ -3243,7 +3303,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
@@ -3252,7 +3312,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TopicRequestsResponseModel"])[];
+          "application/json": components["schemas"]["TopicRequestsResponseModel"][];
         };
       };
     };
@@ -3281,6 +3341,8 @@ export type operations = {
         topicName: string;
         consumerGroupId: string;
         offsetId: string;
+        selectedPartitionId: number;
+        selectedNumberOfOffsets: number;
       };
     };
     responses: {
@@ -3288,7 +3350,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
@@ -3315,7 +3377,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwTenantModel"])[];
+          "application/json": components["schemas"]["KwTenantModel"][];
         };
       };
     };
@@ -3335,7 +3397,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TeamOverview"])[];
+          "application/json": components["schemas"]["TeamOverview"][];
         };
       };
     };
@@ -3364,6 +3426,7 @@ export type operations = {
         currentPage?: string;
         topicnamesearch?: string;
         showAllTopics?: string;
+        resetTopicsCache?: boolean;
         isBulkOption?: string;
       };
     };
@@ -3381,7 +3444,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvIdInfo"])[];
+          "application/json": components["schemas"]["EnvIdInfo"][];
         };
       };
     };
@@ -3400,7 +3463,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorModelResponse"])[];
+          "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
         };
       };
     };
@@ -3410,7 +3473,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3429,7 +3492,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["AclInfo"])[];
+          "application/json": components["schemas"]["AclInfo"][];
         };
       };
     };
@@ -3448,7 +3511,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["AclInfo"])[];
+          "application/json": components["schemas"]["AclInfo"][];
         };
       };
     };
@@ -3458,7 +3521,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -3472,7 +3535,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
@@ -3481,7 +3544,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["SchemaRequestsResponseModel"])[];
+          "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
         };
       };
     };
@@ -3495,7 +3558,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -3503,7 +3566,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["SchemaRequestsResponseModel"])[];
+          "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
         };
       };
     };
@@ -3513,7 +3576,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3540,7 +3603,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -3550,7 +3613,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -3560,7 +3623,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -3571,9 +3634,9 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: (({
-                [key: string]: boolean | undefined;
-              })[]) | undefined;
+            [key: string]: {
+                [key: string]: boolean;
+              }[];
           };
         };
       };
@@ -3585,7 +3648,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
@@ -3596,7 +3659,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["RegisterUserInfoModelResponse"])[];
+          "application/json": components["schemas"]["RegisterUserInfoModelResponse"][];
         };
       };
     };
@@ -3646,7 +3709,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["SupportedProtocolInfo"])[];
+          "application/json": components["schemas"]["SupportedProtocolInfo"][];
         };
       };
     };
@@ -3656,17 +3719,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
-        };
-      };
-    };
-  };
-  getExtensionPeriods: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (string)[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3676,7 +3729,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3693,17 +3746,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
-        };
-      };
-    };
-  };
-  getEnvsForSchemaRequests: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3713,7 +3756,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3723,7 +3766,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -3731,7 +3774,7 @@ export type operations = {
   getEnvParams: {
     parameters: {
       query: {
-        envSelected: string;
+        envSelected: number;
       };
     };
     responses: {
@@ -3791,7 +3834,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["OffsetDetails"])[];
+          "application/json": components["schemas"]["OffsetDetails"][];
         };
       };
     };
@@ -3810,7 +3853,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ((components["schemas"]["KafkaConnectorModelResponse"])[])[];
+          "application/json": components["schemas"]["KafkaConnectorModelResponse"][][];
         };
       };
     };
@@ -3828,7 +3871,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorModelResponse"])[];
+          "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
         };
       };
     };
@@ -3841,7 +3884,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
         isMyRequest?: boolean;
       };
@@ -3850,7 +3893,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorRequestsResponseModel"])[];
+          "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
         };
       };
     };
@@ -3863,7 +3906,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         search?: string;
       };
     };
@@ -3871,7 +3914,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorRequestsResponseModel"])[];
+          "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
         };
       };
     };
@@ -3934,7 +3977,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
+          "application/json": components["schemas"]["KwClustersModelResponse"][];
         };
       };
     };
@@ -3952,7 +3995,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
+          "application/json": components["schemas"]["KwClustersModelResponse"][];
         };
       };
     };
@@ -4004,7 +4047,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: unknown | undefined;
+            [key: string]: unknown;
           };
         };
       };
@@ -4025,7 +4068,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TeamModelResponse"])[];
+          "application/json": components["schemas"]["TeamModelResponse"][];
         };
       };
     };
@@ -4035,7 +4078,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -4045,7 +4088,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["TeamModelResponse"])[];
+          "application/json": components["schemas"]["TeamModelResponse"][];
         };
       };
     };
@@ -4055,7 +4098,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwPropertiesResponse"])[];
+          "application/json": components["schemas"]["KwPropertiesResponse"][];
         };
       };
     };
@@ -4065,7 +4108,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["ServerConfigProperties"])[];
+          "application/json": components["schemas"]["ServerConfigProperties"][];
         };
       };
     };
@@ -4080,7 +4123,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (string)[];
+          "application/json": string[];
         };
       };
     };
@@ -4109,7 +4152,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
@@ -4127,7 +4170,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["ActivityLog"])[];
+          "application/json": components["schemas"]["ActivityLog"][];
         };
       };
     };
@@ -4183,7 +4226,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         topic?: string;
         env?: string;
         search?: string;
@@ -4196,7 +4239,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["AclRequestsResponseModel"])[];
+          "application/json": components["schemas"]["AclRequestsResponseModel"][];
         };
       };
     };
@@ -4211,7 +4254,7 @@ export type operations = {
         env?: string;
         search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -4219,7 +4262,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["AclRequestsResponseModel"])[];
+          "application/json": components["schemas"]["AclRequestsResponseModel"][];
         };
       };
     };
@@ -4245,7 +4288,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4264,7 +4307,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4280,7 +4323,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4299,7 +4342,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4315,7 +4358,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4334,7 +4377,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["EnvModelResponse"])[];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -4350,6 +4393,25 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"];
+        };
+      };
+    };
+  };
+  removeEnvFromCache: {
+    parameters: {
+      header: {
+        Authorization: string;
+      };
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

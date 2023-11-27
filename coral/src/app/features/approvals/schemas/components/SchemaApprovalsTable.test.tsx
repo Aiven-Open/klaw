@@ -2,7 +2,7 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { SchemaRequest } from "src/domain/schema-request";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import {
@@ -43,7 +43,7 @@ const mockedRequests: SchemaRequest[] = [
     environment: "2",
     environmentName: "SEC",
     schemaversion: "1.0",
-    teamname: "NCC1701D",
+    teamname: "NCC1702D",
     teamId: 1702,
     appname: "App",
     schemafull: "",
@@ -54,14 +54,14 @@ const mockedRequests: SchemaRequest[] = [
     requestOperationType: "DELETE",
     remarks: "asap",
     approvingTeamDetails:
-      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
+      "Team : NCC1702D, Users : jlpicard, worf, bcrusher, geordilf",
     approvingtime: "2022-11-04T14:54:13.414+00:00",
     totalNoPages: "4",
     allPageNos: ["1"],
     currentPage: "1",
     deletable: false,
     editable: false,
-    forceRegister: false,
+    forceRegister: true,
   },
 ];
 
@@ -77,8 +77,10 @@ describe("SchemaApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
+    { columnHeader: "Additional notes", relatedField: "forceRegister" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -277,6 +279,10 @@ describe("SchemaApprovalsTable", () => {
 
             if (column.columnHeader === "Request type") {
               text = requestOperationTypeNameMap[field as RequestOperationType];
+            }
+
+            if (column.columnHeader === "Additional notes") {
+              text = field ? "Force register applied" : "";
             }
 
             const cell = within(table).getByRole("cell", { name: text });

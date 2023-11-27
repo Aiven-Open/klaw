@@ -23,8 +23,6 @@ import {
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 
-const defaultType = "ALL";
-
 function SchemaApprovals() {
   const queryClient = useQueryClient();
 
@@ -72,7 +70,7 @@ function SchemaApprovals() {
         pageNo: currentPage.toString(),
         env: environment,
         search: search,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType,
       }),
     keepPreviousData: true,
   });
@@ -263,10 +261,7 @@ function SchemaApprovals() {
       {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environment"}
-            environmentEndpoint={"getAllEnvironmentsForSchema"}
-          />,
+          <EnvironmentFilter key={"environment"} environmentsFor={"SCHEMA"} />,
           <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <SearchTopicFilter key={"topic"} />,

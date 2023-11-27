@@ -1,24 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_101;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_102;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_103;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_104;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_105;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_107;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_108;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_110;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_112;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_113;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_114;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_116;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_118;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
+import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
@@ -41,6 +23,8 @@ import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
+import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -68,7 +52,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -82,8 +65,9 @@ import org.springframework.stereotype.Service;
 public class UsersTeamsControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final String MASKED_PWD = "*******";
+  public static final String MASKED_PWD = "********";
   private static final String SAAS = "saas";
+  public static final String UNUSED_PASSWD = "unusedpasswd";
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -146,15 +130,20 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
-    log.info("updateProfile {}", updateUserObj);
+  public ApiResponse updateProfile(ProfileModel profileModel) throws KlawException {
+    log.debug("updateProfile {}", profileModel);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     UserInfo userInfo = dbHandle.getUsersInfo(getUserName());
-    userInfo.setFullname(updateUserObj.getFullname());
-    userInfo.setMailid(updateUserObj.getMailid());
+    userInfo.setFullname(profileModel.getFullname());
+    userInfo.setMailid(profileModel.getMailid());
     try {
       String result = dbHandle.updateUser(userInfo);
+      commonUtilsService.updateMetadata(
+          commonUtilsService.getTenantId(getUserName()),
+          EntityType.USERS,
+          MetadataOperationType.UPDATE,
+          userInfo.getUsername());
       return ApiResultStatus.SUCCESS.value.equals(result)
           ? ApiResponse.ok(result)
           : ApiResponse.notOk(result);
@@ -637,7 +626,7 @@ public class UsersTeamsControllerService {
       Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
       if (switchAllowedTeamIds == null
           || switchAllowedTeamIds.isEmpty()
-          || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
+          || switchAllowedTeamIds.size() < 2) { // make sure at least 2 teams are selected to switch
         return Pair.of(Boolean.TRUE, TEAMS_ERR_112);
       } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
         return Pair.of(Boolean.TRUE, TEAMS_ERR_113);
@@ -732,19 +721,22 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public ApiResponse changePwd(String changePwd) throws KlawException {
+  public ApiResponse changePwd(ChangePasswordRequestModel changePasswordRequestModel)
+      throws KlawException {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       return ApiResponse.notOk(TEAMS_ERR_114);
     }
+
+    if (!changePasswordRequestModel.getPwd().equals(changePasswordRequestModel.getRepeatPwd())) {
+      return ApiResponse.notOk(TEAMS_ERR_120);
+    }
+
     String userDetails = getUserName();
-    GsonJsonParser jsonParser = new GsonJsonParser();
-    Map<String, Object> pwdMap = jsonParser.parseMap(changePwd);
-    String pwdChange = (String) pwdMap.get("pwd");
+    String pwdChange = changePasswordRequestModel.getPwd();
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
       UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(userDetails);
       inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(pwdChange));
 
@@ -1028,7 +1020,7 @@ public class UsersTeamsControllerService {
       if (DATABASE.value.equals(authenticationType)) {
         userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
       } else {
-        userInfo.setUserPassword("");
+        userInfo.setUserPassword(UNUSED_PASSWD);
       }
       userInfo.setMailid(registerUserInfo.getMailid());
 

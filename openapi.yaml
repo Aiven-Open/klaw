@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.5.0"
+    "version" : "2.6.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -374,7 +374,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/UserInfoModel"
+                "$ref" : "#/components/schemas/ProfileModel"
               }
             }
           },
@@ -464,32 +464,6 @@
           "schema" : {
             "type" : "string",
             "pattern" : "^[a-zA-z ]*$"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/udpateTenantExtension" : {
-      "post" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "udpateTenantExtension",
-        "parameters" : [ {
-          "name" : "selectedTenantExtensionPeriod",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
           }
         } ],
         "responses" : {
@@ -2054,14 +2028,60 @@
       "post" : {
         "tags" : [ "users-teams-controller" ],
         "operationId" : "changePwd",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChangePasswordRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cache/tenant/{tenantId}/entityType/environment" : {
+      "post" : {
+        "tags" : [ "cache-controller" ],
+        "operationId" : "addEnvToCache",
         "parameters" : [ {
-          "name" : "changePwd",
-          "in" : "query",
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
           "required" : true,
           "schema" : {
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Env"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -2422,6 +2442,33 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/SchemaDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schema/request/{schemaReqId}" : {
+      "get" : {
+        "tags" : [ "schema-registry-controller" ],
+        "operationId" : "getSchemaRequest",
+        "parameters" : [ {
+          "name" : "schemaReqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SchemaRequestsResponseModel"
                 }
               }
             }
@@ -2976,7 +3023,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -3069,7 +3116,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -3179,6 +3226,22 @@
           "required" : true,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "selectedPartitionId",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "selectedNumberOfOffsets",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -3365,6 +3428,14 @@
           "schema" : {
             "type" : "string",
             "default" : "false"
+          }
+        }, {
+          "name" : "resetTopicsCache",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
           }
         }, {
           "name" : "isBulkOption",
@@ -3683,7 +3754,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -3775,7 +3846,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -4113,27 +4184,6 @@
         }
       }
     },
-    "/getExtensionPeriods" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getExtensionPeriods",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/getEnvs" : {
       "get" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
@@ -4183,27 +4233,6 @@
             "default" : ""
           }
         } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/EnvModelResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getEnvsForSchemaRequests" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getEnvsForSchemaRequests",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -4272,7 +4301,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -4564,7 +4594,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -4649,7 +4679,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "search",
@@ -5331,7 +5361,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "topic",
@@ -5460,7 +5490,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           }
         }, {
           "name" : "order",
@@ -5776,6 +5806,48 @@
           }
         }
       }
+    },
+    "/cache/tenant/{tenantId}/entityType/environment/id/{id}" : {
+      "delete" : {
+        "tags" : [ "cache-controller" ],
+        "operationId" : "removeEnvFromCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -5784,7 +5856,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -5850,11 +5922,6 @@
       },
       "UserInfoModel" : {
         "properties" : {
-          "username" : {
-            "type" : "string",
-            "maxLength" : 300,
-            "minLength" : 6
-          },
           "fullname" : {
             "type" : "string",
             "maxLength" : 50,
@@ -5864,11 +5931,18 @@
           "mailid" : {
             "type" : "string"
           },
+          "username" : {
+            "type" : "string",
+            "maxLength" : 300,
+            "minLength" : 6
+          },
           "role" : {
             "type" : "string"
           },
           "userPassword" : {
-            "type" : "string"
+            "type" : "string",
+            "maxLength" : 2147483647,
+            "minLength" : 8
           },
           "teamId" : {
             "type" : "integer",
@@ -5913,7 +5987,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6158,6 +6232,20 @@
             "type" : "string"
           }
         }
+      },
+      "ProfileModel" : {
+        "properties" : {
+          "fullname" : {
+            "type" : "string",
+            "maxLength" : 50,
+            "minLength" : 5,
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+          },
+          "mailid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "fullname" ]
       },
       "KwRolesPermissionsModel" : {
         "properties" : {
@@ -6550,7 +6638,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6631,7 +6719,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6707,7 +6795,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "environment" : {
             "type" : "string"
@@ -6793,87 +6881,67 @@
         },
         "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
       },
-      "KwTenantModel" : {
+      "ChangePasswordRequestModel" : {
         "properties" : {
-          "tenantName" : {
+          "pwd" : {
             "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 12,
-            "pattern" : "^[a-zA-Z0-9]{3,}$"
+            "maxLength" : 2147483647,
+            "minLength" : 8
           },
-          "tenantDesc" : {
+          "repeatPwd" : {
             "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 6,
-            "pattern" : "^[a-zA-Z 0-9]{3,}$"
+            "maxLength" : 2147483647,
+            "minLength" : 8
+          }
+        },
+        "required" : [ "pwd", "repeatPwd" ]
+      },
+      "Env" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
           },
           "tenantId" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "licenseExpiryDate" : {
-            "type" : "string"
-          },
-          "contactPerson" : {
-            "type" : "string"
-          },
-          "inTrialPhase" : {
-            "type" : "boolean"
-          },
-          "numberOfDays" : {
-            "type" : "string"
-          },
-          "numberOfHours" : {
-            "type" : "string"
-          },
-          "orgName" : {
-            "type" : "string"
-          },
-          "authorizedToDelete" : {
-            "type" : "boolean"
-          },
-          "emailId" : {
-            "type" : "string"
-          },
-          "activeTenant" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "tenantDesc", "tenantName" ]
-      },
-      "EnvModel" : {
-        "properties" : {
           "name" : {
-            "type" : "string",
-            "maxLength" : 10,
-            "minLength" : 2,
-            "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
+            "type" : "string"
           },
-          "type" : {
+          "stretchCode" : {
             "type" : "string"
           },
           "clusterId" : {
             "type" : "integer",
             "format" : "int32"
           },
+          "type" : {
+            "type" : "string"
+          },
           "otherParams" : {
             "type" : "string"
           },
-          "id" : {
+          "envExists" : {
+            "type" : "string"
+          },
+          "envStatus" : {
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
             "type" : "string"
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
           },
-          "tenantId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "params" : {
             "$ref" : "#/components/schemas/EnvParams"
           }
-        },
-        "required" : [ "clusterId", "name", "type" ]
+        }
       },
       "EnvParams" : {
         "properties" : {
@@ -6933,6 +7001,76 @@
             "type" : "string"
           }
         }
+      },
+      "KwTenantModel" : {
+        "properties" : {
+          "tenantName" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 12,
+            "pattern" : "^[a-zA-Z0-9]{3,}$"
+          },
+          "tenantDesc" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 6,
+            "pattern" : "^[a-zA-Z 0-9]{3,}$"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "contactPerson" : {
+            "type" : "string"
+          },
+          "orgName" : {
+            "type" : "string"
+          },
+          "authorizedToDelete" : {
+            "type" : "boolean"
+          },
+          "emailId" : {
+            "type" : "string"
+          },
+          "activeTenant" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "tenantDesc", "tenantName" ]
+      },
+      "EnvModel" : {
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 2,
+            "pattern" : "^[a-zA-Z0-9_.-]{3,}$"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "clusterId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "associatedEnv" : {
+            "$ref" : "#/components/schemas/EnvTag"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/EnvParams"
+          }
+        },
+        "required" : [ "clusterId", "name", "type" ]
       },
       "KwClustersModel" : {
         "properties" : {
@@ -7053,7 +7191,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -7289,6 +7427,95 @@
           }
         }
       },
+      "SchemaRequestsResponseModel" : {
+        "properties" : {
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "requestOperationType" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "schemafull" : {
+            "type" : "string"
+          },
+          "req_no" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "forceRegister" : {
+            "type" : "boolean"
+          },
+          "schemaversion" : {
+            "type" : "string"
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
+      },
       "RequestEntityStatusCount" : {
         "properties" : {
           "requestEntityType" : {
@@ -7338,7 +7565,7 @@
         "properties" : {
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "count" : {
             "type" : "integer",
@@ -7506,9 +7733,16 @@
           "envStatus" : {
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
+            "type" : "string"
           }
         },
-        "required" : [ "envStatus", "result" ]
+        "required" : [ "envStatus", "envStatusTime", "envStatusTimeString", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -7775,6 +8009,9 @@
           "hasOpenClaimRequest" : {
             "type" : "boolean"
           },
+          "hasOpenRequestOnAnyEnv" : {
+            "type" : "boolean"
+          },
           "hasACL" : {
             "type" : "boolean"
           },
@@ -7792,7 +8029,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicBaseConfig" : {
         "properties" : {
@@ -8006,6 +8243,9 @@
           "allTopicWarningsCount" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "topicsLoadingStatus" : {
+            "type" : "boolean"
           }
         }
       },
@@ -8029,7 +8269,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -8181,6 +8421,9 @@
           "hasOpenClaimRequest" : {
             "type" : "boolean"
           },
+          "hasOpenRequestOnAnyEnv" : {
+            "type" : "boolean"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -8221,7 +8464,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
@@ -8251,6 +8494,13 @@
           "envStatus" : {
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "envStatusTimeString" : {
+            "type" : "string"
           },
           "otherParams" : {
             "type" : "string"
@@ -8286,7 +8536,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "envStatusTime", "envStatusTimeString", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {
@@ -8382,95 +8632,6 @@
             "type" : "string"
           }
         }
-      },
-      "SchemaRequestsResponseModel" : {
-        "properties" : {
-          "environment" : {
-            "type" : "string"
-          },
-          "environmentName" : {
-            "type" : "string"
-          },
-          "requestor" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "teamname" : {
-            "type" : "string"
-          },
-          "requestOperationType" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
-          },
-          "requestStatus" : {
-            "type" : "string",
-            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
-          },
-          "requesttime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "requesttimestring" : {
-            "type" : "string"
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "approvingTeamDetails" : {
-            "type" : "string"
-          },
-          "approver" : {
-            "type" : "string"
-          },
-          "approvingtime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "remarks" : {
-            "type" : "string"
-          },
-          "appname" : {
-            "type" : "string"
-          },
-          "otherParams" : {
-            "type" : "string"
-          },
-          "topicname" : {
-            "type" : "string"
-          },
-          "schemafull" : {
-            "type" : "string"
-          },
-          "req_no" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "forceRegister" : {
-            "type" : "boolean"
-          },
-          "schemaversion" : {
-            "type" : "string"
-          },
-          "deletable" : {
-            "type" : "boolean"
-          },
-          "editable" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
       },
       "SchemaDetailsPerEnv" : {
         "properties" : {
@@ -8606,7 +8767,8 @@
           "lag" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "currentOffset", "endOffset", "lag", "topicPartitionId" ]
       },
       "KafkaConnectorRequestsResponseModel" : {
         "properties" : {
@@ -8628,7 +8790,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",
@@ -9003,6 +9165,9 @@
           "coralEnabled" : {
             "type" : "string"
           },
+          "coralAvailableForUser" : {
+            "type" : "string"
+          },
           "adAuthRoleEnabled" : {
             "type" : "string"
           },
@@ -9013,7 +9178,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {
@@ -9143,7 +9308,7 @@
           },
           "requestOperationType" : {
             "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE", "ALL" ]
           },
           "requestStatus" : {
             "type" : "string",

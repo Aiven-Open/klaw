@@ -8,13 +8,11 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.EnvParams;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,9 @@ public class DefaultDataService {
   @Value("${klaw.docker.kafka.cluster:host.docker.internal:9092}")
   private String dockerKafkaHost;
 
+  @Value("${klaw.docker.kafka.cluster.security-protocol:PLAINTEXT}")
+  private String dockerKafkaSecurityProtocol;
+
   @Value("${klaw.docker.sr.cluster:host.docker.internal:8081}")
   private String dockerSRHost;
 
@@ -42,6 +43,9 @@ public class DefaultDataService {
 
   @Value("${klaw.quickstart.default.pwd:welcome}")
   private String quickStartUserPwd;
+
+  @Value("${klaw.clusterapi.url:http://localhost:9343}")
+  private String clusterApiUrl;
 
   public UserInfo getUser(
       int tenantId,
@@ -83,13 +87,8 @@ public class DefaultDataService {
     kwTenants.setTenantId(tenantId);
     kwTenants.setTenantName("default");
     kwTenants.setTenantDesc("default");
-    kwTenants.setInTrial("false");
     kwTenants.setContactPerson("Klaw Administrator");
     kwTenants.setOrgName("Default Organization");
-    kwTenants.setLicenseExpiry(
-        new Timestamp(
-            System.currentTimeMillis()
-                + TimeUnit.DAYS.toMillis(KwConstants.DAYS_EXPIRY_DEFAULT_TENANT)));
     kwTenants.setIsActive("true");
 
     return kwTenants;
@@ -321,8 +320,7 @@ public class DefaultDataService {
               "Base sync cluster, order of topic promotion environments, topic request envs");
     } else {
       kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+          new KwProperties("klaw.clusterapi.url", tenantId, clusterApiUrl, "Cluster Api URL");
       kwProperties22 =
           new KwProperties(
               "klaw.tenant.config",
@@ -487,9 +485,7 @@ public class DefaultDataService {
       HandleDbRequestsJdbc handleDbRequests, String encryptorSecretKey, String infraTeam) {
     if (quickStartEnabled) {
       // verify if quick start data already exists tbd
-      List<KwClusters> kwClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
-      if (!kwClusters.isEmpty()) {
+      if (handleDbRequests.existsClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID)) {
         return;
       }
 
@@ -520,7 +516,7 @@ public class DefaultDataService {
       kwClusterKafka.setClusterName("STG");
       kwClusterKafka.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       kwClusterKafka.setBootstrapServers(dockerKafkaHost);
-      kwClusterKafka.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      kwClusterKafka.setProtocol(KafkaSupportedProtocol.valueOf(dockerKafkaSecurityProtocol));
       kwClusterKafka.setClusterType(KafkaClustersType.KAFKA.value);
       kwClusterKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
       handleDbRequests.addNewCluster(kwClusterKafka);
@@ -536,7 +532,7 @@ public class DefaultDataService {
       handleDbRequests.addNewCluster(kwClusterSchemaRegistry);
 
       // Add kafka environment
-      kwClusters =
+      var kwClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
       Env envKafka = new Env();
       envKafka.setClusterId(kwClusters.get(0).getClusterId());

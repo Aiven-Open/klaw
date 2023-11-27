@@ -10,6 +10,7 @@ import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
+import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +96,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
     return jdbcInsertHelper.getNextSeqIdAndUpdate(entityName, tenantId);
+  }
+
+  @Override
+  public boolean hasSequence(String entityName, int tenantId) {
+    return jdbcInsertHelper.hasSequence(entityName, tenantId);
   }
 
   @Override
@@ -429,6 +435,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsTopicRequest(String topicName, String requestStatus, int tenantId) {
+    return jdbcSelectHelper.existsTopicRequestOnAnyEnv(topicName, requestStatus, tenantId);
+  }
+
+  @Override
+  public boolean existsConnectorRequest(String connectorName, String requestStatus, int tenantId) {
+    return jdbcSelectHelper.existsConnectorRequestOnAnyEnv(connectorName, requestStatus, tenantId);
+  }
+
+  @Override
   public boolean existsClaimTopicRequest(String topicName, String requestStatus, int tenantId) {
     return jdbcSelectHelper.existsClaimTopicRequest(
         topicName, requestStatus, RequestOperationType.CLAIM.value, tenantId);
@@ -598,6 +614,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public int getCountRegisterUsersInfoForTenant(int tenantId) {
+    return jdbcSelectHelper.countRegisterUsersInfoForTenant(tenantId);
+  }
+
+  @Override
   public List<RegisterUserInfo> getAllRegisterUsersInformation() {
     return jdbcSelectHelper.selectAllRegisterUsersInfo();
   }
@@ -740,6 +761,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    return jdbcSelectHelper.existsClusters(typeOfCluster, tenantId);
+  }
+
+  @Override
   public KwClusters getClusterDetails(int id, int tenantId) {
     return jdbcSelectHelper.getClusterDetails(id, tenantId);
   }
@@ -766,50 +792,55 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<Map<String, String>> getActivityLogForLastDays(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getActivityLogForLastDays(
       int numberOfDays, String[] envId, int tenantId) {
     return jdbcSelectHelper.selectActivityLogForLastDays(numberOfDays, envId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getActivityLogByTeam(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
     return jdbcSelectHelper.selectActivityLogByTeam(teamId, numberOfDays, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getTopicsCountByTeams(Integer teamId, int tenantId) {
+  public List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> getTopicsCountByTeams(
+      Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectTopicsCountByTeams(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getTopicsCountByEnv(Integer tenantId) {
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getTopicsCountByEnv(
+      Integer tenantId) {
     return jdbcSelectHelper.selectTopicsCountByEnv(tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getPartitionsCountByEnv(Integer teamId, Integer tenantId) {
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getPartitionsCountByEnv(
+      Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectPartitionsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getAclsCountByEnv(Integer teamId, Integer tenantId) {
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAclsCountByEnv(
+      Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getAclsCountByTeams(
+  public List<CommonUtilsService.ChartsOverviewItem<Integer, Integer>> getAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByTeams(aclType, teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAllTopicsForTeamGroupByEnv(
+      Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectAllTopicsForTeamGroupByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> getAllMetrics(
+  public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getAllMetrics(
       String metricsType, String metricsName, String env) {
     return jdbcSelectHelper.selectAllMetrics(metricsType, metricsName, env);
   }

@@ -23,6 +23,7 @@ import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -125,7 +126,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    Set<String> orderOfEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
     topics.forEach(
         topic -> {
           EnvIdInfo envIdInfo = new EnvIdInfo();
@@ -136,7 +137,7 @@ public class TopicOverviewService extends BaseOverviewService {
                   .map(Env::getName)
                   .findFirst()
                   .orElse("ENV_NOT_FOUND"));
-          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+          if (orderOfEnvsSet.contains(envIdInfo.getId())) {
             availableEnvs.add(envIdInfo);
           } else {
             availableEnvsNotInPromotionOrder.add(envIdInfo);
@@ -215,10 +216,14 @@ public class TopicOverviewService extends BaseOverviewService {
             || topicInfo.isHasOpenSchemaRequest()
             || topicInfo.isHasOpenTopicRequest()
             || topicInfo.isHasOpenClaimRequest());
+
+    topicInfo.setHasOpenRequestOnAnyEnv(
+        topicInfo.isHasOpenRequest() || isTopicRequestOpen(topicName, tenantId));
   }
 
   private void setHasOpenRequestOnly(
       TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+
     topicInfo.setHasOpenRequest(
         isACLRequestOpen(topicName, envId, tenantId)
             || isSchemaRequestOpen(topicName, envId, tenantId)
@@ -349,6 +354,9 @@ public class TopicOverviewService extends BaseOverviewService {
           topicInfoList
               .get(0)
               .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
+          topicInfoList
+              .get(0)
+              .setHasOpenRequestOnAnyEnv(isTopicRequestOpen(topicNameSearch, tenantId));
           if (topicInfoList.get(0).isHasOpenClaimRequest()) {
             topicInfoList.get(0).setHasOpenRequest(true);
           } else {
@@ -368,6 +376,12 @@ public class TopicOverviewService extends BaseOverviewService {
     return manageDatabase
         .getHandleDbRequests()
         .existsTopicRequest(topicName, RequestStatus.CREATED.value, environmentId, tenantId);
+  }
+
+  private boolean isTopicRequestOpen(String topicName, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsTopicRequest(topicName, RequestStatus.CREATED.value, tenantId);
   }
 
   private boolean isClaimTopicRequestOpen(String topicName, int tenantId) {
@@ -405,6 +419,22 @@ public class TopicOverviewService extends BaseOverviewService {
         .isPresent();
   }
 
+  private <T> boolean checkIfElementsAreNeighbors(
+      LinkedHashSet<T> tLinkedHashSet, T element1, T element2) {
+    boolean foundFirst = false;
+    for (T elem : tLinkedHashSet) {
+      if (foundFirst && elem.equals(element2)) {
+        return true;
+      } else {
+        foundFirst = false;
+      }
+      if (elem.equals(element1)) {
+        foundFirst = true;
+      }
+    }
+    return false;
+  }
+
   private PromotionStatus getTopicPromotionEnv(
       String topicSearch, List<Topic> topics, int tenantId, String environmentId) {
     PromotionStatus promotionStatus = new PromotionStatus();
@@ -414,7 +444,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
       promotionStatus.setTopicName(topicSearch);
       String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-      List<String> envOrderList = KlawResourceUtils.getOrderedEnvsList(orderEnvs);
+      LinkedHashSet<String> orderedEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderEnvs);
 
       if (topics != null && topics.size() > 0) {
         List<String> envList =
@@ -425,8 +455,9 @@ public class TopicOverviewService extends BaseOverviewService {
         // T env
         if (promotionStatus.getTargetEnvId() != null) {
           String targetEnvId = promotionStatus.getTargetEnvId();
-          if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
-              || !envOrderList.contains(environmentId)) {
+          if (!orderedEnvsSet.contains(environmentId)
+              || !orderedEnvsSet.contains(targetEnvId)
+              || !checkIfElementsAreNeighbors(orderedEnvsSet, environmentId, targetEnvId)) {
             promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
           } else if (isTopicPromoteRequestOpen(
               topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {

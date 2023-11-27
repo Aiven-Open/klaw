@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  StatusChip,
+} from "@aivenio/aquarium";
 import { SchemaRequest } from "src/domain/schema-request";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
@@ -18,9 +23,11 @@ interface SchemaRequestTableData {
   topicname: SchemaRequest["topicname"];
   environmentName: SchemaRequest["environmentName"];
   requestor: SchemaRequest["requestor"];
+  teamname: SchemaRequest["teamname"];
   requesttimestring: SchemaRequest["requesttimestring"];
   requestStatus: SchemaRequest["requestStatus"];
   requestOperationType: SchemaRequest["requestOperationType"];
+  forceRegister: SchemaRequest["forceRegister"];
 }
 
 type SchemaApprovalsTableProps = {
@@ -79,10 +86,31 @@ function SchemaApprovalsTable({
     { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",
+      field: "teamname",
+      headerName: "Team",
+    },
+    {
+      type: "text",
       field: "requesttimestring",
       headerName: "Requested on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
+      },
+    },
+    {
+      type: "custom",
+      field: "forceRegister",
+      headerName: "Additional notes",
+      UNSAFE_render: ({ forceRegister }: { forceRegister: boolean }) => {
+        if (forceRegister) {
+          return (
+            <StatusChip
+              text={"Force register applied"}
+              status={"danger"}
+              dense={true}
+            />
+          );
+        }
       },
     },
     {
@@ -148,10 +176,12 @@ function SchemaApprovalsTable({
         id: request.req_no,
         topicname: request.topicname,
         environmentName: request.environmentName,
+        teamname: request.teamname,
         requestor: request.requestor,
         requesttimestring: request.requesttimestring,
         requestStatus: request.requestStatus,
         requestOperationType: request.requestOperationType,
+        forceRegister: request.forceRegister,
       };
     }
   );

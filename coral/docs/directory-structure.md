@@ -7,17 +7,17 @@ The structure is inspired in big parts by:
 
 ## Table of content
 
-* [🏁️ Primary goals of this structure](#-primary-goals-of-this-structure)
-* [🗂️ Folder and file naming](#-folder-and-file-naming)
-* [💁 Outline folder structure](#-outline-folder-structure)
-* [ℹ️ In-depth explanation](#ℹ-in-depth-explanation)
-  + [First level: `app` folder](#first-level-app-folder)
+- [🏁️ Primary goals of this structure](#-primary-goals-of-this-structure)
+- [🗂️ Folder and file naming](#-folder-and-file-naming)
+- [💁 Outline folder structure](#-outline-folder-structure)
+- [ℹ️ In-depth explanation](#ℹ-in-depth-explanation)
+  - [First level: `app` folder](#first-level-app-folder)
     - [Second level: `app/assets`](#second-level-appassets)
     - [Second level: `app/components`](#second-level-appcomponents)
     - [Second level: `app/features`](#second-level-appfeatures)
     - [Second level: `app/pages`](#second-level-apppages)
-  + [First level: `domain` folder](#first-level-domain-folder)
-  + [First level: `services`](#first-level-services)
+  - [First level: `domain` folder](#first-level-domain-folder)
+  - [First level: `services`](#first-level-services)
 
 ## 🏁️ Primary goals of this structure
 
@@ -99,7 +99,7 @@ The structure is inspired in big parts by:
         │   └── utils.ts.ts
         ├── api.test.ts
         └── api.ts
-        
+
 ```
 
 ## ℹ️ In-depth explanation
@@ -165,8 +165,3 @@ Contains functionality we use in many areas to reduce coupling between different
 
 - We name files based on their exported functionality, e.g. `api.ts`.
 - We create folders for the same responsibilities, e.g. for `test-utils/`.
-
-
-
-
-

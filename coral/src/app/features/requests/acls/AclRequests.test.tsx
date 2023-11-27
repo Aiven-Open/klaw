@@ -5,12 +5,12 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import AclRequests from "src/app/features/requests/acls/AclRequests";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -102,7 +102,7 @@ const mockGetAclRequestsResponse = transformAclRequestApiResponse([
 ]);
 
 const mockGetEnvironmentsResponse = [
-  createEnvironment({
+  createMockEnvironmentDTO({
     name: "DEV",
     id: "1",
   }),
@@ -157,7 +157,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -176,7 +176,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -285,7 +285,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -309,7 +309,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -319,7 +319,7 @@ describe("AclRequests", () => {
         queryClient: true,
         memoryRouter: true,
       });
-      const search = screen.getByRole("search", { name: "Search Topic name" });
+      const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
 
       await userEvent.type(search, "abc");
@@ -330,7 +330,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "ALL",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -365,7 +365,7 @@ describe("AclRequests", () => {
         env: "1",
         aclType: "ALL",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -393,7 +393,7 @@ describe("AclRequests", () => {
           env: "1",
           aclType: "ALL",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -416,7 +416,8 @@ describe("AclRequests", () => {
         name: "Filter by ACL type",
       });
 
-      expect(envFilter).toHaveDisplayValue("CONSUMER");
+      expect(envFilter).toHaveDisplayValue("Consumer");
+      expect(envFilter).toHaveValue("CONSUMER");
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -424,7 +425,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "CONSUMER",
         requestStatus: "ALL",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -448,7 +449,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "CONSUMER",
           requestStatus: "ALL",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -479,7 +480,7 @@ describe("AclRequests", () => {
         env: "ALL",
         aclType: "ALL",
         requestStatus: "APPROVED",
-        operationType: undefined,
+        operationType: "ALL",
         isMyRequest: false,
       });
     });
@@ -504,7 +505,7 @@ describe("AclRequests", () => {
           env: "ALL",
           aclType: "ALL",
           requestStatus: "APPROVED",
-          operationType: undefined,
+          operationType: "ALL",
           isMyRequest: false,
         });
       });
@@ -536,7 +537,7 @@ describe("AclRequests", () => {
         aclType: "ALL",
         requestStatus: "ALL",
         isMyRequest: true,
-        operationType: undefined,
+        operationType: "ALL",
       });
     });
 
@@ -564,7 +565,7 @@ describe("AclRequests", () => {
           aclType: "ALL",
           requestStatus: "ALL",
           isMyRequest: true,
-          operationType: undefined,
+          operationType: "ALL",
         });
       });
     });

@@ -17,7 +17,7 @@ const testClusterDetails: ClusterDetailsType = {
   protocol: "SSL",
   showDeleteCluster: false,
   totalNoPages: "2",
-  clusterStatus: "NOT_KNOWN",
+  clusterStatus: "ONLINE",
 };
 
 describe("ClusterDetails", () => {
@@ -90,7 +90,7 @@ describe("ClusterDetails", () => {
       const definition = getAllDefinitions(definitionList, "Cluster status");
 
       expect(term).toBeVisible();
-      expect(definition[0]).toHaveTextContent(testClusterDetails.clusterStatus);
+      expect(definition[0]).toHaveTextContent("Online");
     });
 
     it('shows text information definition related to the "Cluster status"', () => {

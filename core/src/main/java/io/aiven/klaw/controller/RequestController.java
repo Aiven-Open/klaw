@@ -161,23 +161,31 @@ public class RequestController {
   }
 
   private ResponseEntity<List<ApiResponse>> wrapInResponseEntity(List<ApiResponse> obj) {
-    int failure = 0, success = 0;
+    boolean hasFailure = false;
+    boolean hasSuccess = false;
     HttpStatus status;
     for (ApiResponse resp : obj) {
       if (resp.isSuccess()) {
-        success++;
+        hasSuccess = true;
       } else {
-        failure++;
+        hasFailure = true;
+      }
+      if (hasSuccess && hasFailure) {
+        break;
       }
     }
-    if (failure == 0 && success > 0) {
-      status = HttpStatus.OK;
-    } else if (failure > 0 && success == 0) {
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
-    } else if (failure > 0 && success > 0) {
-      status = HttpStatus.MULTI_STATUS;
+    if (hasSuccess) {
+      if (hasFailure) {
+        status = HttpStatus.MULTI_STATUS;
+      } else {
+        status = HttpStatus.OK;
+      }
     } else {
-      status = HttpStatus.BAD_REQUEST;
+      if (hasFailure) {
+        status = HttpStatus.INTERNAL_SERVER_ERROR;
+      } else {
+        status = HttpStatus.BAD_REQUEST;
+      }
     }
     return ResponseEntity.status(status).body(obj);
   }

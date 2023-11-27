@@ -21,9 +21,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- the list is sorted-->
-        <apachecommons.version>2.13.0</apachecommons.version>
-        <apachepoi.version>5.2.3</apachepoi.version>
-        <commons-text.version>1.10.0</commons-text.version>
+        <apachecommons.version>2.15.0</apachecommons.version>
+        <apachepoi.version>5.2.4</apachepoi.version>
+        <commons-text.version>1.11.0</commons-text.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
         <h2.version>2.1.214</h2.version>
@@ -32,7 +32,7 @@
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>8.7.1</pnpm.version>
-        <shedlock.version>5.7.0</shedlock.version>
+        <shedlock.version>5.10.0</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
@@ -229,6 +229,83 @@
         </testResources>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>Clean Coral assets before building</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${basedir}/src/main/resources/templates/coral</directory>
+                                    <includes>index.html</includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>${basedir}/src/main/resources/static/assets/coral</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-coral-index</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/templates/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-coral-assets</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/static/assets/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/assets/coral</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
@@ -244,25 +321,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Clean Coral assets before building</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>clean</phase>
-                        <configuration>
-                            <executable>make</executable>
-                            <commandlineArgs>clean</commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Build and copy Coral assets</id>
+                        <id>Build Coral assets</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
                             <executable>make</executable>
-                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                             <!-- Ignore errors during the execution of this plugin to unblock the user during build process -->
                             <successCodes>
                                 <successCode>0</successCode>
@@ -278,7 +343,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
+                    <jvmArguments>
+                        -Dspringdoc.writer-with-default-pretty-printer=true
+                        -Dklaw.core.ha.enable=true
+                        -Dspring.application.admin.enabled=true
+                    </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -287,8 +356,8 @@
                             <goal>stop</goal>
                         </goals>
                         <configuration>
-
                             <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+
                         </configuration>
                     </execution>
                 </executions>

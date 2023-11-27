@@ -407,6 +407,8 @@ public class KafkaConnectControllerService {
         connectorInfo.isHasOpenClaimRequest()
             || isConnectorRequestOpen(
                 tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
+    connectorInfo.setHasOpenRequestOnAnyEnv(
+        isConnectorRequestOpen(tenantId, connectorSOT.getConnectorName()));
   }
 
   private boolean isConnectorRequestOpen(int tenantId, String connectorName, String environment) {
@@ -421,6 +423,20 @@ public class KafkaConnectControllerService {
     return manageDatabase
         .getHandleDbRequests()
         .existsClaimConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
+  }
+
+  /**
+   * Checks if any connector request is open
+   *
+   * @param tenantId the id of the tenant
+   * @param connectorName the name of the connector
+   * @return true/false if there is any request open on any environment for a connector
+   */
+  private boolean isConnectorRequestOpen(int tenantId, String connectorName) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
   }
 
   private boolean isPromoteRequestOpen(int tenantId, String connectorName, String environment) {
@@ -691,6 +707,7 @@ public class KafkaConnectControllerService {
               jsonConnectorConfig,
               kafkaConnectHost,
               kwClusters.getClusterName() + kwClusters.getClusterId(),
+              connectorRequest.getEnvironment(),
               tenantId);
 
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
@@ -894,8 +911,10 @@ public class KafkaConnectControllerService {
   }
 
   private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
-    List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
-    return orderedEnv.contains(envId);
+    return orderOfEnvs.equals(envId)
+        || orderOfEnvs.startsWith(envId + ",")
+        || orderOfEnvs.endsWith("," + envId)
+        || orderOfEnvs.contains("," + envId + ",");
   }
 
   public List<KafkaConnectorRequestsResponseModel> getConnectorRequests(
@@ -1112,6 +1131,9 @@ public class KafkaConnectControllerService {
                 && connectorInfo.isHighestEnv()
                 && !connectorInfo.isHasOpenRequest());
 
+        connectorInfo.setHasOpenRequestOnAnyEnv(
+            isConnectorRequestOpen(tenantId, conn.getConnectorName()));
+
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());
           connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
@@ -1180,17 +1202,21 @@ public class KafkaConnectControllerService {
         }
 
       } else {
-        connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NOT_AUTHORIZED);
+        notAuthorizedPromotionDetails(connectorOverview);
       }
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      ConnectorPromotionStatus status = new ConnectorPromotionStatus();
-      status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
-      connectorOverview.setPromotionDetails(status);
+      notAuthorizedPromotionDetails(connectorOverview);
     }
 
     return connectorOverview;
+  }
+
+  private static void notAuthorizedPromotionDetails(ConnectorOverview connectorOverview) {
+    ConnectorPromotionStatus status = new ConnectorPromotionStatus();
+    status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+    connectorOverview.setPromotionDetails(status);
   }
 
   private boolean checkIsHighestEnv(String envId, List<EnvIdInfo> availableEnvs) {
@@ -1205,7 +1231,7 @@ public class KafkaConnectControllerService {
       List<KwKafkaConnector> connectors, String envId, int tenantId) {
     ConnectorOverview overview = new ConnectorOverview();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_KAFKA_CONNECT_ENVS);
-    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    Set<String> orderOfEnvsSet = KlawResourceUtils.getOrderedEnvsSet(orderOfEnvs);
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     connectors.forEach(
@@ -1218,7 +1244,7 @@ public class KafkaConnectControllerService {
                   .map(Env::getName)
                   .findFirst()
                   .orElse("ENV_NOT_FOUND"));
-          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+          if (orderOfEnvsSet.contains(envIdInfo.getId())) {
             availableEnvs.add(envIdInfo);
           } else {
             availableEnvsNotInPromotionOrder.add(envIdInfo);
@@ -1403,7 +1429,7 @@ public class KafkaConnectControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     int tenantId = commonUtilsService.getTenantId(userName);
-    List<String> approverRoles =
+    Set<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
@@ -1466,7 +1492,7 @@ public class KafkaConnectControllerService {
   }
 
   private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+      List<UserInfo> userList, String teamName, Set<String> approverRoles, String requestor) {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {

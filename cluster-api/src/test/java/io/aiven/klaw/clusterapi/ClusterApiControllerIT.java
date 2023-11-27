@@ -103,6 +103,8 @@ public class ClusterApiControllerIT {
   public static final String AUTHORIZATION = "Authorization";
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String TEST_MESSAGE = "A test message.";
+  public static final int TIMEOUT_SECS = 5;
 
   static EmbeddedKafkaBroker embeddedKafkaBroker;
 
@@ -524,13 +526,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get();
+                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException e) {
+          } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
           }
         });
@@ -593,13 +595,13 @@ public class ClusterApiControllerIT {
                 adminClient
                     .listConsumerGroupOffsets(CONSUMER_GROUP)
                     .partitionsToOffsetAndMetadata()
-                    .get();
+                    .get(TIMEOUT_SECS, TimeUnit.SECONDS);
             for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
               currentOffsetPositionsMap.put(
                   topicPartition.toString(),
                   topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
             }
-          } catch (InterruptedException | ExecutionException e) {
+          } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
           }
         });
@@ -751,6 +753,64 @@ public class ClusterApiControllerIT {
     assertThat(thrown.getMessage()).contains("Topic " + nonExistingTopic + " does not exist.");
   }
 
+  @Test
+  @Order(16)
+  public void getTopicContents() throws Exception {
+    int numberOfOffsetsToRead = 2;
+    String url =
+        "/topics/getTopicContents/"
+            + bootStrapServersSsl
+            + "/"
+            + "SSL/undefined/testtopic/custom/partitionId/0/"
+            + "selectedNumberOfOffsets/"
+            + numberOfOffsetsToRead
+            + "/DEV2";
+    MockHttpServletResponse response =
+        mvc.perform(
+                MockMvcRequestBuilders.get(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(
+                        AUTHORIZATION,
+                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+    Map<Long, String> apiResponse = mapper.readValue(response.getContentAsString(), Map.class);
+    assertThat(apiResponse.size()).isEqualTo(numberOfOffsetsToRead);
+    assertThat(apiResponse.values().toString()).contains(TEST_MESSAGE);
+  }
+
+  @Test
+  @Order(17)
+  public void getTopicContentsInvalidPartitionId() throws Exception {
+    int numberOfOffsetsToRead = 2;
+    int partitionId = 5;
+    String url =
+        "/topics/getTopicContents/"
+            + bootStrapServersSsl
+            + "/"
+            + "SSL/undefined/testtopic/custom/partitionId/"
+            + partitionId
+            + "/"
+            + "selectedNumberOfOffsets/"
+            + numberOfOffsetsToRead
+            + "/DEV2";
+    MockHttpServletResponse response =
+        mvc.perform(
+                MockMvcRequestBuilders.get(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(
+                        AUTHORIZATION,
+                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+    Map<Long, String> apiResponse = mapper.readValue(response.getContentAsString(), Map.class);
+    assertThat(apiResponse.size()).isEqualTo(0);
+  }
+
   private void produceAndConsumeRecords(boolean consumeRecs)
       throws ExecutionException, InterruptedException {
     Properties configProperties = new Properties();
@@ -762,8 +822,7 @@ public class ClusterApiControllerIT {
     configProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, stringSerializer);
     Producer<String, String> producer = new KafkaProducer<>(configProperties);
     ProducerRecord<String, String> rec1 =
-        new ProducerRecord<>(
-            TOPIC_NAME, null, System.currentTimeMillis(), "testkey", "A test message.");
+        new ProducerRecord<>(TOPIC_NAME, null, System.currentTimeMillis(), "testkey", TEST_MESSAGE);
 
     // produce 10 events;
     for (int i = 0; i < 10; i++) {
@@ -844,10 +903,10 @@ public class ClusterApiControllerIT {
 
     return Jwts.builder()
         .claim("name", clusterApiUser)
-        .setSubject(clusterApiUser)
-        .setId(UUID.randomUUID().toString())
-        .setIssuedAt(Date.from(now))
-        .setExpiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
+        .subject(clusterApiUser)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
         .signWith(hmacKey)
         .compact();
   }

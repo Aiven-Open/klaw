@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.APPROVER_SUBSCRIPTIONS;
+import static io.aiven.klaw.helpers.KwConstants.CORAL_INDEX_FILE_PATH;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -57,7 +57,6 @@ public class UtilControllerService implements InitializingBean {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String ANONYMOUS_USER = "anonymousUser";
   public static final String IMAGE_URI = ".imageURI";
-  public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -89,7 +88,7 @@ public class UtilControllerService implements InitializingBean {
 
   @Autowired private ConfigurableApplicationContext context;
 
-  private Boolean isCoralBuilt;
+  public static Boolean isCoralBuilt;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -242,8 +241,6 @@ public class UtilControllerService implements InitializingBean {
       allConnectorReqs = new ArrayList<>();
     }
 
-    List<RegisterUserInfo> allUserReqs = reqsHandle.getAllRegisterUsersInfoForTenant(tenantId);
-
     countList.put("topics", allTopicReqs.size() + "");
     countList.put("acls", allAclReqs.size() + "");
     countList.put("schemas", allSchemaReqs.size() + "");
@@ -253,7 +250,7 @@ public class UtilControllerService implements InitializingBean {
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       countList.put("users", "0");
     } else {
-      countList.put("users", allUserReqs.size() + "");
+      countList.put("users", reqsHandle.getCountRegisterUsersInfoForTenant(tenantId) + "");
     }
 
     return countList;
@@ -650,6 +647,8 @@ public class UtilControllerService implements InitializingBean {
       // coral attributes
       authenticationInfo.setCoralEnabled(
           Boolean.toString(coralEnabled && isCoralBuilt && !isUserSuperadmin));
+
+      authenticationInfo.setCoralAvailableForUser(Boolean.toString(coralEnabled && isCoralBuilt));
 
       return authenticationInfo;
     } else return null;

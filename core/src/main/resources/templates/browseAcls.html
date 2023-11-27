@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -726,6 +717,11 @@
 																<h6 class="text-primary">Principal / Username</h6><b><i ng-show="aclRequest.showDeleteAcl == false" class="fa fa-lock"></i> {{ aclRequest.acl_ssl }}</b>
 
 															</div>
+															<div ng-show="aclRequest.acl_ssl == null && (aclRequest.acl_ssls == null || aclRequest.acl_ssls.length == 0)" class="p-2 border-right" style="width:30%" >
+
+																<h6 class="text-primary">Principal / Username</h6><b></b>
+
+															</div>
 															<div ng-show="aclRequest.acl_ssl == null && aclRequest.acl_ssls.length > 0" class="p-2 border-right" style="width:30%" >
 
 																<h6 class="text-primary">Principal / Username</h6><b ng-repeat
@@ -907,7 +903,7 @@
 									<table width="100%" ng-show="topicOverview[0].teamname == teamname">
 										<tr>
 											<td align="right" width="15%">
-												<a href="requestSchema?topicname={{ topicSelectedParam }}">
+												<a href="requestSchema?topicname={{ topicSelectedParam }}&envId={{ topicOverview[0].envId }}">
 													<button type="button"
 															class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Request a Schema</button>
 												</a>
@@ -1010,17 +1006,7 @@
 								<div class="tab-pane  p-3" id="topiccontents" role="tabpanel">
 
 									<div ng-show="topicOverview[0].teamname == teamname" class="row" ng-init="getEnvs();loadTeams();">
-										<div class="col-md-4">
-											<div class="form-group has-info">
-												<label class="control-label">Kafka Environment</label>
-												<select class="form-control custom-select"
-														ng-model="topicEventsSelectedEnv" ng-options="env.id as env.name for env in allenvs">
-													<option value="" selected="selected">
-														Select Environment</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-md-4">
+										<div class="col-md-3">
 											<div class="form-group has-info">
 												<label class="control-label">Last Offsets of Topic Partitions</label>
 												<select class="form-control custom-select" ng-model="topicOffsetsVal">
@@ -1029,10 +1015,19 @@
 													<option value="5">5</option>
 													<option value="25">25</option>
 													<option value="50">50</option>
+													<option value="custom">Custom</option>
 												</select>
 											</div>
 										</div>
-										<div class="col-md-4">
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
+											<label class="control-label">Partition id</label>
+											<input type="text" class="form-control" ng-model="selectedPartitionId" placeholder="0">
+										</div>
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
+											<label class="control-label">Number of Offsets</label>
+											<input type="text" class="form-control" ng-model="selectedNumberOfOffsets" placeholder="100">
+										</div>
+										<div class="col-md-3">
 											<div class="form-group has-success">
 												<label class="control-label">Display topic events</label>
 												<button

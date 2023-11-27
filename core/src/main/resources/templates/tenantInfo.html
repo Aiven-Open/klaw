@@ -8,15 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -433,7 +424,7 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid"  ng-init="getTenantInfo();getTenantExtensionPeriods();">
+		<div class="container-fluid"  ng-init="getTenantInfo();">
 			<div class="row page-titles">
 			</div>
 
@@ -443,19 +434,6 @@
 						<div ng-show="alert.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
 						<div ng-show="alert.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
 						<p class="ribbon-content">{{ alert }}</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card" ng-show="myTenantInfo.expired == 'true'">
-						<div class="ribbon ribbon-danger">Notification</div>
-						<p class="ribbon-content">Your tenant has expired.</p>
-					</div>
-					<div class="ribbon-wrapper card"  ng-show="myTenantInfo.expired != 'true'">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">Your tenant is expiring in <b>{{myTenantInfo.numberOfDays}}</b> days and <b>{{myTenantInfo.numberOfHours}}</b> hours.</p>
 					</div>
 				</div>
 			</div>
@@ -517,20 +495,6 @@
 											</div>
 
 										</div>
-										<div class="col-md-6">
-											<div class="form-group" ng-show="myTenantInfo.inTrialPhase == true">
-												<b>In Trial period, expiry :</b>
-<!--												<label class="control-label">Expires On</label>-->
-												<input type="text" disabled class="form-control" value="{{myTenantInfo.licenseExpiryDate}}">
-											</div>
-											<div class="form-group" ng-show="myTenantInfo.inTrialPhase != true">
-												<b>Expiry : {{myTenantInfo.licenseExpiryDate}}</b>
-												<input type="text" disabled class="form-control" value="{{myTenantInfo.licenseExpiryDate}}">
-											</div>
-										</div>
-										<!--/span-->
-
-										<!--/span-->
 									</div>
 
 								</div>
@@ -538,61 +502,6 @@
 								<div class="form-actions" ng-show="myTenantInfo.authorizedToDelete === true">
 									<button ng-click="deleteTenant();" class="btn btn-outline-danger">Delete Tenant</button>
 									<button ng-click="updateTenant();" class="btn btn-outline-success">Update Tenant</button>
-								</div>
-
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="row" ng-show="myTenantInfo.showExtension == 'true'">
-				<div class="col-lg-12">
-					<div class="card card-outline-success">
-						<div class="card-body">
-							<form id="form">
-								<div class="form-body">
-
-									<table class="table color-table success-table" width="100%">
-										<tr>
-											<td align="left"><h3 class="card-title">Tenant Extension</h3>
-											</td>
-										</tr>
-										<tr>
-											<td align="left">
-												<h6>We contact you to find out the cloud provider (AWS/Azure/GCP) and region of your choice and provide you with the software installed on dedicated VMs.</h6>
-											</td>
-										</tr>
-									</table>
-
-									<hr size="1" color="black">
-
-									<div class="row">
-
-										<div class="col-md-6">
-											<div class="form-group">
-												<label>Select an extension period</label>
-												<select class="form-control custom-select"
-														required
-														ng-model="selectedTenantExtensionPeriod"
-														ng-options="extPeriod as extPeriod for extPeriod in tenantExtensionPeriods">
-													<option value="" selected="selected">
-														Select an extension period</option>
-												</select>
-
-											</div>
-										</div>
-										<!--/span-->
-
-
-										<!--/span-->
-									</div>
-
-
-								</div>
-
-								<div class="form-actions">
-									<button ng-click="submitTenantExtension();" class="btn btn-success">Submit Tenant Extension</button>
 								</div>
 
 							</form>

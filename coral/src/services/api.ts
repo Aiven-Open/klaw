@@ -34,6 +34,7 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS = {
+  getSchemaRequest: "/schema/request/{schemaReqId}",
   getAclRequest: "/acl/request/{aclRequestId}",
   approveOperationalRequest: "/operationalRequest/reqId/{reqId}/approve",
   declineOperationalRequest: "/operationalRequest/reqId/{reqId}/decline",
@@ -64,7 +65,6 @@ const API_PATHS = {
   updatePermissions: "/updatePermissions",
   updateKwCustomProperty: "/updateKwCustomProperty",
   udpateTenant: "/udpateTenant",
-  udpateTenantExtension: "/udpateTenantExtension",
   sendMessageToAdmin: "/sendMessageToAdmin",
   saveTopicDocumentation: "/saveTopicDocumentation",
   saveConnectorDocumentation: "/saveConnectorDocumentation",
@@ -157,10 +157,8 @@ const API_PATHS = {
   getKwPubkey: "/getKwPubkey",
   getSupportedKafkaProtocols: "/getKafkaProtocols",
   getKafkaConnectEnvs: "/getKafkaConnectEnvs",
-  getExtensionPeriods: "/getExtensionPeriods",
   getEnvs: "/getEnvs",
   getEnvsPaginated: "/getEnvsPaginated",
-  getEnvsForSchemaRequests: "/getEnvsForSchemaRequests",
   getEnvsBaseCluster: "/getEnvsBaseCluster",
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
   getSchemaRegEnvsPaginated: "/environments/schemaRegistry",
@@ -209,6 +207,8 @@ const API_PATHS = {
     | "getKafkaEnv"
     | "getKafkaConnectEnv"
     | "getSchemaRegEnv"
+    | "addEnvToCache"
+    | "removeEnvFromCache"
   >]: keyof ApiPaths;
 };
 
@@ -223,6 +223,14 @@ type GetTopicRequest = (params: { topicReqId: string }) => keyof ApiPaths;
 type GetKafkaEnv = (params: { envId: string }) => keyof ApiPaths;
 type GetConnectEnv = (params: { envId: string }) => keyof ApiPaths;
 type GetSchemaRegEnv = (params: { envId: string }) => keyof ApiPaths;
+type AddEnvToCache = (params: {
+  tenantId: string;
+  id: string;
+}) => keyof ApiPaths;
+type RemoveEnvFromCache = (params: {
+  tenantId: string;
+  id: string;
+}) => keyof ApiPaths;
 
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
@@ -242,6 +250,10 @@ const DYNAMIC_API_PATHS = {
     `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
   getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
     `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
+  addEnvToCache: ({ tenantId }: Parameters<AddEnvToCache>[0]) =>
+    `/cache/tenant/${tenantId}/entityType/environment` as keyof ApiPaths,
+  removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
+    `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
@@ -251,13 +263,17 @@ const DYNAMIC_API_PATHS = {
     | "getKafkaEnv"
     | "getKafkaConnectEnv"
     | "getSchemaRegEnv"
+    | "addEnvToCache"
+    | "removeEnvFromCache"
   >]:
     | GetSchemaOfTopicFromSource
     | GetSwitchTeams
     | GetTopicRequest
     | GetKafkaEnv
     | GetConnectEnv
-    | GetSchemaRegEnv;
+    | GetSchemaRegEnv
+    | AddEnvToCache
+    | RemoveEnvFromCache;
 };
 
 type Params = URLSearchParams;

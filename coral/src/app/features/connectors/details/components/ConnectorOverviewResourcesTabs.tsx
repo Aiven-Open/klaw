@@ -1,7 +1,6 @@
 import { Alert, Box, Icon, Tabs } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
-import PreviewBanner from "src/app/components/PreviewBanner";
 import {
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
   ConnectorOverviewTabEnum,
@@ -128,14 +127,7 @@ function ConnectorOverviewResourcesTabs({
             aria-label={tab.title}
             key={tab.title}
           >
-            {currentTab === tab.connectorOverviewTabEnum && (
-              <div>
-                <PreviewBanner
-                  linkTarget={`/connectorOverview?connectorName=${connectorName}`}
-                />
-                {renderTabContent()}
-              </div>
-            )}
+            {currentTab === tab.connectorOverviewTabEnum && renderTabContent()}
           </Tabs.Tab>
         );
       })}

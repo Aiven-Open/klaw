@@ -1,7 +1,6 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { within } from "@testing-library/react/pure";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 import { TopicDocumentationMarkdown } from "src/domain/topic";
 

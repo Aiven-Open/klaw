@@ -1,5 +1,5 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import {
   requestOperationTypeList,
   requestOperationTypeNameMap,
@@ -40,7 +40,10 @@ describe("RequestTypeFilter.tsx", () => {
 
       requestOperationTypeList.forEach((type) => {
         const option = screen.getByRole("option", {
-          name: requestOperationTypeNameMap[type],
+          name:
+            requestOperationTypeNameMap[type] === "All"
+              ? "All request types"
+              : requestOperationTypeNameMap[type],
         });
 
         expect(option).toBeEnabled();

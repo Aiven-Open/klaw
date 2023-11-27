@@ -195,4 +195,16 @@ public class CommonUtilsServiceTest {
     verify(manageDatabase, times(1)).loadUsersForAllTenants();
     verify(inMemoryUserDetailsManager, times(1)).deleteUser(any());
   }
+
+  /*@Test
+  public void test() {
+    List<Map<String, String>> list = new ArrayList<>();
+    for (int i = 0; i < 100000000; i++) {
+      Map<String, String> map = new HashMap<>();
+      map.put("test1", i + "");
+      map.put("test2", i + " ?? ");
+      list.add(map);
+    }
+    commonUtilsService.getChartsJsOverview(list, "title", "test1", "test2", "x", "y", 101);
+  }*/
 }

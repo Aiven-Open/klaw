@@ -1,6 +1,6 @@
 import attempt from "lodash/attempt";
 import isError from "lodash/isError";
-import z from "zod";
+import { z } from "zod";
 
 const connectorRequestFormSchema = z.object({
   environment: z.string().min(1, { message: "Please select an environment" }),

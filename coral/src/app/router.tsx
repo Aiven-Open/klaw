@@ -55,13 +55,12 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { TeamsPage } from "src/app/pages/configuration/teams";
+import { UsersPage } from "src/app/pages/configuration/users";
+import { UserProfile } from "src/app/pages/user-information/profile";
+import { ChangePassword } from "src/app/pages/user-information/change-password";
 
 const routes: Array<RouteObject> = [
-  // Login is currently the responsibility of the
-  // Angular Klaw app
-  // {
-  //   path: "/login",
-  // },
   {
     path: "/",
     element: <Layout />,
@@ -123,11 +122,9 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_OVERVIEW,
         element: <ConnectorDetailsPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
         children: [
           {
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
@@ -158,7 +155,7 @@ const routes: Array<RouteObject> = [
             id: ConnectorOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,
@@ -214,10 +211,8 @@ const routes: Array<RouteObject> = [
       {
         path: Routes.CONFIGURATION,
         children: [
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.ENVIRONMENTS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_CONFIGURATIONS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <EnvironmentsPage />,
             children: [
               {
@@ -240,6 +235,35 @@ const routes: Array<RouteObject> = [
                 id: EnvironmentsTabEnum.KAFKA_CONNECT,
               },
             ],
+          },
+          createRouteBehindFeatureFlag({
+            path: Routes.TEAMS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <TeamsPage />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USERS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <UsersPage />,
+          }),
+        ],
+      },
+      {
+        path: Routes.USER_INFORMATION,
+        children: [
+          createRouteBehindFeatureFlag({
+            path: Routes.USER_PROFILE,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <UserProfile />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USER_CHANGE_PASSWORD,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <ChangePassword />,
           }),
         ],
       },
@@ -282,19 +306,14 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_EDIT_REQUEST,
         element: <TopicEditRequestPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.CONNECTOR_EDIT_REQUEST,
         element: <ConnectorEditRequest />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_CONNECTOR,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
-      }),
-
-      createRouteBehindFeatureFlag({
+      },
+      {
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
-      }),
+      },
     ],
   },
   {

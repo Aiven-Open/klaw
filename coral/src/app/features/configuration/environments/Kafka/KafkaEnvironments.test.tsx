@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import KafkaEnvironments from "src/app/features/configuration/environments/Kafka/KafkaEnvironments";
 import { getPaginatedEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { transformPaginatedEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
@@ -38,6 +38,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "DEV",
       envStatus: "OFFLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       otherParams: "",
       showDeleteEnv: false,
       totalNoPages: "1",
@@ -66,6 +68,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "DEV_CLS",
       envStatus: "ONLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       otherParams: "",
       showDeleteEnv: false,
       totalNoPages: "1",
@@ -98,6 +102,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "TST",
       envStatus: "ONLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       otherParams:
         "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
       showDeleteEnv: false,
@@ -131,6 +137,8 @@ const mockedEnvironmentsResponse: EnvironmentPaginatedApiResponse =
       tenantName: "default",
       clusterName: "DEV",
       envStatus: "OFFLINE",
+      envStatusTime: "2023-09-21T11:47:15.664615239",
+      envStatusTimeString: "21-Sep-2023 11:46:15",
       otherParams: "",
       showDeleteEnv: false,
       totalNoPages: "1",
