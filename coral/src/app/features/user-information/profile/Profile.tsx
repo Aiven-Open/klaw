@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUser } from "src/domain/user/user-api";
-import { Box, Grid, Typography } from "@aivenio/aquarium";
+import { getUser } from "src/domain/user";
+import { Alert, Box, Grid, Typography } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -12,9 +12,18 @@ import {
   profileFormSchema,
   ProfileFormSchema,
 } from "src/app/features/user-information/profile/form-schema/profile-form";
+import { SkeletonProfile } from "src/app/features/user-information/profile/components/SkeletonProfile";
+import { parseErrorMsg } from "src/services/mutation-utils";
+import isEqual from "lodash/isEqual";
+import { use } from "msw/lib/core/utils/internal/requestHandlerUtils";
 
 function Profile() {
-  const { data: user } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["getUser"],
     queryFn: getUser,
   });
@@ -32,12 +41,38 @@ function Profile() {
   });
 
   function onSubmitForm(userInput: ProfileFormSchema) {
-    console.log(userInput);
+    if (
+      isEqual(
+        [userInput.fullName, userInput.email],
+        [user?.fullname, user?.mailid]
+      )
+    ) {
+      console.log("NO CHANGES");
+    } else {
+      console.log(userInput);
+    }
   }
 
-  //updateProfile
+  // @ts-ignore
+  function onFormError(error) {
+    console.error(error);
+  }
+
+  if (isLoading) {
+    return <SkeletonProfile />;
+  }
+
+  if (!isLoading && isError) {
+    return <Alert type={"error"}>{parseErrorMsg(error)}</Alert>;
+  }
+
   return (
-    <Form {...form} ariaLabel={"Request a new schema"} onSubmit={onSubmitForm}>
+    <Form
+      {...form}
+      ariaLabel={"Update profile"}
+      onSubmit={onSubmitForm}
+      onError={onFormError}
+    >
       <Grid>
         <Grid.Item md={6} xs={12}>
           <TextInput<ProfileFormSchema>
@@ -68,8 +103,9 @@ function Profile() {
             readOnly={true}
           />
 
-          {user?.switchAllowedTeamNames &&
-            user?.switchAllowedTeamNames?.length >= 1 && (
+          {user.switchTeams &&
+            user.switchAllowedTeamNames &&
+            user.switchAllowedTeamNames?.length >= 1 && (
               <Box.Flex
                 flexDirection={"column"}
                 rowGap={"l2"}
@@ -85,10 +121,10 @@ function Profile() {
 
                 <div>
                   <Typography.SmallStrong>
-                    Member of team
+                    <span id={"team-list-id"}>Member of team</span>
                   </Typography.SmallStrong>
-                  <ul>
-                    {user?.switchAllowedTeamNames.map((team) => {
+                  <ul aria-labelledby={"team-list-id"}>
+                    {user.switchAllowedTeamNames.map((team) => {
                       return <li key={team}>{team}</li>;
                     })}
                   </ul>

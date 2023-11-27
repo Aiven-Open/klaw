@@ -15,7 +15,7 @@ const profileFormSchema = z.object({
   email: z.coerce.string().email().min(5),
   team: z.string(),
   role: z.string(),
-  switchTeams: z.boolean(),
+  switchTeams: z.boolean().optional(),
 });
 
 type ProfileFormSchema = z.infer<typeof profileFormSchema>;

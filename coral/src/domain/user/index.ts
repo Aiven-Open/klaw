@@ -1,5 +1,5 @@
-import { getUserList } from "src/domain/user/user-api";
+import { getUserList, getUser } from "src/domain/user/user-api";
 import { User } from "src/domain/user/user-types";
 
-export { getUserList };
+export { getUserList, getUser };
 export type { User };
