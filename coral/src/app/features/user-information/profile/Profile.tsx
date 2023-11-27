@@ -48,6 +48,10 @@ function Profile() {
           <TextInput<ProfileFormSchema>
             labelText={"Full name"}
             name={"fullName"}
+            description={
+              "Can include uppercase and lowercase letters, accented characters (including" +
+              " umlauts), apostrophes, and spaces. It has to be at least 4 characters."
+            }
           />
           <TextInput<ProfileFormSchema>
             labelText={"Email address"}
