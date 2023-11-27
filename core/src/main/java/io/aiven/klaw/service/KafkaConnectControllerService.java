@@ -200,14 +200,12 @@ public class KafkaConnectControllerService {
     }
 
     if (manageDatabase
-            .getHandleDbRequests()
-            .getConnectorRequests(
-                connectorRequestModel.getConnectorName(),
-                connectorRequestModel.getEnvironment(),
-                RequestStatus.CREATED.value,
-                tenantId)
-            .size()
-        > 0) {
+        .getHandleDbRequests()
+        .existsConnectorRequest(
+            connectorRequestModel.getConnectorName(),
+            connectorRequestModel.getEnvironment(),
+            RequestStatus.CREATED.value,
+            tenantId)) {
       return ApiResponse.notOk(KAFKA_CONNECT_ERR_110);
     }
 
@@ -855,14 +853,12 @@ public class KafkaConnectControllerService {
             .findFirst();
 
     if (manageDatabase
-            .getHandleDbRequests()
-            .getConnectorRequests(
-                kafkaConnectorRequest.getConnectorName(),
-                kafkaConnectorRequest.getEnvironment(),
-                RequestStatus.CREATED.value,
-                tenantId)
-            .size()
-        > 0) {
+        .getHandleDbRequests()
+        .existsConnectorRequest(
+            kafkaConnectorRequest.getConnectorName(),
+            kafkaConnectorRequest.getEnvironment(),
+            RequestStatus.CREATED.value,
+            tenantId)) {
       return ApiResponse.notOk(KAFKA_CONNECT_ERR_115);
     }
 
@@ -988,10 +984,8 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (manageDatabase
-            .getHandleDbRequests()
-            .getConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
-            .size()
-        > 0) {
+        .getHandleDbRequests()
+        .existsConnectorRequest(connectorName, envId, RequestStatus.CREATED.value, tenantId)) {
       return ApiResponse.notOk(KAFKA_CONNECT_ERR_117);
     }
 
