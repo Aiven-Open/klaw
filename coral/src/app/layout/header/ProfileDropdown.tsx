@@ -56,7 +56,7 @@ function ProfileDropdown() {
     window.location.assign(`${window.origin}${path}`);
   }
 
-  function onDropdownClick(actionKey: string | number) {
+  function onDropdownClick(actionKey: React.Key) {
     if (actionKey === LOGOUT_KEY) {
       toast({
         id: "logout",
