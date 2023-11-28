@@ -303,16 +303,16 @@ public class SchemaRegistryControllerService {
   public void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {
     String topic = schemaRequest.getTopicname();
     String schemaRequestEnvironment = schemaRequest.getEnvironment();
-    Optional<Env> optionalKafkaEnv =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(
-                kafkaEnv -> {
-                  if (kafkaEnv.getAssociatedEnv() != null) {
-                    return kafkaEnv.getAssociatedEnv().getId().equals(schemaRequestEnvironment);
-                  }
-                  return false;
-                })
-            .findFirst();
+
+    Optional<Env> optSchemaEnv =
+        manageDatabase.getEnv(tenantId, Integer.valueOf(schemaRequestEnvironment));
+    Optional<Env> optionalKafkaEnv = Optional.empty();
+    // add null pointer checks.
+    if (optSchemaEnv.isPresent()) {
+      optionalKafkaEnv =
+          manageDatabase.getEnv(
+              tenantId, Integer.valueOf(optSchemaEnv.get().getAssociatedEnv().getId()));
+    }
 
     // get all producer and consumer acls for topic, schemaRequestEnvironment
     List<Acl> acls = new ArrayList<>();

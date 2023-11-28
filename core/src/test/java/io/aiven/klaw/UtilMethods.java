@@ -766,6 +766,17 @@ public class UtilMethods {
     return envList;
   }
 
+  public Env getSchemaEnv() {
+    Env env = new Env();
+    env.setId("3");
+    env.setName("DEV");
+    env.setClusterId(3);
+    env.setTenantId(101);
+    env.setAssociatedEnv(new EnvTag("1", "DEV"));
+
+    return env;
+  }
+
   public List<Env> getEnvListsIncorrect1() {
     List<Env> envList = new ArrayList<>();
     Env env = new Env();

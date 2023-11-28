@@ -759,7 +759,11 @@ public class SchemaRegistryControllerServiceTest {
   public void notifySubscribers() {
     int tenantId = 101;
     SchemaRequest schemaRequest = getSchemasReq();
-    when(manageDatabase.getKafkaEnvList(tenantId)).thenReturn(utilMethods.getKafkaEnvs());
+    when(manageDatabase.getEnv(tenantId, Integer.valueOf(schemaRequest.getEnvironment())))
+        .thenReturn(Optional.of(utilMethods.getSchemaEnv()));
+    when(manageDatabase.getEnv(tenantId, Integer.valueOf(utilMethods.getSchemaEnv().getId())))
+        .thenReturn(Optional.of(utilMethods.getKafkaEnvs().get(0)));
+
     when(handleDbRequests.getSyncAcls(
             utilMethods.getKafkaEnvs().get(0).getId(), schemaRequest.getTopicname(), tenantId))
         .thenReturn(utilMethods.getSyncAcls());
