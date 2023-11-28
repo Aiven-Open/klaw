@@ -187,12 +187,12 @@
                 <includes>
                     <include>application.properties</include>
                 </includes>
-                    <excludes>
-                        <exclude>static</exclude>
-                        <exclude>template</exclude>
-                        <exclude>**/*.sql</exclude>
-                        <exclude>**/*.yaml</exclude>
-                    </excludes>
+                <excludes>
+                    <exclude>static</exclude>
+                    <exclude>template</exclude>
+                    <exclude>**/*.sql</exclude>
+                    <exclude>**/*.yaml</exclude>
+                </excludes>
                 <filtering>true</filtering>
             </resource>
             <resource>
@@ -252,6 +252,10 @@
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
+                                <fileset>
+                                    <directory>${basedir}/../coral/dist</directory>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
                             </filesets>
                         </configuration>
                     </execution>
@@ -262,14 +266,34 @@
                 <version>3.3.1</version>
                 <executions>
                     <execution>
-                        <id>copy-coral-index</id>
+                        <id>copy-coral-index-to-resource</id>
                         <!-- here the phase you need -->
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>resources</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/src/main/resources/templates/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-coral-index-to-target</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/templates/coral</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../coral/dist/</directory>
@@ -288,14 +312,31 @@
                 <version>3.3.1</version>
                 <executions>
                     <execution>
-                        <id>copy-coral-assets</id>
+                        <id>copy-coral-assets-to-resource</id>
                         <!-- here the phase you need -->
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>resources</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/src/main/resources/static/assets/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/assets/coral</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-coral-assets-to-target</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/static/assets/coral</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../coral/dist/assets/coral</directory>
