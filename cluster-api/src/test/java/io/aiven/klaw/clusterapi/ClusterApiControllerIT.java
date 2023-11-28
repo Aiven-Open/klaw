@@ -940,8 +940,7 @@ public class ClusterApiControllerIT {
 
   @DynamicPropertySource
   static void registerKafkaProperties(DynamicPropertyRegistry registry) {
-    embeddedKafkaBroker =
-        new EmbeddedKafkaZKBroker(1, false, 1); // .brokerProperties(buildBrokerProperties());
+    embeddedKafkaBroker = new EmbeddedKafkaZKBroker(1, false, 1);
 
     for (Map.Entry<String, String> stringStringEntry : buildBrokerProperties().entrySet()) {
       embeddedKafkaBroker.brokerProperty(stringStringEntry.getKey(), stringStringEntry.getValue());
