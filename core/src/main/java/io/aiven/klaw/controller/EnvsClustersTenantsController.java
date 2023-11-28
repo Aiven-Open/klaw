@@ -311,9 +311,9 @@ public class EnvsClustersTenantsController {
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(
-      value = "/udpateTenant",
+      value = "/updateTenant",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> udpateTenant(
+  public ResponseEntity<ApiResponse> updateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
           String orgName)
       throws KlawException {

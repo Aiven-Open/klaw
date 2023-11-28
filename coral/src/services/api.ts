@@ -64,7 +64,7 @@ const API_PATHS = {
   updateProfile: "/updateProfile",
   updatePermissions: "/updatePermissions",
   updateKwCustomProperty: "/updateKwCustomProperty",
-  udpateTenant: "/udpateTenant",
+  updateTenant: "/updateTenant",
   sendMessageToAdmin: "/sendMessageToAdmin",
   saveTopicDocumentation: "/saveTopicDocumentation",
   saveConnectorDocumentation: "/saveConnectorDocumentation",

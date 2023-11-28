@@ -20,6 +20,9 @@ export type paths = {
   "/updateTopics": {
     post: operations["createTopicsUpdateRequest"];
   };
+  "/updateTenant": {
+    post: operations["updateTenant"];
+  };
   "/updateTeam": {
     post: operations["updateTeam"];
   };
@@ -49,9 +52,6 @@ export type paths = {
   };
   "/updateKwCustomProperty": {
     post: operations["updateKwCustomProperty"];
-  };
-  "/udpateTenant": {
-    post: operations["udpateTenant"];
   };
   "/sendMessageToAdmin": {
     post: operations["sendMessageToAdmin"];
@@ -1279,8 +1279,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1863,6 +1863,21 @@ export type operations = {
       };
     };
   };
+  updateTenant: {
+    parameters: {
+      query: {
+        orgName: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   updateTeam: {
     requestBody: {
       content: {
@@ -2002,21 +2017,6 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["KwPropertiesModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  udpateTenant: {
-    parameters: {
-      query: {
-        orgName: string;
       };
     };
     responses: {

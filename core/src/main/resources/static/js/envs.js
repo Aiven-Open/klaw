@@ -414,7 +414,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "POST",
-                url: "udpateTenant",
+                url: "updateTenant",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'orgName' : orgName},
                 data: {'orgName' : orgName}

@@ -161,6 +161,33 @@
         }
       }
     },
+    "/updateTenant" : {
+      "post" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "updateTenant",
+        "parameters" : [ {
+          "name" : "orgName",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-z ]*$"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/updateTeam" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
@@ -439,33 +466,6 @@
           },
           "required" : true
         },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/udpateTenant" : {
-      "post" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "udpateTenant",
-        "parameters" : [ {
-          "name" : "orgName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[a-zA-z ]*$"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -8022,10 +8022,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
