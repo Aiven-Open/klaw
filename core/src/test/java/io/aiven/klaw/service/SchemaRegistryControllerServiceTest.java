@@ -768,9 +768,6 @@ public class SchemaRegistryControllerServiceTest {
             utilMethods.getKafkaEnvs().get(0).getId(), schemaRequest.getTopicname(), tenantId))
         .thenReturn(utilMethods.getSyncAcls());
     when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeamsForTenant());
-    when(manageDatabase.getEnv(
-            tenantId, Integer.valueOf(utilMethods.getKafkaEnvs().get(0).getId())))
-        .thenReturn(Optional.of(env));
     schemaRegistryControllerService.notifySubscribers(schemaRequest, tenantId);
     verify(mailService, times(1))
         .notifySubscribersOnSchemaChange(

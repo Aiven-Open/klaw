@@ -316,14 +316,11 @@ public class SchemaRegistryControllerService {
 
     // get all producer and consumer acls for topic, schemaRequestEnvironment
     List<Acl> acls = new ArrayList<>();
-    Optional<Env> optionalEnv = Optional.empty();
     if (optionalKafkaEnv.isPresent()) {
       acls =
           manageDatabase
               .getHandleDbRequests()
               .getSyncAcls(optionalKafkaEnv.get().getId(), topic, tenantId);
-      optionalEnv =
-          manageDatabase.getEnv(tenantId, Integer.valueOf(optionalKafkaEnv.get().getId()));
     }
 
     // get all teams to be notified based on above acls
@@ -340,11 +337,11 @@ public class SchemaRegistryControllerService {
             .findFirst();
 
     // send notifications
-    if (optionalOwnerTeam.isPresent() && optionalEnv.isPresent()) {
+    if (optionalOwnerTeam.isPresent() && optionalKafkaEnv.isPresent()) {
       mailService.notifySubscribersOnSchemaChange(
           SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS,
           topic,
-          optionalEnv.get().getName(),
+          optionalKafkaEnv.get().getName(),
           optionalOwnerTeam.get().getTeamname(),
           teamsToBeNotified,
           optionalOwnerTeam.get().getTeammail(),
