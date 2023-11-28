@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "src/domain/user";
-import { Alert, Box, Grid, Typography } from "@aivenio/aquarium";
+import { Alert, Box, Grid, Typography, useToast } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -15,9 +15,11 @@ import {
 import { SkeletonProfile } from "src/app/features/user-information/profile/components/SkeletonProfile";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import isEqual from "lodash/isEqual";
-import { use } from "msw/lib/core/utils/internal/requestHandlerUtils";
+import { FieldErrors } from "react-hook-form";
 
 function Profile() {
+  const toast = useToast();
+
   const {
     data: user,
     isLoading,
@@ -47,14 +49,17 @@ function Profile() {
         [user?.fullname, user?.mailid]
       )
     ) {
-      console.log("NO CHANGES");
-    } else {
-      console.log(userInput);
+      toast({
+        message: "No changes were made to the topic.",
+        position: "bottom-left",
+        variant: "default",
+      });
+      return;
     }
+    console.log(userInput);
   }
 
-  // @ts-ignore
-  function onFormError(error) {
+  function onFormError(error: FieldErrors<ProfileFormSchema>) {
     console.error(error);
   }
 
@@ -76,7 +81,7 @@ function Profile() {
       <Grid>
         <Grid.Item md={6} xs={12}>
           <TextInput<ProfileFormSchema>
-            labelText={"User name"}
+            labelText={"User name (read-only)"}
             name={"userName"}
             readOnly={true}
           />
@@ -93,12 +98,12 @@ function Profile() {
             name={"email"}
           />
           <TextInput<ProfileFormSchema>
-            labelText={"Team (currently logged in)"}
+            labelText={"Team (read-only)"}
             name={"team"}
             readOnly={true}
           />
           <TextInput<ProfileFormSchema>
-            labelText={"Role"}
+            labelText={"Role (read-only)"}
             name={"role"}
             readOnly={true}
           />
@@ -116,12 +121,12 @@ function Profile() {
                   checked={user.switchTeams}
                   disabled={true}
                 >
-                  User can switch teams
+                  User can switch teams (read-only)
                 </Checkbox>
 
                 <div>
                   <Typography.SmallStrong>
-                    <span id={"team-list-id"}>Member of team</span>
+                    <span id={"team-list-id"}>Member of team (read-only)</span>
                   </Typography.SmallStrong>
                   <ul aria-labelledby={"team-list-id"}>
                     {user.switchAllowedTeamNames.map((team) => {
