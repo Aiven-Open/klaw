@@ -9,7 +9,6 @@ import { transformUserListApiResponse } from "src/domain/user/user-transformer";
 import { User, UserListApiResponse } from "src/domain/user/user-types";
 import { convertQueryValuesToString } from "src/services/api-helper";
 
-
 async function getUserList(
   params: KlawApiRequestQueryParameters<"showUsers">
 ): Promise<UserListApiResponse> {
@@ -38,13 +37,11 @@ async function getUser(): Promise<User> {
   );
 }
 
-
 async function changePassword(
   payload: KlawApiRequest<"changePwd">
 ): Promise<KlawApiResponse<"changePwd">> {
   return api.post(API_PATHS.changePwd, payload);
 }
-
 
 async function updateProfile(profile: KlawApiModel<"ProfileModel">) {
   return api.post<
