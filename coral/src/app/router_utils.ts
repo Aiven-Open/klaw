@@ -24,6 +24,7 @@ enum Routes {
   USER_INFORMATION = "/user",
   USER_PROFILE = "/user/profile",
   USER_CHANGE_PASSWORD = "/user/change-password",
+  USER_TENANT_INFO = "/user/tenant-info",
 }
 
 enum EnvironmentsTabEnum {

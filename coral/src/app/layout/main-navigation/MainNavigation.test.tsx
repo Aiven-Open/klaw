@@ -66,7 +66,7 @@ const submenuItems = [
         linkTo: "/changePwd",
       },
       {
-        name: "Tenant",
+        name: "Tenant info",
         linkTo: "/tenantInfo",
       },
     ],
