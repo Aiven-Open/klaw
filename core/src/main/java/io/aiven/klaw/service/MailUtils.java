@@ -11,6 +11,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +127,7 @@ public class MailUtils {
                 getUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
             .getTenantId();
     loadKwProps(tenantId);
-    Boolean requiresApproval = false;
+    boolean requiresApproval = false;
     switch (mailType) {
       case TOPIC_CREATE_REQUESTED -> {
         formattedStr = String.format(topicRequestMail, "'" + topicName + "'");
@@ -275,6 +276,41 @@ public class MailUtils {
         requiresApproval,
         tenantId,
         loginUrl);
+  }
+
+  void notifySubscribersOnSchemaChange(
+      MailType mailType,
+      String topicName,
+      String envName,
+      String teamName,
+      List<String> toMailIds,
+      String ccOwnerTeamMailId,
+      int tenantId,
+      String loginUrl) {
+    String subject, formattedStr;
+    if (mailType == MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS) {
+      subject = "New schema on a topic";
+      formattedStr =
+          "A schema has been uploaded on Topic :"
+              + topicName
+              + " Environment : "
+              + envName
+              + " by team : "
+              + teamName;
+      String finalSubject = subject;
+      String finalFormattedStr = formattedStr;
+      CompletableFuture.runAsync(
+          () -> {
+            emailService.sendSimpleMessage(
+                toMailIds,
+                Collections.singletonList(ccOwnerTeamMailId),
+                Collections.emptyList(),
+                finalSubject,
+                finalFormattedStr,
+                tenantId,
+                loginUrl);
+          });
+    }
   }
 
   void sendMail(String username, String pwd, HandleDbRequests dbHandle, String loginUrl) {
