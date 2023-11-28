@@ -410,7 +410,8 @@ describe("Users.tsx", () => {
 
       expect(search).toBeEnabled();
       expect(search).toHaveAccessibleDescription(
-        'Partial match for user name Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Partial match for username Searching starts automatically with a little delay while typing. Press "Escape"' +
+          " to delete all your input."
       );
     });
 
