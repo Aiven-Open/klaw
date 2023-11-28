@@ -4,7 +4,10 @@ import { userEvent } from "@testing-library/user-event";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
 import { getEnvironmentsForTopicRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { requestTopicCreation } from "src/domain/topic/topic-api";
+import {
+  getTopicAdvancedConfigOptions,
+  requestTopicCreation,
+} from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
 
@@ -18,6 +21,10 @@ jest.mock("src/domain/topic/topic-api");
 const mockRequestTopicCreation = requestTopicCreation as jest.MockedFunction<
   typeof requestTopicCreation
 >;
+const mockGetTopicAdvancedConfigOptions =
+  getTopicAdvancedConfigOptions as jest.MockedFunction<
+    typeof getTopicAdvancedConfigOptions
+  >;
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -32,24 +39,12 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 describe("<TopicRequest />", () => {
-  const originalConsoleError = console.error;
-  let user: ReturnType<typeof userEvent.setup>;
-
-  beforeAll(() => {
-    console.error = jest.fn();
-  });
-
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
-
-  beforeEach(() => {
-    user = userEvent.setup();
-  });
+  const user = userEvent.setup();
 
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
           createMockEnvironmentDTO({ name: "TST", id: "2" }),
@@ -106,6 +101,7 @@ describe("<TopicRequest />", () => {
 
     describe("when field is clicked", () => {
       beforeEach(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
           createMockEnvironmentDTO({ name: "TST", id: "2" }),
@@ -167,6 +163,7 @@ describe("<TopicRequest />", () => {
   describe("Topic name", () => {
     describe("informs user about valid input with placeholder per default", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "DEV",
@@ -209,6 +206,7 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with placeholder when regex should be applied", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "DEV",
@@ -250,6 +248,7 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with a prefix is needed", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "DEV",
@@ -292,6 +291,7 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not have enough characters", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "EnvWithTopicPrefix",
@@ -335,6 +335,7 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not match the default pattern", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "EnvWithTopicPrefix",
@@ -378,6 +379,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicPrefix defined", () => {
       beforeEach(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "EnvWithTopicPrefix",
@@ -458,6 +460,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicSuffix defined", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
             name: "EnvWithTopicSuffix",
@@ -505,6 +508,7 @@ describe("<TopicRequest />", () => {
   describe("Replication factor", () => {
     describe("renders all necessary elements on default", () => {
       beforeAll(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
           createMockEnvironmentDTO({
@@ -574,6 +578,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment is changed", () => {
       beforeEach(() => {
+        mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
           createMockEnvironmentDTO({
@@ -688,6 +693,7 @@ describe("<TopicRequest />", () => {
 
   describe("Topic partitions", () => {
     beforeAll(() => {
+      mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
         createMockEnvironmentDTO({
@@ -753,6 +759,7 @@ describe("<TopicRequest />", () => {
 
   describe("when environment is changed", () => {
     beforeEach(() => {
+      mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
         createMockEnvironmentDTO({
@@ -849,6 +856,7 @@ describe("<TopicRequest />", () => {
 
   describe("AdvancedConfiguration", () => {
     beforeAll(() => {
+      mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
@@ -887,7 +895,17 @@ describe("<TopicRequest />", () => {
   });
 
   describe("form submission", () => {
-    beforeAll(async () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      // this need to be reset in beforeEach
+      // because they are async and resetting them
+      // afterEach may lead to false results when
+      // tests run fast
+      mockedUsedNavigate.mockReset();
+
+      mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
@@ -904,13 +922,7 @@ describe("<TopicRequest />", () => {
         name: "Environment *",
       });
       await screen.findByRole("option", { name: "DEV" });
-    });
 
-    afterAll(() => {
-      cleanup();
-    });
-
-    beforeEach(async () => {
       // Fill form with valid data
       await user.selectOptions(
         screen.getByRole("combobox", {
@@ -933,15 +945,18 @@ describe("<TopicRequest />", () => {
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
       jest.resetAllMocks();
+      cleanup();
     });
 
     describe("handles an error from the api", () => {
       it("renders an error message", async () => {
-        mockRequestTopicCreation.mockRejectedValue({
+        const testError = {
           data: { message: "Topic with such name already exists!" },
           status: 400,
-        });
+        };
+        mockRequestTopicCreation.mockRejectedValue(testError);
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
@@ -972,25 +987,12 @@ describe("<TopicRequest />", () => {
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Topic with such name already exists!");
+
+        expect(console.error).toHaveBeenCalledWith(testError);
       });
     });
 
     describe("enables user to create a new topic request", () => {
-      beforeEach(async () => {
-        // these two need to be reset in beforeEach
-        // because they are async and resetting them
-        // afterEach may lead to false results when
-        // tests run fast
-
-        mockedUsedNavigate.mockReset();
-
-        // const originalConsoleError = console.error;
-      });
-
-      afterEach(() => {
-        mockedUseToast.mockReset();
-      });
-
       it("creates a new topic request when input was valid", async () => {
         mockRequestTopicCreation.mockResolvedValue({
           success: true,
@@ -1024,6 +1026,7 @@ describe("<TopicRequest />", () => {
           remarks: "",
         });
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
+        expect(console.error).not.toHaveBeenCalled();
       });
 
       it("errors and does not create a new topic request when input was invalid", async () => {
@@ -1042,6 +1045,11 @@ describe("<TopicRequest />", () => {
         expect(
           screen.getByRole("button", { name: "Submit request" })
         ).toBeEnabled();
+
+        expect(console.error).toHaveBeenCalledWith(
+          "Form error",
+          expect.anything()
+        );
       });
 
       it("shows a notification that request was successful and redirects user", async () => {
@@ -1061,6 +1069,7 @@ describe("<TopicRequest />", () => {
           position: "bottom-left",
           variant: "default",
         });
+        expect(console.error).not.toHaveBeenCalled();
       });
     });
   });
@@ -1073,6 +1082,7 @@ describe("<TopicRequest />", () => {
     };
 
     beforeEach(async () => {
+      mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
