@@ -18,9 +18,11 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -267,6 +269,10 @@ public class SchemaRegistryControllerService {
         if (responseDb.equals(ApiResultStatus.SUCCESS.value)) {
           saveToTopicHistory(userDetails, tenantId, schemaRequest);
         }
+
+        // send mail to producers and consumers
+        notifySubscribers(schemaRequest, tenantId);
+
         mailService.sendMail(
             schemaRequest.getTopicname(),
             null,
@@ -291,6 +297,40 @@ public class SchemaRegistryControllerService {
         errStr = errStr.substring(0, 98) + "...";
       }
       return ApiResponse.notOk(String.format(SCHEMA_ERR_102, errStr));
+    }
+  }
+
+  private void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {
+    String topic = schemaRequest.getTopicname();
+    String environment = schemaRequest.getEnvironment();
+    // get all producer and consumer acls for topic, environment
+    List<Acl> acls = manageDatabase.getHandleDbRequests().getSyncAcls(environment, topic, tenantId);
+
+    // get all teams to be notified based on above acls
+    List<Integer> teamIdsToBeNotified = acls.stream().map(Acl::getTeamId).toList();
+    List<String> teamsToBeNotified =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> teamIdsToBeNotified.contains(team.getTeamId()))
+            .map(Team::getTeammail)
+            .toList();
+
+    Optional<Team> optionalOwnerTeam =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), schemaRequest.getTeamId()))
+            .findFirst();
+    Optional<Env> optionalEnv = manageDatabase.getEnv(tenantId, Integer.valueOf(environment));
+
+    // send notifications
+    if (optionalOwnerTeam.isPresent() && optionalEnv.isPresent()) {
+      mailService.notifySubscribersOnSchemaChange(
+          SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS,
+          topic,
+          optionalEnv.get().getName(),
+          optionalOwnerTeam.get().getTeamname(),
+          teamsToBeNotified,
+          optionalOwnerTeam.get().getTeamname(),
+          tenantId,
+          commonUtilsService.getLoginUrl());
     }
   }
 
