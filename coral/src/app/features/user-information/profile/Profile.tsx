@@ -31,19 +31,21 @@ function Profile() {
     queryFn: getUser,
   });
 
-  const { mutate: updateUser, isLoading: isLoadingUpdateUser } = useMutation(
-    updateProfile,
-    {
-      onSuccess: async () => {
-        toast({
-          message: "Profile successfully updated",
-          position: "bottom-left",
-          variant: "default",
-        });
-        await refetchUser();
-      },
-    }
-  );
+  const {
+    mutate: updateUser,
+    isLoading: isLoadingUpdateUser,
+    isError: isErrorUpdateUser,
+    error: errorUpdateUser,
+  } = useMutation(updateProfile, {
+    onSuccess: async () => {
+      toast({
+        message: "Profile successfully updated",
+        position: "bottom-left",
+        variant: "default",
+      });
+      await refetchUser();
+    },
+  });
 
   const form = useForm<ProfileFormSchema>({
     values: {
@@ -82,79 +84,90 @@ function Profile() {
     return <SkeletonProfile />;
   }
 
-  if (!isLoadingUser && isErrorUser) {
+  if (isErrorUser) {
     return <Alert type={"error"}>{parseErrorMsg(errorUser)}</Alert>;
   }
 
   return (
-    <Form
-      {...form}
-      ariaLabel={"Update profile"}
-      onSubmit={onSubmitForm}
-      onError={onFormError}
-    >
-      <Grid>
-        <Grid.Item md={6} xs={12}>
-          <TextInput<ProfileFormSchema>
-            labelText={"User name (read-only)"}
-            name={"userName"}
-            readOnly={true}
-          />
-          <TextInput<ProfileFormSchema>
-            labelText={"Full name"}
-            name={"fullName"}
-            description={
-              "Can include uppercase and lowercase letters, accented characters (including" +
-              " umlauts), apostrophes, and spaces. It has to be at least 4 characters."
-            }
-          />
-          <TextInput<ProfileFormSchema>
-            labelText={"Email address"}
-            name={"email"}
-          />
-          <TextInput<ProfileFormSchema>
-            labelText={"Team (read-only)"}
-            name={"team"}
-            readOnly={true}
-          />
-          <TextInput<ProfileFormSchema>
-            labelText={"Role (read-only)"}
-            name={"role"}
-            readOnly={true}
-          />
+    <>
+      {isErrorUpdateUser && (
+        <Box marginBottom={"l2"}>
+          <Alert type={"error"}>{parseErrorMsg(errorUpdateUser)}</Alert>
+        </Box>
+      )}
+      <Form
+        {...form}
+        ariaLabel={"Update profile"}
+        onSubmit={onSubmitForm}
+        onError={onFormError}
+      >
+        <Grid>
+          <Grid.Item md={6} xs={12}>
+            <TextInput<ProfileFormSchema>
+              labelText={"User name (read-only)"}
+              name={"userName"}
+              readOnly={true}
+            />
+            <TextInput<ProfileFormSchema>
+              labelText={"Full name"}
+              name={"fullName"}
+              description={
+                "Can include uppercase and lowercase letters, accented characters (including" +
+                " umlauts), apostrophes, and spaces. It has to be at least 4 characters."
+              }
+            />
+            <TextInput<ProfileFormSchema>
+              labelText={"Email address"}
+              name={"email"}
+            />
+            <TextInput<ProfileFormSchema>
+              labelText={"Team (read-only)"}
+              name={"team"}
+              readOnly={true}
+            />
+            <TextInput<ProfileFormSchema>
+              labelText={"Role (read-only)"}
+              name={"role"}
+              readOnly={true}
+            />
 
-          {user.switchTeams &&
-            user.switchAllowedTeamNames &&
-            user.switchAllowedTeamNames?.length >= 1 && (
-              <Box.Flex
-                flexDirection={"column"}
-                rowGap={"l2"}
-                paddingBottom={"l2"}
-              >
-                <Checkbox<ProfileFormSchema>
-                  name={"switchTeams"}
-                  checked={user.switchTeams}
-                  disabled={true}
+            {user.switchTeams &&
+              user.switchAllowedTeamNames &&
+              user.switchAllowedTeamNames?.length >= 1 && (
+                <Box.Flex
+                  flexDirection={"column"}
+                  rowGap={"l2"}
+                  paddingBottom={"l2"}
                 >
-                  User can switch teams (read-only)
-                </Checkbox>
+                  <Checkbox<ProfileFormSchema>
+                    name={"switchTeams"}
+                    checked={user.switchTeams}
+                    disabled={true}
+                  >
+                    User can switch teams (read-only)
+                  </Checkbox>
 
-                <div>
-                  <Typography.SmallStrong>
-                    <span id={"team-list-id"}>Member of team (read-only)</span>
-                  </Typography.SmallStrong>
-                  <ul aria-labelledby={"team-list-id"}>
-                    {user.switchAllowedTeamNames.map((team) => {
-                      return <li key={team}>{team}</li>;
-                    })}
-                  </ul>
-                </div>
-              </Box.Flex>
-            )}
-        </Grid.Item>
-      </Grid>
-      <SubmitButton loading={isLoadingUpdateUser}>Update profile</SubmitButton>
-    </Form>
+                  <div>
+                    <Typography.SmallStrong>
+                      <span id={"team-list-id"}>
+                        Member of team (read-only)
+                      </span>
+                    </Typography.SmallStrong>
+                    <ul aria-labelledby={"team-list-id"}>
+                      {user.switchAllowedTeamNames.map((team) => {
+                        return <li key={team}>{team}</li>;
+                      })}
+                    </ul>
+                  </div>
+                </Box.Flex>
+              )}
+          </Grid.Item>
+        </Grid>
+        <SubmitButton loading={isLoadingUpdateUser}>
+          Update profile
+        </SubmitButton>
+      </Form>
+    </>
   );
 }
 

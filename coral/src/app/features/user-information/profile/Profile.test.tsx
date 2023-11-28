@@ -504,4 +504,71 @@ describe("Profile.tsx", () => {
       expect(getUser).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe("handles errors when updating profile fails", () => {
+    const error: KlawApiError = {
+      success: false,
+      message: "Oh no 😭",
+    };
+
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockUpdateProfile.mockRejectedValue(error);
+      mockGetUser.mockResolvedValue({
+        ...testUser,
+        switchTeams: true,
+        switchAllowedTeamNames: ["Discovery", "Enterprise"],
+      });
+      customRender(<Profile />, { queryClient: true });
+
+      await waitForElementToBeRemoved(
+        screen.getByText("User profile loading.")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("shows error when updating profile fails", async () => {
+      const submitButton = screen.getByRole("button", {
+        name: "Update profile",
+      });
+
+      const errorBefore = screen.queryByText(error.message);
+      expect(errorBefore).not.toBeInTheDocument();
+
+      const input = screen.getByRole("textbox", { name: /Full name/ });
+
+      await user.type(input, " is the best");
+      await user.click(submitButton);
+
+      expect(mockUpdateProfile).toHaveBeenCalled();
+
+      const errorAfter = screen.getByRole("alert");
+
+      expect(errorAfter).toBeVisible();
+      expect(errorAfter).toHaveTextContent(error.message);
+      expect(console.error).toHaveBeenCalledWith(error);
+    });
+
+    it("does not refetches the user profile after when update failed", async () => {
+      const submitButton = screen.getByRole("button", {
+        name: "Update profile",
+      });
+      const input = screen.getByRole("textbox", { name: /Full name/ });
+
+      await user.type(input, " is the best");
+      await user.click(submitButton);
+
+      expect(mockUpdateProfile).toHaveBeenCalled();
+
+      // first call to getUser on page load
+      expect(getUser).not.toHaveBeenCalledTimes(2);
+      expect(console.error).toHaveBeenCalledWith(error);
+    });
+  });
 });
