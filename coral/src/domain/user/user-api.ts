@@ -1,8 +1,12 @@
-import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
-import api, { API_PATHS } from "src/services/api";
 import { transformUserListApiResponse } from "src/domain/user/user-transformer";
 import { UserListApiResponse } from "src/domain/user/user-types";
+import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiResponse,
+} from "types/utils";
 
 async function getUserList(
   params: KlawApiRequestQueryParameters<"showUsers">
@@ -26,4 +30,10 @@ async function getUserList(
     );
 }
 
-export { getUserList };
+async function changePassword(
+  payload: KlawApiRequest<"changePwd">
+): Promise<KlawApiResponse<"changePwd">> {
+  return api.post(API_PATHS.changePwd, payload);
+}
+
+export { changePassword, getUserList };
