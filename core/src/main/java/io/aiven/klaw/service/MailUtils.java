@@ -304,7 +304,7 @@ public class MailUtils {
             emailService.sendSimpleMessage(
                 toMailIds,
                 Collections.singletonList(ccOwnerTeamMailId),
-                Collections.singletonList(null),
+                Collections.emptyList(),
                 finalSubject,
                 finalFormattedStr,
                 tenantId,

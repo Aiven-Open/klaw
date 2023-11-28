@@ -7,6 +7,7 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.KwTenants;
@@ -271,6 +272,23 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
+  public List<Acl> getSyncAcls() {
+    List<Acl> allTopicReqs = new ArrayList<>();
+    Acl acl1 = new Acl();
+    acl1.setTeamId(102);
+    acl1.setAclType(AclType.PRODUCER.value);
+    acl1.setTenantId(101);
+    allTopicReqs.add(acl1);
+
+    Acl acl2 = new Acl();
+    acl2.setTeamId(103);
+    acl2.setAclType(AclType.CONSUMER.value);
+    acl2.setTenantId(101);
+    allTopicReqs.add(acl2);
+
+    return allTopicReqs;
+  }
+
   public List<AclInfo> getAclInfoList() {
     List<AclInfo> allTopicReqs = new ArrayList<>();
     AclInfo topicRequest = new AclInfo();
@@ -467,6 +485,39 @@ public class UtilMethods {
     allTopicReqs.add(team);
 
     return allTopicReqs;
+  }
+
+  public List<Team> getTeamsForTenant() {
+    List<Team> teams = new ArrayList<>();
+    Team team1 = new Team();
+    team1.setTeamname("Seahorses");
+    team1.setTeamId(101);
+    team1.setContactperson("Contact Person1");
+    team1.setTenantId(101);
+    team1.setTeamphone("3142342343242");
+    team1.setTeammail("test1@test.com");
+
+    Team team2 = new Team();
+    team2.setTeamname("Octopus");
+    team2.setTeamId(102);
+    team2.setContactperson("Contact Person2");
+    team2.setTenantId(101);
+    team2.setTeamphone("3142342343242");
+    team2.setTeammail("test2@test.com");
+
+    Team team3 = new Team();
+    team3.setTeamname("Dragons");
+    team3.setTeamId(103);
+    team3.setContactperson("Contact Person3");
+    team3.setTenantId(101);
+    team3.setTeamphone("3142342343242");
+    team3.setTeammail("test3@test.com");
+
+    teams.add(team1);
+    teams.add(team2);
+    teams.add(team3);
+
+    return teams;
   }
 
   public List<TeamModelResponse> getTeamsModel() {
@@ -700,6 +751,18 @@ public class UtilMethods {
     envList.add(env);
     env.setClusterId(1);
     env.setTenantId(101);
+    return envList;
+  }
+
+  public List<Env> getKafkaEnvs() {
+    List<Env> envList = new ArrayList<>();
+    Env env = new Env();
+    env.setId("1");
+    env.setName("DEV");
+    envList.add(env);
+    env.setClusterId(1);
+    env.setTenantId(101);
+    env.setAssociatedEnv(new EnvTag("3", "DEV"));
     return envList;
   }
 

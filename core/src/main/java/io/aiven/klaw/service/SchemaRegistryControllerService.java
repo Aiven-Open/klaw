@@ -300,11 +300,31 @@ public class SchemaRegistryControllerService {
     }
   }
 
-  private void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {
+  public void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {
     String topic = schemaRequest.getTopicname();
-    String environment = schemaRequest.getEnvironment();
-    // get all producer and consumer acls for topic, environment
-    List<Acl> acls = manageDatabase.getHandleDbRequests().getSyncAcls(environment, topic, tenantId);
+    String schemaRequestEnvironment = schemaRequest.getEnvironment();
+    Optional<Env> optionalKafkaEnv =
+        manageDatabase.getKafkaEnvList(tenantId).stream()
+            .filter(
+                kafkaEnv -> {
+                  if (kafkaEnv.getAssociatedEnv() != null) {
+                    return kafkaEnv.getAssociatedEnv().getId().equals(schemaRequestEnvironment);
+                  }
+                  return false;
+                })
+            .findFirst();
+
+    // get all producer and consumer acls for topic, schemaRequestEnvironment
+    List<Acl> acls = new ArrayList<>();
+    Optional<Env> optionalEnv = Optional.empty();
+    if (optionalKafkaEnv.isPresent()) {
+      acls =
+          manageDatabase
+              .getHandleDbRequests()
+              .getSyncAcls(optionalKafkaEnv.get().getId(), topic, tenantId);
+      optionalEnv =
+          manageDatabase.getEnv(tenantId, Integer.valueOf(optionalKafkaEnv.get().getId()));
+    }
 
     // get all teams to be notified based on above acls
     List<Integer> teamIdsToBeNotified = acls.stream().map(Acl::getTeamId).toList();
@@ -318,7 +338,6 @@ public class SchemaRegistryControllerService {
         manageDatabase.getTeamObjForTenant(tenantId).stream()
             .filter(team -> Objects.equals(team.getTeamId(), schemaRequest.getTeamId()))
             .findFirst();
-    Optional<Env> optionalEnv = manageDatabase.getEnv(tenantId, Integer.valueOf(environment));
 
     // send notifications
     if (optionalOwnerTeam.isPresent() && optionalEnv.isPresent()) {
@@ -328,7 +347,7 @@ public class SchemaRegistryControllerService {
           optionalEnv.get().getName(),
           optionalOwnerTeam.get().getTeamname(),
           teamsToBeNotified,
-          optionalOwnerTeam.get().getTeamname(),
+          optionalOwnerTeam.get().getTeammail(),
           tenantId,
           commonUtilsService.getLoginUrl());
     }

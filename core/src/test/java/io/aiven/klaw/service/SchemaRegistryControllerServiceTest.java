@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.enums.MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
@@ -84,6 +86,7 @@ public class SchemaRegistryControllerServiceTest {
   private ObjectMapper mapper = new ObjectMapper();
 
   private Env env;
+  private UtilMethods utilMethods;
 
   @Captor private ArgumentCaptor<SchemaRequest> schemaRequestCaptor;
 
@@ -109,6 +112,7 @@ public class SchemaRegistryControllerServiceTest {
     Boolean validateOnSave = true;
     ReflectionTestUtils.setField(
         schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
+    utilMethods = new UtilMethods();
   }
 
   private void loginMock() {
@@ -751,6 +755,33 @@ public class SchemaRegistryControllerServiceTest {
     }
   }
 
+  @Test
+  public void notifySubscribers() {
+    int tenantId = 101;
+    SchemaRequest schemaRequest = getSchemasReq();
+    when(manageDatabase.getKafkaEnvList(tenantId)).thenReturn(utilMethods.getKafkaEnvs());
+    when(handleDbRequests.getSyncAcls(
+            utilMethods.getKafkaEnvs().get(0).getId(), schemaRequest.getTopicname(), tenantId))
+        .thenReturn(utilMethods.getSyncAcls());
+    when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeamsForTenant());
+    when(manageDatabase.getEnv(
+            tenantId, Integer.valueOf(utilMethods.getKafkaEnvs().get(0).getId())))
+        .thenReturn(Optional.of(env));
+    schemaRegistryControllerService.notifySubscribers(schemaRequest, tenantId);
+    verify(mailService, times(1))
+        .notifySubscribersOnSchemaChange(
+            SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS,
+            schemaRequest.getTopicname(),
+            env.getName(),
+            utilMethods.getTeamsForTenant().get(0).getTeamname(),
+            Arrays.asList(
+                utilMethods.getTeamsForTenant().get(1).getTeammail(),
+                utilMethods.getTeamsForTenant().get(2).getTeammail()),
+            utilMethods.getTeamsForTenant().get(0).getTeammail(),
+            tenantId,
+            commonUtilsService.getLoginUrl());
+  }
+
   private static SchemaRequestModel createDefaultSchemaRequestModel() {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
@@ -885,6 +916,17 @@ public class SchemaRegistryControllerServiceTest {
     return schema;
   }
 
+  private SchemaRequest getSchemasReq() {
+    SchemaRequest schReq = new SchemaRequest();
+    schReq.setEnvironment("3");
+    schReq.setRequestStatus(RequestStatus.CREATED.value);
+    schReq.setTeamId(101);
+    schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    schReq.setTopicname("testtopic");
+
+    return schReq;
+  }
+
   private List<SchemaRequest> getSchemasReqs() {
     List<SchemaRequest> schList = new ArrayList<>();
     SchemaRequest schReq = new SchemaRequest();
@@ -892,6 +934,7 @@ public class SchemaRegistryControllerServiceTest {
     schReq.setRequestStatus(RequestStatus.CREATED.value);
     schReq.setTeamId(101);
     schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    schReq.setTopicname("testtopic");
     schList.add(schReq);
 
     schReq = new SchemaRequest();
