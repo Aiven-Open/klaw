@@ -596,6 +596,17 @@ export type components = {
       deleteAssociatedSchema?: boolean;
       otherParams?: string;
     };
+    KwTenantModel: {
+      tenantName: string;
+      tenantDesc: string;
+      contactPerson: string;
+      orgName: string;
+      emailId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      authorizedToDelete?: boolean;
+      activeTenant?: boolean;
+    };
     TeamModel: {
       teamname: string;
       teammail?: string;
@@ -926,17 +937,6 @@ export type components = {
     EnvTag: {
       id?: string;
       name?: string;
-    };
-    KwTenantModel: {
-      tenantName: string;
-      tenantDesc: string;
-      /** Format: int32 */
-      tenantId?: number;
-      contactPerson?: string;
-      orgName?: string;
-      authorizedToDelete?: boolean;
-      emailId?: string;
-      activeTenant?: boolean;
     };
     EnvModel: {
       name: string;
@@ -1279,8 +1279,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1864,9 +1864,9 @@ export type operations = {
     };
   };
   updateTenant: {
-    parameters: {
-      query: {
-        orgName: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwTenantModel"];
       };
     };
     responses: {
