@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getUser } from "src/domain/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getUser, updateProfile } from "src/domain/user";
 import { Alert, Box, Grid, Typography, useToast } from "@aivenio/aquarium";
 import {
   Form,
@@ -22,13 +22,28 @@ function Profile() {
 
   const {
     data: user,
-    isLoading,
-    isError,
-    error,
+    isLoading: isLoadingUser,
+    isError: isErrorUser,
+    error: errorUser,
+    refetch: refetchUser,
   } = useQuery({
     queryKey: ["getUser"],
     queryFn: getUser,
   });
+
+  const { mutate: updateUser, isLoading: isLoadingUpdateUser } = useMutation(
+    updateProfile,
+    {
+      onSuccess: async () => {
+        toast({
+          message: "Profile successfully updated",
+          position: "bottom-left",
+          variant: "default",
+        });
+        await refetchUser();
+      },
+    }
+  );
 
   const form = useForm<ProfileFormSchema>({
     values: {
@@ -56,19 +71,19 @@ function Profile() {
       });
       return;
     }
-    console.log(userInput);
+    updateUser({ fullname: userInput.fullName, mailid: userInput.email });
   }
 
   function onFormError(error: FieldErrors<ProfileFormSchema>) {
     console.error(error);
   }
 
-  if (isLoading) {
+  if (isLoadingUser) {
     return <SkeletonProfile />;
   }
 
-  if (!isLoading && isError) {
-    return <Alert type={"error"}>{parseErrorMsg(error)}</Alert>;
+  if (!isLoadingUser && isErrorUser) {
+    return <Alert type={"error"}>{parseErrorMsg(errorUser)}</Alert>;
   }
 
   return (
@@ -138,7 +153,7 @@ function Profile() {
             )}
         </Grid.Item>
       </Grid>
-      <SubmitButton>Update profile</SubmitButton>
+      <SubmitButton loading={isLoadingUpdateUser}>Update profile</SubmitButton>
     </Form>
   );
 }

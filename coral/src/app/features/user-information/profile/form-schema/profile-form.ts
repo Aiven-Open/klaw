@@ -12,7 +12,10 @@ const profileFormSchema = z.object({
         "Invalid input. Full name can only include uppercase and lowercase letters, accented characters (including" +
         " umlauts), apostrophes, and spaces.",
     }),
-  email: z.coerce.string().email().min(5),
+  email: z.coerce
+    .string()
+    .min(1, { message: "Email address can not be empty." })
+    .email({ message: "Email address is invalid." }),
   team: z.string(),
   role: z.string(),
   switchTeams: z.boolean().optional(),
