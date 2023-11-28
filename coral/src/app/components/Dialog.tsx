@@ -57,7 +57,7 @@ function Dialog(props: DialogProps) {
 
   return (
     <Modal
-      title={""}
+      title={title}
       dialogTitle={dialogTitle}
       isDialog={true}
       primaryAction={props.primaryAction}
