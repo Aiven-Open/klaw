@@ -220,7 +220,7 @@ function TopicRequest() {
   );
 
   function onError(err: Partial<FieldErrorsImpl<Schema>>) {
-    console.log("Form error", err);
+    console.error("Form error", err);
   }
 }
 

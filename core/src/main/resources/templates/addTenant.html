@@ -496,6 +496,23 @@
 										<!--/span-->
 									</div>
 									<!--/row-->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Contact Person</label>
+												<input type="text" class="form-control" required ng-model="addTenantId.contactPerson" minlength="5">
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Organization</label>
+												<input type="text" class="form-control" required ng-model="addTenantId.orgName"
+													   minlength="5" placeholder="Organization">
+											</div>
+										</div>
+										<!--/span-->
+									</div>
 
 								</div>
 								<div id="successbar">{{ alert }}</div>

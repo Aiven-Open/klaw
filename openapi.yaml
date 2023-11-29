@@ -161,6 +161,34 @@
         }
       }
     },
+    "/updateTenant" : {
+      "post" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "updateTenant",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KwTenantModel"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/updateTeam" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
@@ -439,33 +467,6 @@
           },
           "required" : true
         },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/udpateTenant" : {
-      "post" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "udpateTenant",
-        "parameters" : [ {
-          "name" : "orgName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[a-zA-z ]*$"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6042,6 +6043,44 @@
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
+      "KwTenantModel" : {
+        "properties" : {
+          "tenantName" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 6,
+            "pattern" : "^[a-zA-Z0-9]{3,}$"
+          },
+          "tenantDesc" : {
+            "type" : "string",
+            "maxLength" : 25,
+            "minLength" : 6,
+            "pattern" : "^[a-zA-Z 0-9]{3,}$"
+          },
+          "contactPerson" : {
+            "type" : "string",
+            "maxLength" : 50,
+            "minLength" : 5
+          },
+          "orgName" : {
+            "type" : "string"
+          },
+          "emailId" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "authorizedToDelete" : {
+            "type" : "boolean"
+          },
+          "activeTenant" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "contactPerson", "orgName", "tenantDesc", "tenantName" ]
+      },
       "TeamModel" : {
         "properties" : {
           "teamname" : {
@@ -7001,42 +7040,6 @@
             "type" : "string"
           }
         }
-      },
-      "KwTenantModel" : {
-        "properties" : {
-          "tenantName" : {
-            "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 12,
-            "pattern" : "^[a-zA-Z0-9]{3,}$"
-          },
-          "tenantDesc" : {
-            "type" : "string",
-            "maxLength" : 25,
-            "minLength" : 6,
-            "pattern" : "^[a-zA-Z 0-9]{3,}$"
-          },
-          "tenantId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "contactPerson" : {
-            "type" : "string"
-          },
-          "orgName" : {
-            "type" : "string"
-          },
-          "authorizedToDelete" : {
-            "type" : "boolean"
-          },
-          "emailId" : {
-            "type" : "string"
-          },
-          "activeTenant" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "tenantDesc", "tenantName" ]
       },
       "EnvModel" : {
         "properties" : {
@@ -8022,10 +8025,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },

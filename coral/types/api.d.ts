@@ -20,6 +20,9 @@ export type paths = {
   "/updateTopics": {
     post: operations["createTopicsUpdateRequest"];
   };
+  "/updateTenant": {
+    post: operations["updateTenant"];
+  };
   "/updateTeam": {
     post: operations["updateTeam"];
   };
@@ -49,9 +52,6 @@ export type paths = {
   };
   "/updateKwCustomProperty": {
     post: operations["updateKwCustomProperty"];
-  };
-  "/udpateTenant": {
-    post: operations["udpateTenant"];
   };
   "/sendMessageToAdmin": {
     post: operations["sendMessageToAdmin"];
@@ -596,6 +596,17 @@ export type components = {
       deleteAssociatedSchema?: boolean;
       otherParams?: string;
     };
+    KwTenantModel: {
+      tenantName: string;
+      tenantDesc: string;
+      contactPerson: string;
+      orgName: string;
+      emailId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      authorizedToDelete?: boolean;
+      activeTenant?: boolean;
+    };
     TeamModel: {
       teamname: string;
       teammail?: string;
@@ -926,17 +937,6 @@ export type components = {
     EnvTag: {
       id?: string;
       name?: string;
-    };
-    KwTenantModel: {
-      tenantName: string;
-      tenantDesc: string;
-      /** Format: int32 */
-      tenantId?: number;
-      contactPerson?: string;
-      orgName?: string;
-      authorizedToDelete?: boolean;
-      emailId?: string;
-      activeTenant?: boolean;
     };
     EnvModel: {
       name: string;
@@ -1863,6 +1863,21 @@ export type operations = {
       };
     };
   };
+  updateTenant: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwTenantModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   updateTeam: {
     requestBody: {
       content: {
@@ -2002,21 +2017,6 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["KwPropertiesModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  udpateTenant: {
-    parameters: {
-      query: {
-        orgName: string;
       };
     };
     responses: {

@@ -1,6 +1,5 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_109;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_110;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_102;
@@ -953,7 +952,6 @@ public class EnvsClustersTenantsControllerService {
         }
 
         kwTenantModel.setActiveTenant(Boolean.parseBoolean(tenant.getIsActive()));
-
         tenantModels.add(kwTenantModel);
       }
       return tenantModels;
@@ -1006,7 +1004,8 @@ public class EnvsClustersTenantsControllerService {
     kwTenants.setTenantName(kwTenantModel.getTenantName());
     kwTenants.setTenantDesc(kwTenantModel.getTenantDesc());
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
-    kwTenants.setOrgName(ENV_CLUSTER_TNT_109);
+    kwTenants.setOrgName(kwTenantModel.getOrgName());
+
     if (isExternal) {
       kwTenantModel.setActiveTenant(true);
     }
@@ -1064,6 +1063,8 @@ public class EnvsClustersTenantsControllerService {
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
       kwTenantModel.setActiveTenant("true".equals(tenant.get().getIsActive()));
       kwTenantModel.setOrgName(tenant.get().getOrgName());
+      kwTenantModel.setTenantDesc(tenant.get().getTenantDesc());
+      kwTenantModel.setTenantId(tenant.get().getTenantId());
 
       kwTenantModel.setAuthorizedToDelete(
           !commonUtilsService.isNotAuthorizedUser(
@@ -1120,14 +1121,18 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public ApiResponse updateTenant(String orgName) throws KlawException {
+  public ApiResponse updateTenant(KwTenantModel kwTenantModel) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
+
     int tenantId = commonUtilsService.getTenantId(getUserName());
+    KwTenants kwTenants = new KwTenants();
+    copyProperties(kwTenantModel, kwTenants);
+
     try {
-      String result = manageDatabase.getHandleDbRequests().updateTenant(tenantId, orgName);
+      String result = manageDatabase.getHandleDbRequests().addNewTenant(kwTenants);
 
       if (ApiResultStatus.SUCCESS.value.equals(result)) {
         commonUtilsService.updateMetadata(

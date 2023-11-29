@@ -253,6 +253,7 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(utilMethods.getEnvLists().get(0));
     when(topicControllerService.getExistingTopicRequests(addTopicRequest, tenantId))
         .thenReturn(List.of(topicRequest));
+    when(topicControllerService.existsTopicRequests(addTopicRequest, tenantId)).thenReturn(true);
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =
@@ -338,6 +339,7 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
     when(topicControllerService.getExistingTopicRequests(any(), anyInt()))
         .thenReturn(Collections.emptyList());
+    when(topicControllerService.existsTopicRequests(any(), anyInt())).thenReturn(false);
 
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =
         validator.validate(addTopicRequest);

@@ -20,7 +20,6 @@ import io.aiven.klaw.model.response.SupportedProtocolInfo;
 import io.aiven.klaw.model.response.TenantInfo;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -311,14 +310,12 @@ public class EnvsClustersTenantsController {
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(
-      value = "/udpateTenant",
+      value = "/updateTenant",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> udpateTenant(
-      @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
-          String orgName)
+  public ResponseEntity<ApiResponse> updateTenant(@Valid @RequestBody KwTenantModel kwTenantModel)
       throws KlawException {
     return new ResponseEntity<>(
-        envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
+        envsClustersTenantsControllerService.updateTenant(kwTenantModel), HttpStatus.OK);
   }
 
   @RequestMapping(
