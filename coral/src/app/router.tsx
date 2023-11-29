@@ -59,6 +59,7 @@ import { TeamsPage } from "src/app/pages/configuration/teams";
 import { UsersPage } from "src/app/pages/configuration/users";
 import { UserProfile } from "src/app/pages/user-information/profile";
 import { ChangePassword } from "src/app/pages/user-information/change-password";
+import { TenantInfo } from "src/app/pages/user-information/tenant-info";
 
 const routes: Array<RouteObject> = [
   {
@@ -236,18 +237,14 @@ const routes: Array<RouteObject> = [
               },
             ],
           },
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.TEAMS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <TeamsPage />,
-          }),
-          createRouteBehindFeatureFlag({
+          },
+          {
             path: Routes.USERS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <UsersPage />,
-          }),
+          },
         ],
       },
       {
@@ -264,6 +261,12 @@ const routes: Array<RouteObject> = [
             featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
             redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <ChangePassword />,
+          }),
+          createRouteBehindFeatureFlag({
+            path: Routes.USER_TENANT_INFO,
+            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <TenantInfo />,
           }),
         ],
       },

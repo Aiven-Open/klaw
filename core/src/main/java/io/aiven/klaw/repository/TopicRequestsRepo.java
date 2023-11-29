@@ -39,6 +39,9 @@ public interface TopicRequestsRepo
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 
+  boolean existsByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
+      String topicStatus, String topicName, String envId, int tenantId);
+
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
