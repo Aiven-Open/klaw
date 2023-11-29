@@ -95,7 +95,7 @@ function MainNavigation() {
         <li>
           <MainNavigationSubmenuList
             icon={settings}
-            text={"Configuration"}
+            text={"Configuration overview"}
             defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
             <MainNavigationLink

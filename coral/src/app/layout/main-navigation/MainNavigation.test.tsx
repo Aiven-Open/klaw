@@ -41,7 +41,7 @@ const navLinks = [
 
 const submenuItems = [
   {
-    name: "Configuration",
+    name: "Configuration overview",
     links: [
       { name: "Users", linkTo: "/configuration/users" },
       {
