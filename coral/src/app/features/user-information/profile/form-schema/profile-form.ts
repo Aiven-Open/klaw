@@ -18,7 +18,6 @@ const profileFormSchema = z.object({
     .email({ message: "Email address is invalid." }),
   team: z.string(),
   role: z.string(),
-  switchTeams: z.boolean().optional(),
 });
 
 type ProfileFormSchema = z.infer<typeof profileFormSchema>;

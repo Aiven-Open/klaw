@@ -244,7 +244,7 @@ describe("Profile.tsx", () => {
 
       expect(mockedUseToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "No changes were made to the topic.",
+          message: "No changes were made to the profile.",
         })
       );
     });

@@ -54,7 +54,6 @@ function Profile() {
       email: user?.mailid || "",
       team: user?.team || "",
       role: user?.role || "",
-      switchTeams: user?.switchTeams || false,
     },
     schema: profileFormSchema,
   });
@@ -67,7 +66,7 @@ function Profile() {
       )
     ) {
       toast({
-        message: "No changes were made to the topic.",
+        message: "No changes were made to the profile.",
         position: "bottom-left",
         variant: "default",
       });
