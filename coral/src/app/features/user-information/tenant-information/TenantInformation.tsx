@@ -15,17 +15,19 @@ const TenantInformation = () => {
     return (
       <>
         {isError && <Alert type="error">{parseErrorMsg(error)}</Alert>}
-        <Box.Flex flexDirection="column" maxWidth={"lg"}>
-          <Box.Flex flexDirection="column">
-            <Input.Skeleton />
+        {!isError && (
+          <Box.Flex flexDirection="column" maxWidth={"lg"}>
+            <Box.Flex flexDirection="column">
+              <Input.Skeleton />
+            </Box.Flex>
+            <Box.Flex flexDirection="column">
+              <Input.Skeleton />
+            </Box.Flex>
+            <Box.Flex flexDirection="column">
+              <Input.Skeleton />
+            </Box.Flex>
           </Box.Flex>
-          <Box.Flex flexDirection="column">
-            <Input.Skeleton />
-          </Box.Flex>
-          <Box.Flex flexDirection="column">
-            <Input.Skeleton />
-          </Box.Flex>
-        </Box.Flex>
+        )}
       </>
     );
   }
@@ -44,6 +46,7 @@ const TenantInformation = () => {
           tenantName={data.tenantName}
           orgName={data.orgName}
           contactPerson={data.contactPerson}
+          description={data.tenantDesc}
         />
       )}
     </>

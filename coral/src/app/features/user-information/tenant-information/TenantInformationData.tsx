@@ -2,38 +2,40 @@ import { Box, Typography } from "@aivenio/aquarium";
 
 interface TenantInformationDataProps {
   tenantName: string;
-  orgName?: string;
-  contactPerson?: string;
+  orgName: string;
+  contactPerson: string;
+  description: string;
 }
 
 const TenantInformationData = ({
   tenantName,
   orgName,
   contactPerson,
+  description,
 }: TenantInformationDataProps) => {
   return (
     <Box.Flex flexDirection="column" gap={"l2"}>
       <Box.Flex flexDirection="column">
         <Typography.SmallStrong htmlTag="dt">
-          Tenant name
+          Description
         </Typography.SmallStrong>
-        <Typography.Default htmlTag="dd">{tenantName}</Typography.Default>
+        <Typography.Default htmlTag="dd">{description}</Typography.Default>
       </Box.Flex>
       <Box.Flex flexDirection="column">
         <Typography.SmallStrong htmlTag="dt">
           Organization
         </Typography.SmallStrong>
-        <Typography.Default htmlTag="dd">
-          {orgName === undefined ? <i>Not available</i> : orgName}
-        </Typography.Default>
+        <Typography.Default htmlTag="dd">{orgName}</Typography.Default>
+      </Box.Flex>
+      <Box.Flex flexDirection="column">
+        <Typography.SmallStrong htmlTag="dt">Tenant</Typography.SmallStrong>
+        <Typography.Default htmlTag="dd">{tenantName}</Typography.Default>
       </Box.Flex>
       <Box.Flex flexDirection="column">
         <Typography.SmallStrong htmlTag="dt">
           Contact person
         </Typography.SmallStrong>
-        <Typography.Default htmlTag="dd">
-          {contactPerson === undefined ? <i>Not available</i> : contactPerson}
-        </Typography.Default>
+        <Typography.Default htmlTag="dd">{contactPerson}</Typography.Default>
       </Box.Flex>
     </Box.Flex>
   );
