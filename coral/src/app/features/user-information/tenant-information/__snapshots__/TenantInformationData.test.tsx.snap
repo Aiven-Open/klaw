@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TenantInformationData.tsx renders correct DOM with provided props renders correct DOM with required props 1`] = `Screen {}`;

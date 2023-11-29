@@ -404,6 +404,20 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     $scope.showAlertToast();
                     return;
                 }
+            if($scope.myTenantInfo.contactPerson === undefined)
+            {
+                $scope.alertnote = "Please fill in contact person";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.myTenantInfo.tenantDesc === undefined)
+            {
+                $scope.alertnote = "Please fill in description";
+                $scope.showAlertToast();
+                return;
+            }
+
              var orgName = $scope.myTenantInfo.orgName.trim();
              if(orgName.length === 0 || orgName.length > 50)
              {
@@ -412,12 +426,18 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                  return;
              }
 
+            var serviceInput = {};
+            serviceInput['tenantId'] = $scope.myTenantInfo.tenantId;
+            serviceInput['tenantName'] = $scope.myTenantInfo.tenantName;
+            serviceInput['tenantDesc'] = $scope.myTenantInfo.tenantDesc;
+            serviceInput['contactPerson'] = $scope.myTenantInfo.contactPerson;
+            serviceInput['orgName'] = $scope.myTenantInfo.orgName;
+
             $http({
                 method: "POST",
-                url: "udpateTenant",
+                url: "updateTenant",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'orgName' : orgName},
-                data: {'orgName' : orgName}
+                data: serviceInput
             }).success(function(output) {
                     $scope.alert = "Update Tenant Request : "+output.message;
                     if(output.success){

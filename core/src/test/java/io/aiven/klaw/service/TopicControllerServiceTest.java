@@ -240,6 +240,8 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(getListTopicRequests());
+    when(handleDbRequests.existsTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(true);
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
@@ -262,6 +264,8 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
+    when(handleDbRequests.existsTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(false);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
@@ -376,6 +380,8 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(getListTopicRequests());
+    when(handleDbRequests.existsTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(true);
     try {
       ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
       assertThat(apiResponse.getMessage())
