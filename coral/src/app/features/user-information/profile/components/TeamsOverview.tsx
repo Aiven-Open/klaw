@@ -7,6 +7,8 @@ import {
   Typography,
 } from "@aivenio/aquarium";
 import uniqueId from "lodash/uniqueId";
+import { Link } from "react-router-dom";
+import { Routes } from "src/app/router_utils";
 
 type TeamsOverviewProps = {
   teams: string[];
@@ -65,6 +67,8 @@ const TeamsOverview = ({ teams }: TeamsOverviewProps) => {
         rows={rows}
         noWrap={false}
       />
+
+      <Link to={Routes.TEAMS}>See all teams</Link>
     </Box.Flex>
   );
 };

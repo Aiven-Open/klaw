@@ -41,7 +41,7 @@ describe("Profile.tsx", () => {
   describe("shows information that profile is loading", () => {
     beforeAll(() => {
       mockGetUser.mockResolvedValue(testUser);
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
     });
 
     afterAll(() => {
@@ -74,7 +74,7 @@ describe("Profile.tsx", () => {
     beforeAll(async () => {
       console.error = jest.fn();
       mockGetUser.mockRejectedValue(testError);
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -104,7 +104,7 @@ describe("Profile.tsx", () => {
   describe("shows all necessary elements in a form with all required user data", () => {
     beforeAll(async () => {
       mockGetUser.mockResolvedValue(testUser);
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -197,7 +197,7 @@ describe("Profile.tsx", () => {
         switchTeams: true,
         switchAllowedTeamNames: ["Discovery", "Enterprise"],
       });
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -225,7 +225,7 @@ describe("Profile.tsx", () => {
         switchTeams: true,
         switchAllowedTeamNames: ["Discovery", "Enterprise"],
       });
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -259,7 +259,7 @@ describe("Profile.tsx", () => {
         switchTeams: true,
         switchAllowedTeamNames: ["Discovery", "Enterprise"],
       });
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -416,7 +416,7 @@ describe("Profile.tsx", () => {
         switchTeams: true,
         switchAllowedTeamNames: ["Discovery", "Enterprise"],
       });
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
@@ -502,7 +502,7 @@ describe("Profile.tsx", () => {
         switchTeams: true,
         switchAllowedTeamNames: ["Discovery", "Enterprise"],
       });
-      customRender(<Profile />, { queryClient: true });
+      customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")

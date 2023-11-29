@@ -1,13 +1,14 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { TeamsOverview } from "src/app/features/user-information/profile/components/TeamsOverview";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const testTeams = ["Discovery", "Enterprise", "Voyager"];
 describe("TeamsOverview.tsx", () => {
   describe("shows a table with all teams", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(<TeamsOverview teams={testTeams} />);
+      customRender(<TeamsOverview teams={testTeams} />, { memoryRouter: true });
     });
 
     afterAll(cleanup);
@@ -57,6 +58,14 @@ describe("TeamsOverview.tsx", () => {
         const row = within(table).getByRole("row", { name: team });
         expect(row).toBeVisible();
       });
+    });
+
+    it("shows a link to the page showing all teams", () => {
+      const link = screen.getByRole("link", {
+        name: "See all teams",
+      });
+
+      expect(link).toBeVisible();
     });
   });
 });
