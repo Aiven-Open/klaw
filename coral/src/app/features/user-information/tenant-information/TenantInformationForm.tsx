@@ -1,5 +1,5 @@
 const TenantInformationForm = () => {
-  return <div>To be added later</div>;
+  return <form role="form">To be added later</form>;
 };
 
 export { TenantInformationForm };
