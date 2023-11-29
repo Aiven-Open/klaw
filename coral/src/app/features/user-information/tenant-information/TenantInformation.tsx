@@ -5,47 +5,32 @@ import { getMyTenantInfo } from "src/domain/user/user-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 const TenantInformation = () => {
-  const { data, isError, error } = useQuery(
+  const { data, isLoading, isError, error } = useQuery(
     ["getMyTenantInfo"],
     getMyTenantInfo
   );
 
-  if (data === undefined) {
+  if (isLoading) {
     return (
-      <>
-        {isError && <Alert type="error">{parseErrorMsg(error)}</Alert>}
-        {!isError && (
-          <Box.Flex flexDirection="column" maxWidth={"lg"}>
-            <Box.Flex flexDirection="column">
-              <Input.Skeleton />
-            </Box.Flex>
-            <Box.Flex flexDirection="column">
-              <Input.Skeleton />
-            </Box.Flex>
-            <Box.Flex flexDirection="column">
-              <Input.Skeleton />
-            </Box.Flex>
-          </Box.Flex>
-        )}
-      </>
+      <Box.Flex flexDirection="column" maxWidth={"lg"}>
+        <Input.Skeleton />
+        <Input.Skeleton />
+        <Input.Skeleton />
+      </Box.Flex>
     );
   }
 
-  return (
-    <>
-      {isError && (
-        <Box marginBottom={"l1"}>
-          <Alert type="error">{parseErrorMsg(error)}</Alert>
-        </Box>
-      )}
+  if (isError) {
+    return <Alert type="error">{parseErrorMsg(error)}</Alert>;
+  }
 
-      <TenantInformationData
-        tenantName={data.tenantName}
-        orgName={data.orgName}
-        contactPerson={data.contactPerson}
-        description={data.tenantDesc}
-      />
-    </>
+  return (
+    <TenantInformationData
+      tenantName={data.tenantName}
+      orgName={data.orgName}
+      contactPerson={data.contactPerson}
+      description={data.tenantDesc}
+    />
   );
 };
 
