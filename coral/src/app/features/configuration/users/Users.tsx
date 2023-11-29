@@ -64,7 +64,7 @@ function UsersWithoutFilterContext() {
         <SearchFilter
           key="search"
           label="Search username"
-          placeholder={"UserName"}
+          placeholder={"Find user, e.g. RileySmith"}
           description={`Partial match for username`}
           ariaDescription={`Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
