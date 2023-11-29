@@ -18,9 +18,11 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -267,6 +269,10 @@ public class SchemaRegistryControllerService {
         if (responseDb.equals(ApiResultStatus.SUCCESS.value)) {
           saveToTopicHistory(userDetails, tenantId, schemaRequest);
         }
+
+        // send mail to producers and consumers
+        notifySubscribers(schemaRequest, tenantId);
+
         mailService.sendMail(
             schemaRequest.getTopicname(),
             null,
@@ -291,6 +297,56 @@ public class SchemaRegistryControllerService {
         errStr = errStr.substring(0, 98) + "...";
       }
       return ApiResponse.notOk(String.format(SCHEMA_ERR_102, errStr));
+    }
+  }
+
+  public void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {
+    String topic = schemaRequest.getTopicname();
+    String schemaRequestEnvironment = schemaRequest.getEnvironment();
+
+    Optional<Env> optSchemaEnv =
+        manageDatabase.getEnv(tenantId, Integer.valueOf(schemaRequestEnvironment));
+    Optional<Env> optionalKafkaEnv = Optional.empty();
+    // add null pointer checks.
+    if (optSchemaEnv.isPresent()) {
+      optionalKafkaEnv =
+          manageDatabase.getEnv(
+              tenantId, Integer.valueOf(optSchemaEnv.get().getAssociatedEnv().getId()));
+    }
+
+    // get all producer and consumer acls for topic, schemaRequestEnvironment
+    List<Acl> acls = new ArrayList<>();
+    if (optionalKafkaEnv.isPresent()) {
+      acls =
+          manageDatabase
+              .getHandleDbRequests()
+              .getSyncAcls(optionalKafkaEnv.get().getId(), topic, tenantId);
+    }
+
+    // get all teams to be notified based on above acls
+    List<Integer> teamIdsToBeNotified = acls.stream().map(Acl::getTeamId).toList();
+    List<String> teamsToBeNotified =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> teamIdsToBeNotified.contains(team.getTeamId()))
+            .map(Team::getTeammail)
+            .toList();
+
+    Optional<Team> optionalOwnerTeam =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), schemaRequest.getTeamId()))
+            .findFirst();
+
+    // send notifications
+    if (optionalOwnerTeam.isPresent() && optionalKafkaEnv.isPresent()) {
+      mailService.notifySubscribersOnSchemaChange(
+          SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS,
+          topic,
+          optionalKafkaEnv.get().getName(),
+          optionalOwnerTeam.get().getTeamname(),
+          teamsToBeNotified,
+          optionalOwnerTeam.get().getTeammail(),
+          tenantId,
+          commonUtilsService.getLoginUrl());
     }
   }
 
