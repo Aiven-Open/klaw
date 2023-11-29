@@ -1,5 +1,5 @@
 const TenantInformationForm = () => {
-  return <form role="form">To be added later</form>;
+  return <form name="superadmin-form">To be added later</form>;
 };
 
 export { TenantInformationForm };
