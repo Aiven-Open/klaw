@@ -1,12 +1,13 @@
-import { transformUserListApiResponse } from "src/domain/user/user-transformer";
-import { UserListApiResponse } from "src/domain/user/user-types";
-import api, { API_PATHS } from "src/services/api";
-import { convertQueryValuesToString } from "src/services/api-helper";
 import {
+  KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
+import api, { API_PATHS } from "src/services/api";
+import { transformUserListApiResponse } from "src/domain/user/user-transformer";
+import { User, UserListApiResponse } from "src/domain/user/user-types";
+import { convertQueryValuesToString } from "src/services/api-helper";
 
 async function getUserList(
   params: KlawApiRequestQueryParameters<"showUsers">
@@ -30,14 +31,27 @@ async function getUserList(
     );
 }
 
+async function getUser(): Promise<User> {
+  return api.get<KlawApiResponse<"getMyProfileInfo">>(
+    API_PATHS.getMyProfileInfo
+  );
+}
+
 async function changePassword(
   payload: KlawApiRequest<"changePwd">
 ): Promise<KlawApiResponse<"changePwd">> {
   return api.post(API_PATHS.changePwd, payload);
 }
 
+async function updateProfile(profile: KlawApiModel<"ProfileModel">) {
+  return api.post<
+    KlawApiResponse<"updateProfile">,
+    KlawApiRequest<"updateProfile">
+  >(API_PATHS.updateProfile, profile);
+}
+
 async function getMyTenantInfo(): Promise<KlawApiResponse<"getMyTenantInfo">> {
   return api.get(API_PATHS.getMyTenantInfo);
 }
 
-export { changePassword, getUserList, getMyTenantInfo };
+export { changePassword, getUserList, updateProfile, getMyTenantInfo, getUser };
