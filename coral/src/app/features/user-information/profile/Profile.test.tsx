@@ -2,13 +2,13 @@ import {
   cleanup,
   screen,
   waitForElementToBeRemoved,
-  within,
 } from "@testing-library/react";
 import { Profile } from "src/app/features/user-information/profile/Profile";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getUser, updateProfile, User } from "src/domain/user";
 import { KlawApiError } from "src/services/api";
 import { userEvent } from "@testing-library/user-event";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockGetUser = getUser as jest.MockedFunction<typeof getUser>;
 const mockUpdateProfile = updateProfile as jest.MockedFunction<
@@ -35,6 +35,8 @@ const testUser: User = {
 
 describe("Profile.tsx", () => {
   const user = userEvent.setup();
+
+  beforeAll(mockIntersectionObserver);
 
   describe("shows information that profile is loading", () => {
     beforeAll(() => {
@@ -207,32 +209,12 @@ describe("Profile.tsx", () => {
       jest.resetAllMocks();
     });
 
-    it("shows a disabled checkbox with information that user can switch teams", () => {
-      const switchTeam = screen.getByRole("checkbox", {
-        name: "User can switch teams (read-only)",
+    it("shows the team overview with table", () => {
+      const table = screen.getByRole("table", {
+        name: "Teams user belongs to",
       });
 
-      expect(switchTeam).toBeDisabled();
-      expect(switchTeam).toBeChecked();
-    });
-
-    it("shows a list with teams the user is member of", () => {
-      const teams = screen.getByRole("list", {
-        name: "Member of team (read-only)",
-      });
-
-      expect(teams).toBeVisible();
-    });
-
-    it("shows all teams the user is member of", () => {
-      const teams = screen.getByRole("list", {
-        name: "Member of team (read-only)",
-      });
-      const allTeams = within(teams).getAllByRole("listitem");
-
-      expect(allTeams).toHaveLength(2);
-      expect(allTeams[0]).toHaveTextContent("Discovery");
-      expect(allTeams[1]).toHaveTextContent("Enterprise");
+      expect(table).toBeVisible();
     });
   });
 

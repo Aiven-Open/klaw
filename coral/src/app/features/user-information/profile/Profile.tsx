@@ -1,11 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUser, updateProfile } from "src/domain/user";
-import { Alert, Box, Grid, Typography, useToast } from "@aivenio/aquarium";
+import { Alert, Box, Grid, useToast } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
   TextInput,
-  Checkbox,
   useForm,
 } from "src/app/components/Form";
 import {
@@ -16,6 +15,7 @@ import { SkeletonProfile } from "src/app/features/user-information/profile/compo
 import { parseErrorMsg } from "src/services/mutation-utils";
 import isEqual from "lodash/isEqual";
 import { FieldErrors } from "react-hook-form";
+import { TeamsOverview } from "src/app/features/user-information/profile/components/TeamsOverview";
 
 function Profile() {
   const toast = useToast();
@@ -130,43 +130,18 @@ function Profile() {
               name={"role"}
               readOnly={true}
             />
-
-            {user.switchTeams &&
-              user.switchAllowedTeamNames &&
-              user.switchAllowedTeamNames?.length >= 1 && (
-                <Box.Flex
-                  flexDirection={"column"}
-                  rowGap={"l2"}
-                  paddingBottom={"l2"}
-                >
-                  <Checkbox<ProfileFormSchema>
-                    name={"switchTeams"}
-                    checked={user.switchTeams}
-                    disabled={true}
-                  >
-                    User can switch teams (read-only)
-                  </Checkbox>
-
-                  <div>
-                    <Typography.SmallStrong>
-                      <span id={"team-list-id"}>
-                        Member of team (read-only)
-                      </span>
-                    </Typography.SmallStrong>
-                    <ul aria-labelledby={"team-list-id"}>
-                      {user.switchAllowedTeamNames.map((team) => {
-                        return <li key={team}>{team}</li>;
-                      })}
-                    </ul>
-                  </div>
-                </Box.Flex>
-              )}
           </Grid.Item>
         </Grid>
         <SubmitButton loading={isLoadingUpdateUser}>
           Update profile
         </SubmitButton>
       </Form>
+
+      {user.switchTeams &&
+        user.switchAllowedTeamNames &&
+        user.switchAllowedTeamNames?.length >= 1 && (
+          <TeamsOverview teams={user.switchAllowedTeamNames} />
+        )}
     </>
   );
 }
