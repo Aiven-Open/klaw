@@ -76,6 +76,8 @@ public class MockMethods {
     KwTenantModel kwTenantModel = new KwTenantModel();
     kwTenantModel.setTenantName(nltenant);
     kwTenantModel.setTenantDesc("tenant desc");
+    kwTenantModel.setContactPerson("Contact person");
+    kwTenantModel.setOrgName("Organization");
     return kwTenantModel;
   }
 

@@ -36,4 +36,8 @@ async function changePassword(
   return api.post(API_PATHS.changePwd, payload);
 }
 
-export { changePassword, getUserList };
+async function getMyTenantInfo(): Promise<KlawApiResponse<"getMyTenantInfo">> {
+  return api.get(API_PATHS.getMyTenantInfo);
+}
+
+export { changePassword, getUserList, getMyTenantInfo };

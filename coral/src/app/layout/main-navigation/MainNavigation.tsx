@@ -148,7 +148,7 @@ function MainNavigation() {
                   ? Routes.USER_TENANT_INFO
                   : "/tenantInfo"
               }
-              linkText={"Tenant info"}
+              linkText={"Tenant information"}
               active={pathname.startsWith(Routes.USER_TENANT_INFO)}
             />
           </MainNavigationSubmenuList>
