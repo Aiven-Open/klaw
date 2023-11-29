@@ -10,7 +10,13 @@ import { NoCoralAccessSuperadmin } from "src/app/components/NoCoralAccessSuperad
  * at the moment, so we only have a AuthUser
  * in the context
  * */
-const AuthContext = createContext<AuthUser | undefined>(undefined);
+const AuthContext = createContext<AuthUser>({
+  username: "",
+  userrole: "",
+  teamname: "",
+  teamId: "",
+  canSwitchTeams: "",
+});
 
 const useAuthContext = () => useContext(AuthContext);
 

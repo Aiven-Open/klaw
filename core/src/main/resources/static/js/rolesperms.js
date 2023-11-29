@@ -72,7 +72,7 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
 
                      var tenantId = $scope.addTenantId.tenantName.trim();
 
-                     if(tenantId.length == 0){
+                     if(tenantId.length === 0){
                        $scope.alertnote = "Please fill in Tenant Name.";
                        $scope.showAlertToast();
                      }
@@ -80,12 +80,13 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                      var serviceInput = {};
                      serviceInput['tenantName'] = $scope.addTenantId.tenantName;
                      serviceInput['tenantDesc'] = $scope.addTenantId.tenantDesc;
+                     serviceInput['contactPerson'] = $scope.addTenantId.contactPerson;
+                     serviceInput['orgName'] = $scope.addTenantId.orgName;
 
                      $http({
                              method: "POST",
                              url: "addTenantId",
                              headers : { 'Content-Type' : 'application/json' },
-                             params: {'tenantName' : $scope.addTenantId.tenantName, 'tenantDesc' : $scope.addTenantId.tenantDesc },
                              data: serviceInput
                          }).success(function(output) {
                              $scope.alert = "Tenant add status : "+ output.message;

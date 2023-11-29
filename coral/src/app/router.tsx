@@ -237,18 +237,14 @@ const routes: Array<RouteObject> = [
               },
             ],
           },
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.TEAMS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <TeamsPage />,
-          }),
-          createRouteBehindFeatureFlag({
+          },
+          {
             path: Routes.USERS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_TEAMS,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <UsersPage />,
-          }),
+          },
         ],
       },
       {
