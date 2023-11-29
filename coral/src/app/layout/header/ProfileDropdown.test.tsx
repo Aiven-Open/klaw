@@ -21,10 +21,6 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => mockAuthUser(),
 }));
 
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => mockIsFeatureFlagActive(),
-}));
-
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToastContext: () => [mockToast, mockDismiss],
@@ -34,19 +30,16 @@ const menuItems = [
   {
     angularPath: "/myProfile",
     path: "/user/profile",
-    behindFeatureFlag: true,
     name: "User profile",
   },
   {
     angularPath: "/changePwd",
     path: "/user/change-password",
-    behindFeatureFlag: true,
     name: "Change password",
   },
   {
     angularPath: "/tenantInfo",
     path: "/user/tenant-info",
-    behindFeatureFlag: true,
     name: "Tenant information",
   },
 ];
@@ -125,46 +118,7 @@ describe("ProfileDropdown", () => {
     });
   });
 
-  describe("handles user choosing items from the menu when feature-flag for user information is disabled", () => {
-    beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
-      mockAuthUser.mockReturnValue(testUser);
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
-      customRender(<ProfileDropdown />, { memoryRouter: true });
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-      cleanup();
-    });
-
-    menuItems.forEach((item) => {
-      const name = item.name;
-      const path = item.angularPath;
-
-      it(`navigates to "${path}" when user clicks "${name}"`, async () => {
-        const button = screen.getByRole("button", {
-          name: "Open profile menu",
-        });
-        await user.click(button);
-
-        const menuItem = screen.getByRole("menuitem", { name: name });
-        await user.click(menuItem);
-
-        // in tests it will start with http://localhost/ since that is the window.origin
-        expect(window.location.assign).toHaveBeenCalledWith(
-          `http://localhost${path}`
-        );
-      });
-    });
-  });
-
-  describe("handles user choosing items from the menu when feature-flag for user information is enabled", () => {
+  describe("handles user choosing items from the menu", () => {
     beforeEach(() => {
       mockIsFeatureFlagActive.mockReturnValue(true);
       mockAuthUser.mockReturnValue(testUser);
@@ -185,39 +139,19 @@ describe("ProfileDropdown", () => {
     menuItems.forEach((item) => {
       const name = item.name;
 
-      if (item.behindFeatureFlag) {
-        const path = item.path;
+      const path = item.path;
 
-        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
-          const button = screen.getByRole("button", {
-            name: "Open profile menu",
-          });
-          await user.click(button);
-
-          const menuItem = screen.getByRole("menuitem", { name: name });
-          await user.click(menuItem);
-
-          expect(window.location.assign).not.toHaveBeenCalled();
-          expect(mockedNavigate).toHaveBeenCalledWith("/user/profile");
+      it(`navigates to "${path}" when user clicks "${name}"`, async () => {
+        const button = screen.getByRole("button", {
+          name: "Open profile menu",
         });
-      } else {
-        const path = item.angularPath;
+        await user.click(button);
 
-        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
-          const button = screen.getByRole("button", {
-            name: "Open profile menu",
-          });
-          await user.click(button);
+        const menuItem = screen.getByRole("menuitem", { name: name });
+        await user.click(menuItem);
 
-          const menuItem = screen.getByRole("menuitem", { name: name });
-          await user.click(menuItem);
-
-          // in tests it will start with http://localhost/ since that is the window.origin
-          expect(window.location.assign).toHaveBeenCalledWith(
-            `http://localhost${path}`
-          );
-        });
-      }
+        expect(mockedNavigate).toHaveBeenCalledWith("/user/profile");
+      });
     });
   });
 

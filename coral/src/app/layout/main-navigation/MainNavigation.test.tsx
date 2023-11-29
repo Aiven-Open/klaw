@@ -65,15 +65,15 @@ const submenuItems = [
     links: [
       {
         name: "User profile",
-        linkTo: isFeatureFlagActiveMock() ? `/user/profile` : `/myProfile`,
+        linkTo: "/user/profile",
       },
       {
         name: "Change password",
-        linkTo: "/changePwd",
+        linkTo: "/user/change-password",
       },
       {
         name: "Tenant information",
-        linkTo: "/tenantInfo",
+        linkTo: "/user/tenant-info",
       },
     ],
   },
@@ -161,53 +161,6 @@ describe("MainNavigation.tsx", () => {
 
       const icons = within(nav).getAllByTestId("ds-icon");
       expect(icons).toHaveLength(iconAmount);
-    });
-  });
-
-  describe("renders links to profile behind feature flag", () => {
-    afterEach(() => {
-      cleanup();
-      jest.resetAllMocks();
-    });
-
-    it("renders a link to the old UI when feature flag is false", async () => {
-      isFeatureFlagActiveMock.mockReturnValue(false);
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-
-      const button = screen.getByRole("button", {
-        name: new RegExp("User information", "i"),
-      });
-      await userEvent.click(button);
-      const list = screen.getByRole("list", {
-        name: "User information submenu",
-      });
-
-      const link = within(list).getByRole("link", { name: "User profile" });
-      expect(link).toBeVisible();
-      expect(link).toHaveAttribute("href", "/myProfile");
-    });
-
-    it("renders a link to the profile page when feature flag is true", async () => {
-      isFeatureFlagActiveMock.mockReturnValue(true);
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-
-      const button = screen.getByRole("button", {
-        name: new RegExp("User information", "i"),
-      });
-      await userEvent.click(button);
-      const list = screen.getByRole("list", {
-        name: "User information submenu",
-      });
-
-      const link = within(list).getByRole("link", { name: "User profile" });
-      expect(link).toBeVisible();
-      expect(link).toHaveAttribute("href", "/user/profile");
     });
   });
 

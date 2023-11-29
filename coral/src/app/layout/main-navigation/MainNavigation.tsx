@@ -13,14 +13,9 @@ import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const userInformationFeatureFlagEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
-  );
 
   const clusterViewFeatureFlagIsEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_VIEW_CLUSTER
@@ -137,29 +132,17 @@ function MainNavigation() {
             defaultExpanded={pathname.startsWith(Routes.USER_INFORMATION)}
           >
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_PROFILE
-                  : "/myProfile"
-              }
+              to={Routes.USER_PROFILE}
               linkText={"User profile"}
               active={pathname.startsWith(Routes.USER_PROFILE)}
             />
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_CHANGE_PASSWORD
-                  : "/changePwd"
-              }
+              to={Routes.USER_CHANGE_PASSWORD}
               linkText={"Change password"}
               active={pathname.startsWith(Routes.USER_CHANGE_PASSWORD)}
             />
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_TENANT_INFO
-                  : "/tenantInfo"
-              }
+              to={Routes.USER_TENANT_INFO}
               linkText={"Tenant information"}
               active={pathname.startsWith(Routes.USER_TENANT_INFO)}
             />
