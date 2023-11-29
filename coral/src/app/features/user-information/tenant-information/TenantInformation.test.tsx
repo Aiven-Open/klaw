@@ -20,14 +20,6 @@ const mockGetMyTenantInfoResponseUser = {
   authorizedToDelete: false,
   activeTenant: true,
 };
-const mockGetMyTenantInfoResponseSuperAdmin = {
-  tenantName: "default",
-  tenantDesc: "This is the default description",
-  contactPerson: "Klaw Administrator",
-  orgName: "Default Organization",
-  authorizedToDelete: true,
-  activeTenant: true,
-};
 
 describe("TenantInformation.tsx", () => {
   const originalConsoleError = console.error;
@@ -40,7 +32,7 @@ describe("TenantInformation.tsx", () => {
     console.error = originalConsoleError;
   });
 
-  describe("renders tenant information data if user is not superadmin", () => {
+  describe("renders tenant information data", () => {
     beforeEach(() => {
       mockGetMyTenantInfo.mockResolvedValue(mockGetMyTenantInfoResponseUser);
       customRender(<TenantInformation />, { queryClient: true });
@@ -59,31 +51,6 @@ describe("TenantInformation.tsx", () => {
 
       expect(labels).toHaveLength(4);
       expect(form).toBeNull();
-    });
-  });
-
-  describe("renders tenant information form if user is superadmin", () => {
-    beforeEach(() => {
-      mockGetMyTenantInfo.mockResolvedValue(
-        mockGetMyTenantInfoResponseSuperAdmin
-      );
-      customRender(<TenantInformation />, { queryClient: true });
-    });
-
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("renders a form", async () => {
-      const skeletons = screen.getAllByRole("progressbar");
-      await waitForElementToBeRemoved(skeletons);
-
-      const form = screen.getByRole("form");
-      const labels = screen.queryAllByRole("definition");
-
-      expect(form).toBeVisible();
-      expect(labels).toHaveLength(0);
     });
   });
 
