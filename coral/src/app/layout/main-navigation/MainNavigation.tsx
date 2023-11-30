@@ -4,10 +4,11 @@ import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
-import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import person from "@aivenio/aquarium/dist/src/icons/person";
+import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
@@ -20,6 +21,7 @@ function MainNavigation() {
   const userInformationFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
+  const { totalPendingRequests } = useAuthContext();
 
   return (
     <Box
@@ -72,6 +74,7 @@ function MainNavigation() {
             to={Routes.APPROVALS}
             linkText={"Approve requests"}
             active={pathname.startsWith(Routes.APPROVALS)}
+            notifications={totalPendingRequests}
           />
         </li>
         <li>
