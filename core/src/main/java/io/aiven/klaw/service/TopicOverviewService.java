@@ -91,8 +91,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<AclOverviewInfo> prefixedAclsInfo = new ArrayList<>();
     List<Topic> topicsSearchList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
     // tenant filtering
-    Integer topicOwnerTeamId =
-        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer topicOwnerTeamId = topicsSearchList.get(0).getTeamId();
 
     enrichTopicInfoList(
         topicName,

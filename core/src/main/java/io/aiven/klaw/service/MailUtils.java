@@ -462,7 +462,7 @@ public class MailUtils {
       String subject, String reconTopicsContent, String tenantName, int tenantId, String loginUrl) {
     String reconMailContent =
         manageDatabase.getKwPropertyValue(RECONCILIATION_TOPICS_KEY, tenantId);
-    String formattedStr = String.format(reconMailContent, tenantName);
+    String formattedStr = String.format(reconMailContent, tenantName) + "\n\n" + reconTopicsContent;
 
     try {
       CompletableFuture.runAsync(

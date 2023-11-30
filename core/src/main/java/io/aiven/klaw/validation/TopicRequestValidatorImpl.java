@@ -112,7 +112,7 @@ public class TopicRequestValidatorImpl
 
     // Check if topic is owned by a different team, applicable on update requests
     List<Topic> topics =
-        topicControllerService.getTopicFromName(topicRequestModel.getTopicname(), tenantId);
+        commonUtilsService.getTopicsForTopicName(topicRequestModel.getTopicname(), tenantId);
     if (topics != null
         && !topics.isEmpty()
         && !Objects.equals(
