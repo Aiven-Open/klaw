@@ -16,11 +16,6 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   },
 }));
 
-const isFeatureFlagActiveMock = jest.fn();
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
-}));
-
 const navLinks = [
   {
     name: "Dashboard",
