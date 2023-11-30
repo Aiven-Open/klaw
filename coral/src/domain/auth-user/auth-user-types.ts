@@ -6,6 +6,11 @@ type AuthUser = {
   teamname: KlawApiModel<"AuthenticationInfo">["teamname"];
   teamId: KlawApiModel<"AuthenticationInfo">["teamId"];
   canSwitchTeams: KlawApiModel<"AuthenticationInfo">["canSwitchTeams"];
+  pendingTopicRequests: number;
+  pendingAclRequests: number;
+  pendingSchemaRequests: number;
+  pendingConnectorRequests: number;
+  totalPendingRequests: number;
 };
 
 export type { AuthUser };
