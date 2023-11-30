@@ -146,7 +146,7 @@ describe("ProfileDropdown", () => {
         const menuItem = screen.getByRole("menuitem", { name: name });
         await user.click(menuItem);
 
-        expect(mockedNavigate).toHaveBeenCalledWith("/user/profile");
+        expect(mockedNavigate).toHaveBeenCalledWith(path);
       });
     });
   });
