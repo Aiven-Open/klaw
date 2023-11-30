@@ -38,7 +38,7 @@ const menuItems: MenuItem[] = [
     angularPath: "/tenantInfo",
     path: "/user/tenant-info",
     behindFeatureFlag: true,
-    name: "Tenant info",
+    name: "Tenant information",
   },
 ];
 

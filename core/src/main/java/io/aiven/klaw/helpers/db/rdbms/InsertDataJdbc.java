@@ -546,7 +546,8 @@ public class InsertDataJdbc {
     if (kwTenants.getTenantId() != null) {
       Optional<KwTenants> tenantExists = tenantRepo.findById(kwTenants.getTenantId());
       if (tenantExists.isPresent()) {
-        return "Failure. Tenant already exists";
+        tenantRepo.save(kwTenants);
+        return ApiResultStatus.SUCCESS.value;
       }
     }
 

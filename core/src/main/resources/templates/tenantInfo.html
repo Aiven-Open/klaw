@@ -473,7 +473,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Contact Person</label>
-												<input type="text" disabled class="form-control" value="{{myTenantInfo.contactPerson}}">
+												<input type="text"  ng-model="myTenantInfo.contactPerson" class="form-control" value="{{myTenantInfo.contactPerson}}">
 											</div>
 
 										</div>
@@ -492,6 +492,13 @@
 												<label class="control-label">Organization</label>
 												<input type="text" disabled minlength="3" maxlength="50" class="form-control" ng-model="myTenantInfo.orgName">
 												<small class="form-control-feedback"> Will be displayed in header. </small>
+											</div>
+
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Description</label>
+												<input type="text" class="form-control"  ng-model="myTenantInfo.tenantDesc" value="{{myTenantInfo.tenantDesc}}">
 											</div>
 
 										</div>
