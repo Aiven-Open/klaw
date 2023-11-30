@@ -331,7 +331,6 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singleton("USER"));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
     List<AclRequestsResponseModel> aclReqs =

@@ -481,25 +481,6 @@ public class CommonUtilsService {
     }
   }
 
-  protected List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    List<Topic> filteredList = new ArrayList<>();
-    // tenant filtering
-    try {
-      final Set<String> allowedEnvIdSet = getEnvsFromUserId(getUserName(getPrincipal()));
-      if (topicsFromSOT != null) {
-        filteredList =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      // this situation cannot happen, as every topic has an assigned team and this flow is
-      // triggered on topic overview, which means topic has an owner
-      log.error("No environments/clusters found.", e);
-    }
-    return filteredList;
-  }
-
   public Set<String> getEnvsFromUserId(String userName) {
     return new HashSet<>(
         manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
@@ -693,7 +674,7 @@ public class CommonUtilsService {
           || entityType.equals(RequestEntityType.ACL.name())
           || entityType.equals(RequestEntityType.SCHEMA.name())) {
         existingTopicList =
-            getFilteredTopicsForTenant(getTopicsForTopicName(topicName, tenantId)).stream()
+            getTopicsForTopicName(topicName, tenantId).stream()
                 .filter(topic -> Objects.equals(topic.getEnvironment(), topicEnvironment))
                 .toList();
         existingTopicList.stream().findFirst().ifPresent(a -> existingHistory.set(a.getHistory()));

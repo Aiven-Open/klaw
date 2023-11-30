@@ -227,7 +227,7 @@ public class TopicControllerService {
       return ApiResponse.notOk(TOPICS_ERR_103);
     }
 
-    List<Topic> topics = getTopicFromName(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // check if you are part of the same team to delete this request
     Integer userTeamId = commonUtilsService.getTeamId(userName);
@@ -304,7 +304,8 @@ public class TopicControllerService {
       return ApiResponse.notOk(TOPICS_ERR_107);
     }
 
-    List<Topic> topics = getTopicFromName(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
+    ;
     Integer topicOwnerTeamId = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
         dbHandle.getAllUsersInfo(tenantId).stream()
@@ -479,8 +480,6 @@ public class TopicControllerService {
       }
     } else {
       topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-      // tenant filtering
-      topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
       if (!topics.isEmpty()) {
         topicTeamResponse.setTeam(
@@ -604,7 +603,8 @@ public class TopicControllerService {
       if (RequestStatus.APPROVED != topicRequestModel.getRequestStatus()) {
         if (topicRequestModel.getRequestOperationType() != null
             && RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
-          List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
+          List<Topic> topics =
+              commonUtilsService.getTopicsForTopicName(topicRequestModel.getTopicname(), tenantId);
           if (!topics.isEmpty()) {
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -720,7 +720,8 @@ public class TopicControllerService {
     String schemaUpdateStatus = ApiResultStatus.SUCCESS.value;
     String updateSchemaMsg = "";
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
-      List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
+      List<Topic> allTopics =
+          commonUtilsService.getTopicsForTopicName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(
             topicRequest.getTeamId()); // for claim reqs, team stored in approving team field
@@ -901,9 +902,6 @@ public class TopicControllerService {
         commonUtilsService.getTopics(
             envSelected, null, commonUtilsService.getTenantId(getUserName()));
 
-    // tenant filtering
-    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
-
     if (isMyTeamTopics) {
       Integer userTeamId = commonUtilsService.getTeamId(userName);
       topicsFromSOT =
@@ -931,8 +929,7 @@ public class TopicControllerService {
 
     try {
       // tenant filtering
-      Integer topicOwnerTeamId =
-          commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+      Integer topicOwnerTeamId = topicsSearchList.get(0).getTeamId();
       Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
         String status = manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic);
@@ -1108,10 +1105,6 @@ public class TopicControllerService {
       producerConsumerTopics =
           handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
-      // tenant filtering, not really necessary though, as based on team is searched.
-      producerConsumerTopics =
-          commonUtilsService.getFilteredTopicsForTenant(producerConsumerTopics);
-
       // select all topics and then filter
       env = "ALL";
       teamId = 1;
@@ -1119,7 +1112,6 @@ public class TopicControllerService {
 
     // Get Sync topics
     List<Topic> topicsFromSOT = commonUtilsService.getTopics(env, teamId, tenantId);
-    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -1356,12 +1348,5 @@ public class TopicControllerService {
 
   public String getSyncCluster(int tenantId) {
     return manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-  }
-
-  public List<Topic> getTopicFromName(String topicName, int tenantId) {
-    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-    // tenant filtering
-    topics = commonUtilsService.getFilteredTopicsForTenant(topics);
-    return topics;
   }
 }

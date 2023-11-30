@@ -310,7 +310,6 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp =
         schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
@@ -332,7 +331,6 @@ public class SchemaRegistryControllerServiceTest {
         .thenThrow(new RuntimeException("Error from schema upload"));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
 
@@ -361,7 +359,6 @@ public class SchemaRegistryControllerServiceTest {
   @Order(10)
   public void promoteSchemaCanNotFindSourceEnvironmentSchema() throws Exception {
     //    mockGetEnvironment();
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTeamId(any())).thenReturn(101);
@@ -619,7 +616,6 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
 
@@ -801,7 +797,6 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
   }

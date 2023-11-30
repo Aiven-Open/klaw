@@ -113,7 +113,7 @@ public class TopicRequestValidatorImplIT {
         .contains("Failure. Please fill in a valid topic name.", "Invalid topic name");
 
     addTopicRequest.setTopicname("testtopic$@$@#$"); // with special characters
-    when(topicControllerService.getTopicFromName(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(topicControllerService.getEnvDetails(anyString()))
         .thenReturn(utilMethods.getEnvListsIncorrect1().get(0));
@@ -151,7 +151,8 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =
@@ -178,7 +179,7 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1", "2"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(topicControllerService.getTopicFromName(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(topicControllerService.getSyncCluster(anyInt())).thenReturn("1");
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1,2");
@@ -190,7 +191,8 @@ public class TopicRequestValidatorImplIT {
     assertThat(violations.toString())
         .contains("Failure. Please request for a topic first in " + env.getName() + " cluster.");
 
-    when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(null);
     violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -336,7 +338,8 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getEnvDetails(anyString()))
         .thenReturn(utilMethods.getEnvLists().get(0));
-    when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(topicControllerService.getExistingTopicRequests(any(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(topicControllerService.existsTopicRequests(any(), anyInt())).thenReturn(false);
