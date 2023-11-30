@@ -1,4 +1,4 @@
-import { Icon, Tooltip } from "@aivenio/aquarium";
+import { Badge, Icon, Tooltip } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,9 +8,10 @@ type HeaderMenuLinkProps = {
   linkText: string;
   href: string;
   rel?: string;
+  showNotificationBadge?: boolean;
 };
 function HeaderMenuLink(props: HeaderMenuLinkProps) {
-  const { icon, linkText, href, rel } = props;
+  const { icon, linkText, href, rel, showNotificationBadge = false } = props;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
@@ -41,8 +42,13 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
         placement="right"
         isOpen={isOpen}
       >
-        {/* aria-hidden="true" is added natively to the Icon component */}
-        <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
+        {showNotificationBadge ? (
+          <Badge.Notification>
+            <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
+          </Badge.Notification>
+        ) : (
+          <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
+        )}
       </Tooltip>
     </Link>
   );

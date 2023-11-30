@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { Routes } from "src/app/router_utils";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
@@ -19,6 +20,7 @@ const requestNewEntityPaths: { [key: string]: string } = {
 
 function HeaderNavigation() {
   const navigate = useNavigate();
+  const { totalPendingRequests } = useAuthContext();
 
   return (
     <Box display={"flex"} colGap={"l2"} alignItems="center">
@@ -57,6 +59,7 @@ function HeaderNavigation() {
               icon={notifications}
               linkText={"Go to approve requests"}
               href={Routes.APPROVALS}
+              showNotificationBadge={totalPendingRequests > 0}
             />
           </li>
           <li>
