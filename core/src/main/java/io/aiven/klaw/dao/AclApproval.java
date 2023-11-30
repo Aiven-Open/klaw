@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "kwaclapprovals")
-// @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class AclApproval extends Approval implements Serializable {
 

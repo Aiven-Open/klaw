@@ -19,8 +19,10 @@ public interface AclRequestsRepo
       getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApproverAndApprovalsApproverName(
           String requestStatus, String requestor, String requiredApprover, String approverName);
 
-  List<AclRequests> getAllByAndApprovalsRequiredApproverAndApprovalsApproverName(
-      String requiredApprover, String approverName);
+  List<AclRequests> getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApprover(
+      String requestStatus, String requestor, String requiredApprover);
+
+  List<AclRequests> getAllByApprovalsRequiredApprover(String requiredApprover);
 
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
       int tenantId, String env, String requestStatus, String topicname);

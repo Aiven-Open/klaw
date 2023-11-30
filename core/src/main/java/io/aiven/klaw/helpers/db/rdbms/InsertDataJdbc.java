@@ -229,7 +229,7 @@ public class InsertDataJdbc {
         aclReq.setReq_no(aclId);
       }
     }
-
+    // Set foreign Keys for when you have approvals for the kwaclapprovals table
     if (aclReq.getApprovals() != null) {
       AclRequests parent = new AclRequests();
       parent.setReq_no(aclReq.getReq_no());

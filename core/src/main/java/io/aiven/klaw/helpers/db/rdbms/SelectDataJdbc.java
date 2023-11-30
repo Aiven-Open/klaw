@@ -4,7 +4,6 @@ import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -131,7 +130,7 @@ public class SelectDataJdbc {
                 isMyRequest ? requestor : null,
                 tenantId,
                 requestOperationType));
-    ObjectMapper mapper = new ObjectMapper();
+
     if (isApproval) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
@@ -145,15 +144,7 @@ public class SelectDataJdbc {
                               .equals(RequestOperationType.CLAIM.value))
               .collect(Collectors.toList());
 
-      getAclClaimRequestsForApproval(requestor, team, aclListSub);
-
-    } else {
-      aclListSub =
-          aclListSub.stream()
-              .filter(
-                  req -> !req.getRequestOperationType().equals(RequestOperationType.CLAIM.value))
-              .collect(Collectors.toList());
-      getAclClaimRequestsForMyTeam(team, aclListSub);
+      getAclClaimRequestsForApproval(requestor, team, aclListSub, status);
     }
 
     if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
@@ -178,8 +169,6 @@ public class SelectDataJdbc {
 
         if (RequestOperationType.DELETE.value.equals(rowRequestOperationType)) {
           teamId = row.getRequestingteam();
-        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)) {
-
         }
 
       } else {
@@ -188,8 +177,7 @@ public class SelectDataJdbc {
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
         aclList.add(row);
-      } else if ((teamSelected != null && teamSelected.equals(teamId))
-          || row.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
+      } else if (teamSelected != null && teamSelected.equals(teamId)) {
         aclList.add(row);
       }
 
@@ -204,23 +192,32 @@ public class SelectDataJdbc {
   }
 
   private void getAclClaimRequestsForApproval(
-      String requestor, Optional<Team> team, List<AclRequests> aclListSub) {
+      String requestor, Optional<Team> team, List<AclRequests> aclListSub, String requestStatus) {
     if (team.isPresent()) {
 
-      // GET CLAIMS that have not been approved yet
-      aclListSub.addAll(
-          aclRequestsRepo
-              .getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApproverAndApprovalsApproverName(
-                  RequestStatus.CREATED.value, requestor, team.get().getTeamname(), null));
+      if (requestStatus == null || requestStatus.equals(RequestStatus.ALL.value)) {
+        aclListSub.addAll(
+            aclRequestsRepo.getAllByApprovalsRequiredApprover(team.get().getTeamname()));
+      } else if (requestStatus.equals(RequestStatus.CREATED.value)) {
+        // GET CLAIMS that have not been approved yet
+        aclListSub.addAll(
+            aclRequestsRepo
+                .getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApproverAndApprovalsApproverName(
+                    requestStatus, requestor, team.get().getTeamname(), null));
+      } else {
+        aclListSub.addAll(
+            aclRequestsRepo.getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApprover(
+                requestStatus, requestor, team.get().getTeamname()));
+      }
     }
   }
 
-  private void getAclClaimRequestsForMyTeam(Optional<Team> team, List<AclRequests> aclListSub) {
+  private void getAclClaimRequestsForMyTeam(
+      Optional<Team> team, List<AclRequests> aclListSub, String requestStatus) {
     if (team.isPresent()) {
-      // GET CLAIMS that have not been approved yet
+      // GET All AclRequests CLAIMS for my Team
       aclListSub.addAll(
-          aclRequestsRepo.getAllByAndApprovalsRequiredApproverAndApprovalsApproverName(
-              team.get().getTeamname(), null));
+          aclRequestsRepo.getAllByApprovalsRequiredApprover(team.get().getTeamname()));
     }
   }
 
