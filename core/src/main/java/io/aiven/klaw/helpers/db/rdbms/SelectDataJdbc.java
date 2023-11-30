@@ -212,15 +212,6 @@ public class SelectDataJdbc {
     }
   }
 
-  private void getAclClaimRequestsForMyTeam(
-      Optional<Team> team, List<AclRequests> aclListSub, String requestStatus) {
-    if (team.isPresent()) {
-      // GET All AclRequests CLAIMS for my Team
-      aclListSub.addAll(
-          aclRequestsRepo.getAllByApprovalsRequiredApprover(team.get().getTeamname()));
-    }
-  }
-
   /**
    * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
