@@ -2,7 +2,7 @@ package io.aiven.klaw.config;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import io.aiven.klaw.model.Approval;
+import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -35,7 +35,7 @@ class ApprovalCustomConfigurationTest {
   @Test
   public void returnCustomEnvironmentSpecificProperties() throws Exception {
 
-    ApprovalService defaultList = config.createTopicService();
+    ApprovalService defaultList = config.approvalService();
 
     List<Approval> aclClaimApprovals =
         defaultList.getApprovalsForRequest(

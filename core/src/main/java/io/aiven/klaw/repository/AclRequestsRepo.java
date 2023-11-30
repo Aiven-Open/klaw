@@ -15,6 +15,13 @@ public interface AclRequestsRepo
 
   List<AclRequests> findAllByTenantId(int tenantId);
 
+  List<AclRequests>
+      getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApproverAndApprovalsApproverName(
+          String requestStatus, String requestor, String requiredApprover, String approverName);
+
+  List<AclRequests> getAllByAndApprovalsRequiredApproverAndApprovalsApproverName(
+      String requiredApprover, String approverName);
+
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
       int tenantId, String env, String requestStatus, String topicname);
 

@@ -174,6 +174,13 @@ public class AclController {
   }
 
   @PostMapping(
+      value = "/acl/claim/{aclId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> claimAcl(@PathVariable int aclId) throws KlawException {
+    return new ResponseEntity<>(aclControllerService.claimAcl(aclId), HttpStatus.OK);
+  }
+
+  @PostMapping(
       value = "/execAclRequestDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> declineAclRequests(

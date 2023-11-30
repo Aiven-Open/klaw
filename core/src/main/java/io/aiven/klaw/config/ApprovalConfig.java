@@ -1,7 +1,7 @@
 package io.aiven.klaw.config;
 
+import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.error.KlawConfigurationException;
-import io.aiven.klaw.model.Approval;
 import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +56,8 @@ public class ApprovalConfig {
   }
 
   @Bean
-  public ApprovalService createTopicService() throws KlawConfigurationException {
+  @Qualifier("approvalService")
+  public ApprovalService approvalService() throws KlawConfigurationException {
     return new ApprovalService(
         flattenAllRequestsToKeys(getTopicProperties(), RequestEntityType.TOPIC),
         flattenAllRequestsToKeys(getACLProperties(), RequestEntityType.ACL),
@@ -169,7 +171,7 @@ public class ApprovalConfig {
         approvals.add(createDefaultApproval(ApprovalType.ACL_TEAM_OWNER));
       } else {
         Approval teamApproval = createDefaultApproval(ApprovalType.TEAM);
-        teamApproval.setRequiredApprovingTeamName(str);
+        teamApproval.setRequiredApprover(str);
         approvals.add(teamApproval);
       }
     }

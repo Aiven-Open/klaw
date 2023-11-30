@@ -1,15 +1,16 @@
 package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.Approval;
 import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.MailType;
 import java.util.ArrayList;
@@ -72,11 +73,32 @@ public class ApprovalServiceTest {
   public void addAResourceOwnerApproval() throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                OCTOPUS, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(
-                OCTOPUS, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JAMES, 11, null);
+
+    assertThat(approvalAdded.size()).isEqualTo(2);
+
+    assertThat(approvalAdded.get(0).getApproverName()).isEqualTo(JAMES);
+    assertThat(approvalAdded.get(0).getApproverTeamId()).isEqualTo(11);
+    assertThat(approvalAdded.get(0).getApproverTeamName()).isEqualTo(OCTOPUS);
+    assertThat(approvalAdded.get(1).getApproverName()).isNullOrEmpty();
+    assertThat(approvalAdded.get(1).getApproverTeamName()).isNullOrEmpty();
+
+    // IsNotFullyApproved They should only be allowed to approve one approval slot of the same type
+    // in this case RESOURCE_TEAM_OWNER
+    assertThat(approvalService.isRequestFullyApproved(approvalAdded)).isFalse();
+  }
+
+  @Test
+  public void addAResourceOwnerApprovalAndAttemptASecond() throws KlawException {
+    List<Approval> approvals =
+        List.of(
+            createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+    List<Approval> approvalAdded = approvalService.addApproval(approvals, JAMES, 11, null);
+    assertThatThrownBy(() -> approvalService.addApproval(approvalAdded, JAMES, 11, null))
+        .isInstanceOf(KlawException.class);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
 
@@ -95,10 +117,8 @@ public class ApprovalServiceTest {
   public void addAResourceOwnerApproval_rejectDifferentTeams() throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                OCTOPUS, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(
-                OCTOPUS, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JOHN, 11, null);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -117,32 +137,30 @@ public class ApprovalServiceTest {
   public void addAResourceOwnerApproval_rejectUserAlreadyApproved() throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                OCTOPUS, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, JAMES, OCTOPUS, 11),
-            createApproval(
-                OCTOPUS, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
-    List<Approval> approvalAdded = approvalService.addApproval(approvals, JAMES, 11, null);
+            createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, JAMES, OCTOPUS, 11),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+    assertThatThrownBy(() -> approvalService.addApproval(approvals, JAMES, 11, null))
+        .isInstanceOf(KlawException.class);
 
-    assertThat(approvalAdded.size()).isEqualTo(2);
+    assertThat(approvals.size()).isEqualTo(2);
 
-    assertThat(approvalAdded.get(0).getApproverName()).isEqualTo(JAMES);
-    assertThat(approvalAdded.get(0).getApproverTeamId()).isEqualTo(11);
-    assertThat(approvalAdded.get(0).getApproverTeamName()).isEqualTo(OCTOPUS);
-    assertThat(approvalAdded.get(1).getApproverName()).isNullOrEmpty();
-    assertThat(approvalAdded.get(1).getApproverTeamName()).isNullOrEmpty();
+    assertThat(approvals.get(0).getApproverName()).isEqualTo(JAMES);
+    assertThat(approvals.get(0).getApproverTeamId()).isEqualTo(11);
+    assertThat(approvals.get(0).getApproverTeamName()).isEqualTo(OCTOPUS);
+    assertThat(approvals.get(1).getApproverName()).isNullOrEmpty();
+    assertThat(approvals.get(1).getApproverTeamName()).isNullOrEmpty();
 
     // IsNotFullyApproved They should only be allowed to approve one approval slot of the same type
     // in this case RESOURCE_TEAM_OWNER
-    assertThat(approvalService.isRequestFullyApproved(approvalAdded)).isFalse();
+    assertThat(approvalService.isRequestFullyApproved(approvals)).isFalse();
   }
 
   @Test
   public void addAnACLOwnerApproval_WhereDifferentTeamOwnsResource() throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                ALICE, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JOHN, 11, 10);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -163,9 +181,8 @@ public class ApprovalServiceTest {
       throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                ALICE, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JOHN, 10, 10);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -188,9 +205,8 @@ public class ApprovalServiceTest {
       throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(
-                ALICE, "Create-11-1", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JAMES, 10, 10);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -210,8 +226,8 @@ public class ApprovalServiceTest {
 
     List<Approval> approvals =
         List.of(
-            createApproval(SUPPORT_TEAM, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(SUPPORT_TEAM, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JACKIE, 10, 11);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -232,9 +248,8 @@ public class ApprovalServiceTest {
 
     List<Approval> approvals =
         List.of(
-            createApproval(SUPPORT_TEAM, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(
-                OCTOPUS, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(SUPPORT_TEAM, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JACKIE, 10, null);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -254,8 +269,8 @@ public class ApprovalServiceTest {
   public void addATeamOwnerApproval_rejectDifferentTeams_NoApprovalsAdded() throws KlawException {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JACKIE, 10, 10);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
@@ -274,9 +289,8 @@ public class ApprovalServiceTest {
   public void getEmailAddresses() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(
-                OCTOPUS, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
 
     Set<String> emails = approvalService.getApproverEmails(approvals, 101);
     // two seperate email addresses expected
@@ -288,12 +302,10 @@ public class ApprovalServiceTest {
 
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(
-                ALICE, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(ALICE, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null),
-            createApproval(
-                ALICE, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
 
     Set<String> emails = approvalService.getApproverEmails(approvals, 101);
     // All The same Team so we only expect to get one email so we can send once.
@@ -304,12 +316,10 @@ public class ApprovalServiceTest {
   public void sendEmailToApprovers() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(
-                ALICE, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
-            createApproval(ALICE, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null),
-            createApproval(
-                ALICE, "Create-11-2", ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null),
+            createApproval(ALICE, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
 
     approvalService.sendEmailToApprovers(
         JOHN, "SimpleTopic", null, null, MailType.TOPIC_CREATE_REQUESTED, approvals, 101);
@@ -325,8 +335,8 @@ public class ApprovalServiceTest {
   public void isUserAbleToApprove_NotElligible_returnFalse() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
   }
 
@@ -334,8 +344,8 @@ public class ApprovalServiceTest {
   public void isUserAbleToApprove_AlreadyAddedApproval_returnFalse() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
   }
 
@@ -343,9 +353,8 @@ public class ApprovalServiceTest {
   public void isUserAbleToApprove_AlreadyAddedApprovalAsMemberOfAnotherTeam_returnFalse() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, OCTOPUS, 11),
-            createApproval(
-                SUPPORT_TEAM, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, JACKIE, OCTOPUS, 11),
+            createApproval(SUPPORT_TEAM, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
   }
 
@@ -353,8 +362,8 @@ public class ApprovalServiceTest {
   public void isUserAbleToApprove_AlreadyAddedApproval_returnTrue() {
     List<Approval> approvals =
         List.of(
-            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
-            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+            createApproval(ALICE, 1, ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
+            createApproval(OCTOPUS, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
     assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
   }
 
@@ -371,7 +380,7 @@ public class ApprovalServiceTest {
 
   private Approval createApproval(
       String requiredTeamName,
-      String approvalId,
+      Integer approvalId,
       ApprovalType type,
       String userName,
       String approverTeamName,
@@ -381,7 +390,7 @@ public class ApprovalServiceTest {
     approval.setApprovalId(approvalId);
     approval.setApprovalType(type);
     approval.setApproverTeamName(approverTeamName);
-    approval.setRequiredApprovingTeamName(requiredTeamName);
+    approval.setRequiredApprover(requiredTeamName);
     if (approvingTeamId != null) {
       approval.setApproverTeamId(approvingTeamId);
     }

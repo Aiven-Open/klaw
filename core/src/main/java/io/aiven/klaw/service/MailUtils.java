@@ -177,6 +177,13 @@ public class MailUtils {
         formattedStr = String.format(aclRequestApproved, "'" + acl + "'", "'" + topicName + "'");
         subject = "Acl Request Approved";
       }
+      case ACL_REQUEST_APPROVAL_ADDED -> {
+        formattedStr =
+            String.format(
+                "Acl Request %s for topic %s has had an approval added to it.",
+                "'" + acl + "'", "'" + topicName + "'");
+        subject = "Acl Request Approval Addded";
+      }
       case ACL_REQUEST_DENIED -> {
         formattedStr =
             String.format(

@@ -234,6 +234,9 @@ export type paths = {
   "/addNewCluster": {
     post: operations["addNewCluster"];
   };
+  "/acl/claim/{aclId}": {
+    post: operations["claimAcl"];
+  };
   "/user/{userId}/switchTeamsList": {
     get: operations["getSwitchTeams"];
   };
@@ -868,6 +871,58 @@ export type components = {
       connectorName: string;
       env: string;
     };
+    AclApproval: {
+      /** Format: int32 */
+      approvalId?: number;
+      /** @enum {string} */
+      approvalType?: "RESOURCE_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
+      requiredApprover?: string;
+      approverName?: string;
+      /** Format: int32 */
+      approverTeamId?: number;
+      approverTeamName?: string;
+      parent?: components["schemas"]["AclRequests"];
+    };
+    AclRequests: {
+      /** Format: int32 */
+      req_no?: number;
+      /** Format: int32 */
+      tenantId?: number;
+      topicname?: string;
+      environment?: string;
+      environmentName?: string;
+      /** Format: int32 */
+      teamId?: number;
+      /** Format: int32 */
+      requestingteam?: number;
+      appname?: string;
+      aclType?: string;
+      consumergroup?: string;
+      requestor?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      requestStatus?: string;
+      remarks?: string;
+      acl_ip?: string;
+      acl_ssl?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      requestOperationType?: string;
+      aclPatternType?: string;
+      aclResourceType?: string;
+      transactionalId?: string;
+      otherParams?: string;
+      jsonParams?: {
+        [key: string]: string;
+      };
+      /** @enum {string} */
+      aclIpPrincipleType?: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      totalNoPages?: string;
+      currentPage?: string;
+      allPageNos?: string[];
+    };
     AclRequestsModel: {
       /** @enum {string} */
       requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
@@ -893,6 +948,7 @@ export type components = {
       requestingteam?: number;
       aclResourceType?: string;
       otherParams?: string;
+      approvals?: components["schemas"]["AclApproval"][];
     };
     KafkaConnectorRestartModel: {
       connectorName: string;
@@ -1205,6 +1261,7 @@ export type components = {
       /** @enum {string} */
       kafkaFlavorType: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
       showDeleteAcl: boolean;
+      showClaimAcl: boolean;
       /** Format: int32 */
       teamid: number;
       teamname: string;
@@ -1315,16 +1372,16 @@ export type components = {
       options?: components["schemas"]["Options"];
       series?: string[];
       titleForReport?: string;
-      yaxisLabel?: string;
       xaxisLabel?: string;
+      yaxisLabel?: string;
     };
     Options: {
       title?: components["schemas"]["Title"];
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      yaxes?: components["schemas"]["YAx"][];
       xaxes?: components["schemas"]["YAx"][];
+      yaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -1765,6 +1822,7 @@ export type components = {
       consumergroup: string;
       acl_ip: string[];
       acl_ssl: string[];
+      approvals?: components["schemas"]["AclApproval"][];
       transactionalId?: string;
       aclResourceType?: string;
       deletable?: boolean;
@@ -2956,6 +3014,21 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["KwClustersModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  claimAcl: {
+    parameters: {
+      path: {
+        aclId: number;
       };
     };
     responses: {

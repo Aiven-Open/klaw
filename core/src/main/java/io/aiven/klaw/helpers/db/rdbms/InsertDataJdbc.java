@@ -230,6 +230,15 @@ public class InsertDataJdbc {
       }
     }
 
+    if (aclReq.getApprovals() != null) {
+      AclRequests parent = new AclRequests();
+      parent.setReq_no(aclReq.getReq_no());
+      parent.setTenantId(aclReq.getTenantId());
+      for (AclApproval req : aclReq.getApprovals()) {
+        req.setParent(parent);
+      }
+    }
+
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     final UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getRequestor());

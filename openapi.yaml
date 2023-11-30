@@ -2263,6 +2263,33 @@
         }
       }
     },
+    "/acl/claim/{aclId}" : {
+      "post" : {
+        "tags" : [ "acl-controller" ],
+        "operationId" : "claimAcl",
+        "parameters" : [ {
+          "name" : "aclId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/{userId}/switchTeamsList" : {
       "get" : {
         "tags" : [ "users-teams-controller" ],
@@ -6830,6 +6857,138 @@
         },
         "required" : [ "connectorName", "env" ]
       },
+      "AclApproval" : {
+        "properties" : {
+          "approvalId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "approvalType" : {
+            "type" : "string",
+            "enum" : [ "RESOURCE_TEAM_OWNER", "ACL_TEAM_OWNER", "TEAM" ]
+          },
+          "requiredApprover" : {
+            "type" : "string"
+          },
+          "approverName" : {
+            "type" : "string"
+          },
+          "approverTeamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "approverTeamName" : {
+            "type" : "string"
+          },
+          "parent" : {
+            "$ref" : "#/components/schemas/AclRequests"
+          }
+        }
+      },
+      "AclRequests" : {
+        "properties" : {
+          "req_no" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "requestingteam" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "aclType" : {
+            "type" : "string"
+          },
+          "consumergroup" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "requestStatus" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "acl_ip" : {
+            "type" : "string"
+          },
+          "acl_ssl" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requestOperationType" : {
+            "type" : "string"
+          },
+          "aclPatternType" : {
+            "type" : "string"
+          },
+          "aclResourceType" : {
+            "type" : "string"
+          },
+          "transactionalId" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "jsonParams" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "aclIpPrincipleType" : {
+            "type" : "string",
+            "enum" : [ "IP_ADDRESS", "PRINCIPAL", "USERNAME" ]
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
       "AclRequestsModel" : {
         "properties" : {
           "requestOperationType" : {
@@ -6902,6 +7061,12 @@
           },
           "otherParams" : {
             "type" : "string"
+          },
+          "approvals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AclApproval"
+            }
           }
         },
         "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "requestOperationType", "teamId", "topicname" ]
@@ -7796,6 +7961,9 @@
           "showDeleteAcl" : {
             "type" : "boolean"
           },
+          "showClaimAcl" : {
+            "type" : "boolean"
+          },
           "teamid" : {
             "type" : "integer",
             "format" : "int32"
@@ -7836,7 +8004,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "aclPatternType", "environment", "environmentName", "kafkaFlavorType", "req_no", "showDeleteAcl", "teamid", "teamname", "topicname", "topictype" ]
+        "required" : [ "aclPatternType", "environment", "environmentName", "kafkaFlavorType", "req_no", "showClaimAcl", "showDeleteAcl", "teamid", "teamname", "topicname", "topictype" ]
       },
       "PromotionStatus" : {
         "properties" : {
@@ -8128,10 +8296,10 @@
           "titleForReport" : {
             "type" : "string"
           },
-          "yaxisLabel" : {
+          "xaxisLabel" : {
             "type" : "string"
           },
-          "xaxisLabel" : {
+          "yaxisLabel" : {
             "type" : "string"
           }
         }
@@ -8148,13 +8316,13 @@
       },
       "Scales" : {
         "properties" : {
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
@@ -9396,6 +9564,12 @@
             "type" : "array",
             "items" : {
               "type" : "string"
+            }
+          },
+          "approvals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AclApproval"
             }
           },
           "transactionalId" : {
