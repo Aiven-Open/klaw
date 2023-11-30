@@ -7,7 +7,6 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 const mockedNavigate = jest.fn();
 const mockAuthUser = jest.fn();
-const mockIsFeatureFlagActive = jest.fn();
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
 
@@ -56,7 +55,6 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is closed", () => {
     beforeAll(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       customRender(<ProfileDropdown />, { memoryRouter: true });
     });
@@ -82,7 +80,6 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is open", () => {
     beforeAll(async () => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       customRender(<ProfileDropdown />, { memoryRouter: true });
       const button = screen.getByRole("button", { name: "Open profile menu" });
@@ -120,7 +117,6 @@ describe("ProfileDropdown", () => {
 
   describe("handles user choosing items from the menu", () => {
     beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(true);
       mockAuthUser.mockReturnValue(testUser);
       Object.defineProperty(window, "location", {
         value: {
@@ -157,7 +153,6 @@ describe("ProfileDropdown", () => {
 
   describe("handles user sucessfully login out", () => {
     beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
@@ -220,7 +215,6 @@ describe("ProfileDropdown", () => {
   });
 
   describe("handles error in logout process", () => {
-    mockIsFeatureFlagActive(false);
     mockAuthUser.mockReturnValue(testUser);
     const testError = {
       status: 500,
