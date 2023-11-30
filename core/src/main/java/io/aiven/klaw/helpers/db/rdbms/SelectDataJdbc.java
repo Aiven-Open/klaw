@@ -130,7 +130,6 @@ public class SelectDataJdbc {
                 isMyRequest ? requestor : null,
                 tenantId,
                 requestOperationType));
-
     if (isApproval) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
@@ -143,7 +142,6 @@ public class SelectDataJdbc {
                           && !req.getRequestOperationType()
                               .equals(RequestOperationType.CLAIM.value))
               .collect(Collectors.toList());
-
       getAclClaimRequestsForApproval(requestor, team, aclListSub, status);
     }
 
@@ -169,6 +167,8 @@ public class SelectDataJdbc {
 
         if (RequestOperationType.DELETE.value.equals(rowRequestOperationType)) {
           teamId = row.getRequestingteam();
+        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)) {
+
         }
 
       } else {
@@ -177,7 +177,8 @@ public class SelectDataJdbc {
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
         aclList.add(row);
-      } else if (teamSelected != null && teamSelected.equals(teamId)) {
+      } else if ((teamSelected != null && teamSelected.equals(teamId))
+          || row.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         aclList.add(row);
       }
 

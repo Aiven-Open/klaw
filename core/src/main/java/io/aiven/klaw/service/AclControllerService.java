@@ -545,6 +545,7 @@ public class AclControllerService {
     // reset the request number
     request.setReq_no(null);
     // Store the original aclId in the other Params section
+
     request.setAssociatedAclId(aclOp.get().getReq_no());
     // Add Complex Approvers
     request.setRequestingteam(commonUtilsService.getTeamId(userName));
@@ -681,10 +682,12 @@ public class AclControllerService {
 
     List<Approval> approvals = KlawResourceUtils.aclApprovalsToApprovalsList(aclReq.getApprovals());
     approvalService.addApproval(approvals, userDetails, acl.get().getTeamId(), aclReq.getTeamId());
+
     boolean fullyApproved = approvalService.isRequestFullyApproved(approvals);
     if (fullyApproved) {
       // changeAclOwnership
       emailStatus = ACL_REQUEST_APPROVED;
+
       acl.get().setTeamId(aclReq.getRequestingteam());
       manageDatabase.getHandleDbRequests().updateAcl(acl.get());
     }

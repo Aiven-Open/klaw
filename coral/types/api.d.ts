@@ -1744,6 +1744,7 @@ export type components = {
       adAuthRoleEnabled: string;
       supportlink: string;
       myteamtopics: string;
+      googleFeedbackFormLink: string;
     };
     KwPropertiesResponse: {
       result?: string;
