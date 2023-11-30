@@ -105,13 +105,12 @@ public class SchemaRegistrySyncControllerService {
       Integer teamId) {
     SyncSchemasList syncSchemasList = new SyncSchemasList();
     List<SchemaSubjectInfoResponse> schemaInfoList;
-    String userName = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userName);
-
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
       return syncSchemasList;
     }
 
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
     if (kafkaEnv.getAssociatedEnv() == null) {
       return syncSchemasList;
@@ -228,8 +227,6 @@ public class SchemaRegistrySyncControllerService {
       String topicNameSearch,
       boolean showAllTopics)
       throws KlawException {
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
     SyncSchemasList syncSchemasList = new SyncSchemasList();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
       return syncSchemasList;
@@ -237,6 +234,8 @@ public class SchemaRegistrySyncControllerService {
 
     List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList = new ArrayList<>();
 
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
     Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
     if (kafkaEnv.getAssociatedEnv() == null) {
       return syncSchemasList;
@@ -403,13 +402,13 @@ public class SchemaRegistrySyncControllerService {
 
   private void validateSchemas(
       SchemaSubjectInfoResponse schemaSubjectInfoResponse, Set<String> schemaVersionsOnDb) {
-    Set<Integer> schemaVersionsOnCluster = schemaSubjectInfoResponse.getSchemaVersions();
 
     if (schemaVersionsOnDb == null) {
       schemaSubjectInfoResponse.setRemarks(NOT_IN_SYNC);
       return;
     }
 
+    Set<Integer> schemaVersionsOnCluster = schemaSubjectInfoResponse.getSchemaVersions();
     if (schemaVersionsOnCluster.size() != schemaVersionsOnDb.size()) {
       schemaSubjectInfoResponse.setRemarks(NOT_IN_SYNC);
       return;
@@ -439,8 +438,6 @@ public class SchemaRegistrySyncControllerService {
 
   private ApiResponse updateSyncSchemasToCluster(SyncSchemaUpdates syncSchemaUpdates)
       throws KlawException {
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
@@ -448,6 +445,8 @@ public class SchemaRegistrySyncControllerService {
     List<String> logArray = new ArrayList<>();
     logArray.add("Topics/Schemas result");
 
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
     Env kafkaEnv =
         manageDatabase
             .getHandleDbRequests()
@@ -540,12 +539,12 @@ public class SchemaRegistrySyncControllerService {
 
   private ApiResponse updateSyncSchemasToMetadata(SyncSchemaUpdates syncSchemaUpdates)
       throws Exception {
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
     Env kafkaEnv =
         manageDatabase
             .getHandleDbRequests()
