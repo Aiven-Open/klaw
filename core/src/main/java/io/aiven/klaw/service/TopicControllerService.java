@@ -305,7 +305,6 @@ public class TopicControllerService {
     }
 
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-    ;
     Integer topicOwnerTeamId = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
         dbHandle.getAllUsersInfo(tenantId).stream()
