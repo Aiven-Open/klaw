@@ -116,6 +116,11 @@ function MainNavigation() {
               linkText={"Environments"}
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
+            <MainNavigationLink
+              to={Routes.CLUSTERS}
+              linkText={"Clusters"}
+              active={pathname.startsWith(Routes.CLUSTERS)}
+            />
           </MainNavigationSubmenuList>
         </li>
         <li>

@@ -60,6 +60,7 @@ import { UsersPage } from "src/app/pages/configuration/users";
 import { UserProfile } from "src/app/pages/user-information/profile";
 import { ChangePassword } from "src/app/pages/user-information/change-password";
 import { TenantInfo } from "src/app/pages/user-information/tenant-info";
+import { ClustersPage } from "src/app/pages/configuration/clusters";
 
 const routes: Array<RouteObject> = [
   {
@@ -244,6 +245,10 @@ const routes: Array<RouteObject> = [
           {
             path: Routes.USERS,
             element: <UsersPage />,
+          },
+          {
+            path: Routes.CLUSTERS,
+            element: <ClustersPage />,
           },
         ],
       },

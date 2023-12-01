@@ -52,6 +52,10 @@ const submenuItems = [
         name: "Environments",
         linkTo: "/configuration/environments",
       },
+      {
+        name: "Clusters",
+        linkTo: "/configuration/clusters",
+      },
     ],
   },
   {
