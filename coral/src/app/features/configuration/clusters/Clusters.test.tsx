@@ -1,15 +1,52 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Clusters } from "src/app/features/configuration/clusters/Clusters";
-import { cleanup, screen } from "@testing-library/react";
-import { getClustersPaginated } from "src/domain/cluster";
+import { cleanup, screen, within } from "@testing-library/react";
+import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiError } from "src/services/api";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 jest.mock("src/domain/cluster/cluster-api.ts");
 const mockGetClustersPaginated = getClustersPaginated as jest.MockedFunction<
   typeof getClustersPaginated
 >;
+
+const testCluster: ClusterDetails[] = [
+  {
+    allPageNos: ["1"],
+    associatedServers: "https://testrestproxy:11111",
+    bootstrapServers: "this-is-a-test.aivencloud.com:11111",
+    clusterId: 1,
+    clusterName: "DEV",
+    clusterStatus: "OFFLINE",
+    clusterType: "kafka",
+    kafkaFlavor: "Aiven for Apache Kafka",
+    projectName: "test-project-name",
+    protocol: "SSL",
+    publicKey: "",
+    serviceName: "test-service-name",
+    showDeleteCluster: true,
+    totalNoPages: "1",
+  },
+  {
+    allPageNos: ["1"],
+    associatedServers: "https://otherproxy:11111",
+    bootstrapServers: "11.111.11.111:9999",
+    clusterId: 2,
+    clusterName: "PROD",
+    clusterStatus: "OFFLINE",
+    clusterType: "kafkaconnect",
+    kafkaFlavor: "Apache Kafka",
+    protocol: "PLAINTEXT",
+    publicKey: "",
+    showDeleteCluster: true,
+    totalNoPages: "1",
+  },
+];
+
 describe("Clusters.tsx", () => {
+  beforeAll(mockIntersectionObserver);
+
   describe("handles loading state", () => {
     beforeAll(() => {
       mockGetClustersPaginated.mockResolvedValue({
@@ -92,6 +129,51 @@ describe("Clusters.tsx", () => {
       expect(error).toBeVisible();
       expect(error).toHaveTextContent(testError.message);
       expect(console.error).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  describe("handles successful response with one page", () => {
+    beforeAll(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 1,
+        totalPages: 1,
+        entries: testCluster,
+      });
+      customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders the cluster table with information about the pages", async () => {
+      const table = screen.getByRole("table", {
+        name: "Cluster overview, page 1 of 1",
+      });
+
+      expect(table).toBeVisible();
+    });
+
+    it("shows cluster names row headers", () => {
+      const table = screen.getByRole("table", {
+        name: "Cluster overview, page 1 of 1",
+      });
+
+      const rowHeader = within(table).getByRole("cell", {
+        name: testCluster[0].clusterName,
+      });
+      expect(rowHeader).toBeVisible();
+    });
+
+    it("does not render the pagination", () => {
+      const pagination = screen.queryByRole("navigation", {
+        name: /Pagination/,
+      });
+
+      expect(pagination).not.toBeInTheDocument();
     });
   });
 });
