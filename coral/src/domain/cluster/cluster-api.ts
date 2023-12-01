@@ -1,6 +1,8 @@
 import { Environment } from "src/domain/environment";
 import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 import api, { API_PATHS } from "src/services/api";
+import { ClustersPaginatedApiResponse } from "src/domain/cluster/cluster-types";
+import { transformPaginatedClustersApiResponse } from "src/domain/cluster/cluster-api-transformer";
 
 const getClusterInfoFromEnvironment = async ({
   envSelected,
@@ -24,20 +26,24 @@ function getClusterDetails(clusterId: string) {
   );
 }
 
-function getClustersPaginated({
-  clusterType = "all",
+async function getClustersPaginated({
   pageNo,
   searchClusterParam,
-}: KlawApiRequestQueryParameters<"getClustersPaginated">) {
-  const params = {
-    clusterType,
+}: Omit<
+  KlawApiRequestQueryParameters<"getClustersPaginated">,
+  "clusterType"
+>): Promise<ClustersPaginatedApiResponse> {
+  const params: KlawApiRequestQueryParameters<"getClustersPaginated"> = {
+    clusterType: "all",
     pageNo,
     ...(searchClusterParam && { searchClusterParam: searchClusterParam }),
   };
-  return api.get<KlawApiResponse<"getClustersPaginated">>(
-    API_PATHS.getClusterDetails,
+  const response = await api.get<KlawApiResponse<"getClustersPaginated">>(
+    API_PATHS.getClustersPaginated,
     new URLSearchParams(params)
   );
+
+  return transformPaginatedClustersApiResponse(response);
 }
 
 export {
