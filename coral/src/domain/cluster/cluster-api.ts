@@ -1,5 +1,5 @@
 import { Environment } from "src/domain/environment";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 import api, { API_PATHS } from "src/services/api";
 
 const getClusterInfoFromEnvironment = async ({
@@ -24,4 +24,24 @@ function getClusterDetails(clusterId: string) {
   );
 }
 
-export { getClusterInfoFromEnvironment, getClusterDetails };
+function getClustersPaginated({
+  clusterType = "all",
+  pageNo,
+  searchClusterParam,
+}: KlawApiRequestQueryParameters<"getClustersPaginated">) {
+  const params = {
+    clusterType,
+    pageNo,
+    ...(searchClusterParam && { searchClusterParam: searchClusterParam }),
+  };
+  return api.get<KlawApiResponse<"getClustersPaginated">>(
+    API_PATHS.getClusterDetails,
+    new URLSearchParams(params)
+  );
+}
+
+export {
+  getClusterInfoFromEnvironment,
+  getClusterDetails,
+  getClustersPaginated,
+};
