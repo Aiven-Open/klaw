@@ -8025,10 +8025,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -8986,6 +8986,9 @@
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
+          "currentPage" : {
+            "type" : "string"
+          },
           "associatedServers" : {
             "type" : "string"
           },
@@ -8999,7 +9002,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "bootstrapServers", "clusterId", "clusterName", "clusterStatus", "clusterType", "kafkaFlavor", "protocol", "showDeleteCluster", "totalNoPages" ]
+        "required" : [ "allPageNos", "bootstrapServers", "clusterId", "clusterName", "clusterStatus", "clusterType", "currentPage", "kafkaFlavor", "protocol", "showDeleteCluster", "totalNoPages" ]
       },
       "ClusterInfo" : {
         "properties" : {
