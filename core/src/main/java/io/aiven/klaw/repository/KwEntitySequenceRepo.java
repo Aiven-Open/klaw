@@ -11,5 +11,5 @@ public interface KwEntitySequenceRepo extends CrudRepository<KwEntitySequence, K
 
   List<KwEntitySequence> findAllByEntityNameAndTenantId(String entityName, Integer tenantId);
 
-  int countAllByEntityNameAndTenantId(String entityName, Integer tenantId);
+  boolean existsByEntityNameAndTenantId(String entityName, Integer tenantId);
 }
