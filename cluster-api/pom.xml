@@ -22,8 +22,7 @@
         <java.version>17</java.version>
         <!-- the list is sorted-->
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
-        <kafka.version>3.5.1</kafka.version>
-        <kafka.client.version>3.5.1</kafka.client.version>
+        <kafka.version>3.6.0</kafka.version>
         <mockserver.version>5.15.0</mockserver.version>
         <spring-kafka-test.version>3.1.0</spring-kafka-test.version>
     </properties>
@@ -32,7 +31,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>${kafka.client.version}</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
