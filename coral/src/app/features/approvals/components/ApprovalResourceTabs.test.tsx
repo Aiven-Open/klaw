@@ -4,6 +4,7 @@ import ApprovalResourceTabs from "src/app/features/approvals/components/Approval
 import { ApprovalsTabEnum } from "src/app/router_utils";
 import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import * as hook from "src/app/hooks/usePendingRequests";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -21,11 +22,13 @@ const mockedPendingRequests: RequestsWaitingForApprovalWithTotal = {
   TOTAL: 8,
 };
 
-jest.mock("src/app/context-provider/PendingRequestsProvider", () => ({
-  usePendingRequestsContext: () => mockedPendingRequests,
-}));
-
 describe("ApprovalResourceTabs", () => {
+  beforeAll(() => {
+    jest
+      .spyOn(hook, "usePendingRequests")
+      .mockImplementation(() => mockedPendingRequests);
+  });
+
   describe("Tab badges", () => {
     beforeAll(() => {
       customRender(

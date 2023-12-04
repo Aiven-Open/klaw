@@ -8,8 +8,8 @@ import person from "@aivenio/aquarium/dist/src/icons/person";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
-import { usePendingRequestsContext } from "src/app/context-provider/PendingRequestsProvider";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
+import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
@@ -21,7 +21,7 @@ function MainNavigation() {
   const userInformationFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
-  const { TOTAL } = usePendingRequestsContext();
+  const { TOTAL } = usePendingRequests();
 
   return (
     <Box

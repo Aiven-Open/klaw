@@ -6,7 +6,7 @@ import codeBlock from "@aivenio/aquarium/icons/codeBlock";
 import dataflow02 from "@aivenio/aquarium/icons/dataflow02";
 import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
-import { usePendingRequestsContext } from "src/app/context-provider/PendingRequestsProvider";
+import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { Routes } from "src/app/router_utils";
@@ -20,7 +20,7 @@ const requestNewEntityPaths: { [key: string]: string } = {
 
 function HeaderNavigation() {
   const navigate = useNavigate();
-  const { TOTAL } = usePendingRequestsContext();
+  const { TOTAL } = usePendingRequests();
 
   return (
     <Box display={"flex"} colGap={"l2"} alignItems="center">

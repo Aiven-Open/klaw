@@ -6,7 +6,7 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-import * as hook from "src/app/context-provider/PendingRequestsProvider";
+import * as hook from "src/app/hooks/usePendingRequests";
 
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
@@ -48,7 +48,7 @@ describe("HeaderNavigation.tsx", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
       jest
-        .spyOn(hook, "usePendingRequestsContext")
+        .spyOn(hook, "usePendingRequests")
         .mockImplementation(() => mockedNoPendingRequests);
 
       customRender(<HeaderNavigation />, { memoryRouter: true });
@@ -162,7 +162,7 @@ describe("HeaderNavigation.tsx", () => {
   describe("shows notification on Approve request link when there are pending requests", () => {
     beforeAll(() => {
       jest
-        .spyOn(hook, "usePendingRequestsContext")
+        .spyOn(hook, "usePendingRequests")
         .mockImplementation(() => mockedPendingRequests);
       customRender(<HeaderNavigation />, { memoryRouter: true });
     });
