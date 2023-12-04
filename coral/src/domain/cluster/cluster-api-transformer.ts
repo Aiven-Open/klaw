@@ -15,6 +15,7 @@ function transformPaginatedClustersApiResponse(
   return {
     totalPages: Number(apiResponse[0].totalNoPages),
     // Backend fix to add currentPage is open right now
+    // PR #2071
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     currentPage: Number(apiResponse[0].currentPage || 1),

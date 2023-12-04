@@ -5,6 +5,7 @@ import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiError } from "src/services/api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/cluster/cluster-api.ts");
 const mockGetClustersPaginated = getClustersPaginated as jest.MockedFunction<
@@ -46,6 +47,10 @@ const testCluster: ClusterDetails[] = [
 
 describe("Clusters.tsx", () => {
   beforeAll(mockIntersectionObserver);
+
+  const defaultApiParams = {
+    pageNo: "1",
+  };
 
   describe("handles loading state", () => {
     beforeAll(() => {
@@ -149,6 +154,10 @@ describe("Clusters.tsx", () => {
       jest.resetAllMocks();
     });
 
+    it("fetches data with default params on page load", async () => {
+      expect(mockGetClustersPaginated).toHaveBeenCalledWith(defaultApiParams);
+    });
+
     it("renders the cluster table with information about the pages", async () => {
       const table = screen.getByRole("table", {
         name: "Cluster overview, page 1 of 1",
@@ -174,6 +183,80 @@ describe("Clusters.tsx", () => {
       });
 
       expect(pagination).not.toBeInTheDocument();
+    });
+  });
+
+  describe("handles successful response with three page", () => {
+    beforeAll(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 2,
+        totalPages: 3,
+        entries: testCluster,
+      });
+      customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders the cluster table with information about the pages", async () => {
+      const table = screen.getByRole("table", {
+        name: "Cluster overview, page 2 of 3",
+      });
+
+      expect(table).toBeVisible();
+    });
+
+    it("does render the pagination with information about the pages", () => {
+      const pagination = screen.getByRole("navigation", {
+        name: "Pagination navigation, you're on page 2 of 3",
+      });
+
+      expect(pagination).toBeVisible();
+    });
+  });
+
+  describe("handles user stepping through pagination", () => {
+    beforeEach(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 3,
+        totalPages: 5,
+        entries: testCluster,
+      });
+      customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows page 3 as currently active page and the total page number", () => {
+      const pagination = screen.getByRole("navigation", {
+        name: /Pagination/,
+      });
+
+      expect(pagination).toHaveAccessibleName(
+        "Pagination navigation, you're on page 3 of 5"
+      );
+    });
+
+    it("fetches new data when user clicks on next page", async () => {
+      const pageTwoButton = screen.getByRole("button", {
+        name: "Go to next page, page 4",
+      });
+
+      await userEvent.click(pageTwoButton);
+
+      expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
+        pageNo: "4",
+      });
     });
   });
 });

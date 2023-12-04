@@ -16,14 +16,15 @@ function Clusters() {
     isLoading,
     isError,
     error,
-  } = useQuery(["get-clusters-paginated"], {
-    queryFn: () => getClustersPaginated({ pageNo: String(currentPage) }),
+  } = useQuery(["get-clusters-paginated", currentPage], {
+    queryFn: () => getClustersPaginated({ pageNo: currentPage.toString() }),
   });
 
   function handleChangePage(page: number) {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   }
+
   const pagination =
     clusters && clusters.totalPages > 1 ? (
       <Pagination
