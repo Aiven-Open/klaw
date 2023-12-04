@@ -124,7 +124,6 @@ public class TopicOverviewServiceTest {
         .get(0)
         .setJsonParams("{\"advancedTopicConfiguration\":{\"retention.ms\":\"404800000\"}}");
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
@@ -165,8 +164,6 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(kwClustersHashMap);
@@ -264,8 +261,6 @@ public class TopicOverviewServiceTest {
         .thenReturn(getAclsSOT(TESTTOPIC));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
@@ -343,8 +338,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -361,8 +354,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
     assertThat(topicOverview.isCreateSchemaAllowed()).isTrue();
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -415,8 +406,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -431,8 +420,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -475,8 +462,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -494,8 +479,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -542,8 +525,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -558,8 +539,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -609,8 +588,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -625,8 +602,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -724,8 +699,6 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
@@ -743,8 +716,6 @@ public class TopicOverviewServiceTest {
         .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
@@ -797,13 +768,9 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     when(handleDbRequests.existsClaimTopicRequest(
@@ -936,8 +903,6 @@ public class TopicOverviewServiceTest {
     mockTenantConfig();
 
     when(manageDatabase.getTeamNameFromTeamId(101, TEAMID)).thenReturn(TEAM_1);
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
         .thenReturn(createClusterMap(numberOfEnvs));
   }

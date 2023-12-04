@@ -262,7 +262,7 @@ public class TopicSyncControllerServiceTest {
 
     SyncTopicsList topicRequests =
         topicSyncControllerService.getSyncTopics(
-            envSel, pageNo, "", topicNameSearch, "false", false, false);
+            envSel, pageNo, "", topicNameSearch, "false", false, false, null, false);
     assertThat(topicRequests.getResultSet()).isNotNull();
   }
 
@@ -286,6 +286,8 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(
             createAPIResponse(
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
             CRUDResponse.<Topic>builder()
@@ -340,6 +342,8 @@ public class TopicSyncControllerServiceTest {
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
 
     // execute
     ApiResponse retval =
@@ -392,6 +396,9 @@ public class TopicSyncControllerServiceTest {
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -440,6 +447,9 @@ public class TopicSyncControllerServiceTest {
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -490,6 +500,9 @@ public class TopicSyncControllerServiceTest {
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -534,11 +547,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getSyncTopics(
+            "1", "1", "", null, "false", false, false, null, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(0);
@@ -570,11 +583,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getReconTopics(
+            "1", "1", "", null, "false", false, false, 101, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(0);
@@ -602,11 +615,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getSyncTopics(
+            "1", "1", "", null, "false", false, false, null, false);
 
     // With 13 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(2);
@@ -639,11 +652,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getReconTopics(
+            "1", "1", "", null, "false", false, false, 101, false);
 
     // 14 in the DB and 14 in the cluster means we return 0 here.
     assertThat(syncTopics.getResultSet()).hasSize(5);
@@ -675,11 +688,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "true", false, false);
+        topicSyncControllerService.getSyncTopics(
+            "1", "1", "", null, "true", false, false, null, false);
 
     // With 12 existing in the DB and 15 on the cluster all 15 are returned
     assertThat(syncTopics.getResultSet()).hasSize(15);
@@ -712,11 +725,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getReconTopics(
+            "1", "1", "", null, "false", false, false, 101, false);
 
     // 14 in the DB and 10 in the cluster i am expecting the difference to be returned
     assertThat(syncTopics.getResultSet()).hasSize(4);
@@ -748,11 +761,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getSyncTopics(
+            "1", "1", "", null, "false", false, false, null, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(3);
@@ -779,11 +792,11 @@ public class TopicSyncControllerServiceTest {
     "5,8,1,3,3,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 DevTopic6 DevTopic7 DevTopic8",
     "5,8,1,3,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
     "8,8,1,0,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
-    "3,8,2,5,2,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
-    "3,8,3,5,4,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
-    "3,8,3,5,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
-    "7,8,4,1,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
-    "1,8,4,7,4,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
+    "3,8,2,8,5,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
+    "3,8,3,8,7,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
+    "3,8,3,8,4,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "7,8,4,8,8,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "1,8,4,8,5,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
   })
   @Order(17)
   public void getSyncList_ValidationOn(
@@ -816,12 +829,12 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
+    Integer tenantId = 101;
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "false", false, false);
+            String.valueOf(environment), "1", "", null, "false", false, false, tenantId, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -857,11 +870,11 @@ public class TopicSyncControllerServiceTest {
     "5,8,1,3,3,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 DevTopic6 DevTopic7 DevTopic8",
     "5,8,1,3,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
     "8,6,1,2,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
-    "3,8,2,5,2,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
-    "3,8,3,5,4,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
-    "3,8,3,5,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
-    "7,8,4,1,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
-    "1,8,4,7,4,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
+    "3,8,2,8,5,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
+    "3,8,3,8,7,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
+    "3,8,3,8,4,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "7,8,4,8,8,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "1,8,4,8,5,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
   })
   @Order(18)
   public void getReconSyncList_ValidationOn(
@@ -894,12 +907,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
-            String.valueOf(environment), "1", "", null, "false", false, false);
+            String.valueOf(environment), "1", "", null, "false", false, false, 101, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -972,12 +984,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "true", false, false);
+            String.valueOf(environment), "1", "", null, "true", false, false, null, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -1052,12 +1063,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
-            String.valueOf(environment), "1", "", null, "false", false, false);
+            String.valueOf(environment), "1", "", null, "false", false, false, null, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
@@ -1102,11 +1112,11 @@ public class TopicSyncControllerServiceTest {
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
     SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false, false);
+        topicSyncControllerService.getSyncTopics(
+            "1", "1", "", null, "false", false, false, null, false);
 
     // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
     assertThat(syncTopics.getResultSet()).hasSize(3);
@@ -1228,35 +1238,32 @@ public class TopicSyncControllerServiceTest {
 
     when(handleDbRequests.requestForTopic(any()))
         .thenReturn(
-            new HashMap<String, String>() {
+            new HashMap<>() {
               {
                 put("result", ApiResultStatus.SUCCESS.value);
                 put("topicId", "1");
               }
             })
         .thenReturn(
-            new HashMap<String, String>() {
+            new HashMap<>() {
               {
                 put("result", ApiResultStatus.SUCCESS.value);
                 put("topicId", "2");
               }
             });
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(createTopic(Integer.valueOf(1), TOPIC_NAME_1, env.getId())))
-        .thenReturn(List.of(createTopic(Integer.valueOf(2), TOPIC_NAME_2, env.getId())));
   }
 
   private void mockGetTopicsFromEnv() {
     when(handleDbRequests.getTopicsFromEnv(env.getId(), TENANT_ID))
         .thenReturn(
             List.of(
-                createTopic(Integer.valueOf(1), TOPIC_NAME_1, env.getId()),
-                createTopic(Integer.valueOf(2), TOPIC_NAME_2, test.getId())));
+                createTopic(1, TOPIC_NAME_1, env.getId()),
+                createTopic(2, TOPIC_NAME_2, test.getId())));
   }
 
   private void mockSelectedOnlyTopics(int topicId, String topicName, String envId) {
     when(handleDbRequests.getTopicFromId(eq(topicId), eq(TENANT_ID)))
-        .thenReturn(Optional.of(createTopic(Integer.valueOf(topicId), topicName, envId)));
+        .thenReturn(Optional.of(createTopic(topicId, topicName, envId)));
   }
 
   private void verifyCaptureContents(

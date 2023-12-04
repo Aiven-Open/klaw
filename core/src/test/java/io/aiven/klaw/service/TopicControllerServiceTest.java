@@ -247,9 +247,7 @@ public class TopicControllerServiceTest {
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getMessage())
           .isEqualTo("Failure. A delete topic request already exists.");
-    } catch (KlawException e) {
-      throw new RuntimeException(e);
-    } catch (KlawNotAuthorizedException e) {
+    } catch (KlawException | KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -268,17 +266,13 @@ public class TopicControllerServiceTest {
         .thenReturn(false);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getMessage())
           .isEqualTo(
               "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
-    } catch (KlawException e) {
-      throw new RuntimeException(e);
-    } catch (KlawNotAuthorizedException e) {
+    } catch (KlawException | KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -296,8 +290,6 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     try {
@@ -306,9 +298,7 @@ public class TopicControllerServiceTest {
       assertThat(apiResponse.getMessage())
           .isEqualTo(
               "Failure. There are existing subscriptions for topic. Please get them deleted before.");
-    } catch (KlawException e) {
-      throw new RuntimeException(e);
-    } catch (KlawNotAuthorizedException e) {
+    } catch (KlawException | KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -328,14 +318,13 @@ public class TopicControllerServiceTest {
         .thenReturn(List.of(getTopic(topicName)));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getMessage())
           .isEqualTo("Failure. Topic not found on cluster: " + topicName);
-    } catch (KlawException e) {
-      throw new RuntimeException(e);
-    } catch (KlawNotAuthorizedException e) {
+    } catch (KlawException | KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -352,8 +341,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -401,8 +388,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
     List<UserInfo> userList = utilMethods.getUserInfoList("testuser", "");
     userList.get(0).setTeamId(1);
@@ -458,7 +443,6 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics());
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests(
@@ -488,7 +472,6 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics());
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests(
@@ -560,7 +543,6 @@ public class TopicControllerServiceTest {
     List<Topic> topicList = utilMethods.getTopics();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL);
@@ -716,8 +698,6 @@ public class TopicControllerServiceTest {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.addToSynctopics(any()))
         .thenReturn(
             CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
@@ -756,8 +736,6 @@ public class TopicControllerServiceTest {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
@@ -816,7 +794,6 @@ public class TopicControllerServiceTest {
   public void getAllTopics() {
     stubUserInfo();
 
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
 
     List<String> result = topicControllerService.getAllTopics(false, "DEV");
@@ -828,8 +805,6 @@ public class TopicControllerServiceTest {
   @Order(29)
   public void getAllTopicsForMyTeam() {
     stubUserInfo();
-
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
@@ -845,8 +820,7 @@ public class TopicControllerServiceTest {
     TopicInfo topicInfo = utilMethods.getTopicInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(List.of(getTopic("testtopic")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
+        .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
     when(handleDbRequests.updateTopicDocumentation(any()))
@@ -864,7 +838,6 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic("testtopic")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
 
     when(handleDbRequests.updateTopicDocumentation(any()))
@@ -976,7 +949,6 @@ public class TopicControllerServiceTest {
         .thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(
@@ -1011,7 +983,6 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
     List<Topic> topicList = utilMethods.getTopics();
     topicList.get(0).setTopicname("testtopic" + "--" + AclPatternType.PREFIXED + "--");
-    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(
@@ -1071,20 +1042,6 @@ public class TopicControllerServiceTest {
     ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
     assertThat(resultResp.getMessage()).isEqualTo("This request does not exist anymore.");
-  }
-
-  @Test
-  @Order(41)
-  public void getTopicTeam() {
-    String topicName = "testtopic";
-    stubUserInfo();
-    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
-
-    List<Topic> topicTeam = topicControllerService.getTopicFromName(topicName, 1);
-    assertThat(topicTeam.get(0).getTeamId()).isOne();
   }
 
   @Test
@@ -1244,8 +1201,6 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     List<UserInfo> userList = utilMethods.getUserInfoList("testuser", "");
     userList.get(0).setTeamId(1);
     when(handleDbRequests.getAllUsersInfo(anyInt())).thenReturn(userList);
@@ -1400,8 +1355,6 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTopicsForTopicName(eq("Topic0"), eq(101)))
         .thenReturn(List.of(getTopic("Topic0")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic("Topic0")));
     List<TopicRequestsResponseModel> ordered_response =
         topicControllerService.getTopicRequests(
             "1",
@@ -1456,8 +1409,6 @@ public class TopicControllerServiceTest {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.addToSynctopics(any()))
         .thenReturn(
             CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
@@ -1502,8 +1453,6 @@ public class TopicControllerServiceTest {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.addToSynctopics(any()))
         .thenReturn(
             CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());

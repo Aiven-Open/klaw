@@ -35,6 +35,7 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.cluster.LoadTopicsResponse;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -42,6 +43,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.response.SyncTopicsList;
 import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicSyncResponseModel;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -58,10 +60,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +75,15 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class TopicSyncControllerService {
+
+  @Value("${server.port}")
+  private String serverPort;
+
+  @Value("${server.servlet.context-path:}")
+  private String contextPath;
+
+  @Value("${server.ssl.key-store:null}")
+  private String keyStore;
 
   @Autowired private ClusterApiService clusterApiService;
 
@@ -82,8 +97,15 @@ public class TopicSyncControllerService {
 
   private int topicCounter = 0;
 
-  // default at 7 am everyday
-  //    @Scheduled(cron = "${klaw.recontopics.fixedtime:0 7 * * ?}")
+  // default at 12 am everyday
+  @ConditionalOnProperty(
+      name = "klaw.notify.admins.clusterchanges.scheduler.enable",
+      havingValue = "true")
+  @Scheduled(cron = "${klaw.notify.admins.clusterchanges.scheduler.cron.expression:0 0 0 * * ?}")
+  @SchedulerLock(
+      name = "TaskScheduler_NotifyAdminsOfClusterChanges",
+      lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
+      lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void getReconTopicsScheduledAsync() {
     CompletableFuture.runAsync(this::getReconTopicsScheduled);
   }
@@ -94,37 +116,86 @@ public class TopicSyncControllerService {
     List<Integer> tenants = new ArrayList<>(envTenantMap.keySet());
 
     for (Integer tenantId : tenants) {
-      List<String> envsStrList = envTenantMap.get(tenantId);
       StringBuilder reconStr = new StringBuilder();
-      reconStr.append("Tenant : ").append(tenantMap.get(tenantId)).append("\n");
 
-      for (String envStr : envsStrList) {
-        reconStr = new StringBuilder();
+      boolean notifyAdmin = false;
+
+      int i = 0;
+      // One email per environment if there are changes
+      for (Env env : manageDatabase.getKafkaEnvList(tenantId)) {
+        if (env.getEnvStatus() != ClusterStatus.ONLINE) {
+          continue;
+        }
         try {
           List<TopicSyncResponseModel> results =
-              getReconTopics(envStr, "-1", "", null, "false", false, false).getResultSet();
+              getReconTopics(env.getId(), "-1", "", null, "false", false, false, 101, true)
+                  .getResultSet();
+
+          if (i == 0) {
+            reconStr.append("Tenant : ").append(tenantMap.get(tenantId)).append("\n");
+          }
+
+          reconStr
+              .append("Topic differences in ")
+              .append(env.getName())
+              .append(" Klaw environment !!\n\n");
 
           for (TopicSyncResponseModel topicRequestModel : results) {
-            reconStr
-                .append(topicRequestModel.getTopicname())
-                .append(topicRequestModel.getEnvironmentName())
-                .append(topicRequestModel.getRemarks())
-                .append("\n");
+            notifyAdmin = true;
+            if (topicRequestModel.getRemarks().equalsIgnoreCase("added")) {
+              reconStr
+                  .append("Topic ")
+                  .append(topicRequestModel.getTopicname())
+                  .append(" ")
+                  .append(topicRequestModel.getRemarks().toLowerCase())
+                  .append(" on Kafka cluster ")
+                  .append(topicRequestModel.getEnvironmentName())
+                  .append("\n");
+            } else {
+              reconStr
+                  .append("Topic : ")
+                  .append(topicRequestModel.getTopicname())
+                  .append(" ")
+                  .append(topicRequestModel.getRemarks().toLowerCase())
+                  .append(" in Klaw environment ")
+                  .append(topicRequestModel.getEnvironmentName())
+                  .append("\n");
+            }
           }
 
-          if (!results.isEmpty()) {
-            mailService.sendReconMailToAdmin(
-                "Reconciliation of Topics",
-                reconStr.toString(),
-                tenantMap.get(tenantId),
-                tenantId,
-                commonUtilsService.getLoginUrl());
-          }
+          reconStr
+              .append("\n------------------------------------------------------------------")
+              .append("\n\n");
+
         } catch (Exception e) {
           log.error("Exception:", e);
         }
+        i++;
+      }
+
+      if (notifyAdmin) {
+        mailService.sendReconMailToAdmin(
+            "Reconciliation of Topics for tenant :" + manageDatabase.getTenantMap().get(tenantId),
+            reconStr.toString(),
+            tenantMap.get(tenantId),
+            tenantId,
+            getServerUrl());
       }
     }
+  }
+
+  private String getServerUrl() {
+    String baseProtocol = "http";
+    if (keyStore != null && !keyStore.equals("null")) {
+      baseProtocol = "https";
+    }
+    return baseProtocol
+        + "://"
+        + InetAddress.getLoopbackAddress().getHostName()
+        + ":"
+        + serverPort
+        + "/"
+        + contextPath;
   }
 
   public SyncTopicsList getReconTopics(
@@ -134,7 +205,9 @@ public class TopicSyncControllerService {
       String topicNameSearch,
       String showAllTopics,
       boolean isBulkOption,
-      boolean resetTopicsCache)
+      boolean resetTopicsCache,
+      Integer tenantId,
+      boolean scheduledThread)
       throws Exception {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
@@ -146,7 +219,9 @@ public class TopicSyncControllerService {
             topicNameSearch,
             showAllTopics,
             isBulkOption,
-            resetTopicsCache);
+            resetTopicsCache,
+            tenantId,
+            scheduledThread);
     List<TopicSyncResponseModel> topicRequestModelList = loadTopicsResponse.getResultSet();
 
     topicRequestModelList =
@@ -161,11 +236,15 @@ public class TopicSyncControllerService {
 
     int allTopicsCount = topicRequestModelList.size();
 
+    Integer finalTenantId1 = tenantId;
     topicRequestModelList.forEach(
-        topicReq -> topicReq.setEnvironmentName(getEnvDetails(envId).getName()));
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+        topicReq -> topicReq.setEnvironmentName(getEnvDetails(envId, finalTenantId1).getName()));
+    if (tenantId == null) {
+      tenantId = commonUtilsService.getTenantId(getUserName());
+    }
 
     if (!"-1".equals(pageNo)) { // scheduler call
+      Integer finalTenantId = tenantId;
       topicRequestModelList =
           Pager.getItemsList(
               pageNo,
@@ -175,7 +254,7 @@ public class TopicSyncControllerService {
                 mp.setTotalNoPages(pageContext.getTotalPages());
                 mp.setAllPageNos(pageContext.getAllPageNos());
                 mp.setCurrentPage(pageContext.getPageNo());
-                mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+                mp.setTeamname(manageDatabase.getTeamNameFromTeamId(finalTenantId, mp.getTeamId()));
                 return mp;
               });
     }
@@ -196,11 +275,15 @@ public class TopicSyncControllerService {
       String topicNameSearch,
       String showAllTopics,
       boolean isBulkOption,
-      boolean resetTopicsCache)
+      boolean resetTopicsCache,
+      Integer tenantId,
+      boolean scheduledThread)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
     SyncTopicsList syncTopicsList = new SyncTopicsList();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    if (tenantId == null) {
+      tenantId = commonUtilsService.getTenantId(getUserName());
+    }
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
     if (!"-1".equals(pageNo)) { // ignore check for scheduler
@@ -210,7 +293,7 @@ public class TopicSyncControllerService {
     }
 
     LoadTopicsResponse loadTopicsResponse =
-        getTopicsFromKafkaCluster(env, topicNameSearch, resetTopicsCache);
+        getTopicsFromKafkaCluster(env, topicNameSearch, resetTopicsCache, tenantId);
     syncTopicsList.setTopicsLoadingStatus(loadTopicsResponse.isLoadingInProgress());
     List<TopicConfig> topicsList;
 
@@ -225,7 +308,12 @@ public class TopicSyncControllerService {
     if (isReconciliation) {
       syncTopicsList.setResultSet(
           getSyncTopicListRecon(
-              topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
+              topicsList,
+              deletedTopicsFromClusterList,
+              env,
+              isBulkOption,
+              tenantId,
+              scheduledThread));
       syncTopicsList.setAllTopicsCount(topicsList.size());
       syncTopicsList.setAllTopicWarningsCount(
           Long.valueOf(
@@ -243,7 +331,8 @@ public class TopicSyncControllerService {
               env,
               isBulkOption,
               sizeOfTopics,
-              tenantId));
+              tenantId,
+              scheduledThread));
       syncTopicsList.setAllTopicsCount(sizeOfTopics.get(0));
       syncTopicsList.setAllTopicWarningsCount(
           Long.valueOf(
@@ -264,16 +353,17 @@ public class TopicSyncControllerService {
       String env,
       boolean isBulkOption,
       List<Integer> sizeOfTopics,
-      int tenantId) {
+      int tenantId,
+      boolean scheduledThread) {
     // Get Sync topics
     List<Topic> topicsFromSOT =
         manageDatabase.getHandleDbRequests().getSyncTopics(env, null, tenantId);
 
     // tenant filtering
-    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
+    //    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
     int counterInc;
-    List<String> teamList = new ArrayList<>();
-    teamList = tenantFilterTeams(teamList);
+    List<String> teamList;
+    teamList = tenantFilterTeams(tenantId, scheduledThread);
 
     if (!isBulkOption) {
       updateClusterDeletedTopicsList(
@@ -290,7 +380,8 @@ public class TopicSyncControllerService {
       }
     }
     // topics which exist on cluster and not in kw, with no recon option.
-    List<TopicSyncResponseModel> topicRequestModelList = getTopicSyncModels(topicsListMap, env);
+    List<TopicSyncResponseModel> topicRequestModelList =
+        getTopicSyncModels(topicsListMap, env, tenantId);
     topicRequestModelList.addAll(deletedTopicsFromClusterList);
 
     sizeOfTopics.add(topicRequestModelList.size());
@@ -312,17 +403,17 @@ public class TopicSyncControllerService {
       List<TopicSyncResponseModel> deletedTopicsFromClusterList,
       String env,
       boolean isBulkOption,
-      int tenantId) {
+      int tenantId,
+      boolean scheduledThread) {
     // Get Sync topics
     List<Topic> topicsFromSOT =
         manageDatabase.getHandleDbRequests().getSyncTopics(env, null, tenantId);
 
-    // tenant filtering
-    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
+    //    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
     List<TopicRequest> topicsListMap = new ArrayList<>();
 
-    List<String> teamList = new ArrayList<>();
-    teamList = tenantFilterTeams(teamList);
+    List<String> teamList;
+    teamList = tenantFilterTeams(tenantId, scheduledThread);
     int counterInc;
 
     if (!isBulkOption) {
@@ -342,18 +433,19 @@ public class TopicSyncControllerService {
     }
 
     // topics which exist in cluster and not in kw.
-    List<TopicSyncResponseModel> topicSyncModelList = getTopicSyncModels(topicsListMap, env);
+    List<TopicSyncResponseModel> topicSyncModelList =
+        getTopicSyncModels(topicsListMap, env, tenantId);
     topicSyncModelList.addAll(deletedTopicsFromClusterList);
 
     return topicSyncModelList;
   }
 
   private List<TopicSyncResponseModel> getTopicSyncModels(
-      List<TopicRequest> topicsList, String envId) {
+      List<TopicRequest> topicsList, String envId, Integer tenantId) {
     List<TopicSyncResponseModel> topicSyncList = new ArrayList<>();
     TopicSyncResponseModel topicSyncModel;
 
-    Env env = getEnvDetails(envId);
+    Env env = getEnvDetails(envId, tenantId);
 
     String topicPrefix = "";
     String topicSuffix = "";
@@ -491,24 +583,27 @@ public class TopicSyncControllerService {
     }
   }
 
-  private List<String> tenantFilterTeams(List<String> teamList) {
-    if (!commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
+  private List<String> tenantFilterTeams(Integer tenantId, boolean scheduledThread) {
+    if (!scheduledThread
+        && (!commonUtilsService.isNotAuthorizedUser(
+                getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)
+            || !commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)
+            || !commonUtilsService.isNotAuthorizedUser(
+                getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)
+            || !commonUtilsService.isNotAuthorizedUser(
+                getPrincipal(), PermissionType.SYNC_BACK_TOPICS))) {
       // tenant filtering
-      int tenantId = commonUtilsService.getTenantId(getUserName());
-      List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
-      List<String> teamListUpdated = new ArrayList<>();
-      for (Team teamsItem : teams) {
-        teamListUpdated.add(teamsItem.getTeamname());
+      if (tenantId == null) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
       }
-      teamList = teamListUpdated;
     }
-    return teamList;
+    List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
+    List<String> teamListUpdated = new ArrayList<>();
+    for (Team teamsItem : teams) {
+      teamListUpdated.add(teamsItem.getTeamname());
+    }
+
+    return teamListUpdated;
   }
 
   public ApiResponse updateSyncBackTopics(SyncBackTopics syncBackTopics) {
@@ -518,8 +613,10 @@ public class TopicSyncControllerService {
 
     List<String> logArray = new ArrayList<>();
 
-    logArray.add("Source Environment " + getEnvDetails(syncBackTopics.getSourceEnv()).getName());
-    logArray.add("Target Environment " + getEnvDetails(syncBackTopics.getTargetEnv()).getName());
+    logArray.add(
+        "Source Environment " + getEnvDetails(syncBackTopics.getSourceEnv(), tenantId).getName());
+    logArray.add(
+        "Target Environment " + getEnvDetails(syncBackTopics.getTargetEnv(), tenantId).getName());
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
@@ -608,7 +705,8 @@ public class TopicSyncControllerService {
 
   private void createAndApproveTopicRequest(
       SyncBackTopics syncBackTopics, Topic topicFound, int tenantId) {
-    List<Topic> topics = getTopicFromName(topicFound.getTopicname(), tenantId);
+    List<Topic> topics =
+        commonUtilsService.getTopicsForTopicName(topicFound.getTopicname(), tenantId);
     Integer teamName;
     if (topics != null && topics.size() > 0) {
       teamName = topics.get(0).getTeamId();
@@ -690,8 +788,8 @@ public class TopicSyncControllerService {
           handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
-      producerConsumerTopics =
-          commonUtilsService.getFilteredTopicsForTenant(producerConsumerTopics);
+      //      producerConsumerTopics =
+      //          commonUtilsService.getFilteredTopicsForTenant(producerConsumerTopics);
 
       // select all topics and then filter
       env = "ALL";
@@ -700,7 +798,7 @@ public class TopicSyncControllerService {
 
     // Get Sync topics
     List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env, teamId, tenantId);
-    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
+    //    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -807,10 +905,11 @@ public class TopicSyncControllerService {
   public ApiResponse updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) throws KlawException {
     log.info("updateSyncTopicsBulk {}", syncTopicsBulk);
     //    Map<String, List<String>> resultMap = new HashMap<>();
-
+    int tenantId = commonUtilsService.getTenantId(getUserName());
     List<String> logArray = new ArrayList<>();
 
-    logArray.add("Source Environment " + getEnvDetails(syncTopicsBulk.getSourceEnv()).getName());
+    logArray.add(
+        "Source Environment " + getEnvDetails(syncTopicsBulk.getSourceEnv(), tenantId).getName());
     logArray.add("Assigned to Team " + syncTopicsBulk.getSelectedTeam());
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
@@ -834,7 +933,10 @@ public class TopicSyncControllerService {
       try {
         LoadTopicsResponse loadTopicsResponse =
             getTopicsFromKafkaCluster(
-                syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter(), false);
+                syncTopicsBulk.getSourceEnv(),
+                syncTopicsBulk.getTopicSearchFilter(),
+                false,
+                tenantId);
         for (TopicConfig topicConfig : loadTopicsResponse.getTopicConfigSet()) {
           invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, topicConfig);
         }
@@ -877,12 +979,12 @@ public class TopicSyncControllerService {
   }
 
   private LoadTopicsResponse getTopicsFromKafkaCluster(
-      String env, String topicNameSearch, boolean resetTopicsCache) throws Exception {
+      String env, String topicNameSearch, boolean resetTopicsCache, Integer tenantId)
+      throws Exception {
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
     }
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    Env envSelected = getEnvDetails(env);
+    Env envSelected = getEnvDetails(env, tenantId);
     KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA, tenantId)
@@ -992,7 +1094,8 @@ public class TopicSyncControllerService {
             .contains(topicUpdate.getEnvSelected())) {
           return ApiResponse.NOT_AUTHORIZED;
         }
-        existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
+        existingTopics =
+            commonUtilsService.getTopicsForTopicName(topicUpdate.getTopicName(), tenantId);
 
         if (existingTopics != null) {
           for (Topic existingTopic : existingTopics) {
@@ -1147,18 +1250,9 @@ public class TopicSyncControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public List<Topic> getTopicFromName(String topicName, int tenantId) {
-    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-
-    // tenant filtering
-    topics = commonUtilsService.getFilteredTopicsForTenant(topics);
-
-    return topics;
-  }
-
-  public Env getEnvDetails(String envId) {
+  public Env getEnvDetails(String envId, Integer tenantId) {
     Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
+        manageDatabase.getKafkaEnvList(tenantId).stream()
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);

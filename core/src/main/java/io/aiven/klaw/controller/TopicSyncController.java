@@ -96,7 +96,9 @@ public class TopicSyncController {
               topicNameSearch,
               showAllTopics,
               Boolean.parseBoolean(isBulkOption),
-              resetTopicsCache),
+              resetTopicsCache,
+              null,
+              false),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(
@@ -107,7 +109,9 @@ public class TopicSyncController {
               topicNameSearch,
               showAllTopics,
               Boolean.parseBoolean(isBulkOption),
-              resetTopicsCache),
+              resetTopicsCache,
+              101,
+              false),
           HttpStatus.OK);
     }
   }

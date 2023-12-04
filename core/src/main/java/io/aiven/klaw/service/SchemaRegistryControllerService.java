@@ -457,8 +457,7 @@ public class SchemaRegistryControllerService {
     List<Topic> topicsSearchList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
-    Integer topicOwnerTeam =
-        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer topicOwnerTeam = topicsSearchList.get(0).getTeamId();
     return Objects.equals(userTeamId, topicOwnerTeam);
   }
 

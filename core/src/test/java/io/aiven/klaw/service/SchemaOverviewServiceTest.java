@@ -508,8 +508,6 @@ public class SchemaOverviewServiceTest {
     mockTenantConfig();
 
     when(manageDatabase.getTeamNameFromTeamId(101, 10)).thenReturn(TEAM_1);
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(createTopic(TESTTOPIC, "DEV")));
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
         .thenReturn(createClusterMap(numberOfEnvs));
   }

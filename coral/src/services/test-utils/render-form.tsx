@@ -1,6 +1,6 @@
 import { Button } from "@aivenio/aquarium";
 import React from "react";
-import type { DeepPartial, FieldValues } from "react-hook-form";
+import type { DefaultValues, FieldValues } from "react-hook-form";
 import {
   Form,
   SubmitButton,
@@ -14,7 +14,7 @@ import { render } from "@testing-library/react";
 
 type WrapperProps<T extends FieldValues> = {
   schema: ZodSchema;
-  defaultValues?: DeepPartial<T>;
+  defaultValues?: DefaultValues<T>;
   onSubmit: SubmitHandler<T>;
   onError: SubmitErrorHandler<T>;
 };
@@ -44,7 +44,7 @@ export const renderForm = <T extends FieldValues>(
     onError,
   }: {
     schema: ZodSchema;
-    defaultValues?: DeepPartial<T>;
+    defaultValues?: DefaultValues<T>;
     onSubmit: SubmitHandler<T>;
     onError: SubmitErrorHandler<T>;
   }
@@ -75,7 +75,7 @@ export const renderFormWithState = <T extends FieldValues>(
   }: {
     isLoading: boolean;
     schema: ZodSchema;
-    defaultValues?: DeepPartial<T>;
+    defaultValues?: DefaultValues<T>;
     onSubmit: SubmitHandler<T>;
     onError: SubmitErrorHandler<T>;
   }

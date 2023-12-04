@@ -384,8 +384,7 @@ public class AclControllerService {
       int tenantId) {
     List<Topic> topicTeamsList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
     if (topicTeamsList.size() > 0) {
-      Integer teamId =
-          commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
+      Integer teamId = topicTeamsList.get(0).getTeamId();
 
       if (RequestOperationType.DELETE == requestOperationType) teamId = team;
       List<UserInfo> userList =
