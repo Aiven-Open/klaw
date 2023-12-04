@@ -54,7 +54,9 @@ const submenuItems = [
       },
       {
         name: "Clusters",
-        linkTo: "/configuration/clusters",
+        linkTo: isFeatureFlagActiveMock()
+          ? "/configuration/clusters"
+          : "/clusters",
       },
     ],
   },
@@ -206,6 +208,53 @@ describe("MainNavigation.tsx", () => {
       const link = within(list).getByRole("link", { name: "User profile" });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute("href", "/user/profile");
+    });
+  });
+
+  describe("renders links to cluster behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration overview", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "Configuration overview submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "Clusters" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/clusters");
+    });
+
+    it("renders a link to the profile page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const button = screen.getByRole("button", {
+        name: new RegExp("Configuration overview", "i"),
+      });
+      await userEvent.click(button);
+      const list = screen.getByRole("list", {
+        name: "Configuration overview submenu",
+      });
+
+      const link = within(list).getByRole("link", { name: "Clusters" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/configuration/clusters");
     });
   });
 

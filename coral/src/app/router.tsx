@@ -246,10 +246,12 @@ const routes: Array<RouteObject> = [
             path: Routes.USERS,
             element: <UsersPage />,
           },
-          {
+          createRouteBehindFeatureFlag({
             path: Routes.CLUSTERS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_VIEW_CLUSTER,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <ClustersPage />,
-          },
+          }),
         ],
       },
       {

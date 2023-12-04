@@ -21,6 +21,11 @@ function MainNavigation() {
   const userInformationFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
+
+  const clusterViewFeatureFlagIsEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_VIEW_CLUSTER
+  );
+
   const { TOTAL } = usePendingRequests();
 
   return (
@@ -117,7 +122,9 @@ function MainNavigation() {
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
             <MainNavigationLink
-              to={Routes.CLUSTERS}
+              to={
+                clusterViewFeatureFlagIsEnabled ? Routes.CLUSTERS : "/clusters"
+              }
               linkText={"Clusters"}
               active={pathname.startsWith(Routes.CLUSTERS)}
             />

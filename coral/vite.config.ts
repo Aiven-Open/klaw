@@ -141,6 +141,9 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_USER_INFORMATION: ["development", "remote-api"]
           .includes(mode)
           .toString(),
+        FEATURE_FLAG_VIEW_CLUSTER: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {
