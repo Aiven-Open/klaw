@@ -29,6 +29,7 @@ function Clusters() {
         pageNo: currentPage.toString(),
         searchClusterParam: search.length === 0 ? undefined : search,
       }),
+    keepPreviousData: true,
   });
 
   function handleChangePage(page: number) {
