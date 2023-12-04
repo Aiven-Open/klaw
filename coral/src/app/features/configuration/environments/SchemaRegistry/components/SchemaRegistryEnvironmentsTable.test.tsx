@@ -173,8 +173,8 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
           environment.envStatus === "ONLINE"
             ? "Online"
             : environment.envStatus === "OFFLINE"
-            ? "Offline"
-            : "Unknown";
+              ? "Offline"
+              : "Unknown";
 
         const status = within(row).getByRole("cell", {
           name: `${statusText} Last update: ${TEST_UPDATE_TIME} UTC`,

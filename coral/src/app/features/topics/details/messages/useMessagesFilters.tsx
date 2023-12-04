@@ -67,8 +67,8 @@ function useMessagesFilters(): OffsetFilters {
       getCustomOffset() === "" || getCustomOffset() === null
         ? "Please enter the number of recent offsets you want to view"
         : Number(getCustomOffset()) > 100
-        ? "Entered value exceeds the view limit for offsets: 100"
-        : null;
+          ? "Entered value exceeds the view limit for offsets: 100"
+          : null;
 
     setFilterErrors({
       partitionIdFilters: partitionIdFiltersError,
@@ -129,8 +129,8 @@ function useMessagesFilters(): OffsetFilters {
         customOffset === ""
           ? "Please enter the number of recent offsets you want to view"
           : Number(customOffset) > 100
-          ? "Entered value exceeds the view limit for offsets: 100"
-          : null,
+            ? "Entered value exceeds the view limit for offsets: 100"
+            : null,
     }));
     searchParams.set(NAMES.customOffset, customOffset);
     setSearchParams(searchParams);
