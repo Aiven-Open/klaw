@@ -6,12 +6,7 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-
-const isFeatureFlagActiveMock = jest.fn();
-
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
-}));
+import * as hook from "src/app/context-provider/PendingRequestsProvider";
 
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
@@ -29,15 +24,40 @@ const quickLinksNavItems = [
   },
 ];
 
-describe("HeaderNavigation.tsx", () => {
-  isFeatureFlagActiveMock.mockReturnValue(true);
+const mockedNoPendingRequests = {
+  TOPIC: 0,
+  ACL: 0,
+  SCHEMA: 0,
+  CONNECTOR: 0,
+  USER: 0,
+  OPERATIONAL: 0,
+  TOTAL: 0,
+};
 
+const mockedPendingRequests = {
+  TOPIC: 1,
+  ACL: 0,
+  SCHEMA: 3,
+  CONNECTOR: 2,
+  USER: 2,
+  OPERATIONAL: 0,
+  TOTAL: 8,
+};
+
+describe("HeaderNavigation.tsx", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
+      jest
+        .spyOn(hook, "usePendingRequestsContext")
+        .mockImplementation(() => mockedNoPendingRequests);
+
       customRender(<HeaderNavigation />, { memoryRouter: true });
     });
 
-    afterAll(cleanup);
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     it("renders a navigation element with quick links", () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
@@ -136,6 +156,33 @@ describe("HeaderNavigation.tsx", () => {
           expect(element).toHaveFocus();
         });
       });
+    });
+  });
+
+  describe("shows notification on Approve request link when there are pending requests", () => {
+    beforeAll(() => {
+      jest
+        .spyOn(hook, "usePendingRequestsContext")
+        .mockImplementation(() => mockedPendingRequests);
+      customRender(<HeaderNavigation />, { memoryRouter: true });
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("renders correct link text", () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const approvalsLink = within(nav).getAllByRole("link")[0];
+
+      expect(approvalsLink).toHaveAttribute("href", "/approvals");
+
+      const linkText = within(approvalsLink).getByText(
+        "Go to approve 8 pending requests"
+      );
+
+      expect(linkText).toBeVisible();
     });
   });
 });

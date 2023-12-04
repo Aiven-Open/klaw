@@ -43,9 +43,12 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
         isOpen={isOpen}
       >
         {showNotificationBadge ? (
-          <Badge.Notification>
-            <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
-          </Badge.Notification>
+          // This data-testid wrapper is unfortunately necessary as Badge.Notification does not forward any attribute
+          <div data-testid="badge.notification">
+            <Badge.Notification>
+              <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
+            </Badge.Notification>
+          </div>
         ) : (
           <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
         )}

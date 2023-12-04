@@ -1,7 +1,7 @@
-import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
-import { cleanup, render, screen } from "@testing-library/react";
 import data from "@aivenio/aquarium/dist/src/icons/console";
+import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import { Routes } from "src/app/router_utils";
 
 describe("MainNavigationLink.tsx", () => {
@@ -97,6 +97,25 @@ describe("MainNavigationLink.tsx", () => {
       const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink.parentNode).toHaveClass("mainNavigationLinkActive");
+    });
+
+    it(`shows notifications amount when it is passed and more than 0`, () => {
+      render(
+        <MainNavigationLink
+          icon={mockIcon}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
+          notifications={10}
+        />
+      );
+
+      const notificationsBadge = screen.getByRole("status", {
+        name: "10",
+      });
+      const accessibilityText = screen.getByText("10 pending requests.");
+
+      expect(notificationsBadge).toBeVisible();
+      expect(accessibilityText).toBeVisible();
     });
   });
 

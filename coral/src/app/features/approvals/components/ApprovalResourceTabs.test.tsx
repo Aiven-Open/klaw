@@ -18,7 +18,7 @@ const mockedPendingRequests: RequestsWaitingForApprovalWithTotal = {
   CONNECTOR: 2,
   USER: 2,
   OPERATIONAL: 0,
-  TOTAL: 0,
+  TOTAL: 8,
 };
 
 jest.mock("src/app/context-provider/PendingRequestsProvider", () => ({
