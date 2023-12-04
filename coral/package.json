@@ -39,7 +39,7 @@
     ]
   },
   "dependencies": {
-    "@aivenio/aquarium": "^1.47.0",
+    "@aivenio/aquarium": "^1.48.1",
     "@hookform/resolvers": "^2.9.10",
     "@monaco-editor/react": "^4.5.2",
     "@tanstack/react-query": "^4.29.5",
@@ -69,7 +69,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.10",
-    "@types/lodash": "^4.14.200",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^18.17.14",
     "@types/react": "^18.2.35",
     "@types/react-dom": "^18.2.7",
@@ -91,7 +91,7 @@
     "lodash": "^4.17.21",
     "msw": "^2.0.9",
     "openapi-typescript": "^6.7.0",
-    "prettier": "^3.0.3",
+    "prettier": "^3.1.0",
     "prop-types": "^15.8.1",
     "react-aria": "^3.30.0",
     "react-test-renderer": "^18.2.0",
