@@ -57,7 +57,11 @@ function HeaderNavigation() {
           <li>
             <HeaderMenuLink
               icon={notifications}
-              linkText={"Go to approve requests"}
+              linkText={
+                TOTAL > 0
+                  ? `Go to approve ${TOTAL} pending requests`
+                  : `Go to approve requests`
+              }
               href={Routes.APPROVALS}
               showNotificationBadge={TOTAL > 0}
             />

@@ -57,10 +57,20 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
       {isRouterLink() ? (
         <RouterLink to={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
+          {notifications > 0 && (
+            <span className={"visually-hidden"}>
+              {`${notifications} pending requests.`}
+            </span>
+          )}
         </RouterLink>
       ) : (
         <Link href={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
+          {notifications > 0 && (
+            <span className={"visually-hidden"}>
+              {`${notifications} pending requests.`}
+            </span>
+          )}
         </Link>
       )}
       {notifications > 0 && <StatusChip text={notifications} />}
