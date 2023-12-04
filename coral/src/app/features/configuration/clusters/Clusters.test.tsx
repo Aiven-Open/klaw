@@ -1,6 +1,6 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { Clusters } from "src/app/features/configuration/clusters/Clusters";
-import { cleanup, screen, within } from "@testing-library/react";
+import Clusters from "src/app/features/configuration/clusters/Clusters";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiError } from "src/services/api";
@@ -46,11 +46,9 @@ const testCluster: ClusterDetails[] = [
 ];
 
 describe("Clusters.tsx", () => {
-  beforeAll(mockIntersectionObserver);
+  const user = userEvent.setup();
 
-  const defaultApiParams = {
-    pageNo: "1",
-  };
+  beforeAll(mockIntersectionObserver);
 
   describe("handles loading state", () => {
     beforeAll(() => {
@@ -155,7 +153,17 @@ describe("Clusters.tsx", () => {
     });
 
     it("fetches data with default params on page load", async () => {
-      expect(mockGetClustersPaginated).toHaveBeenCalledWith(defaultApiParams);
+      expect(mockGetClustersPaginated).toHaveBeenCalledWith({
+        pageNo: "1",
+      });
+    });
+
+    it("renders a search field for cluster params", () => {
+      const search = screen.getByRole("search", {
+        name: "Search Cluster params",
+      });
+
+      expect(search).toBeEnabled();
     });
 
     it("renders the cluster table with information about the pages", async () => {
@@ -252,11 +260,48 @@ describe("Clusters.tsx", () => {
         name: "Go to next page, page 4",
       });
 
-      await userEvent.click(pageTwoButton);
+      await user.click(pageTwoButton);
 
       expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
         pageNo: "4",
       });
+    });
+  });
+
+  describe("handles user searching for Cluster params", () => {
+    beforeEach(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 3,
+        totalPages: 5,
+        entries: testCluster,
+      });
+      customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("fetches new data when user searches for Cluster params", async () => {
+      const testSearchInput = "MyCluster";
+
+      const search = screen.getByRole("search", {
+        name: "Search Cluster params",
+      });
+
+      await user.type(search, testSearchInput);
+
+      expect(search).toHaveValue(testSearchInput);
+
+      await waitFor(() =>
+        expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
+          pageNo: "1",
+          searchClusterParam: testSearchInput,
+        })
+      );
     });
   });
 });

@@ -1,6 +1,6 @@
 import { PageHeader } from "@aivenio/aquarium";
 import PreviewBanner from "src/app/components/PreviewBanner";
-import { Clusters } from "src/app/features/configuration/clusters/Clusters";
+import Clusters from "src/app/features/configuration/clusters/Clusters";
 
 const ClustersPage = () => {
   return (

@@ -4,6 +4,11 @@ import { getClustersPaginated } from "src/domain/cluster";
 import { ClustersTable } from "src/app/features/configuration/clusters/components/ClustersTable";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
+import { SearchClusterParamFilter } from "src/app/features/components/filters/SearchClusterParamFilter";
 
 function Clusters() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,13 +16,19 @@ function Clusters() {
     ? Number(searchParams.get("page"))
     : 1;
 
+  const { search } = useFiltersContext();
+
   const {
     data: clusters,
     isLoading,
     isError,
     error,
-  } = useQuery(["get-clusters-paginated", currentPage], {
-    queryFn: () => getClustersPaginated({ pageNo: currentPage.toString() }),
+  } = useQuery(["get-clusters-paginated", currentPage, search], {
+    queryFn: () =>
+      getClustersPaginated({
+        pageNo: currentPage.toString(),
+        searchClusterParam: search.length === 0 ? undefined : search,
+      }),
   });
 
   function handleChangePage(page: number) {
@@ -36,7 +47,7 @@ function Clusters() {
 
   return (
     <TableLayout
-      filters={[]}
+      filters={[<SearchClusterParamFilter key={"search"} />]}
       table={
         <ClustersTable
           clusters={clusters?.entries || []}
@@ -53,4 +64,4 @@ function Clusters() {
   );
 }
 
-export { Clusters };
+export default withFiltersContext({ element: <Clusters /> });
