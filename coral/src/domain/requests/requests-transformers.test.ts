@@ -9,6 +9,7 @@ const mockedRequestsWaitingForApproval: RequestsWaitingForApprovalWithTotal = {
   CONNECTOR: 2,
   USER: 0,
   OPERATIONAL: 0,
+  TOTAL: 15,
 };
 
 const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApprovalWithTotal =
@@ -19,6 +20,7 @@ const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApprovalWith
     CONNECTOR: 2,
     USER: 0,
     OPERATIONAL: 0,
+    TOTAL: 8,
   };
 
 const defaultRecord = {
@@ -28,6 +30,7 @@ const defaultRecord = {
   CONNECTOR: 0,
   USER: 0,
   OPERATIONAL: 0,
+  TOTAL: 0,
 };
 
 const mockApiResponse: KlawApiResponse<"getRequestStatistics"> = {
