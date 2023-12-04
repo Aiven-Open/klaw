@@ -6,10 +6,6 @@ import { BasePage } from "src/app/layout/page/BasePage";
 import { getRequestsWaitingForApproval } from "src/domain/requests/requests-api";
 import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
 
-/** We don't do Authentication on Corals side
- * at the moment, so we only have a AuthUser
- * in the context
- * */
 const PendingRequestsContext =
   createContext<RequestsWaitingForApprovalWithTotal>({
     TOPIC: 0,

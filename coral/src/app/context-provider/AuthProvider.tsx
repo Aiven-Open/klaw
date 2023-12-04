@@ -16,11 +16,6 @@ const AuthContext = createContext<AuthUser>({
   teamname: "",
   teamId: "",
   canSwitchTeams: "",
-  pendingTopicRequests: 0,
-  pendingAclRequests: 0,
-  pendingSchemaRequests: 0,
-  pendingConnectorRequests: 0,
-  totalPendingRequests: 0,
 });
 
 const useAuthContext = () => useContext(AuthContext);

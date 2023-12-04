@@ -13,24 +13,12 @@ function isSuperAdmin(user: AuthUser): user is SuperAdminUser {
 }
 
 function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
-  const totalPendingRequests = [
-    response.notifications,
-    response.notificationsAcls,
-    response.notificationsSchemas,
-    response.notificationsConnectors,
-  ].reduce((curr, prev) => Number(curr) + Number(prev), 0);
-
   return {
     username: response.username,
     teamname: response.teamname,
     teamId: response.teamId,
     canSwitchTeams: response.canSwitchTeams,
     userrole: response.userrole,
-    pendingTopicRequests: Number(response.notifications),
-    pendingAclRequests: Number(response.notificationsAcls),
-    pendingSchemaRequests: Number(response.notificationsSchemas),
-    pendingConnectorRequests: Number(response.notificationsConnectors),
-    totalPendingRequests,
   };
 }
 
