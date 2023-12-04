@@ -18,6 +18,7 @@ import "/src/services/configure-monaco-editor";
 import { AuthProvider } from "src/app/context-provider/AuthProvider";
 import { BasePage } from "src/app/layout/page/BasePage";
 import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
+import { PendingRequestsProvider } from "src/app/context-provider/PendingRequestsProvider";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -55,10 +56,12 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AquariumContext>
-          <RouterProvider router={router} />
-          {DEV_MODE && <ReactQueryDevtools />}
-        </AquariumContext>
+        <PendingRequestsProvider>
+          <AquariumContext>
+            <RouterProvider router={router} />
+            {DEV_MODE && <ReactQueryDevtools />}
+          </AquariumContext>
+        </PendingRequestsProvider>
       </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>

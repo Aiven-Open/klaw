@@ -1,8 +1,8 @@
-import { RequestsWaitingForApproval } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
 import { KlawApiResponse } from "types/utils";
 import { getRequestsWaitingForApprovalTransformer } from "src/domain/requests/requests-transformers";
 
-const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
+const mockedRequestsWaitingForApproval: RequestsWaitingForApprovalWithTotal = {
   TOPIC: 0,
   ACL: 7,
   SCHEMA: 6,
@@ -11,14 +11,15 @@ const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
   OPERATIONAL: 0,
 };
 
-const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApproval = {
-  TOPIC: 0,
-  ACL: 0,
-  SCHEMA: 6,
-  CONNECTOR: 2,
-  USER: 0,
-  OPERATIONAL: 0,
-};
+const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApprovalWithTotal =
+  {
+    TOPIC: 0,
+    ACL: 0,
+    SCHEMA: 6,
+    CONNECTOR: 2,
+    USER: 0,
+    OPERATIONAL: 0,
+  };
 
 const defaultRecord = {
   TOPIC: 0,

@@ -3,7 +3,7 @@ import { userEvent } from "@testing-library/user-event";
 import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
 import { ApprovalsTabEnum } from "src/app/router_utils";
 import * as requestApi from "src/domain/requests/requests-api";
-import { RequestsWaitingForApproval } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 class Deferred<T> {
@@ -24,7 +24,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
-const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
+const mockedRequestsWaitingForApproval: RequestsWaitingForApprovalWithTotal = {
   TOPIC: 1,
   ACL: 0,
   SCHEMA: 3,
@@ -46,7 +46,7 @@ describe("ApprovalResourceTabs", () => {
   });
 
   describe("Tab badges", () => {
-    let manual: Deferred<RequestsWaitingForApproval>;
+    let manual: Deferred<RequestsWaitingForApprovalWithTotal>;
 
     beforeAll(() => {
       manual = new Deferred();
