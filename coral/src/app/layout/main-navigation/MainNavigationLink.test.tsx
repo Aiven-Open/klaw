@@ -109,12 +109,11 @@ describe("MainNavigationLink.tsx", () => {
         />
       );
 
-      const notificationsBadge = screen.getByRole("status", {
-        name: "10",
-      });
+      const notificationsBadge = screen.getByTestId("ds-tabBadge");
       const accessibilityText = screen.getByText("10 pending requests.");
 
       expect(notificationsBadge).toBeVisible();
+      expect(notificationsBadge).toHaveTextContent("10");
       expect(accessibilityText).toBeVisible();
     });
   });

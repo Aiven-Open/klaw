@@ -1,8 +1,9 @@
-import { Box, Icon, Link, StatusChip } from "@aivenio/aquarium";
+import { Box, Icon, Link } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
+import { TabBadge } from "@aivenio/aquarium/dist/src/molecules/Badge/Badge";
+import { Link as RouterLink } from "react-router-dom";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 import { Routes } from "src/app/router_utils";
-import { Link as RouterLink } from "react-router-dom";
 
 function LinkContent({
   linkText,
@@ -73,7 +74,16 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
           )}
         </Link>
       )}
-      {notifications > 0 && <StatusChip text={notifications} />}
+      {notifications > 0 && (
+        <Box.Flex
+          alignItems="center"
+          color={"var(--aquarium-colors-primary-80)"}
+        >
+          <Box.Flex height={"fit"}>
+            <TabBadge value={notifications} />
+          </Box.Flex>
+        </Box.Flex>
+      )}
     </Box.Flex>
   );
 }
