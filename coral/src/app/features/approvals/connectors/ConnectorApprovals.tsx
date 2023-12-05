@@ -73,6 +73,7 @@ function ConnectorApprovals() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const {

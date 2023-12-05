@@ -54,6 +54,7 @@ const getPaginatedEnvironments = ({
           searchEnvParam: search.length === 0 ? undefined : search,
         }),
       keepPreviousData: true,
+      refetchOnWindowFocus: true,
     }
   );
   return {

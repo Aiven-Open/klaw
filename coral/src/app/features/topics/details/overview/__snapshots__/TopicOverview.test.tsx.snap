@@ -101,7 +101,6 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             style="display: inline-flex; align-items: center; margin: -24px -24px -24px 0px;"
           >
             <img
-              alt=""
               class="bg-cover object-cover w-full"
               src="[object Object]"
             />

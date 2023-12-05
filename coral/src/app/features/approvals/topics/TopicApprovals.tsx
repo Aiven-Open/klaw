@@ -84,6 +84,7 @@ function TopicApprovals() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const {

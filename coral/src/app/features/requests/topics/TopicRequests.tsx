@@ -59,6 +59,7 @@ function TopicRequests() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const { mutate: deleteRequest, isLoading: deleteRequestIsLoading } =
