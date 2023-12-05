@@ -34,6 +34,7 @@ function BrowseConnectors() {
         teamId: teamId !== "ALL" ? Number(teamId) : undefined,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   function handleChangePage(page: number) {

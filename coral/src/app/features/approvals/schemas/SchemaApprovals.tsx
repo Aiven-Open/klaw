@@ -73,6 +73,7 @@ function SchemaApprovals() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const {

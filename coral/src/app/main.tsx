@@ -13,11 +13,11 @@ import router from "src/app/router";
 import { isUnauthorizedError } from "src/services/api";
 import "/src/app/accessibility.module.css";
 import "/src/app/main.module.css";
-// https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
-import "/src/services/configure-monaco-editor";
+import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
 import { AuthProvider } from "src/app/context-provider/AuthProvider";
 import { BasePage } from "src/app/layout/page/BasePage";
-import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
+// https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
+import "/src/services/configure-monaco-editor";
 
 const DEV_MODE = import.meta.env.DEV;
 

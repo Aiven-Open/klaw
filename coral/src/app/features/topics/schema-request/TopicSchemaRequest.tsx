@@ -73,6 +73,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         onlyMyTeamTopics: true,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
     onSuccess: (data) => {
       if (topicName === undefined) {
         return;
