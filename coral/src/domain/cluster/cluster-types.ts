@@ -1,7 +1,15 @@
-import { KlawApiModel } from "types/utils";
+import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
 
 type ClusterInfoFromEnvironment = KlawApiModel<"ClusterInfo">;
 
 type ClusterDetails = KlawApiModel<"KwClustersModelResponse">;
 
-export type { ClusterInfoFromEnvironment, ClusterDetails };
+type ClustersPaginatedApiResponse = ResolveIntersectionTypes<
+  Paginated<ClusterDetails[]>
+>;
+
+export type {
+  ClusterInfoFromEnvironment,
+  ClusterDetails,
+  ClustersPaginatedApiResponse,
+};
