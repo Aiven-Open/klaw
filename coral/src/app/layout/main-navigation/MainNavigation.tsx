@@ -21,7 +21,7 @@ function MainNavigation() {
   const userInformationFeatureFlagEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_USER_INFORMATION
   );
-  const { TOTAL } = usePendingRequests();
+  const { TOTAL_NOTIFICATIONS } = usePendingRequests();
 
   return (
     <Box
@@ -74,7 +74,7 @@ function MainNavigation() {
             to={Routes.APPROVALS}
             linkText={"Approve requests"}
             active={pathname.startsWith(Routes.APPROVALS)}
-            notifications={TOTAL}
+            notifications={TOTAL_NOTIFICATIONS}
           />
         </li>
         <li>
