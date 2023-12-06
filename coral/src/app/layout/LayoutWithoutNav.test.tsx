@@ -94,12 +94,12 @@ describe("LayoutWithoutNav.tsx", () => {
       const quickLinks = screen.getByRole("navigation", {
         name: "Quick links",
       });
-      const link = within(quickLinks).getAllByRole("link")[0];
+      const firstItem = within(quickLinks).getAllByRole("button")[0];
 
-      expect(link).not.toHaveFocus();
+      expect(firstItem).not.toHaveFocus();
       await tabThroughForward(4);
 
-      expect(link).toHaveFocus();
+      expect(firstItem).toHaveFocus();
     });
   });
 });
