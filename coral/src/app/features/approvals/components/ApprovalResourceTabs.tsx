@@ -4,6 +4,7 @@ import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
+  Routes,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
 
@@ -61,9 +62,12 @@ function ApprovalResourceTabs({ currentTab }: Props) {
     resourceTypeId: unknown
   ): void {
     if (isApprovalsTabEnum(resourceTypeId)) {
-      navigate(`/approvals/${APPROVALS_TAB_ID_INTO_PATH[resourceTypeId]}`, {
-        replace: true,
-      });
+      navigate(
+        `${Routes.APPROVALS}/${APPROVALS_TAB_ID_INTO_PATH[resourceTypeId]}`,
+        {
+          replace: true,
+        }
+      );
     }
   }
 
