@@ -41,7 +41,7 @@ type BaseRequestsWaitingForApproval = {
 
 interface RequestsWaitingForApprovalWithTotal
   extends BaseRequestsWaitingForApproval {
-  TOTAL: number;
+  TOTAL_NOTIFICATIONS: number;
 }
 
 export type {

@@ -13,7 +13,7 @@ const getRequestsWaitingForApprovalTransformer = (
     CONNECTOR: 0,
     USER: 0,
     OPERATIONAL: 0,
-    TOTAL: 0,
+    TOTAL_NOTIFICATIONS: 0,
   };
 
   if (requestEntityStatistics === undefined) {
@@ -39,7 +39,13 @@ const getRequestsWaitingForApprovalTransformer = (
     requestsWaitingForApproval = {
       ...requestsWaitingForApproval,
       [requestEntityType]: amountOfRequestsForEntity,
-      TOTAL: requestsWaitingForApproval.TOTAL + amountOfRequestsForEntity,
+      TOTAL_NOTIFICATIONS:
+        // We do not include the USER and OPERATIONAL requests in this total
+        // As it is used to display notifications for users, not superadmin
+        requestEntityType !== "USER" && requestEntityType !== "OPERATIONAL"
+          ? requestsWaitingForApproval.TOTAL_NOTIFICATIONS +
+            amountOfRequestsForEntity
+          : requestsWaitingForApproval.TOTAL_NOTIFICATIONS,
     };
   });
 
