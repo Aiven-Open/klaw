@@ -83,6 +83,7 @@ function AclRequests() {
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const [errorMessage, setErrorMessage] = useState("");

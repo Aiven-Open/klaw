@@ -84,6 +84,7 @@ function ConnectorRequests() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const setCurrentPage = (page: number) => {

@@ -81,6 +81,7 @@ function AclApprovals() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const {

@@ -13,6 +13,7 @@ export default {
     "<rootDir>/test-setup/setup-files-after-env.ts",
     "<rootDir>/test-setup/mock-monaco-editor.tsx",
     "<rootDir>/test-setup/mock-ds-icon-component.tsx",
+    "<rootDir>/test-setup/mock-ds-tabBadge-component.tsx",
   ],
 
   moduleNameMapper: {

@@ -67,6 +67,7 @@ function TopicMessages() {
         selectedNumberOfOffsets: Number(customOffsetFilters.customOffset),
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const isConsuming = isInitialLoading || isRefetching;
