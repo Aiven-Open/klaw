@@ -4,6 +4,7 @@ import {
   Typography,
   Icon,
   useToastContext,
+  Button,
 } from "@aivenio/aquarium";
 import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
@@ -124,9 +125,9 @@ function ProfileDropdown() {
       }
     >
       <DropdownMenu.Trigger>
-        <button aria-label={"Open profile menu"}>
+        <Button.Ghost aria-label={"Open profile menu"}>
           <Icon icon={user} fontSize={"20px"} color={"grey-0"} />
-        </button>
+        </Button.Ghost>
       </DropdownMenu.Trigger>
       <DropdownMenu.Items>
         <DropdownMenu.Section>
