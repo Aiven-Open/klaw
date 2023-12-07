@@ -17,10 +17,10 @@
     "dev": "vite --mode remote-api",
     "start": "pnpm dev",
     "dev-without-api": "vite",
-    "lint": "prettier --check src && eslint .",
+    "lint": "prettier --check . && eslint .",
     "lint-staged": "lint-staged",
     "preview": "vite build --mode remote-api && vite preview --mode remote-api",
-    "reformat": "prettier --write src proxy",
+    "reformat": "prettier --write . proxy",
     "test": "jest",
     "test-ci": "jest --ci",
     "test-dev": "jest --watch",
@@ -30,7 +30,7 @@
     "add-precommit": "git config --local core.hooksPath .githooks/"
   },
   "lint-staged": {
-    "**/!(*api.d).{ts,tsx,js}": [
+    "**/!(*api.d).{ts,tsx,js,cjs}": [
       "prettier --check",
       "eslint"
     ],
