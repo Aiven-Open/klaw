@@ -94,7 +94,7 @@ public interface TopicRequestsRepo
       value =
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
               + " and ((teamid = :teamId and topictype != 'Claim')"
-              + " or (approvingteamid != :approvingTeamId and topictype = 'Claim'))"
+              + " or (approvingteamid = :approvingTeamId and topictype = 'Claim'))"
               + " and requestor != :requestor and topicstatus = :topicStatus group by topicstatus",
       nativeQuery = true)
   Long countRequestorsTopicRequestsGroupByStatusType(
