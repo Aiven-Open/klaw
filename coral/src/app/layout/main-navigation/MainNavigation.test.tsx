@@ -10,6 +10,13 @@ import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 jest.mock("src/domain/team/team-api.ts");
 
+const mockGetRequestsStatistics = jest.fn();
+const mockGetRequestsWaitingForApproval = jest.fn();
+jest.mock("src/domain/requests/requests-api.ts", () => ({
+  getRequestsStatistics: () => mockGetRequestsStatistics(),
+  getRequestsWaitingForApproval: () => mockGetRequestsWaitingForApproval(),
+}));
+
 jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => {
     return testAuthUser;
@@ -91,6 +98,11 @@ const navOrderFirstLevel = [
 ];
 
 describe("MainNavigation.tsx", () => {
+  beforeEach(() => {
+    mockGetRequestsStatistics.mockResolvedValue([]);
+    mockGetRequestsWaitingForApproval.mockResolvedValue([]);
+  });
+
   describe("renders the main navigation in default state", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {

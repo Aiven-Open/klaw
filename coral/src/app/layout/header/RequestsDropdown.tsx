@@ -59,16 +59,18 @@ function RequestsDropdown() {
       </DropdownMenu.Trigger>
       <DropdownMenu.Items>
         <DropdownMenu.Item key="topic" icon={codeBlock}>
-          {TOPIC === 0 ? "No" : TOPIC} pending topic requests
+          {`${TOPIC === 0 ? "No" : TOPIC} pending topic requests`}
         </DropdownMenu.Item>
         <DropdownMenu.Item key="acl" icon={people}>
-          {ACL === 0 ? "No" : ACL} pending ACL requests
+          {`${ACL === 0 ? "No" : ACL} pending ACL requests`}
         </DropdownMenu.Item>
         <DropdownMenu.Item key="schema" icon={code}>
-          {SCHEMA === 0 ? "No" : SCHEMA} pending schema requests
+          {`${SCHEMA === 0 ? "No" : SCHEMA} pending schema requests`}
         </DropdownMenu.Item>
         <DropdownMenu.Item key="connector" icon={dataflow02}>
-          {CONNECTOR === 0 ? "No" : CONNECTOR} pending Kafka connector requests
+          {`${
+            CONNECTOR === 0 ? "No" : CONNECTOR
+          } pending Kafka connector requests`}
         </DropdownMenu.Item>
       </DropdownMenu.Items>
     </DropdownMenu>
