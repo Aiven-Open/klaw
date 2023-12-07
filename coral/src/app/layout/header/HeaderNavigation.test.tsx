@@ -1,6 +1,5 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
-import { Routes } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
@@ -17,7 +16,6 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const quickLinksNavItems = [
-  { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
@@ -31,7 +29,7 @@ const mockedNoPendingRequests = {
   CONNECTOR: 0,
   USER: 0,
   OPERATIONAL: 0,
-  TOTAL: 0,
+  TOTAL_NOTIFICATIONS: 0,
 };
 
 const mockedPendingRequests = {
@@ -41,7 +39,7 @@ const mockedPendingRequests = {
   CONNECTOR: 2,
   USER: 2,
   OPERATIONAL: 0,
-  TOTAL: 8,
+  TOTAL_NOTIFICATIONS: 6,
 };
 
 describe("HeaderNavigation.tsx", () => {
@@ -96,8 +94,9 @@ describe("HeaderNavigation.tsx", () => {
   describe("enables user to navigate with keyboard only", () => {
     const allHeaderElements = [
       "Request a new",
-      ...quickLinksNavItems.map((link) => link.name),
+      "No pending requests",
       "Open profile menu",
+      ...quickLinksNavItems.map((link) => link.name),
     ];
 
     describe("user can navigate through elements", () => {
@@ -113,8 +112,7 @@ describe("HeaderNavigation.tsx", () => {
         const numbersOfTabs = index + 1;
         it(`sets focus on ${headerElement} when user tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new" &&
-            headerElement !== "Open profile menu"
+            headerElement === "Go to Klaw documentation page"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
 
@@ -131,7 +129,7 @@ describe("HeaderNavigation.tsx", () => {
       beforeEach(() => {
         customRender(<HeaderNavigation />, { memoryRouter: true });
         const lastElement = allHeaderElements[allHeaderElements.length - 1];
-        const lastNavItem = screen.getByRole("button", {
+        const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });
         lastNavItem.focus();
@@ -145,8 +143,7 @@ describe("HeaderNavigation.tsx", () => {
 
         it(`sets focus on ${headerElement} when user shift+tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new" &&
-            headerElement !== "Open profile menu"
+            headerElement === "Go to Klaw documentation page"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
           index > 0 && expect(element).not.toHaveFocus();
@@ -159,7 +156,7 @@ describe("HeaderNavigation.tsx", () => {
     });
   });
 
-  describe("shows notification on Approve request link when there are pending requests", () => {
+  describe("shows notification on Approve request button when there are pending requests", () => {
     beforeAll(() => {
       jest
         .spyOn(hook, "usePendingRequests")
@@ -172,17 +169,13 @@ describe("HeaderNavigation.tsx", () => {
       jest.clearAllMocks();
     });
 
-    it("renders correct link text", () => {
+    it("renders correct button", async () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const approvalsLink = within(nav).getAllByRole("link")[0];
+      const button = await within(nav).findByRole("button", {
+        name: "See 6 pending requests",
+      });
 
-      expect(approvalsLink).toHaveAttribute("href", "/approvals");
-
-      const linkText = within(approvalsLink).getByText(
-        "Go to approve 8 pending requests"
-      );
-
-      expect(linkText).toBeVisible();
+      expect(button).toBeVisible();
     });
   });
 });

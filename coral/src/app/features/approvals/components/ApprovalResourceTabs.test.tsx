@@ -19,7 +19,7 @@ const mockedPendingRequests: RequestsWaitingForApprovalWithTotal = {
   CONNECTOR: 2,
   USER: 2,
   OPERATIONAL: 0,
-  TOTAL: 8,
+  TOTAL_NOTIFICATIONS: 8,
 };
 
 describe("ApprovalResourceTabs", () => {

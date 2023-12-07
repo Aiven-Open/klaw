@@ -17,6 +17,6 @@ export const usePendingRequests = () => {
     CONNECTOR: 0,
     OPERATIONAL: 0,
     USER: 0,
-    TOTAL: 0,
+    TOTAL_NOTIFICATIONS: 0,
   };
 };

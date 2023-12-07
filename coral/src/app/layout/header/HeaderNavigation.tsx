@@ -1,13 +1,12 @@
-import { Box, Button, DropdownMenu } from "@aivenio/aquarium";
-import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
+import { Box, Button, Divider, DropdownMenu } from "@aivenio/aquarium";
 import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
 import code from "@aivenio/aquarium/icons/code";
 import codeBlock from "@aivenio/aquarium/icons/codeBlock";
 import dataflow02 from "@aivenio/aquarium/icons/dataflow02";
 import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
+import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { Routes } from "src/app/router_utils";
 
@@ -20,10 +19,9 @@ const requestNewEntityPaths: { [key: string]: string } = {
 
 function HeaderNavigation() {
   const navigate = useNavigate();
-  const { TOTAL } = usePendingRequests();
 
   return (
-    <Box display={"flex"} colGap={"l2"} alignItems="center">
+    <Box display={"flex"} colGap={"l1"} alignItems="center">
       <DropdownMenu
         onAction={(key) => {
           if (requestNewEntityPaths[key.toString()] !== undefined) {
@@ -52,19 +50,22 @@ function HeaderNavigation() {
         </DropdownMenu.Items>
       </DropdownMenu>
 
+      <Box height={"l3"} paddingRight={"4"}>
+        <Divider direction="vertical" size={1} />
+      </Box>
+
       <nav aria-label={"Quick links"}>
-        <Box component={"ul"} display={"flex"} colGap={"l2"}>
+        <Box
+          component={"ul"}
+          display={"flex"}
+          colGap={"l2"}
+          alignItems={"baseline"}
+        >
           <li>
-            <HeaderMenuLink
-              icon={notifications}
-              linkText={
-                TOTAL > 0
-                  ? `Go to approve ${TOTAL} pending requests`
-                  : `Go to approve requests`
-              }
-              href={Routes.APPROVALS}
-              showNotificationBadge={TOTAL > 0}
-            />
+            <RequestsDropdown />
+          </li>
+          <li>
+            <ProfileDropdown />
           </li>
           <li>
             <HeaderMenuLink
@@ -73,9 +74,6 @@ function HeaderNavigation() {
               href={"https://www.klaw-project.io/docs"}
               rel={"noreferrer"}
             />
-          </li>
-          <li>
-            <ProfileDropdown />
           </li>
         </Box>
       </nav>
