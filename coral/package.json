@@ -27,7 +27,8 @@
     "tsc": "tsc -p tsconfig.json",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
     "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type",
-    "add-precommit": "git config --local core.hooksPath .githooks/"
+    "add-precommit": "git config --local core.hooksPath .githooks/",
+    "generate-toc": "node scripts/markdown-toc.cjs && prettier --write '**/*.md' '../**/*.md'"
   },
   "lint-staged": {
     "**/!(*api.d).{ts,tsx,js,cjs}": [
