@@ -84,7 +84,6 @@ public interface KwKafkaConnectorRequestsRepo
   Long countRequestorsConnectorRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
       @Param("approvingTeamid") String approvingTeamid,
-      @Param("approvingTeamidInt") Integer approvingTeamidInt,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("connectorStatus") String connectorStatus);
