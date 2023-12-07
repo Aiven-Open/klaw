@@ -13,6 +13,8 @@ import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
