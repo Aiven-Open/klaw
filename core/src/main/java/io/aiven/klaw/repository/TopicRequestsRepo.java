@@ -93,7 +93,7 @@ public interface TopicRequestsRepo
   @Query(
       value =
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
-              + " and (((teamid = :teamId or approvingteamid = :approvingTeamId) and topictype != 'Claim') or (teamId != :approvingTeamId and topictype = 'Claim')) and requestor != :requestor and topicstatus = :topicStatus group by topicstatus",
+              + " and (((teamid = :teamId or approvingteamid = :approvingTeamId) and topictype != 'Claim') or (teamId != :teamId and topictype = 'Claim')) and requestor != :requestor and topicstatus = :topicStatus group by topicstatus",
       nativeQuery = true)
   Long countRequestorsTopicRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
