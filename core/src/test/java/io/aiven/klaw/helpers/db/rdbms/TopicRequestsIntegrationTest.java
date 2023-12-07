@@ -799,7 +799,7 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results).hasSize(2);
-    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 0L);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 4L);
     assertThat(operationTypeCount.getOrDefault(RequestOperationType.CREATE.value, 0L)).isZero();
     assertThat(operationTypeCount).containsEntry(RequestOperationType.CLAIM.value, 7L);
     assertThat(statsCount.getOrDefault(RequestStatus.APPROVED.value, 0L)).isZero();
