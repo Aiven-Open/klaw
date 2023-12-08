@@ -1168,10 +1168,8 @@ describe("<TopicAclRequest />", () => {
           name: "Topic name *",
         });
 
-        await userEvent.selectOptions(
-          visibleTopicNameField,
-          mockedResponseTopicNames[0]
-        );
+        await userEvent.click(visibleTopicNameField);
+        await userEvent.click(screen.getByText(mockedResponseTopicNames[0]));
 
         expect(visibleTopicNameField).toHaveValue(mockedResponseTopicNames[0]);
 
@@ -1258,10 +1256,8 @@ describe("<TopicAclRequest />", () => {
           name: "Topic name *",
         });
 
-        await userEvent.selectOptions(
-          visibleTopicNameField,
-          mockedResponseTopicNames[0]
-        );
+        await userEvent.click(visibleTopicNameField);
+        await userEvent.click(screen.getByText(mockedResponseTopicNames[0]));
 
         expect(visibleTopicNameField).toHaveValue(mockedResponseTopicNames[0]);
 
@@ -1364,10 +1360,8 @@ describe("<TopicAclRequest />", () => {
           name: "Topic name *",
         });
 
-        await userEvent.selectOptions(
-          visibleTopicNameField,
-          mockedResponseTopicNames[0]
-        );
+        await userEvent.click(visibleTopicNameField);
+        await userEvent.click(screen.getByText(mockedResponseTopicNames[0]));
 
         expect(visibleTopicNameField).toHaveValue(mockedResponseTopicNames[0]);
 

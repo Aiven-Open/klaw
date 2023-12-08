@@ -1002,7 +1002,7 @@ describe("<TopicAclRequest />", () => {
       expect(hiddenPrefixField).toBeNull();
       expect(visibleTopicNameField).toBeInTheDocument();
       expect(visibleTopicNameField).toBeEnabled();
-      expect(visibleTopicNameField).toHaveDisplayValue("aivtopic1");
+      expect(visibleTopicNameField).toHaveValue("aivtopic1");
 
       await userEvent.click(prefixedField);
 
@@ -1015,7 +1015,7 @@ describe("<TopicAclRequest />", () => {
       expect(hiddenTopicNameField).toBeNull();
       expect(visiblePrefixField).toBeInTheDocument();
       expect(visiblePrefixField).toBeEnabled();
-      expect(visiblePrefixField).toHaveDisplayValue("aivtopic1");
+      expect(visiblePrefixField).toHaveValue("aivtopic1");
     });
 
     it("navigates back when clicking Cancel (TopicProducerForm)", async () => {
