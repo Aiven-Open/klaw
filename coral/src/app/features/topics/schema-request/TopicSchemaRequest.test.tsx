@@ -97,7 +97,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -121,7 +121,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -153,7 +153,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -192,7 +192,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -231,7 +231,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -252,7 +252,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -278,7 +278,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -318,7 +318,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -458,7 +458,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <AquariumContext>
-          <TopicSchemaRequest topicName={testTopicName} />
+          <TopicSchemaRequest presetTopicName={testTopicName} />
         </AquariumContext>,
         {
           queryClient: true,
@@ -536,7 +536,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <TopicSchemaRequest
-          topicName={testTopicName}
+          presetTopicName={testTopicName}
           schemafullValueForTest={"{}"}
         />,
         {
@@ -655,7 +655,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <TopicSchemaRequest
-          topicName={testTopicName}
+          presetTopicName={testTopicName}
           schemafullValueForTest={"{}"}
         />,
         {
@@ -760,7 +760,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <TopicSchemaRequest
-          topicName={testTopicName}
+          presetTopicName={testTopicName}
           schemafullValueForTest={"{}"}
         />,
         {
@@ -947,7 +947,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <TopicSchemaRequest
-          topicName={testTopicName}
+          presetTopicName={testTopicName}
           schemafullValueForTest={"{}"}
         />,
         {
@@ -1026,7 +1026,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(
         <TopicSchemaRequest
-          topicName={testTopicName}
+          presetTopicName={testTopicName}
           schemafullValueForTest={"{}"}
         />,
         {
