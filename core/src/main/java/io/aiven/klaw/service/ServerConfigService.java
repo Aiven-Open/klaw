@@ -57,7 +57,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ServerConfigService {
 
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectMapper OBJECT_MAPPER =
+      new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   @Autowired private Environment env;
@@ -154,7 +155,6 @@ public class ServerConfigService {
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         TenantConfig dynamicObj;
         try {
-          OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
           dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           updateEnvNameValues(dynamicObj, tenantId);
           kwVal = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);

@@ -72,7 +72,11 @@ public class ExportImportDataService {
   @Value("${klaw.version}")
   private String klawVersion;
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER =
+      new ObjectMapper()
+          .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
+          .configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+  ;
   private static final String FILE_EXT = ".json";
   private static final String FILE_PREFIX = "kwmetadata";
   private static final String ADMIN_CONFIG_PREFIX = "admin_config";
@@ -91,7 +95,6 @@ public class ExportImportDataService {
   void importData() {
     try {
       if (importMetadata) {
-        OBJECT_MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
         HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
         importKlawAdminConfig(handleDbRequests);
         importKwData(handleDbRequests);
@@ -158,7 +161,6 @@ public class ExportImportDataService {
     if (!exportMetadata) {
       return;
     }
-    OBJECT_MAPPER.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
     exportKwMetadata();
   }
