@@ -5,6 +5,7 @@ import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -66,30 +67,32 @@ public class ConfigUtils {
       KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
       KwAuthenticationFailureHandler kwAuthenticationFailureHandler)
       throws Exception {
-    http.csrf()
-        .disable()
-        .authorizeHttpRequests()
-        .requestMatchers(getStaticResources(coralEnabled))
-        .permitAll()
-        .anyRequest()
-        .authenticated()
-        .and()
-        .oauth2Login()
-        .successHandler(kwAuthenticationSuccessHandler)
-        .failureHandler(kwAuthenticationFailureHandler)
-        .failureUrl("/login?error")
-        .loginPage("/login")
-        .permitAll()
-        .and()
-        .logout()
-        .invalidateHttpSession(true)
-        .logoutUrl("/logout")
-        .logoutSuccessUrl("/login")
-        .addLogoutHandler(
-            new HeaderWriterLogoutHandler(
-                new ClearSiteDataHeaderWriter(
-                    ClearSiteDataHeaderWriter.Directive.CACHE,
-                    ClearSiteDataHeaderWriter.Directive.COOKIES,
-                    ClearSiteDataHeaderWriter.Directive.STORAGE)));
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(getStaticResources(coralEnabled))
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .oauth2Login(
+            oauthLogin ->
+                oauthLogin
+                    .successHandler(kwAuthenticationSuccessHandler)
+                    .failureHandler(kwAuthenticationFailureHandler)
+                    .failureUrl("/login?error")
+                    .loginPage("/login")
+                    .permitAll())
+        .logout(
+            logout ->
+                logout
+                    .invalidateHttpSession(true)
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login")
+                    .addLogoutHandler(
+                        new HeaderWriterLogoutHandler(
+                            new ClearSiteDataHeaderWriter(
+                                ClearSiteDataHeaderWriter.Directive.CACHE,
+                                ClearSiteDataHeaderWriter.Directive.COOKIES,
+                                ClearSiteDataHeaderWriter.Directive.STORAGE))));
   }
 }
