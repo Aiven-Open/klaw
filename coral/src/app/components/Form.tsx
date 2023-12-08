@@ -1,4 +1,6 @@
 import {
+  Combobox as BaseCombobox,
+  ComboboxProps as BaseComboboxProps,
   Input as BaseInput,
   InputProps as BaseInputProps,
   MultiInput as BaseMultiInput,
@@ -484,6 +486,66 @@ export const NativeSelect = <T extends FieldValues>(
 };
 
 NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
+
+//
+// <Combobox>
+//
+function _Combobox<T extends FieldValues, FieldValue>({
+  name,
+  formContext: form,
+  disabled,
+  ...props
+}: BaseComboboxProps<FieldValue> & FormInputProps<T> & FormRegisterProps<T>) {
+  const isEditable = !disabled && !props.readOnly;
+  return (
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { name }, fieldState: { error } }) => {
+        const { isSubmitting } = form.formState;
+        const value = form.getValues(name);
+
+        // makes sure Combobox in Form works without logging warning
+        // about use of value and defaultValue when:
+        // - it has placeholder AND defaultValue (which is not a usual case),
+        // - value is updated not through user input
+        const baseNativeProps = !value
+          ? props
+          : { ...omit(props, "placeholder"), value: value };
+        return (
+          <BaseCombobox
+            {...baseNativeProps}
+            name={name}
+            disabled={disabled || isSubmitting}
+            aria-readonly={props.readOnly}
+            onChange={(value) => {
+              if (!isEditable) return;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, value as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            valid={error === undefined}
+            helperText={error?.message}
+          />
+        );
+      }}
+    />
+  );
+}
+
+const ComboboxMemo = memo(_Combobox, () => false) as typeof _Combobox;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const Combobox = <T extends FieldValues, FieldValue>(
+  props: FormInputProps<T> & BaseComboboxProps<FieldValue>
+): React.ReactElement<FormInputProps<T> & BaseComboboxProps<FieldValue>> => {
+  const ctx = useFormContext<T>();
+  return <ComboboxMemo formContext={ctx} {...props} />;
+};
+
+Combobox.Skeleton = BaseCombobox.Skeleton;
 
 type ButtonProps = React.ComponentProps<typeof Button.Primary>;
 function _SubmitButton<T extends FieldValues>({
