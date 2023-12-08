@@ -22,7 +22,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.DefaultDataService;
 import io.aiven.klaw.service.utils.CacheService;
@@ -75,9 +74,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // key is tenantid id, value is hashmap of team Id as key and teamname as value
   private static Map<Integer, Map<Integer, String>> teamIdAndNamePerTenant;
-
-  // EnvModel lists for status
-  private static Map<Integer, List<EnvModel>> envModelsClustersStatus;
 
   // key tenantId, value tenant name
   private static Map<Integer, String> tenantMap;
@@ -872,10 +868,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       rolesPermsMap.put(rolesPermission.getRoleId(), tmpList);
     }
     rolesPermsMapPerTenant.put(tenantId, rolesPermsMap);
-  }
-
-  public Map<Integer, List<EnvModel>> getEnvModelsClustersStatusAllTenants() {
-    return envModelsClustersStatus;
   }
 
   public List<String> getRequestStatusList() {
