@@ -349,26 +349,6 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public Map<String, List<EnvModel>> getEnvsStatus() {
-    Integer tenantId = getUserDetails(getUserName()).getTenantId();
-    Map<Integer, List<EnvModel>> allTenantsEnvModels =
-        manageDatabase.getEnvModelsClustersStatusAllTenants();
-    Map<String, List<EnvModel>> allTenantsEnvModelsUpdated = new HashMap<>();
-
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      allTenantsEnvModelsUpdated.put(
-          manageDatabase.getTenantMap().get(tenantId), allTenantsEnvModels.get(tenantId));
-    } else {
-      for (Integer tenantIdInt : allTenantsEnvModels.keySet()) {
-        allTenantsEnvModelsUpdated.put(
-            manageDatabase.getTenantMap().get(tenantIdInt), allTenantsEnvModels.get(tenantIdInt));
-      }
-    }
-
-    return allTenantsEnvModelsUpdated;
-  }
-
   public List<EnvModelResponse> getEnvsPaginated(
       KafkaClustersType type, String envId, String pageNo, String searchEnvParam) {
     List<EnvModelResponse> envListMap;
