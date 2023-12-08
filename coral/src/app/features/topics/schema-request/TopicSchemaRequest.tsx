@@ -51,7 +51,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   const hasPresetTopicName = presetTopicName !== undefined;
   const hasPresetEnvironment =
-    presetEnvironment !== undefined && presetEnvironment.length > 0;
+    presetEnvironment !== null &&
+    presetEnvironment !== undefined &&
+    presetEnvironment.length > 0;
 
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
