@@ -11,9 +11,9 @@ import lombok.Data;
 @Data
 public class TopicOverviewInfo extends TopicBaseInfo {
 
-  @NotNull private boolean isTopicOwner;
+  @NotNull private boolean topicOwner;
 
-  @NotNull private boolean isHighestEnv;
+  @NotNull private boolean highestEnv;
 
   @NotNull private boolean hasOpenRequest;
 
