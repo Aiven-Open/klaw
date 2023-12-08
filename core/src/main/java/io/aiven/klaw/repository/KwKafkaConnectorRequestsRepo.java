@@ -77,7 +77,10 @@ public interface KwKafkaConnectorRequestsRepo
   @Query(
       value =
           "select count(*) from kwkafkaconnectorrequests where tenantid = :tenantId"
-              + " and (((teamid = :teamId or approvingteamid = :approvingTeamid) and connectortype != 'Claim') or (teamId != :approvingTeamid and connectortype = 'Claim')) and requestor != :requestor and connectorstatus = :connectorStatus group by connectorstatus",
+              + " and (((teamid = :teamId and connectortype != 'Claim'))"
+              + " or (approvingteamid = :approvingTeamid and connectortype = 'Claim')) "
+              + "and requestor != :requestor"
+              + " and connectorstatus = :connectorStatus group by connectorstatus",
       nativeQuery = true)
   Long countRequestorsConnectorRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
