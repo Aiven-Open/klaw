@@ -1,5 +1,4 @@
-import { Option } from "@aivenio/aquarium";
-import { NativeSelect } from "src/app/components/Form";
+import { Combobox } from "src/app/components/Form";
 
 interface TopicNameFieldProps {
   topicNames: string[];
@@ -12,19 +11,14 @@ const TopicNameField = ({
 }: TopicNameFieldProps) => {
   const labelText = readOnly ? "Topic name (read-only)" : "Topic name";
   return (
-    <NativeSelect
+    <Combobox
       name="topicname"
       labelText={labelText}
       placeholder={"-- Select Topic --"}
       readOnly={readOnly}
       required={!readOnly}
-    >
-      {topicNames.map((name) => (
-        <Option key={name} value={name}>
-          {name}
-        </Option>
-      ))}
-    </NativeSelect>
+      options={topicNames}
+    />
   );
 };
 

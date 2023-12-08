@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";
 import {
+  Checkbox,
+  Combobox,
   Form,
   NativeSelect,
   SubmitButton,
   Textarea,
   useForm,
-  Checkbox,
 } from "src/app/components/Form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import {
@@ -22,8 +23,8 @@ import {
 } from "src/domain/environment";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
-import { parseErrorMsg } from "src/services/mutation-utils";
 import { KlawApiError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type TopicSchemaRequestProps = {
   topicName?: string;
@@ -183,7 +184,10 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               <NativeSelect.Skeleton />
             </div>
           ) : (
-            <NativeSelect<TopicRequestFormSchema>
+            <Combobox<
+              TopicRequestFormSchema,
+              TopicRequestFormSchema["topicname"]
+            >
               name={"topicname"}
               labelText={
                 hasPresetTopicName ? "Topic name (read-only)" : "Topic name"
@@ -191,15 +195,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               required={!hasPresetTopicName}
               readOnly={hasPresetTopicName}
               placeholder={"-- Please select --"}
-            >
-              {topicNames.map((topic) => {
-                return (
-                  <option key={topic} value={topic}>
-                    {topic}
-                  </option>
-                );
-              })}
-            </NativeSelect>
+              options={topicNames}
+            />
           )}
           {environmentsIsLoading || environments === undefined ? (
             <div data-testid={"environments-select-loading"}>
