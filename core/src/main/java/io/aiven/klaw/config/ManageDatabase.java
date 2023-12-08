@@ -22,7 +22,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.DefaultDataService;
 import io.aiven.klaw.service.utils.CacheService;
@@ -53,7 +52,8 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class ManageDatabase implements ApplicationContextAware, InitializingBean, DisposableBean {
 
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectMapper OBJECT_MAPPER =
+      new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @Autowired HandleDbRequestsJdbc handleDbRequests;
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
@@ -74,9 +74,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // key is tenantid id, value is hashmap of team Id as key and teamname as value
   private static Map<Integer, Map<Integer, String>> teamIdAndNamePerTenant;
-
-  // EnvModel lists for status
-  private static Map<Integer, List<EnvModel>> envModelsClustersStatus;
 
   // key tenantId, value tenant name
   private static Map<Integer, String> tenantMap;
@@ -873,25 +870,18 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     rolesPermsMapPerTenant.put(tenantId, rolesPermsMap);
   }
 
-  public Map<Integer, List<EnvModel>> getEnvModelsClustersStatusAllTenants() {
-    return envModelsClustersStatus;
-  }
-
   public List<String> getRequestStatusList() {
     return reqStatusList;
   }
 
   public void updateKwTenantConfigPerTenant(Integer tenantId) {
     try {
-      String TENANT_CONFIG = "klaw.tenant.config";
-      if (kwPropertiesMapPerTenant.get(tenantId) != null) {
-        if (kwPropertiesMapPerTenant.get(tenantId).get(TENANT_CONFIG) != null) {
-          String kwTenantConfig =
-              kwPropertiesMapPerTenant.get(tenantId).get(TENANT_CONFIG).get("kwvalue");
-          TenantConfig dynamicObj;
-          OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-          dynamicObj = OBJECT_MAPPER.readValue(kwTenantConfig, TenantConfig.class);
+      final var kwProps = kwPropertiesMapPerTenant.get(tenantId);
+      if (kwProps != null) {
+        final var tenantConfig = kwPropertiesMapPerTenant.get(tenantId).get("klaw.tenant.config");
+        if (tenantConfig != null) {
+          String kwTenantConfig = tenantConfig.get("kwvalue");
+          TenantConfig dynamicObj = OBJECT_MAPPER.readValue(kwTenantConfig, TenantConfig.class);
           setTenantConfig(dynamicObj);
         }
       }
