@@ -1002,7 +1002,7 @@ describe("<TopicAclRequest />", () => {
       expect(hiddenPrefixField).toBeNull();
       expect(visibleTopicNameField).toBeInTheDocument();
       expect(visibleTopicNameField).toBeEnabled();
-      expect(visibleTopicNameField).toHaveValue("aivtopic1");
+      waitFor(() => expect(visibleTopicNameField).toHaveValue("aivtopic1"));
 
       await userEvent.click(prefixedField);
 
