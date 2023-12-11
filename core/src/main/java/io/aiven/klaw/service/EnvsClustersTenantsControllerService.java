@@ -196,35 +196,18 @@ public class EnvsClustersTenantsControllerService {
     }
 
     if (searchClusterParam != null && !searchClusterParam.equals("")) {
-      List<KwClustersModelResponse> envListMap1 =
-          kwClustersModelList.stream()
-              .filter(
-                  env ->
-                      env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase()))
-              .collect(toList());
-      List<KwClustersModelResponse> envListMap2 =
-          kwClustersModelList.stream()
-              .filter(
-                  env ->
-                      env.getBootstrapServers()
-                          .toLowerCase()
-                          .contains(searchClusterParam.toLowerCase()))
-              .toList();
-      List<KwClustersModelResponse> envListMap3 =
-          kwClustersModelList.stream()
-              .filter(
-                  env ->
-                      env.getProtocol()
-                          .getName()
-                          .toLowerCase()
-                          .contains(searchClusterParam.toLowerCase()))
-              .toList();
-      envListMap1.addAll(envListMap2);
-      envListMap1.addAll(envListMap3);
-
-      // remove duplicates
       kwClustersModelList =
-          envListMap1.stream()
+          kwClustersModelList.stream()
+              .filter(
+                  env ->
+                      env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase())
+                          || env.getBootstrapServers()
+                              .toLowerCase()
+                              .contains(searchClusterParam.toLowerCase())
+                          || env.getProtocol()
+                              .getName()
+                              .toLowerCase()
+                              .contains(searchClusterParam.toLowerCase()))
               .collect(
                   Collectors.collectingAndThen(
                       Collectors.toCollection(
@@ -375,22 +358,20 @@ public class EnvsClustersTenantsControllerService {
       envListMap =
           envListMap.stream()
               .filter(
-                  env -> {
-                    if (env.getName().toLowerCase().contains(searchEnvParam.toLowerCase())
-                        || env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase())
-                        || (env.getOtherParams() != null
-                            && env.getOtherParams()
-                                .toLowerCase()
-                                .contains(searchEnvParam.toLowerCase()))
-                        || manageDatabase
-                            .getTenantMap()
-                            .get(env.getTenantId())
-                            .toLowerCase()
-                            .contains(searchEnvParam.toLowerCase())) {
-                      return true;
-                    }
-                    return false;
-                  })
+                  env ->
+                      env.getName().toLowerCase().contains(searchEnvParam.toLowerCase())
+                          || env.getClusterName()
+                              .toLowerCase()
+                              .contains(searchEnvParam.toLowerCase())
+                          || (env.getOtherParams() != null
+                              && env.getOtherParams()
+                                  .toLowerCase()
+                                  .contains(searchEnvParam.toLowerCase()))
+                          || manageDatabase
+                              .getTenantMap()
+                              .get(env.getTenantId())
+                              .toLowerCase()
+                              .contains(searchEnvParam.toLowerCase()))
               .toList();
     }
 
