@@ -1269,6 +1269,8 @@ export type components = {
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
+      topicOwner: boolean;
+      highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenTopicRequest: boolean;
       hasOpenACLRequest: boolean;
@@ -1279,8 +1281,6 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
-      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
