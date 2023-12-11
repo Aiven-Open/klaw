@@ -22,7 +22,7 @@ const SchemaRequest = () => {
             : `Request new schema for topic "${topicName}"`
         }
       />
-      <TopicSchemaRequest topicName={topicName} />
+      <TopicSchemaRequest presetTopicName={topicName} />
     </>
   );
 };
