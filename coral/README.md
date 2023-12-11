@@ -150,6 +150,16 @@ You can also run `pnpm` in your console to get a list of all available scripts.
 - `test-dev`: runs all test tests related to changed files in a watch mode
 - `test`: runs all tests one time
 - `tsc`: runs the TypeScript compiler
+- `generate-toc`: generates Table of Contents for markdown files **when they have this placeholder**:
+  ```
+  <!-- auto-generated-toc-start -->
+  <!-- auto-generated-toc-end -->
+  ```
+- `generate-toc -f path/to/your/file.md`: generates Table of Contents for one given markdown file **when is has this placeholder**:
+  ```
+  <!-- auto-generated-toc-start -->
+  <!-- auto-generated-toc-end -->
+  ```
 
 ℹ️ We are using a custom hook path for enabling pre-commit hooks. This path is set in the local git config when running `pnpm install`. See script `pnpm:devPreinstall`.
 

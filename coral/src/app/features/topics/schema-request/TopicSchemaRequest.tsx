@@ -1,6 +1,6 @@
 import { Alert, Box, Button, useToast } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";
 import {
@@ -27,7 +27,7 @@ import { KlawApiError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 type TopicSchemaRequestProps = {
-  topicName?: string;
+  presetTopicName?: string;
   // ‼️this property is ONLY for testing purpose!
   schemafullValueForTest?: string;
 };
@@ -40,9 +40,9 @@ type TopicSchemaRequestProps = {
 // Since that is are important test cases, I opted for the bad practice rather in order to
 // be able to add this tests. I created na issue in GitHub related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
-  const { topicName } = props;
+  const { presetTopicName } = props;
   const [searchParams] = useSearchParams();
-  const presetEnvironment = searchParams.get("env");
+  const presetEnvironment = searchParams.get("env") || undefined;
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [isValidationError, setIsValidationError] = useState(false);
@@ -50,7 +50,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const hasPresetTopicName = topicName !== undefined;
+  const hasPresetTopicName = presetTopicName !== undefined;
   const hasPresetEnvironment =
     presetEnvironment !== null &&
     presetEnvironment !== undefined &&
@@ -59,9 +59,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
-      topicname: topicName,
+      topicname: presetTopicName,
       schemafull: props.schemafullValueForTest || undefined,
-      environment: presetEnvironment || undefined,
+      environment: presetEnvironment,
     },
   });
 
@@ -73,19 +73,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       getTopicNames({
         onlyMyTeamTopics: true,
       }),
-    keepPreviousData: true,
-    refetchOnWindowFocus: true,
-    onSuccess: (data) => {
-      if (topicName === undefined) {
-        return;
-      }
-
-      const topicExists = data?.includes(topicName);
-      if (!topicExists) {
-        navigate(-1);
-      }
-    },
   });
+
+  useEffect(() => {
+    if (presetTopicName === undefined || topicNames === undefined) {
+      return;
+    }
+
+    const topicExists = topicNames.includes(presetTopicName);
+    if (!topicExists) {
+      navigate(-1);
+    }
+  }, [topicNames, presetTopicName]);
 
   const { data: environments, isLoading: environmentsIsLoading } = useQuery<
     Environment[],
@@ -98,25 +97,25 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     // We use name and ID related to the Kafka Environment in form and mutation.
     select: (kafkaEnvironments) =>
       kafkaEnvironments.filter((env) => env.associatedEnv),
-    onSuccess: (environments) => {
-      if (presetEnvironment) {
-        const validEnv = environments.find(
-          (env) =>
-            presetEnvironment === env.id || presetEnvironment === env.name
-        );
-
-        // Allows to pass environment name as well as environment id as search param
-        if (validEnv && isNaN(Number(presetEnvironment))) {
-          form.setValue("environment", validEnv.id);
-          return;
-        }
-
-        if (validEnv === undefined) {
-          navigate(-1);
-        }
-      }
-    },
   });
+
+  useEffect(() => {
+    if (presetEnvironment !== undefined && environments !== undefined) {
+      const validEnv = environments.find(
+        (env) => presetEnvironment === env.id || presetEnvironment === env.name
+      );
+
+      // Allows to pass environment name as well as environment id as search param
+      if (validEnv && isNaN(Number(presetEnvironment))) {
+        form.setValue("environment", validEnv.id);
+        return;
+      }
+
+      if (validEnv === undefined) {
+        navigate(-1);
+      }
+    }
+  }, [environments, presetEnvironment, form]);
 
   const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {

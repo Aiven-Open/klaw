@@ -222,6 +222,7 @@ describe("topic-transformer.ts", () => {
             hasACL: false,
             envName: "DEV",
             description: "my description",
+            topicOwner: false,
           },
         ],
         topicPromotionDetails: {
@@ -263,6 +264,7 @@ describe("topic-transformer.ts", () => {
           topicDeletable: false,
           topicName: "test-topic",
           description: "my description",
+          topicOwner: false,
         },
         topicPromotionDetails: {
           status: "SUCCESS",
@@ -303,6 +305,7 @@ describe("topic-transformer.ts", () => {
             hasACL: false,
             envName: "DEV",
             description: "my description",
+            topicOwner: false,
           },
         ],
         topicPromotionDetails: {
@@ -398,6 +401,7 @@ describe("topic-transformer.ts", () => {
           topicDeletable: false,
           topicName: "test-topic",
           description: "my description",
+          topicOwner: false,
         },
         topicPromotionDetails: {
           status: "SUCCESS",
