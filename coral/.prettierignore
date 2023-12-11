@@ -1,0 +1,4 @@
+dist/
+index.html
+pnpm-lock.yaml
+types/api.d.ts
