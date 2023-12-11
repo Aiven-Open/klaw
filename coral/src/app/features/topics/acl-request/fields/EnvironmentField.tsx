@@ -12,7 +12,7 @@ interface EnvironmentFieldProps {
 const getOptions = (
   environments: ExtendedEnvironment[],
   prefixed: boolean,
-  topicName?: string
+  topicName: string
 ) => {
   return environments.map((env) => {
     if (prefixed) {
@@ -31,7 +31,7 @@ const getOptions = (
       );
     }
 
-    if (topicName !== undefined && !env.topicNames.includes(topicName)) {
+    if (topicName !== "" && !env.topicNames.includes(topicName)) {
       return (
         <Option key={env.id} value={env.id} disabled>
           {env.name} (unavailable for selected topic)
@@ -49,7 +49,7 @@ const getOptions = (
 
 const EnvironmentField = ({
   environments,
-  selectedTopic,
+  selectedTopic = "",
   prefixed = false,
   readOnly = false,
 }: EnvironmentFieldProps) => {

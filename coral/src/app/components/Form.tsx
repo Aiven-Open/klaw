@@ -505,16 +505,10 @@ function _Combobox<T extends FieldValues, FieldValue>({
         const { isSubmitting } = form.formState;
         const value = form.getValues(name);
 
-        // makes sure Combobox in Form works without logging warning
-        // about use of value and defaultValue when:
-        // - it has placeholder AND defaultValue (which is not a usual case),
-        // - value is updated not through user input
-        const baseNativeProps = !value
-          ? props
-          : { ...omit(props, "placeholder"), value: value };
         return (
           <BaseCombobox
-            {...baseNativeProps}
+            {...props}
+            value={value}
             name={name}
             disabled={disabled || isSubmitting}
             aria-readonly={props.readOnly}

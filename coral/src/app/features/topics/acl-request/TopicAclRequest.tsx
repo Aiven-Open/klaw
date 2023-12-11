@@ -9,7 +9,6 @@ import topicConsumerFormSchema, {
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
-import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
@@ -18,8 +17,9 @@ import { AclType } from "src/domain/acl";
 
 const TopicAclRequest = () => {
   const navigate = useNavigate();
-  const { topicName } = useParams();
+  const { topicName = "" } = useParams();
   const [searchParams] = useSearchParams();
+  const environment = searchParams.get("env") ?? undefined;
 
   const [aclType, setAclType] = useState<AclType>("PRODUCER");
 
@@ -28,10 +28,10 @@ const TopicAclRequest = () => {
     defaultValues: {
       topicname: topicName,
       aclType: "PRODUCER",
-      aclPatternType: topicName !== undefined ? "LITERAL" : undefined,
-      environment: searchParams.get("env") ?? undefined,
+      aclPatternType: topicName !== "" ? "LITERAL" : undefined,
+      environment,
       // teamId is required, but we only add it to the form data when submitting the form
-      // as it depends on the topicname and aclpatterntype fiewlds
+      // as it depends on the topicname and aclpatterntype fields
       teamId: 0,
     },
   });
@@ -43,7 +43,7 @@ const TopicAclRequest = () => {
       topicname: topicName,
       aclType: "CONSUMER",
       consumergroup: "",
-      environment: searchParams.get("env") ?? undefined,
+      environment,
       // teamId is required, but we only add it to the form data when submitting the form...
       // ...as it depends on the topicname and aclPatternType fields.
       // We need to give it a default value, otherwise the submit handler of the Form would not trigger...
@@ -61,11 +61,7 @@ const TopicAclRequest = () => {
 
   // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
   // So we redirect when it is missing
-  if (
-    hasFetchedExtendedEnvironments &&
-    topicName !== undefined &&
-    !isValidEnv
-  ) {
+  if (hasFetchedExtendedEnvironments && topicName !== "" && !isValidEnv) {
     navigate(`/topic/${topicName}/subscriptions`);
   }
 
@@ -116,7 +112,7 @@ const TopicAclRequest = () => {
   }
 
   const currentTopicNames =
-    selectedEnvironment === undefined && topicName !== undefined
+    selectedEnvironment === undefined && topicName !== ""
       ? [topicName]
       : selectedEnvironment?.topicNames;
 
@@ -133,7 +129,7 @@ const TopicAclRequest = () => {
           isAivenCluster={selectedEnvironment?.isAivenCluster}
           // This prop is true when user navigated to /topic/{topicName}/subscribe?env={id}
           // False when navigating to /request/acl
-          isSubscription={topicName !== undefined && environment !== undefined}
+          isSubscription={topicName !== "" && environment !== undefined}
         />
       ) : (
         <TopicProducerForm
@@ -146,7 +142,7 @@ const TopicAclRequest = () => {
           isAivenCluster={selectedEnvironment?.isAivenCluster}
           // This prop is true when user navigated to /topic/{topicName}/subscribe?env={id}
           // False when navigating to /request/acl
-          isSubscription={topicName !== undefined && environment !== undefined}
+          isSubscription={topicName !== "" && environment !== undefined}
         />
       )}
     </Box>
