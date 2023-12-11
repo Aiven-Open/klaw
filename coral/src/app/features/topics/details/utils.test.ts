@@ -29,6 +29,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
     hasOpenRequest: false,
     hasSchema: false,
     description: "my description",
+    topicOwner: false,
   },
   aclInfoList: [
     {
@@ -99,6 +100,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
     hasOpenRequest: false,
     hasSchema: false,
     description: "my description",
+    topicOwner: false,
   },
   aclInfoList: [],
   topicHistoryList: [
