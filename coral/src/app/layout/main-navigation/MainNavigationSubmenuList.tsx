@@ -1,7 +1,7 @@
 import { Box, Icon } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import classes from "src/app/layout/main-navigation/MainNavigationSubmenuList.module.css";
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import caretDown from "@aivenio/aquarium/dist/src/icons/caretDown";
 import caretUp from "@aivenio/aquarium/dist/src/icons/caretUp";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
@@ -20,6 +20,10 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
   const buttonText = open
     ? `${text} submenu, open. Click to close.`
     : `${text} submenu, closed. Click to open.`;
+
+  useEffect(() => {
+    setOpen(defaultExpanded);
+  }, [defaultExpanded]);
 
   return (
     <>
