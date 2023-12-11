@@ -17,20 +17,21 @@
     "dev": "vite --mode remote-api",
     "start": "pnpm dev",
     "dev-without-api": "vite",
-    "lint": "prettier --check src && eslint .",
+    "lint": "prettier --check . && eslint .",
     "lint-staged": "lint-staged",
     "preview": "vite build --mode remote-api && vite preview --mode remote-api",
-    "reformat": "prettier --write src proxy",
+    "reformat": "prettier --write . proxy",
     "test": "jest",
     "test-ci": "jest --ci",
     "test-dev": "jest --watch",
     "tsc": "tsc -p tsconfig.json",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
     "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type",
-    "add-precommit": "git config --local core.hooksPath .githooks/"
+    "add-precommit": "git config --local core.hooksPath .githooks/",
+    "generate-toc": "node scripts/markdown-toc.cjs && prettier --write '**/*.md' '../**/*.md'"
   },
   "lint-staged": {
-    "**/!(*api.d).{ts,tsx,js}": [
+    "**/!(*api.d).{ts,tsx,js,cjs}": [
       "prettier --check",
       "eslint"
     ],
@@ -83,6 +84,7 @@
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-no-relative-import-paths": "^1.5.3",
     "eslint-plugin-react": "^7.33.2",
+    "glob": "^10.3.10",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
