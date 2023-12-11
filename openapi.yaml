@@ -7997,6 +7997,12 @@
           "topicDeletable" : {
             "type" : "boolean"
           },
+          "topicOwner" : {
+            "type" : "boolean"
+          },
+          "highestEnv" : {
+            "type" : "boolean"
+          },
           "hasOpenRequest" : {
             "type" : "boolean"
           },
@@ -8024,15 +8030,9 @@
           "clusterId" : {
             "type" : "integer",
             "format" : "int32"
-          },
-          "highestEnv" : {
-            "type" : "boolean"
-          },
-          "topicOwner" : {
-            "type" : "boolean"
           }
         },
-        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenRequestOnAnyEnv", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "highestEnv", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicOwner" ]
       },
       "TopicBaseConfig" : {
         "properties" : {

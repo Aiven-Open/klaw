@@ -73,6 +73,7 @@ const testTopicOverview: TopicOverview = {
     hasOpenRequest: false,
     hasSchema: false,
     description: "my description",
+    topicOwner: false,
   },
   aclInfoList: [
     {
