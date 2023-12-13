@@ -1618,6 +1618,7 @@ export type components = {
       allPageNos: string[];
       /** @enum {string} */
       clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      currentPage: string;
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
