@@ -229,6 +229,7 @@ public class EnvsClustersTenantsControllerService {
             numList.add("" + k);
           }
           mp.setAllPageNos(numList);
+          mp.setCurrentPage(pageContext.getPageNo());
           mp.setPublicKey(""); // remove public key from here
           return mp;
         });

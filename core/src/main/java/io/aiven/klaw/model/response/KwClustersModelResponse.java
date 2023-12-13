@@ -34,6 +34,8 @@ public class KwClustersModelResponse implements Serializable {
 
   @NotNull private ClusterStatus clusterStatus;
 
+  @NotNull private String currentPage;
+
   private String associatedServers;
 
   private String projectName;
