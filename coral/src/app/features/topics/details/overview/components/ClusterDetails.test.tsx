@@ -9,6 +9,7 @@ import {
 
 const testClusterDetails: ClusterDetailsType = {
   allPageNos: [],
+  currentPage: "1",
   bootstrapServers: "kafka-112233aa-dev-sandbeach.aivencloud.com:12345",
   clusterId: 999,
   clusterName: "DEV",

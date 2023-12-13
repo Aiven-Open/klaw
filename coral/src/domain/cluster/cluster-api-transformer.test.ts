@@ -17,6 +17,7 @@ const mockedApiResponse: KlawApiModel<"KwClustersModelResponse">[] = [
     projectName: "nice-project",
     serviceName: "kafka-service",
     publicKey: "",
+    currentPage: "1",
   },
   {
     clusterId: 7,
@@ -30,6 +31,7 @@ const mockedApiResponse: KlawApiModel<"KwClustersModelResponse">[] = [
     allPageNos: ["1"],
     clusterStatus: "OFFLINE",
     publicKey: "",
+    currentPage: "1",
   },
 ];
 
