@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.6.0"
+    "version" : "2.7.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -8128,10 +8128,10 @@
           "titleForReport" : {
             "type" : "string"
           },
-          "xaxisLabel" : {
+          "yaxisLabel" : {
             "type" : "string"
           },
-          "yaxisLabel" : {
+          "xaxisLabel" : {
             "type" : "string"
           }
         }

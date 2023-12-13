@@ -4,7 +4,7 @@ SET CURRENTDIR="%cd%"
 set DIR=%~dp0..\
 cd %DIR%
 
-set version=2.6.0
+set version=2.7.0
 set core_lib=.\core\target\klaw-%version%.jar
 set cluster_lib=.\cluster-api\target\cluster-api-%version%.jar
 set core_config=.\core\target\classes\application.properties
