@@ -20,6 +20,7 @@ const testCluster: ClusterDetails[] = [
     serviceName: "test-service-name",
     showDeleteCluster: true,
     totalNoPages: "1",
+    currentPage: "1",
   },
   {
     allPageNos: ["1"],
@@ -34,6 +35,7 @@ const testCluster: ClusterDetails[] = [
     publicKey: "",
     showDeleteCluster: true,
     totalNoPages: "1",
+    currentPage: "1",
   },
 ];
 
