@@ -1,4 +1,4 @@
-import { Box, Divider } from "@aivenio/aquarium";
+import { Box, Card, Divider } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import database from "@aivenio/aquarium/dist/src/icons/database";
@@ -6,22 +6,26 @@ import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import person from "@aivenio/aquarium/dist/src/icons/person";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
-import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import swapHorizontal from "@aivenio/aquarium/dist/src/icons/swapHorizontal";
+import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
-import { Routes } from "src/services/router-utils/types";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { Routes } from "src/services/router-utils/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
   const { userrole } = useAuthContext();
+  const [testCta, settestCta] = useState(
+    Boolean(localStorage.getItem("testCta"))
+  );
 
   const superadminAccessCoralEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
@@ -217,6 +221,28 @@ function MainNavigation() {
           </MainNavigationSubmenuList>
         </li>
       </ul>
+      {!testCta && (
+        <Box.Flex paddingTop={"l2"}>
+          <Card
+            color="info-70"
+            primaryAction={{
+              href: "https://forms.gle/F2Pi8aanWeJPDPLT8",
+              text: "Submit feedback",
+            }}
+            secondaryAction={{
+              onClick: () => {
+                settestCta(true);
+                localStorage.setItem("testCta", "true");
+              },
+              text: "Do not ask me again",
+            }}
+            title="Tell us what you think!"
+          >
+            We are constantly improving Klaw and would love to hear your
+            feedback. Please take a moment to fill out our feedback form.
+          </Card>
+        </Box.Flex>
+      )}
     </Box>
   );
 }
