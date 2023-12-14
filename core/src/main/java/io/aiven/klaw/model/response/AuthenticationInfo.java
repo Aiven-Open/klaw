@@ -59,4 +59,5 @@ public class AuthenticationInfo {
   @NotNull private String adAuthRoleEnabled;
   @NotNull private String supportlink;
   @NotNull private String myteamtopics;
+  @NotNull private String googleFeedbackFormLink;
 }
