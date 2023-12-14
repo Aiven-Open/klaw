@@ -776,6 +776,10 @@
 																<button ng-show="aclRequest.showDeleteAcl == true && dashboardDetails.requestItems=='Authorized'" ng-click="deleteAcls(aclRequest.req_no, aclRequest.teamname)" type="button" class="btn btn-sm btn-danger btn-circle"><i class="fa fa-times"></i>
 																</button>
 															</div>
+															<div class="p-2" style="width:5%">
+																<button ng-show="aclRequest.showClaimAcl == true" type="button" ng-click="onClaimAcl(aclRequest.req_no);"
+																		class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim</button>
+															</div>
 
 															<div class="p-2" style="width:5%">
 																<button ng-show="aclRequest.showClaimAcl == true" type="button" ng-click="onClaimAcl(aclRequest.req_no);"

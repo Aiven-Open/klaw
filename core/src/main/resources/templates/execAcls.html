@@ -598,7 +598,8 @@
 									</div>
 									<br>
 									<div class="d-flex flex-row">
-										<div class="p-2"  style="width:65%">
+										<div class="p-2"  style="width:50%">
+
 											<h6 class="text-primary">Remarks</h6><b>{{ aclRequest.remarks }}</b>
 										</div>
 										<div ng-show="aclRequest.requestStatus === 'CREATED' && aclRequest.requestOperationType == 'CLAIM'" class="p-2 border-left" style="width:10%">
@@ -609,6 +610,16 @@
 											</div>
 
 										</div>
+
+										<div ng-show="aclRequest.requestStatus === 'CREATED' && aclRequest.requestOperationType == 'CLAIM'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Approvals Granted</h6>
+
+											<div ng-repeat="approval in aclRequest.approvals">
+												<b>{{ approval.approverName}}</b>
+											</div>
+
+										</div>
+
 										<div ng-show="aclRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-success">{{ aclRequest.approver }}</span></b>
