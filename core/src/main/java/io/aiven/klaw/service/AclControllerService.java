@@ -535,7 +535,7 @@ public class AclControllerService {
             RequestStatus.CREATED.value,
             aclOp.get().getEnvironment(),
             tenantId)) {
-      return ApiResponse.notOk("Claim already exists for this Acl.");
+      return ApiResponse.notOk("A request for this ACL already exists.");
     }
 
     // Copy into ACL Request
@@ -545,7 +545,7 @@ public class AclControllerService {
     // reset the request number
     request.setReq_no(null);
     // Store the original aclId in the other Params section
-    request.setOtherParams(String.valueOf(aclOp.get().getReq_no()));
+    request.setAssociatedAclId(aclOp.get().getReq_no());
     // Add Complex Approvers
     request.setRequestingteam(commonUtilsService.getTeamId(userName));
     request.setRequestor(userName);
@@ -681,9 +681,7 @@ public class AclControllerService {
       // changeAclOwnership
       emailStatus = ACL_REQUEST_APPROVED;
       Optional<Acl> acl =
-          manageDatabase
-              .getHandleDbRequests()
-              .getAcl(Integer.parseInt(aclReq.getOtherParams()), tenantId);
+          manageDatabase.getHandleDbRequests().getAcl(aclReq.getAssociatedAclId(), tenantId);
       if (acl.isPresent()) {
         acl.get().setTeamId(aclReq.getRequestingteam());
         manageDatabase.getHandleDbRequests().updateAcl(acl.get());
@@ -697,7 +695,7 @@ public class AclControllerService {
             .getHandleDbRequests()
             .claimAclRequest(
                 aclReq, fullyApproved ? RequestStatus.APPROVED : RequestStatus.CREATED);
-    return emailAndReturnClaimUpdate(aclReq, dbHandle, ACL_REQUEST_APPROVED, status);
+    return emailAndReturnClaimUpdate(aclReq, dbHandle, emailStatus, status);
   }
 
   private ApiResponse emailAndReturnClaimUpdate(

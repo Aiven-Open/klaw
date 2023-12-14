@@ -6975,6 +6975,10 @@
             "type" : "string",
             "enum" : [ "IP_ADDRESS", "PRINCIPAL", "USERNAME" ]
           },
+          "associatedAclId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "totalNoPages" : {
             "type" : "string"
           },
@@ -8316,13 +8320,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"

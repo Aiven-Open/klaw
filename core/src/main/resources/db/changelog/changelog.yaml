@@ -1257,3 +1257,13 @@ databaseChangeLog:
                     name: approverteamname
                     type: VARCHAR2(25)
               tableName: kwaclapprovals
+    - changeSet:
+        id: 13-12-2023 Add the ACLId column to acl requests table.
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: associatedaclid
+                    type: INT
+              tableName: kwaclrequests

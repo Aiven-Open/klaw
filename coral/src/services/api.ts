@@ -232,7 +232,7 @@ type RemoveEnvFromCache = (params: {
   tenantId: string;
   id: string;
 }) => keyof ApiPaths;
-type claimAcl = (params: { aclId: number }) => keyof ApiPaths;
+type ClaimAcl = (params: { aclId: number }) => keyof ApiPaths;
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
     source,
@@ -255,7 +255,7 @@ const DYNAMIC_API_PATHS = {
     `/cache/tenant/${tenantId}/entityType/environment` as keyof ApiPaths,
   removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
     `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
-  claimAcl: ({ aclId }: Parameters<claimAcl>[0]) =>
+  claimAcl: ({ aclId }: Parameters<ClaimAcl>[0]) =>
     `/acl/claim/${aclId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
@@ -278,7 +278,7 @@ const DYNAMIC_API_PATHS = {
     | GetSchemaRegEnv
     | AddEnvToCache
     | RemoveEnvFromCache
-    | claimAcl;
+    | ClaimAcl;
 };
 
 type Params = URLSearchParams;

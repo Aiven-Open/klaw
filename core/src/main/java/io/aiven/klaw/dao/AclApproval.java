@@ -25,13 +25,6 @@ public class AclApproval extends Approval implements Serializable {
     super(approval);
   }
 
-  public AclApproval(Approval approval, Integer reqNo, Integer tenantId) {
-    super(approval);
-    parent = new AclRequests();
-    parent.setReq_no(reqNo);
-    parent.setTenantId(tenantId);
-  }
-
   public AclApproval() {
     super();
   }

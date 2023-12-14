@@ -109,6 +109,9 @@ public class AclRequests implements Serializable {
   @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<AclApproval> approvals = new ArrayList<>();
 
+  @Column(name = "associatedaclid")
+  private Integer associatedAclId;
+
   @Transient private String totalNoPages;
 
   @Transient private String currentPage;

@@ -10,11 +10,7 @@ import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,18 +59,17 @@ public class ApprovalService {
       approvals =
           requestToApprover.get(String.join(".", operationType.name(), envName.toUpperCase()));
     }
-    if (approvals != null && !approvals.isEmpty()) {
-      // Always return a deep copy
-
-      return approvals.stream().map(Approval::new).toList();
-    } else {
+    if (approvals == null || approvals.isEmpty()) {
       // Env specific approvers do not exist so return all approvers for that type of operationType.
       // Always return a copy
-      String key = operationType.name();
       approvals = requestToApprover.get(operationType.name());
       // Always return a deep copy
-      return approvals.stream().map(Approval::new).toList();
     }
+    return copyApprovalForReturn(approvals);
+  }
+
+  private static List<Approval> copyApprovalForReturn(List<Approval> approvals) {
+    return approvals.stream().map(Approval::new).toList();
   }
 
   public List<Approval> getApprovalsForRequest(
@@ -87,9 +82,9 @@ public class ApprovalService {
       throws KlawException {
     List<Approval> approvals = getApprovers(entityType, operationType, envName);
     for (Approval app : approvals) {
-      if (app.getApprovalType().equals(ApprovalType.RESOURCE_TEAM_OWNER)) {
+      if (app.getApprovalType() == ApprovalType.RESOURCE_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, resourceNameId));
-      } else if (app.getApprovalType().equals(ApprovalType.ACL_TEAM_OWNER)) {
+      } else if (app.getApprovalType() == ApprovalType.ACL_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, aclOwnerId));
       }
     }
@@ -166,8 +161,8 @@ public class ApprovalService {
     // check that user has not foundapproved any request before potentially as a member of another
     // team
     // Then check to see if their current team has the ability to approve any of the requests.
-    return !approvals.stream()
-            .anyMatch(
+    return approvals.stream()
+            .noneMatch(
                 app ->
                     !StringUtils.isBlank(app.getApproverName())
                         && app.getApproverName().equals(username))
@@ -208,7 +203,7 @@ public class ApprovalService {
 
     if (user.isPresent()) {
       for (Approval approval : remaining) {
-        if (completedApprovalTypes.add(approval.getApprovalType()) && allowMultiApproval == true) {
+        if (completedApprovalTypes.add(approval.getApprovalType()) && allowMultiApproval) {
           switch (approval.getApprovalType()) {
             case RESOURCE_TEAM_OWNER -> isResourceApprovalSatisfied(
                 user.get(), resourceOwnerId, approval, approvals);
@@ -244,8 +239,9 @@ public class ApprovalService {
   }
 
   private void isTeamApprovalSatisfied(UserInfo user, Approval approval, List<Approval> approvals) {
-    if (manageDatabase.getTeamNameFromTeamId(user.getTenantId(), user.getTeamId())
-        == approval.getRequiredApprover()) {
+    if (Objects.equals(
+        manageDatabase.getTeamNameFromTeamId(user.getTenantId(), user.getTeamId()),
+        approval.getRequiredApprover())) {
       addApproverToApprovalList(user, approval, approvals, user.getTenantId());
     }
   }
@@ -258,11 +254,11 @@ public class ApprovalService {
           .filter(app -> app.getApprovalId().equals(approval.getApprovalId()))
           .findFirst()
           .ifPresent(
-              a -> {
+              approve -> {
                 // Add the Approval Details
-                a.setApproverName(user.getUsername());
-                a.setApproverTeamId(user.getTeamId());
-                a.setApproverTeamName(
+                approve.setApproverName(user.getUsername());
+                approve.setApproverTeamId(user.getTeamId());
+                approve.setApproverTeamName(
                     manageDatabase.getTeamNameFromTeamId(tenantId, user.getTeamId()));
               });
 
@@ -293,12 +289,12 @@ public class ApprovalService {
       HandleDbRequests dbHandle, Set<Integer> teamIds, int tenantId) {
     Set<String> emailAddresses = new HashSet<>();
     for (Integer teamId : teamIds) {
-      CollectionUtils.addIgnoreNull(emailAddresses, getTeammail(dbHandle, tenantId, teamId));
+      CollectionUtils.addIgnoreNull(emailAddresses, getTeamMail(dbHandle, tenantId, teamId));
     }
     return emailAddresses;
   }
 
-  private static String getTeammail(HandleDbRequests dbHandle, int tenantId, Integer teamId) {
+  private static String getTeamMail(HandleDbRequests dbHandle, int tenantId, Integer teamId) {
     Team team = dbHandle.getTeamDetails(teamId, tenantId);
     return team != null ? team.getTeammail() : null;
   }

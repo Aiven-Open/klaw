@@ -105,7 +105,7 @@ public class ApprovalConfig {
         throw new KlawConfigurationException("Approval key " + strKey + " has too many parts.");
       } else if (strKey.startsWith(ALL_ENTITY_TYPES)) {
         if (!orderedSet.add(strKey)) {
-          throw new KlawConfigurationException("Dupliate approval key " + strKey);
+          throw new KlawConfigurationException("Duplicate approval key " + strKey);
         }
       }
     }
@@ -154,7 +154,7 @@ public class ApprovalConfig {
     for (RequestOperationType value : RequestOperationType.values()) {
       entityToApprovers.put(
           suffix == null ? value.name() : value.name() + suffix.toUpperCase(),
-          new ArrayList(approvers));
+          new ArrayList<>(approvers));
     }
   }
 
