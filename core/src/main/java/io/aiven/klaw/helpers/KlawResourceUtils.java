@@ -39,6 +39,7 @@ public class KlawResourceUtils {
   }
 
   public static List<Approval> aclApprovalsToApprovalsList(List<AclApproval> aclApps) {
+
     return aclApps.stream().map(Approval::new).toList();
   }
 

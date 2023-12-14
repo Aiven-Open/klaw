@@ -169,6 +169,8 @@ public class SelectDataJdbc {
 
         if (RequestOperationType.DELETE.value.equals(rowRequestOperationType)) {
           teamId = row.getRequestingteam();
+        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)) {
+
         }
 
       } else {
@@ -177,7 +179,8 @@ public class SelectDataJdbc {
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
         aclList.add(row);
-      } else if (teamSelected != null && teamSelected.equals(teamId)) {
+      } else if ((teamSelected != null && teamSelected.equals(teamId))
+          || row.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         aclList.add(row);
       }
 

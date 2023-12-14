@@ -240,6 +240,7 @@ public class ApprovalService {
   }
 
   private void isTeamApprovalSatisfied(UserInfo user, Approval approval, List<Approval> approvals) {
+
     if (Objects.equals(
         manageDatabase.getTeamNameFromTeamId(user.getTenantId(), user.getTeamId()),
         approval.getRequiredApprover())) {

@@ -1267,3 +1267,4 @@ databaseChangeLog:
                     name: associatedaclid
                     type: INT
               tableName: kwaclrequests
+
