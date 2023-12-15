@@ -203,7 +203,8 @@ public class ApprovalService {
 
     if (user.isPresent()) {
       for (Approval approval : remaining) {
-        if (completedApprovalTypes.add(approval.getApprovalType()) && allowMultiApproval) {
+        if ((completedApprovalTypes.isEmpty() || allowMultiApproval)
+            && completedApprovalTypes.add(approval.getApprovalType())) {
           switch (approval.getApprovalType()) {
             case RESOURCE_TEAM_OWNER -> isResourceApprovalSatisfied(
                 user.get(), resourceOwnerId, approval, approvals);

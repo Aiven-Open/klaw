@@ -919,6 +919,8 @@ export type components = {
       };
       /** @enum {string} */
       aclIpPrincipleType?: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      /** Format: int32 */
+      associatedAclId?: number;
       totalNoPages?: string;
       currentPage?: string;
       allPageNos?: string[];
@@ -1380,8 +1382,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      xaxes?: components["schemas"]["YAx"][];
       yaxes?: components["schemas"]["YAx"][];
+      xaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];

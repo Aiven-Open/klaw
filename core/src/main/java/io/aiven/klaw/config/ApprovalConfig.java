@@ -22,6 +22,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+/**
+ * Approval Config consumes an approval.properties file from the classpath this is the used to allow
+ * for creation of complex rules for approving resources. In the first release (2.8) this is only
+ * being used by Claim Acl's where multiple Approvals are required to transfer ownership of an ACL.
+ * The approval config is flattened and moved into a map which is then queried based on the
+ * operation type and then environment and it allows increased control of who can approve what
+ * operations across teams and environments.
+ */
 @Data
 @Configuration
 @EnableConfigurationProperties

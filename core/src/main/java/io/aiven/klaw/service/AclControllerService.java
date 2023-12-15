@@ -673,21 +673,20 @@ public class AclControllerService {
       AclRequests aclReq, String userDetails, int tenantId, HandleDbRequests dbHandle)
       throws KlawException {
     MailType emailStatus = ACL_REQUEST_APPROVAL_ADDED;
+    Optional<Acl> acl =
+        manageDatabase.getHandleDbRequests().getAcl(aclReq.getAssociatedAclId(), tenantId);
+    if (acl.isEmpty()) {
+      return ApiResponse.notOk("Acl no longer exists");
+    }
+
     List<Approval> approvals = KlawResourceUtils.aclApprovalsToApprovalsList(aclReq.getApprovals());
-    approvalService.addApproval(
-        approvals, userDetails, aclReq.getRequestingteam(), aclReq.getTeamId());
+    approvalService.addApproval(approvals, userDetails, acl.get().getTeamId(), aclReq.getTeamId());
     boolean fullyApproved = approvalService.isRequestFullyApproved(approvals);
     if (fullyApproved) {
       // changeAclOwnership
       emailStatus = ACL_REQUEST_APPROVED;
-      Optional<Acl> acl =
-          manageDatabase.getHandleDbRequests().getAcl(aclReq.getAssociatedAclId(), tenantId);
-      if (acl.isPresent()) {
-        acl.get().setTeamId(aclReq.getRequestingteam());
-        manageDatabase.getHandleDbRequests().updateAcl(acl.get());
-      } else {
-        return ApiResponse.notOk("Acl no longer exists");
-      }
+      acl.get().setTeamId(aclReq.getRequestingteam());
+      manageDatabase.getHandleDbRequests().updateAcl(acl.get());
     }
     aclReq.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
     String status =
@@ -695,6 +694,7 @@ public class AclControllerService {
             .getHandleDbRequests()
             .claimAclRequest(
                 aclReq, fullyApproved ? RequestStatus.APPROVED : RequestStatus.CREATED);
+
     return emailAndReturnClaimUpdate(aclReq, dbHandle, emailStatus, status);
   }
 
