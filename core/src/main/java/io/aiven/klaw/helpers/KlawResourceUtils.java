@@ -14,15 +14,15 @@ public class KlawResourceUtils {
   private static final LinkedHashSet<String> EMPTY_LINKED_HASH_SET = new LinkedHashSet<>(0);
 
   public static List<EnvIdInfo> getConvertedEnvs(List<Env> allEnvs, Set<String> selectedEnvs) {
-    Set<EnvIdInfo> newEnvList = new LinkedHashSet<>();
+    Set<EnvIdInfo> newEnvSet = new LinkedHashSet<>();
     for (Env env1 : allEnvs) {
       if (selectedEnvs.contains(env1.getId())) {
-        newEnvList.add(new EnvIdInfo(env1.getId(), env1.getName()));
+        newEnvSet.add(new EnvIdInfo(env1.getId(), env1.getName()));
         break;
       }
     }
 
-    return new ArrayList<>(newEnvList);
+    return new ArrayList<>(newEnvSet);
   }
 
   public static LinkedHashSet<String> getOrderedEnvsSet(String orderOfEnvs) {

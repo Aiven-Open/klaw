@@ -367,12 +367,12 @@ public class KafkaConnectControllerService {
                   new KafkaConnectorModelResponse();
               kafkaConnectorModelResponse.setSequence(counterInc);
 
-              Set<String> set = new HashSet<>(connectorSOT.getEnvironmentsList());
+              Set<String> envSet = new HashSet<>(connectorSOT.getEnvironmentsList());
 
               kafkaConnectorModelResponse.setConnectorId(connectorSOT.getConnectorId());
               kafkaConnectorModelResponse.setEnvironmentId(connectorSOT.getEnvironment());
               kafkaConnectorModelResponse.setEnvironmentsList(
-                  KlawResourceUtils.getConvertedEnvs(listAllEnvs, set));
+                  KlawResourceUtils.getConvertedEnvs(listAllEnvs, envSet));
               kafkaConnectorModelResponse.setConnectorName(connectorSOT.getConnectorName());
               kafkaConnectorModelResponse.setTeamName(
                   manageDatabase.getTeamNameFromTeamId(tenantId, connectorSOT.getTeamId()));
