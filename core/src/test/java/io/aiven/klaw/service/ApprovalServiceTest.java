@@ -9,6 +9,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.ApprovalType;
@@ -70,7 +71,7 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addAResourceOwnerApproval() throws KlawException {
+  public void addAResourceOwnerApproval() throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
@@ -91,14 +92,15 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addAResourceOwnerApprovalAndAttemptASecond() throws KlawException {
+  public void addAResourceOwnerApprovalAndAttemptASecond()
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
             createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
     List<Approval> approvalAdded = approvalService.addApproval(approvals, JAMES, 11, null);
     assertThatThrownBy(() -> approvalService.addApproval(approvalAdded, JAMES, 11, null))
-        .isInstanceOf(KlawException.class);
+        .isInstanceOf(KlawBadRequestException.class);
 
     assertThat(approvalAdded.size()).isEqualTo(2);
 
@@ -114,7 +116,8 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addAResourceOwnerApproval_rejectDifferentTeams() throws KlawException {
+  public void addAResourceOwnerApproval_rejectDifferentTeams()
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
@@ -140,7 +143,7 @@ public class ApprovalServiceTest {
             createApproval(OCTOPUS, 1, ApprovalType.RESOURCE_TEAM_OWNER, JAMES, OCTOPUS, 11),
             createApproval(OCTOPUS, 2, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null));
     assertThatThrownBy(() -> approvalService.addApproval(approvals, JAMES, 11, null))
-        .isInstanceOf(KlawException.class);
+        .isInstanceOf(KlawBadRequestException.class);
 
     assertThat(approvals.size()).isEqualTo(2);
 
@@ -156,7 +159,8 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addAnACLOwnerApproval_WhereDifferentTeamOwnsResource() throws KlawException {
+  public void addAnACLOwnerApproval_WhereDifferentTeamOwnsResource()
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
@@ -178,7 +182,7 @@ public class ApprovalServiceTest {
 
   @Test
   public void addAnACLOwnerApproval_SameTeamOwnsSubscriptionAndResourceTeams()
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
@@ -202,7 +206,7 @@ public class ApprovalServiceTest {
 
   @Test
   public void addAnACLOwnerApproval_SameTeamOwnsSubscriptionAndResourceTeams_NoApproval()
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(ALICE, 1, ApprovalType.RESOURCE_TEAM_OWNER, null, null, null),
@@ -222,7 +226,8 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addATeamOwnerApprovalToAcl_AddTeamApproval() throws KlawException {
+  public void addATeamOwnerApprovalToAcl_AddTeamApproval()
+      throws KlawException, KlawBadRequestException {
 
     List<Approval> approvals =
         List.of(
@@ -244,7 +249,8 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addATeamOwnerApproval_AddTeamApproval() throws KlawException {
+  public void addATeamOwnerApproval_AddTeamApproval()
+      throws KlawException, KlawBadRequestException {
 
     List<Approval> approvals =
         List.of(
@@ -266,7 +272,8 @@ public class ApprovalServiceTest {
   }
 
   @Test
-  public void addATeamOwnerApproval_rejectDifferentTeams_NoApprovalsAdded() throws KlawException {
+  public void addATeamOwnerApproval_rejectDifferentTeams_NoApprovalsAdded()
+      throws KlawException, KlawBadRequestException {
     List<Approval> approvals =
         List.of(
             createApproval(ALICE, 1, ApprovalType.TEAM, null, null, null),

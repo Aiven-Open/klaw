@@ -23,6 +23,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -482,7 +483,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(16)
-  public void approveAclRequests() throws KlawException {
+  public void approveAclRequests() throws KlawException, KlawBadRequestException {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
@@ -506,7 +507,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(17)
-  public void approveAclRequestsWithAivenAcl() throws KlawException {
+  public void approveAclRequestsWithAivenAcl() throws KlawException, KlawBadRequestException {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
@@ -539,7 +540,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(18)
-  public void approveAclRequestsNotAuthorized() throws KlawException {
+  public void approveAclRequestsNotAuthorized() throws KlawException, KlawBadRequestException {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
@@ -548,7 +549,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(19)
-  public void approveAclRequestsOwnRequest() throws KlawException {
+  public void approveAclRequestsOwnRequest() throws KlawException, KlawBadRequestException {
     stubUserInfo();
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestor("kwusera");
@@ -560,7 +561,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(20)
-  public void approveAclRequestsFailure1() throws KlawException {
+  public void approveAclRequestsFailure1() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
     stubUserInfo();
@@ -582,7 +583,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(21)
-  public void approveAclRequestsFailure2() throws KlawException {
+  public void approveAclRequestsFailure2() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
 
@@ -608,7 +609,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(22)
-  public void approveAclRequestsFailure3() throws KlawException {
+  public void approveAclRequestsFailure3() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestStatus(RequestStatus.APPROVED.value);
@@ -1050,7 +1051,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(37)
-  public void approveAclRequestsFailure4() throws KlawException {
+  public void approveAclRequestsFailure4() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
 

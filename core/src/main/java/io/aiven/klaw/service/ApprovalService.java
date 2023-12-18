@@ -4,6 +4,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.ApprovalType;
@@ -179,7 +180,7 @@ public class ApprovalService {
 
   public List<Approval> addApproval(
       List<Approval> approvals, String userName, Integer resourceOwnerId, Integer aclOwnerId)
-      throws KlawException {
+      throws KlawBadRequestException {
 
     // If this user has already approved once they can not approve a second time.
     if (approvals.stream()
@@ -187,7 +188,7 @@ public class ApprovalService {
             app ->
                 !StringUtils.isBlank(app.getApproverName())
                     && app.getApproverName().equals(userName))) {
-      throw new KlawException(
+      throw new KlawBadRequestException(
           String.format(
               "User %s has already provided one approval, another approver is required to complete the approval process.",
               userName));
@@ -227,6 +228,7 @@ public class ApprovalService {
 
   private void isAclApprovalSatisfied(
       UserInfo user, int aclOwnerId, Approval approval, List<Approval> approvals) {
+    log.info("isAclApprovalSatisfied {} == {}", user.getTeamId(), aclOwnerId);
     if (user.getTeamId() == aclOwnerId) {
       addApproverToApprovalList(user, approval, approvals, user.getTenantId());
     }
@@ -234,6 +236,7 @@ public class ApprovalService {
 
   private void isResourceApprovalSatisfied(
       UserInfo user, int resourceOwnerId, Approval approval, List<Approval> approvals) {
+    log.info("isResourceApprovalSatisfied {} == {}", user.getTeamId(), resourceOwnerId);
     if (user.getTeamId() == resourceOwnerId) {
       addApproverToApprovalList(user, approval, approvals, user.getTenantId());
     }

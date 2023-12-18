@@ -23,6 +23,7 @@ import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
@@ -628,7 +629,8 @@ public class AclControllerService {
     return executeAclRequestModel(userName, aclRequestsDao, ACL_DELETE_REQUESTED);
   }
 
-  public ApiResponse approveAclRequests(String req_no) throws KlawException {
+  public ApiResponse approveAclRequests(String req_no)
+      throws KlawException, KlawBadRequestException {
     log.info("approveAclRequests {}", req_no);
     final String userDetails = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
@@ -672,16 +674,25 @@ public class AclControllerService {
 
   private ApiResponse approveClaimAcl(
       AclRequests aclReq, String userDetails, int tenantId, HandleDbRequests dbHandle)
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     MailType emailStatus = ACL_REQUEST_APPROVAL_ADDED;
     Optional<Acl> acl =
         manageDatabase.getHandleDbRequests().getAcl(aclReq.getAssociatedAclId(), tenantId);
     if (acl.isEmpty()) {
       return ApiResponse.notOk("Acl no longer exists");
     }
+    Optional<Topic> topic =
+        manageDatabase.getTopicsForTenant(tenantId).stream()
+            .filter(topicSearch -> topicSearch.getTopicname().equals(acl.get().getTopicname()))
+            .findFirst();
 
+    if (topic.isEmpty()) {
+      return ApiResponse.notOk("Associated Topic to Acl not found exists");
+    }
     List<Approval> approvals = KlawResourceUtils.aclApprovalsToApprovalsList(aclReq.getApprovals());
-    approvalService.addApproval(approvals, userDetails, acl.get().getTeamId(), aclReq.getTeamId());
+
+    approvalService.addApproval(
+        approvals, userDetails, topic.get().getTeamId(), acl.get().getTeamId());
 
     boolean fullyApproved = approvalService.isRequestFullyApproved(approvals);
     if (fullyApproved) {
