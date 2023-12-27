@@ -174,6 +174,14 @@ export default defineConfig(({ mode }): UserConfig => {
       rollupOptions: {
         output: {
           manualChunks: (id: string) => {
+            if (id.includes("/monaco-editor@")) {
+              return "monaco-editor";
+            }
+
+            if (id.includes("/@aivenio+aquarium@")) {
+              return "aquarium";
+            }
+
             if (id.includes("node_modules")) {
               return "vendor";
             }
