@@ -281,6 +281,7 @@ function ConnectorEditRequest() {
               Submit update request
             </SubmitButton>
             <Button
+              disabled={editIsLoading}
               type="button"
               kind={"secondary"}
               onClick={
