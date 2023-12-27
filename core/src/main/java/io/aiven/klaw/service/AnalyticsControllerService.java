@@ -399,7 +399,8 @@ public class AnalyticsControllerService {
         manageDatabase.getKwPropertyValue(KwConstants.KW_REPORTS_TMP_LOCATION_KEY, tenantId);
 
     List<TeamOverview> totalOverviewList = getTeamsOverview(null);
-
+    final Map<String, List<String>> topicNames = getTopicNames(tenantId);
+    final Map<String, List<String>> consumerGroups = getConsumerGroups(tenantId);
     File zipFile =
         new File(
             kwReportsLocation + "KwReport" + DATE_TIME_FORMATTER.format(Instant.now()) + ".zip");
@@ -433,9 +434,8 @@ public class AnalyticsControllerService {
       generateReportPerView(totalOverview.getConsumerAclsPerTeamsOverview(), workbook, reportFile);
       generateReportPerView(totalOverview.getActivityLogOverview(), workbook, reportFile);
 
-      addTopicNamesPerEnvToReport(getTopicNames(tenantId), workbook, reportFile, "Topics");
-      addTopicNamesPerEnvToReport(
-          getConsumerGroups(tenantId), workbook, reportFile, "ConsumerGroups");
+      addTopicNamesPerEnvToReport(topicNames, workbook, reportFile, "Topics");
+      addTopicNamesPerEnvToReport(consumerGroups, workbook, reportFile, "ConsumerGroups");
 
       log.info("Report generated");
       if (zipOutputStream != null) {

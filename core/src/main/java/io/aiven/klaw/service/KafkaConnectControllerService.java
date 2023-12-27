@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -366,13 +367,12 @@ public class KafkaConnectControllerService {
                   new KafkaConnectorModelResponse();
               kafkaConnectorModelResponse.setSequence(counterInc);
 
-              List<String> envList = connectorSOT.getEnvironmentsList();
-              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+              Set<String> envSet = new HashSet<>(connectorSOT.getEnvironmentsList());
 
               kafkaConnectorModelResponse.setConnectorId(connectorSOT.getConnectorId());
               kafkaConnectorModelResponse.setEnvironmentId(connectorSOT.getEnvironment());
               kafkaConnectorModelResponse.setEnvironmentsList(
-                  KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+                  KlawResourceUtils.getConvertedEnvs(listAllEnvs, envSet));
               kafkaConnectorModelResponse.setConnectorName(connectorSOT.getConnectorName());
               kafkaConnectorModelResponse.setTeamName(
                   manageDatabase.getTeamNameFromTeamId(tenantId, connectorSOT.getTeamId()));
