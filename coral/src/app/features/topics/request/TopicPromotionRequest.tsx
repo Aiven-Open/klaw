@@ -291,6 +291,7 @@ function TopicPromotionRequest() {
             Submit promotion request
           </SubmitButton>
           <Button
+            disabled={promoteIsLoading}
             type="button"
             kind={"secondary"}
             onClick={
