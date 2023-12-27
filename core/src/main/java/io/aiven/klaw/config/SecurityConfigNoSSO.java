@@ -26,6 +26,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
@@ -75,24 +76,23 @@ public class SecurityConfigNoSSO {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf()
-        .disable()
-        .authorizeHttpRequests()
-        .requestMatchers(ConfigUtils.getStaticResources(coralEnabled))
-        .permitAll()
-        .anyRequest()
-        .fullyAuthenticated()
-        .and()
-        .formLogin()
-        .successHandler(kwAuthenticationSuccessHandler)
-        .failureHandler(kwAuthenticationFailureHandler)
-        .failureForwardUrl("/login?error")
-        .failureUrl("/login?error")
-        .loginPage("/login")
-        .permitAll()
-        .and()
-        .logout()
-        .logoutSuccessUrl("/login");
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(ConfigUtils.getStaticResources(coralEnabled))
+                    .permitAll()
+                    .anyRequest()
+                    .fullyAuthenticated())
+        .formLogin(
+            formLogin ->
+                formLogin
+                    .successHandler(kwAuthenticationSuccessHandler)
+                    .failureHandler(kwAuthenticationFailureHandler)
+                    .failureForwardUrl("/login?error")
+                    .failureUrl("/login?error")
+                    .loginPage("/login")
+                    .permitAll())
+        .logout(logout -> logout.logoutSuccessUrl("/login"));
 
     return http.build();
   }

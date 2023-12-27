@@ -1,8 +1,9 @@
 import { Box, Icon, Link } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
+import { TabBadge } from "@aivenio/aquarium/dist/src/molecules/Badge/Badge";
+import { Link as RouterLink } from "react-router-dom";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 import { Routes } from "src/app/router_utils";
-import { Link as RouterLink } from "react-router-dom";
 
 function LinkContent({
   linkText,
@@ -29,9 +30,10 @@ type MainNavigationLinkProps = {
   to: Routes | string;
   linkText: string;
   active?: boolean;
+  notifications?: number;
 };
 function MainNavigationLink(props: MainNavigationLinkProps) {
-  const { icon, to, linkText, active = false } = props;
+  const { icon, to, linkText, active = false, notifications = 0 } = props;
 
   function isRouterLink() {
     const allRoutes: string[] = Object.values(Routes);
@@ -39,7 +41,7 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
   }
 
   return (
-    <Box
+    <Box.Flex
       className={
         active ? classes.mainNavigationLinkActive : classes.mainNavigationLink
       }
@@ -50,17 +52,39 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
       marginLeft={"-l3"}
       marginBottom={"3"}
       paddingBottom={"3"}
+      justifyContent={"space-between"}
+      gap={"1"}
     >
       {isRouterLink() ? (
         <RouterLink to={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
+          {notifications > 0 && (
+            <span className={"visually-hidden"}>
+              {`${notifications} pending requests.`}
+            </span>
+          )}
         </RouterLink>
       ) : (
         <Link href={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
+          {notifications > 0 && (
+            <span className={"visually-hidden"}>
+              {`${notifications} pending requests.`}
+            </span>
+          )}
         </Link>
       )}
-    </Box>
+      {notifications > 0 && (
+        <Box.Flex
+          alignItems="center"
+          color={"var(--aquarium-colors-primary-80)"}
+        >
+          <Box.Flex height={"fit"}>
+            <TabBadge value={notifications} />
+          </Box.Flex>
+        </Box.Flex>
+      )}
+    </Box.Flex>
   );
 }
 

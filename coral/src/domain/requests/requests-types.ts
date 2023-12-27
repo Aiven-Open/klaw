@@ -35,9 +35,14 @@ type RequestVerdictDelete<T extends RequestEntityType> =
     }
   >;
 
-type RequestsWaitingForApproval = {
+type BaseRequestsWaitingForApproval = {
   [key in RequestEntityType]: number;
 };
+
+interface RequestsWaitingForApprovalWithTotal
+  extends BaseRequestsWaitingForApproval {
+  TOTAL_NOTIFICATIONS: number;
+}
 
 export type {
   RequestOperationType,
@@ -46,5 +51,5 @@ export type {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
-  RequestsWaitingForApproval,
+  RequestsWaitingForApprovalWithTotal,
 };

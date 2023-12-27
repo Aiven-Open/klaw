@@ -10,10 +10,13 @@ import AclApprovalsPage from "src/app/pages/approvals/acls";
 import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
+import { ClustersPage } from "src/app/pages/configuration/clusters";
 import EnvironmentsPage from "src/app/pages/configuration/environments";
 import KafkaEnvironmentsPage from "src/app/pages/configuration/environments/kafka";
 import KafkaConnectEnvironmentsPage from "src/app/pages/configuration/environments/kafka-connect";
 import SchemaRegistryEnvironmentsPage from "src/app/pages/configuration/environments/schema-registry";
+import { TeamsPage } from "src/app/pages/configuration/teams";
+import { UsersPage } from "src/app/pages/configuration/users";
 import ConnectorsPage from "src/app/pages/connectors";
 import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
@@ -39,6 +42,9 @@ import TopicEditRequestPage from "src/app/pages/topics/edit-request";
 import TopicPromotionRequestPage from "src/app/pages/topics/promotion-request";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
+import { ChangePassword } from "src/app/pages/user-information/change-password";
+import { UserProfile } from "src/app/pages/user-information/profile";
+import { TenantInfo } from "src/app/pages/user-information/tenant-info";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -53,13 +59,6 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
-import { TeamsPage } from "src/app/pages/configuration/teams";
-import { UsersPage } from "src/app/pages/configuration/users";
-import { UserProfile } from "src/app/pages/user-information/profile";
-import { ChangePassword } from "src/app/pages/user-information/change-password";
-import { TenantInfo } from "src/app/pages/user-information/tenant-info";
 
 const routes: Array<RouteObject> = [
   {
@@ -245,29 +244,27 @@ const routes: Array<RouteObject> = [
             path: Routes.USERS,
             element: <UsersPage />,
           },
+          {
+            path: Routes.CLUSTERS,
+            element: <ClustersPage />,
+          },
         ],
       },
       {
         path: Routes.USER_INFORMATION,
         children: [
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.USER_PROFILE,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <UserProfile />,
-          }),
-          createRouteBehindFeatureFlag({
+          },
+          {
             path: Routes.USER_CHANGE_PASSWORD,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <ChangePassword />,
-          }),
-          createRouteBehindFeatureFlag({
+          },
+          {
             path: Routes.USER_TENANT_INFO,
-            featureFlag: FeatureFlag.FEATURE_FLAG_USER_INFORMATION,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <TenantInfo />,
-          }),
+          },
         ],
       },
     ],

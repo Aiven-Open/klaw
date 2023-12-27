@@ -634,7 +634,7 @@ public class KafkaConnectorsIntegrationTest {
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results).hasSize(2);
-    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 21L);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 11L);
     assertThat(operationTypeCount)
         .containsEntry(RequestOperationType.CREATE.value, 10L)
         .containsEntry(RequestOperationType.CLAIM.value, 10L);

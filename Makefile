@@ -1,4 +1,5 @@
-version = 2.6.0
+version = 2.7.0
+NODE = node
 
 # Sets a custom hook path in the local git config.
 # Currently there's only a pre-commit hook related
@@ -27,3 +28,10 @@ run-core:
 
 run-cluster-api:
 	java -jar cluster-api/target/cluster-api-$(version).jar --spring.config.location=cluster-api/target/classes/application.properties
+
+generate-toc:
+	@if [ ! "$(NODE)" ]; then \
+		echo "⚠️ Node.js is not installed. This command needs Node.js to run."; \
+		exit 1; \
+	fi
+	cd coral && $(NODE) scripts/markdown-toc.cjs

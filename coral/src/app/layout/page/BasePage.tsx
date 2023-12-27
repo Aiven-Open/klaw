@@ -12,7 +12,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
       colGap={"l1"}
       minHeight={"screen"}
       style={{
-        gridTemplateColumns: "265px 1fr",
+        gridTemplateColumns: "280px 1fr",
         gridTemplateRows: "auto 1fr",
       }}
     >

@@ -47,7 +47,7 @@ public class HARestMessagingService implements HAMessagingServiceI {
   private List<String> clusterUrls;
 
   private RestTemplate rest;
-  private static HttpComponentsClientHttpRequestFactory requestFactory = null;
+  private static volatile HttpComponentsClientHttpRequestFactory requestFactory = null;
 
   private static Map<String, String> baseUrlsMap;
 
@@ -97,7 +97,15 @@ public class HARestMessagingService implements HAMessagingServiceI {
   public RestTemplate getRestTemplate() {
     if (clusterUrlsAsString.toLowerCase().startsWith("https")) {
       if (requestFactory == null) {
-        requestFactory = ClusterApiService.requestFactory;
+        synchronized (HARestMessagingService.class) {
+          if (requestFactory == null) {
+            requestFactory = ClusterApiService.requestFactory;
+            if (requestFactory == null) {
+              throw new RuntimeException(
+                  "Connectivity between Klaw core and Klaw cluster should be established first");
+            }
+          }
+        }
       }
       return new RestTemplate(requestFactory);
     } else {

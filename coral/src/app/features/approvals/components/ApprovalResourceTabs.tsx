@@ -1,12 +1,12 @@
 import { Tabs } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
+import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import {
-  ApprovalsTabEnum,
   APPROVALS_TAB_ID_INTO_PATH,
+  ApprovalsTabEnum,
+  Routes,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
-import { getRequestsWaitingForApproval } from "src/domain/requests/requests-api";
 
 type Props = {
   currentTab: ApprovalsTabEnum;
@@ -15,9 +15,7 @@ type Props = {
 function ApprovalResourceTabs({ currentTab }: Props) {
   const navigate = useNavigate();
 
-  const { data } = useQuery(["getRequestsWaitingForApproval"], {
-    queryFn: getRequestsWaitingForApproval,
-  });
+  const pendingRequests = usePendingRequests();
 
   return (
     <Tabs
@@ -27,32 +25,32 @@ function ApprovalResourceTabs({ currentTab }: Props) {
       <Tabs.Tab
         title="Topics"
         value={ApprovalsTabEnum.TOPICS}
-        badge={getBadgeValue(data?.TOPIC)}
-        aria-label={getTabAriaLabel("Topics", data?.TOPIC)}
+        badge={getBadgeValue(pendingRequests.TOPIC)}
+        aria-label={getTabAriaLabel("Topics", pendingRequests.TOPIC)}
       >
         {currentTab === ApprovalsTabEnum.TOPICS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="ACLs"
         value={ApprovalsTabEnum.ACLS}
-        badge={getBadgeValue(data?.ACL)}
-        aria-label={getTabAriaLabel("ACLs", data?.ACL)}
+        badge={getBadgeValue(pendingRequests.ACL)}
+        aria-label={getTabAriaLabel("ACLs", pendingRequests.ACL)}
       >
         {currentTab === ApprovalsTabEnum.ACLS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="Schemas"
         value={ApprovalsTabEnum.SCHEMAS}
-        badge={getBadgeValue(data?.SCHEMA)}
-        aria-label={getTabAriaLabel("Schemas", data?.SCHEMA)}
+        badge={getBadgeValue(pendingRequests.SCHEMA)}
+        aria-label={getTabAriaLabel("Schemas", pendingRequests.SCHEMA)}
       >
         {currentTab === ApprovalsTabEnum.SCHEMAS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="Connectors"
         value={ApprovalsTabEnum.CONNECTORS}
-        badge={getBadgeValue(data?.CONNECTOR)}
-        aria-label={getTabAriaLabel("Connectors", data?.CONNECTOR)}
+        badge={getBadgeValue(pendingRequests.CONNECTOR)}
+        aria-label={getTabAriaLabel("Connectors", pendingRequests.CONNECTOR)}
       >
         {currentTab === ApprovalsTabEnum.CONNECTORS && <Outlet />}
       </Tabs.Tab>
@@ -64,9 +62,12 @@ function ApprovalResourceTabs({ currentTab }: Props) {
     resourceTypeId: unknown
   ): void {
     if (isApprovalsTabEnum(resourceTypeId)) {
-      navigate(`/approvals/${APPROVALS_TAB_ID_INTO_PATH[resourceTypeId]}`, {
-        replace: true,
-      });
+      navigate(
+        `${Routes.APPROVALS}/${APPROVALS_TAB_ID_INTO_PATH[resourceTypeId]}`,
+        {
+          replace: true,
+        }
+      );
     }
   }
 

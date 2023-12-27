@@ -1269,6 +1269,8 @@ export type components = {
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
+      topicOwner: boolean;
+      highestEnv: boolean;
       hasOpenRequest: boolean;
       hasOpenTopicRequest: boolean;
       hasOpenACLRequest: boolean;
@@ -1279,8 +1281,6 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
-      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1315,8 +1315,8 @@ export type components = {
       options?: components["schemas"]["Options"];
       series?: string[];
       titleForReport?: string;
-      xaxisLabel?: string;
       yaxisLabel?: string;
+      xaxisLabel?: string;
     };
     Options: {
       title?: components["schemas"]["Title"];
@@ -1618,6 +1618,7 @@ export type components = {
       allPageNos: string[];
       /** @enum {string} */
       clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      currentPage: string;
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;

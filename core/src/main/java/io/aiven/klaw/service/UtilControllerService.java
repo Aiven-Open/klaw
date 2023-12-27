@@ -55,6 +55,8 @@ import org.springframework.stereotype.Service;
 public class UtilControllerService implements InitializingBean {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  private static final String GOOGLE_FEEDBACK_FORM_LINK = "https://forms.gle/F2Pi8aanWeJPDPLT8";
   public static final String ANONYMOUS_USER = "anonymousUser";
   public static final String IMAGE_URI = ".imageURI";
   @Autowired ManageDatabase manageDatabase;
@@ -643,6 +645,7 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setShowAddDeleteTenants(addDeleteEditTenants);
       authenticationInfo.setAddDeleteEditClusters(addDeleteEditClusters);
       authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
+      authenticationInfo.setGoogleFeedbackFormLink(GOOGLE_FEEDBACK_FORM_LINK);
 
       // coral attributes
       authenticationInfo.setCoralEnabled(

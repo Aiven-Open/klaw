@@ -2,8 +2,8 @@ import data from "@aivenio/aquarium/dist/src/icons/console";
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
-import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 const linkText = "Go to your profile page";
 
@@ -129,6 +129,22 @@ describe("HeaderMenuLink.tsx", () => {
       });
 
       expect(navLink).toHaveAttribute("rel", "noreferrer");
+    });
+
+    it("renders link in a Badge.Notifications if showNotificationBadge is true", () => {
+      customRender(
+        <HeaderMenuLink
+          icon={mockIcon}
+          href={"/myProfile"}
+          linkText={linkText}
+          showNotificationBadge
+        />,
+        { memoryRouter: true }
+      );
+
+      const notification = screen.getByTestId("badge.notification");
+
+      expect(notification).toBeVisible();
     });
   });
 });

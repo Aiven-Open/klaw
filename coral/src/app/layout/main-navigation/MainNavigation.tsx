@@ -4,22 +4,20 @@ import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
-import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import person from "@aivenio/aquarium/dist/src/icons/person";
+import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
+import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const userInformationFeatureFlagEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
-  );
+
+  const { TOTAL_NOTIFICATIONS } = usePendingRequests();
 
   return (
     <Box
@@ -72,6 +70,7 @@ function MainNavigation() {
             to={Routes.APPROVALS}
             linkText={"Approve requests"}
             active={pathname.startsWith(Routes.APPROVALS)}
+            notifications={TOTAL_NOTIFICATIONS}
           />
         </li>
         <li>
@@ -113,6 +112,11 @@ function MainNavigation() {
               linkText={"Environments"}
               active={pathname.startsWith(Routes.ENVIRONMENTS)}
             />
+            <MainNavigationLink
+              to={Routes.CLUSTERS}
+              linkText={"Clusters"}
+              active={pathname.startsWith(Routes.CLUSTERS)}
+            />
           </MainNavigationSubmenuList>
         </li>
         <li>
@@ -122,29 +126,17 @@ function MainNavigation() {
             defaultExpanded={pathname.startsWith(Routes.USER_INFORMATION)}
           >
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_PROFILE
-                  : "/myProfile"
-              }
+              to={Routes.USER_PROFILE}
               linkText={"User profile"}
               active={pathname.startsWith(Routes.USER_PROFILE)}
             />
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_CHANGE_PASSWORD
-                  : "/changePwd"
-              }
+              to={Routes.USER_CHANGE_PASSWORD}
               linkText={"Change password"}
               active={pathname.startsWith(Routes.USER_CHANGE_PASSWORD)}
             />
             <MainNavigationLink
-              to={
-                userInformationFeatureFlagEnabled
-                  ? Routes.USER_TENANT_INFO
-                  : "/tenantInfo"
-              }
+              to={Routes.USER_TENANT_INFO}
               linkText={"Tenant information"}
               active={pathname.startsWith(Routes.USER_TENANT_INFO)}
             />

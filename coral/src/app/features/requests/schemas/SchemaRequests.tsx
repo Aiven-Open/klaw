@@ -67,6 +67,7 @@ function SchemaRequests() {
         operationType: requestType,
       }),
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

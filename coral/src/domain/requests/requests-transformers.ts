@@ -1,4 +1,4 @@
-import { RequestsWaitingForApproval } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
 import { KlawApiModel } from "types/utils";
 
 const getRequestsWaitingForApprovalTransformer = (
@@ -6,13 +6,14 @@ const getRequestsWaitingForApprovalTransformer = (
 ) => {
   const { requestEntityStatistics } = data;
 
-  let requestsWaitingForApproval: RequestsWaitingForApproval = {
+  let requestsWaitingForApproval: RequestsWaitingForApprovalWithTotal = {
     TOPIC: 0,
     ACL: 0,
     SCHEMA: 0,
     CONNECTOR: 0,
     USER: 0,
     OPERATIONAL: 0,
+    TOTAL_NOTIFICATIONS: 0,
   };
 
   if (requestEntityStatistics === undefined) {
@@ -38,6 +39,13 @@ const getRequestsWaitingForApprovalTransformer = (
     requestsWaitingForApproval = {
       ...requestsWaitingForApproval,
       [requestEntityType]: amountOfRequestsForEntity,
+      TOTAL_NOTIFICATIONS:
+        // We do not include the USER and OPERATIONAL requests in this total
+        // As it is used to display notifications for users, not superadmin
+        requestEntityType !== "USER" && requestEntityType !== "OPERATIONAL"
+          ? requestsWaitingForApproval.TOTAL_NOTIFICATIONS +
+            amountOfRequestsForEntity
+          : requestsWaitingForApproval.TOTAL_NOTIFICATIONS,
     };
   });
 

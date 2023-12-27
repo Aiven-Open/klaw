@@ -1,60 +1,47 @@
 import {
   Box,
   DropdownMenu,
-  Typography,
   Icon,
+  Typography,
   useToastContext,
+  Button,
 } from "@aivenio/aquarium";
-import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
+import user from "@aivenio/aquarium/dist/src/icons/user";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
 import { logoutUser } from "src/domain/auth-user";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { useNavigate } from "react-router-dom";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 type MenuItem = {
   angularPath: string;
   path: string;
   name: string;
-  behindFeatureFlag: boolean;
 };
 
 const menuItems: MenuItem[] = [
   {
     angularPath: "/myProfile",
     path: "/user/profile",
-    behindFeatureFlag: true,
     name: "User profile",
   },
   {
     angularPath: "/changePwd",
     path: "/user/change-password",
-    behindFeatureFlag: true,
     name: "Change password",
   },
   {
     angularPath: "/tenantInfo",
     path: "/user/tenant-info",
-    behindFeatureFlag: true,
     name: "Tenant information",
   },
 ];
 
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
-  const userInformationFeatureFlagEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_USER_INFORMATION
-  );
-
   const navigate = useNavigate();
   const authUser = useAuthContext();
   const [toast, dismiss] = useToastContext();
-
-  function navigateToAngular(path: string) {
-    window.location.assign(`${window.origin}${path}`);
-  }
 
   function onDropdownClick(actionKey: React.Key) {
     if (actionKey === LOGOUT_KEY) {
@@ -89,12 +76,7 @@ function ProfileDropdown() {
         return;
       }
 
-      if (selectedItem.behindFeatureFlag && userInformationFeatureFlagEnabled) {
-        navigate(selectedItem.path);
-        return;
-      }
-
-      navigateToAngular(selectedItem.angularPath);
+      navigate(selectedItem.path);
     }
   }
 
@@ -124,9 +106,9 @@ function ProfileDropdown() {
       }
     >
       <DropdownMenu.Trigger>
-        <button aria-label={"Open profile menu"}>
+        <Button.Ghost aria-label={"Open profile menu"}>
           <Icon icon={user} fontSize={"20px"} color={"grey-0"} />
-        </button>
+        </Button.Ghost>
       </DropdownMenu.Trigger>
       <DropdownMenu.Items>
         <DropdownMenu.Section>

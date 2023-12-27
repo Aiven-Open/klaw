@@ -1,17 +1,11 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
-import { Routes } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-
-const isFeatureFlagActiveMock = jest.fn();
-
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
-}));
+import * as hook from "src/app/hooks/usePendingRequests";
 
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
@@ -22,22 +16,46 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 const quickLinksNavItems = [
-  { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
   },
 ];
 
-describe("HeaderNavigation.tsx", () => {
-  isFeatureFlagActiveMock.mockReturnValue(true);
+const mockedNoPendingRequests = {
+  TOPIC: 0,
+  ACL: 0,
+  SCHEMA: 0,
+  CONNECTOR: 0,
+  USER: 0,
+  OPERATIONAL: 0,
+  TOTAL_NOTIFICATIONS: 0,
+};
 
+const mockedPendingRequests = {
+  TOPIC: 1,
+  ACL: 0,
+  SCHEMA: 3,
+  CONNECTOR: 2,
+  USER: 2,
+  OPERATIONAL: 0,
+  TOTAL_NOTIFICATIONS: 6,
+};
+
+describe("HeaderNavigation.tsx", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
+      jest
+        .spyOn(hook, "usePendingRequests")
+        .mockImplementation(() => mockedNoPendingRequests);
+
       customRender(<HeaderNavigation />, { memoryRouter: true });
     });
 
-    afterAll(cleanup);
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     it("renders a navigation element with quick links", () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
@@ -76,8 +94,9 @@ describe("HeaderNavigation.tsx", () => {
   describe("enables user to navigate with keyboard only", () => {
     const allHeaderElements = [
       "Request a new",
-      ...quickLinksNavItems.map((link) => link.name),
+      "No pending requests",
       "Open profile menu",
+      ...quickLinksNavItems.map((link) => link.name),
     ];
 
     describe("user can navigate through elements", () => {
@@ -93,8 +112,7 @@ describe("HeaderNavigation.tsx", () => {
         const numbersOfTabs = index + 1;
         it(`sets focus on ${headerElement} when user tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new" &&
-            headerElement !== "Open profile menu"
+            headerElement === "Go to Klaw documentation page"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
 
@@ -111,7 +129,7 @@ describe("HeaderNavigation.tsx", () => {
       beforeEach(() => {
         customRender(<HeaderNavigation />, { memoryRouter: true });
         const lastElement = allHeaderElements[allHeaderElements.length - 1];
-        const lastNavItem = screen.getByRole("button", {
+        const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });
         lastNavItem.focus();
@@ -125,8 +143,7 @@ describe("HeaderNavigation.tsx", () => {
 
         it(`sets focus on ${headerElement} when user shift+tabs ${numbersOfTabs} times`, async () => {
           const element =
-            headerElement !== "Request a new" &&
-            headerElement !== "Open profile menu"
+            headerElement === "Go to Klaw documentation page"
               ? screen.getByRole("link", { name: headerElement })
               : screen.getByRole("button", { name: headerElement });
           index > 0 && expect(element).not.toHaveFocus();
@@ -136,6 +153,29 @@ describe("HeaderNavigation.tsx", () => {
           expect(element).toHaveFocus();
         });
       });
+    });
+  });
+
+  describe("shows notification on Approve request button when there are pending requests", () => {
+    beforeAll(() => {
+      jest
+        .spyOn(hook, "usePendingRequests")
+        .mockImplementation(() => mockedPendingRequests);
+      customRender(<HeaderNavigation />, { memoryRouter: true });
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("renders correct button", async () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const button = await within(nav).findByRole("button", {
+        name: "See 6 pending requests",
+      });
+
+      expect(button).toBeVisible();
     });
   });
 });

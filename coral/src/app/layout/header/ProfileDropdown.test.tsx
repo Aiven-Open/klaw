@@ -7,7 +7,6 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 const mockedNavigate = jest.fn();
 const mockAuthUser = jest.fn();
-const mockIsFeatureFlagActive = jest.fn();
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
 
@@ -21,10 +20,6 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => mockAuthUser(),
 }));
 
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => mockIsFeatureFlagActive(),
-}));
-
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToastContext: () => [mockToast, mockDismiss],
@@ -34,19 +29,16 @@ const menuItems = [
   {
     angularPath: "/myProfile",
     path: "/user/profile",
-    behindFeatureFlag: true,
     name: "User profile",
   },
   {
     angularPath: "/changePwd",
     path: "/user/change-password",
-    behindFeatureFlag: true,
     name: "Change password",
   },
   {
     angularPath: "/tenantInfo",
     path: "/user/tenant-info",
-    behindFeatureFlag: true,
     name: "Tenant information",
   },
 ];
@@ -63,7 +55,6 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is closed", () => {
     beforeAll(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       customRender(<ProfileDropdown />, { memoryRouter: true });
     });
@@ -89,7 +80,6 @@ describe("ProfileDropdown", () => {
 
   describe("renders all necessary elements when dropdown is open", () => {
     beforeAll(async () => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       customRender(<ProfileDropdown />, { memoryRouter: true });
       const button = screen.getByRole("button", { name: "Open profile menu" });
@@ -125,9 +115,8 @@ describe("ProfileDropdown", () => {
     });
   });
 
-  describe("handles user choosing items from the menu when feature-flag for user information is disabled", () => {
+  describe("handles user choosing items from the menu", () => {
     beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       Object.defineProperty(window, "location", {
         value: {
@@ -145,7 +134,8 @@ describe("ProfileDropdown", () => {
 
     menuItems.forEach((item) => {
       const name = item.name;
-      const path = item.angularPath;
+
+      const path = item.path;
 
       it(`navigates to "${path}" when user clicks "${name}"`, async () => {
         const button = screen.getByRole("button", {
@@ -156,74 +146,13 @@ describe("ProfileDropdown", () => {
         const menuItem = screen.getByRole("menuitem", { name: name });
         await user.click(menuItem);
 
-        // in tests it will start with http://localhost/ since that is the window.origin
-        expect(window.location.assign).toHaveBeenCalledWith(
-          `http://localhost${path}`
-        );
+        expect(mockedNavigate).toHaveBeenCalledWith(path);
       });
-    });
-  });
-
-  describe("handles user choosing items from the menu when feature-flag for user information is enabled", () => {
-    beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(true);
-      mockAuthUser.mockReturnValue(testUser);
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
-      customRender(<ProfileDropdown />, { memoryRouter: true });
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-      cleanup();
-    });
-
-    menuItems.forEach((item) => {
-      const name = item.name;
-
-      if (item.behindFeatureFlag) {
-        const path = item.path;
-
-        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
-          const button = screen.getByRole("button", {
-            name: "Open profile menu",
-          });
-          await user.click(button);
-
-          const menuItem = screen.getByRole("menuitem", { name: name });
-          await user.click(menuItem);
-
-          expect(window.location.assign).not.toHaveBeenCalled();
-          expect(mockedNavigate).toHaveBeenCalledWith("/user/profile");
-        });
-      } else {
-        const path = item.angularPath;
-
-        it(`navigates to "${path}" when user clicks "${name}"`, async () => {
-          const button = screen.getByRole("button", {
-            name: "Open profile menu",
-          });
-          await user.click(button);
-
-          const menuItem = screen.getByRole("menuitem", { name: name });
-          await user.click(menuItem);
-
-          // in tests it will start with http://localhost/ since that is the window.origin
-          expect(window.location.assign).toHaveBeenCalledWith(
-            `http://localhost${path}`
-          );
-        });
-      }
     });
   });
 
   describe("handles user sucessfully login out", () => {
     beforeEach(() => {
-      mockIsFeatureFlagActive.mockReturnValue(false);
       mockAuthUser.mockReturnValue(testUser);
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
@@ -286,7 +215,6 @@ describe("ProfileDropdown", () => {
   });
 
   describe("handles error in logout process", () => {
-    mockIsFeatureFlagActive(false);
     mockAuthUser.mockReturnValue(testUser);
     const testError = {
       status: 500,

@@ -3,6 +3,13 @@ import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
+const mockGetRequestsStatistics = jest.fn();
+const mockGetRequestsWaitingForApproval = jest.fn();
+jest.mock("src/domain/requests/requests-api.ts", () => ({
+  getRequestsStatistics: () => mockGetRequestsStatistics(),
+  getRequestsWaitingForApproval: () => mockGetRequestsWaitingForApproval(),
+}));
+
 const isFeatureFlagActiveMock = jest.fn();
 
 jest.mock("src/services/feature-flags/utils", () => ({
@@ -22,13 +29,18 @@ describe("LayoutWithoutNav.tsx", () => {
 
   describe("renders the layout component with all needed elements", () => {
     beforeAll(() => {
+      mockGetRequestsStatistics.mockResolvedValue([]);
+      mockGetRequestsWaitingForApproval.mockResolvedValue([]);
       customRender(<LayoutWithoutNav />, {
         browserRouter: true,
         queryClient: true,
       });
     });
 
-    afterAll(cleanup);
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
 
     it("renders a button to skip to main content for assistive technology", () => {
       const skipLink = screen.getByRole("button", {
@@ -51,13 +63,18 @@ describe("LayoutWithoutNav.tsx", () => {
 
   describe("enables user to navigate all navigation element with keyboard", () => {
     beforeEach(() => {
+      mockGetRequestsStatistics.mockResolvedValue([]);
+      mockGetRequestsWaitingForApproval.mockResolvedValue([]);
       customRender(<LayoutWithoutNav />, {
         memoryRouter: true,
         queryClient: true,
       });
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
 
     it("sets focus on the skip link when user tabs the first time", async () => {
       const skipLink = screen.getByRole("button", {
@@ -94,12 +111,12 @@ describe("LayoutWithoutNav.tsx", () => {
       const quickLinks = screen.getByRole("navigation", {
         name: "Quick links",
       });
-      const link = within(quickLinks).getAllByRole("link")[0];
+      const firstItem = within(quickLinks).getAllByRole("button")[0];
 
-      expect(link).not.toHaveFocus();
+      expect(firstItem).not.toHaveFocus();
       await tabThroughForward(4);
 
-      expect(link).toHaveFocus();
+      expect(firstItem).toHaveFocus();
     });
   });
 });
