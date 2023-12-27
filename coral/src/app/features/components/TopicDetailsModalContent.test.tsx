@@ -131,7 +131,7 @@ describe("TopicDetailsModalContent", () => {
     });
   });
 
-  describe("renders correct content for Topic request (no description,  no remarks, with config)", () => {
+  describe("renders correct content for Topic request (no description, no remarks, with config)", () => {
     beforeAll(() => {
       render(
         <TopicDetailsModalContent topicRequest={withAdvancedConfigRequest} />
@@ -188,6 +188,50 @@ describe("TopicDetailsModalContent", () => {
     it("renders Advanced configuration", () => {
       expect(findTerm("Advanced configuration")).toBeVisible();
       expect(screen.getByTestId("topic-advanced-config")).toBeVisible();
+    });
+  });
+
+  describe("renders correct content for Topic CLAIM request (no description, partition, replication)", () => {
+    beforeAll(() => {
+      render(
+        <TopicDetailsModalContent
+          topicRequest={{
+            ...noAdvancedConfigRequest,
+            requestOperationType: "CLAIM",
+          }}
+        />
+      );
+    });
+    afterAll(cleanup);
+
+    it("does not renders Topic description", () => {
+      const term = screen.queryByText("Topic description");
+      const definition = screen.queryByText(
+        noAdvancedConfigRequest.description
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+
+    it("does not renders Topic partition", () => {
+      const term = screen.queryByText("Topic partition");
+      const definition = screen.queryByText(
+        String(noAdvancedConfigRequest.topicpartitions)
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+
+    it("renders Topic replication factor", () => {
+      const term = screen.queryByText("Topic replication factor");
+      const definition = screen.queryByText(
+        noAdvancedConfigRequest.replicationfactor
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
     });
   });
 });
