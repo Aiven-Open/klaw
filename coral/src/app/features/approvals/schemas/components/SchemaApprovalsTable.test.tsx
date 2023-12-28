@@ -1,5 +1,5 @@
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { SchemaRequest } from "src/domain/schema-request";
 import { userEvent } from "@testing-library/user-event";
@@ -9,6 +9,7 @@ import {
   RequestOperationType,
   RequestStatus,
 } from "src/domain/requests/requests-types";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedRequests: SchemaRequest[] = [
   {
@@ -89,7 +90,7 @@ describe("SchemaApprovalsTable", () => {
   ];
 
   it("shows a message to user in case there are no requests that match the search criteria", () => {
-    render(
+    customRender(
       <SchemaApprovalsTable
         requests={[]}
         onDetails={jest.fn()}
@@ -98,7 +99,8 @@ describe("SchemaApprovalsTable", () => {
         isBeingApproved={jest.fn()}
         isBeingDeclined={jest.fn()}
         ariaLabel={"Schema approval requests, page 1 of 10"}
-      />
+      />,
+      { memoryRouter: true }
     );
     screen.getByText("No Schema requests");
     screen.getByText("No Schema request matched your criteria.");
@@ -106,7 +108,7 @@ describe("SchemaApprovalsTable", () => {
 
   describe("user is able to view all the necessary schema request data and actions", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -115,7 +117,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
@@ -219,7 +222,7 @@ describe("SchemaApprovalsTable", () => {
 
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -228,7 +231,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -259,6 +263,13 @@ describe("SchemaApprovalsTable", () => {
 
       if (column.relatedField) {
         mockedRequests.forEach((request) => {
+          const isTeamLink = column.columnHeader === "Team";
+          const isUserLink = column.columnHeader === "Requested by";
+          const isFormattedDate = column.columnHeader === "Requested on";
+          const isStatus = column.columnHeader === "Status";
+          const isRequestType = column.columnHeader === "Request type";
+          const isAdditionalNotes = column.columnHeader === "Additional notes";
+
           it(`shows field ${column.relatedField} for request number ${request.req_no}`, () => {
             const table = screen.getByRole("table", {
               name: "Schema approval requests, page 1 of 10",
@@ -268,26 +279,60 @@ describe("SchemaApprovalsTable", () => {
             //@ts-ignore
             const field = request[column.relatedField];
 
-            let text = field;
-            if (column.columnHeader === "Requested on") {
-              text = `${field}${"\u00A0"}UTC`;
+            if (isTeamLink) {
+              const cell = within(table).getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", { name: field });
+
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", "/configuration/teams");
+
+              // formatting for readability
+            } else if (isUserLink) {
+              const cell = within(table).getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", { name: field });
+
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", "/configuration/users");
+
+              // formatting for readability
+            } else if (isFormattedDate) {
+              const cell = within(table).getByRole("cell", {
+                name: `${field}${"\u00A0"}UTC`,
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isStatus) {
+              const cell = within(table).getByRole("cell", {
+                name: requestStatusNameMap[field as RequestStatus],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isRequestType) {
+              const cell = within(table).getByRole("cell", {
+                name: requestOperationTypeNameMap[
+                  field as RequestOperationType
+                ],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isAdditionalNotes) {
+              const cell = within(table).getByRole("cell", {
+                name: field ? "Force register applied" : "",
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else {
+              const cell = within(table).getByRole("cell", { name: field });
+              expect(cell).toBeVisible();
             }
-
-            if (column.columnHeader === "Status") {
-              text = requestStatusNameMap[field as RequestStatus];
-            }
-
-            if (column.columnHeader === "Request type") {
-              text = requestOperationTypeNameMap[field as RequestOperationType];
-            }
-
-            if (column.columnHeader === "Additional notes") {
-              text = field ? "Force register applied" : "";
-            }
-
-            const cell = within(table).getByRole("cell", { name: text });
-
-            expect(cell).toBeVisible();
           });
         });
       }
@@ -297,7 +342,7 @@ describe("SchemaApprovalsTable", () => {
   describe("triggers opening of a modal with all details if user clicks button for overview", () => {
     const onDetails = jest.fn();
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={onDetails}
@@ -306,7 +351,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(() => {
@@ -333,7 +379,7 @@ describe("SchemaApprovalsTable", () => {
     const onApprove = jest.fn();
     const onDecline = jest.fn();
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -342,7 +388,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -376,7 +423,7 @@ describe("SchemaApprovalsTable", () => {
 
   describe("user is unable to approve and decline non pending requests", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -385,7 +432,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -417,7 +465,7 @@ describe("SchemaApprovalsTable", () => {
     const isBeingApproved = jest.fn(() => true);
     const isBeingDeclined = jest.fn(() => true);
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={mockedRequests}
           onDetails={jest.fn()}
@@ -426,7 +474,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -461,7 +510,7 @@ describe("SchemaApprovalsTable", () => {
     ];
 
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaApprovalsTable
           requests={requestsWithStatusCreated}
           actionsDisabled={true}
@@ -471,7 +520,8 @@ describe("SchemaApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Schema approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
