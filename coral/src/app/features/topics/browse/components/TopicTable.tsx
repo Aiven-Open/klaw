@@ -57,9 +57,11 @@ function TopicTable(props: TopicListProps) {
       },
     },
     {
-      type: "text",
-      field: "teamName",
+      type: "custom",
       headerName: "Team",
+      UNSAFE_render: ({ teamName }: TopicsTableRow) => {
+        return <Link to={"/configuration/teams"}>{teamName}</Link>;
+      },
     },
   ];
 
