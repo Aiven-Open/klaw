@@ -10,6 +10,7 @@ import {
 import type { ConnectorRequest } from "src/domain/connector";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
+import { Link } from "react-router-dom";
 
 type ConnectorRequestTableRow = {
   id: ConnectorRequest["connectorId"];
@@ -46,7 +47,13 @@ function ConnectorRequestsTable({
         text: environmentName,
       }),
     },
-    { type: "text", field: "teamname", headerName: "Owned by" },
+    {
+      type: "custom",
+      headerName: "Owned by",
+      UNSAFE_render: ({ teamname }: ConnectorRequestTableRow) => {
+        return <Link to={"/configuration/teams"}>{teamname}</Link>;
+      },
+    },
     {
       type: "status",
       headerName: "Status",
@@ -67,7 +74,13 @@ function ConnectorRequestsTable({
         };
       },
     },
-    { type: "text", field: "requestor", headerName: "Requested by" },
+    {
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestor }: ConnectorRequestTableRow) => {
+        return <Link to={"/configuration/users"}>{requestor}</Link>;
+      },
+    },
     {
       type: "text",
       field: "requesttimestring",
