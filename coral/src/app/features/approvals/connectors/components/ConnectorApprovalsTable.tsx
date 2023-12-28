@@ -12,6 +12,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { ConnectorRequest } from "src/domain/connector";
+import { Link } from "react-router-dom";
 
 interface ConnectorRequestTableData {
   id: ConnectorRequest["connectorId"];
@@ -77,11 +78,19 @@ function ConnectorApprovalsTable({
         };
       },
     },
-    { type: "text", field: "requestor", headerName: "Requested by" },
     {
-      type: "text",
-      field: "teamname",
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestor }: ConnectorRequestTableData) => {
+        return <Link to={"/configuration/users"}>{requestor}</Link>;
+      },
+    },
+    {
+      type: "custom",
       headerName: "Team",
+      UNSAFE_render: ({ teamname }: ConnectorRequestTableData) => {
+        return <Link to={"/configuration/teams"}>{teamname}</Link>;
+      },
     },
     {
       type: "text",
