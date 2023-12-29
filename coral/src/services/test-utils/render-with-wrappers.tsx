@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
 import { ReactElement, ReactNode } from "react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
 /***
@@ -12,6 +13,7 @@ type RenderConfig = {
   queryClient?: boolean;
   memoryRouter?: boolean;
   browserRouter?: boolean;
+  aquariumContext?: boolean;
   customRoutePath?: string;
 };
 
@@ -24,7 +26,13 @@ function createWrapper(
   config: RenderConfig,
   options?: RenderOptions
 ) {
-  const { queryClient, memoryRouter, browserRouter, customRoutePath } = config;
+  const {
+    queryClient,
+    memoryRouter,
+    browserRouter,
+    aquariumContext,
+    customRoutePath,
+  } = config;
 
   const wrappers: React.FC<WrapperProps>[] = [];
 
@@ -57,6 +65,13 @@ function createWrapper(
       <BrowserRouter>{children}</BrowserRouter>
     );
     wrappers.push(browserRouterWrapper);
+  }
+
+  if (aquariumContext) {
+    const aquariumWrapper: React.FC<WrapperProps> = ({ children }) => (
+      <AquariumContext>{children}</AquariumContext>
+    );
+    wrappers.push(aquariumWrapper);
   }
 
   return render(ui, {
