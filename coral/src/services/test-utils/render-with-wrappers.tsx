@@ -1,148 +1,85 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
-function withQueryClient(ui: ReactElement, options?: RenderOptions) {
-  const queryClient = getQueryClientForTests();
-  return render(ui, {
-    wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    ),
-    ...options,
-  });
-}
-
-function withMemoryRouter({
-  ui,
-  customRoutePath,
-  options,
-}: {
-  ui: ReactElement;
+/***
+ * browserRouter: Only use if needed, e.g., for testing URL states (i.e., search params)
+ * in general, prefer memoryRouter for tests.
+ */
+type RenderConfig = {
+  queryClient?: boolean;
+  memoryRouter?: boolean;
+  browserRouter?: boolean;
   customRoutePath?: string;
-  options?: RenderOptions;
-}) {
-  return render(ui, {
-    wrapper: ({ children }) => (
+};
+
+type WrapperProps = {
+  children?: ReactNode;
+};
+
+function createWrapper(
+  ui: ReactElement,
+  config: RenderConfig,
+  options?: RenderOptions
+) {
+  const { queryClient, memoryRouter, browserRouter, customRoutePath } = config;
+
+  const wrappers: React.FC<WrapperProps>[] = [];
+
+  if (!queryClient && !memoryRouter && !browserRouter) {
+    console.error(
+      "You have not passed any renderWith options, which returns the non-custom render."
+    );
+  }
+
+  if (queryClient) {
+    const queryClientWrapper: React.FC<WrapperProps> = ({ children }) => (
+      <QueryClientProvider client={getQueryClientForTests()}>
+        {children}
+      </QueryClientProvider>
+    );
+    wrappers.push(queryClientWrapper);
+  }
+
+  if (memoryRouter) {
+    const memoryRouterWrapper: React.FC<WrapperProps> = ({ children }) => (
       <MemoryRouter initialEntries={[customRoutePath || ""]}>
         {children}
       </MemoryRouter>
-    ),
-    ...options,
-  });
-}
+    );
+    wrappers.push(memoryRouterWrapper);
+  }
 
-function withMemoryRouterAndQueryClient({
-  ui,
-  customRoutePath,
-  options,
-}: {
-  ui: ReactElement;
-  customRoutePath?: string;
-  options?: RenderOptions;
-}) {
-  const queryClient = getQueryClientForTests();
+  if (browserRouter) {
+    const browserRouterWrapper: React.FC<WrapperProps> = ({ children }) => (
+      <BrowserRouter>{children}</BrowserRouter>
+    );
+    wrappers.push(browserRouterWrapper);
+  }
+
   return render(ui, {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[customRoutePath || ""]}>
-          {children}
-        </MemoryRouter>
-      </QueryClientProvider>
+      <>
+        {wrappers.reduceRight(
+          (acc, Wrapper) => (
+            <Wrapper>{acc}</Wrapper>
+          ),
+          children
+        )}
+      </>
     ),
     ...options,
   });
 }
-
-// Only use if BrowserRouter is really needed
-// prefer MemoryRouter for tests.
-function withBrowserRouterAndQueryClient({
-  ui,
-  options,
-}: {
-  ui: ReactElement;
-  options?: RenderOptions;
-}) {
-  const queryClient = getQueryClientForTests();
-  return render(ui, {
-    wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
-    ),
-    ...options,
-  });
-}
-
-// To be used for testing URL states (ie, search params)
-function withBrowserRouter({
-  ui,
-  options,
-}: {
-  ui: ReactElement;
-  options?: RenderOptions;
-}) {
-  return render(ui, {
-    wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-    ...options,
-  });
-}
-
-type ValidOptions =
-  | "queryClient"
-  | "memoryRouter"
-  | "browserRouter"
-  | "customRoutePath";
-
-type CustomRenderOption = {
-  [K in ValidOptions]?: K extends
-    | "queryClient"
-    | "memoryRouter"
-    | "browserRouter"
-    ? boolean
-    : string;
-};
 
 function customRender(
   ui: ReactElement,
-  renderWith: CustomRenderOption,
+  config: RenderConfig = {},
   options?: RenderOptions
 ) {
-  if (renderWith?.queryClient && renderWith?.memoryRouter) {
-    return withMemoryRouterAndQueryClient({
-      ui,
-      customRoutePath: renderWith?.customRoutePath,
-      options,
-    });
-  }
-
-  if (renderWith?.queryClient && renderWith?.browserRouter) {
-    return withBrowserRouterAndQueryClient({ ui, options });
-  }
-
-  if (renderWith?.memoryRouter) {
-    return withMemoryRouter({
-      ui,
-      customRoutePath: renderWith?.customRoutePath,
-      options,
-    });
-  }
-
-  if (renderWith?.browserRouter) {
-    return withBrowserRouter({
-      ui,
-      options,
-    });
-  }
-
-  if (renderWith?.queryClient) {
-    return withQueryClient(ui, options);
-  }
-
-  console.error(
-    "You have not passed any renderWith option, which returns the non-custom render."
-  );
-  return render(ui, options);
+  return createWrapper(ui, config, options);
 }
+
 export { customRender };
