@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { updateTeam, getTeamsOfUser } from "src/domain/team/team-api";
 import { cleanup, screen, within } from "@testing-library/react";
@@ -52,14 +51,13 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockImplementation(jest.fn());
 
       customRender(
-        <AquariumContext>
-          <SwitchTeamsDropdown
-            userName={testUsername}
-            currentTeam={testCurrentTeam}
-          />
-        </AquariumContext>,
+        <SwitchTeamsDropdown
+          userName={testUsername}
+          currentTeam={testCurrentTeam}
+        />,
         {
           queryClient: true,
+          aquariumContext: true,
         }
       );
     });
@@ -87,14 +85,13 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockImplementation(jest.fn());
 
       customRender(
-        <AquariumContext>
-          <SwitchTeamsDropdown
-            userName={testUsername}
-            currentTeam={testCurrentTeam}
-          />
-        </AquariumContext>,
+        <SwitchTeamsDropdown
+          userName={testUsername}
+          currentTeam={testCurrentTeam}
+        />,
         {
           queryClient: true,
+          aquariumContext: true,
         }
       );
 
@@ -140,14 +137,13 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockImplementation(mockUpdateTeamFn);
 
       customRender(
-        <AquariumContext>
-          <SwitchTeamsDropdown
-            userName={testUsername}
-            currentTeam={testCurrentTeam}
-          />
-        </AquariumContext>,
+        <SwitchTeamsDropdown
+          userName={testUsername}
+          currentTeam={testCurrentTeam}
+        />,
         {
           queryClient: true,
+          aquariumContext: true,
         }
       );
 
@@ -270,14 +266,13 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockRejectedValue(mockError);
 
       customRender(
-        <AquariumContext>
-          <SwitchTeamsDropdown
-            userName={testUsername}
-            currentTeam={testCurrentTeam}
-          />
-        </AquariumContext>,
+        <SwitchTeamsDropdown
+          userName={testUsername}
+          currentTeam={testCurrentTeam}
+        />,
         {
           queryClient: true,
+          aquariumContext: true,
         }
       );
 

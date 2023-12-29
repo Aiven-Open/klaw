@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   screen,
@@ -208,15 +207,11 @@ describe("TopicDetails", () => {
     });
 
     it("fetches topic overview and schema data on first load of page", async () => {
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       await waitFor(() =>
         expect(mockGetTopicOverview).toHaveBeenCalledWith({
@@ -236,15 +231,11 @@ describe("TopicDetails", () => {
     });
 
     it("fetches the data anew when user changes environment", async () => {
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       const select = await screen.findByRole("combobox", {
         name: "Select environment",
@@ -272,16 +263,12 @@ describe("TopicDetails", () => {
     });
 
     it("fetches the correct data when URL has env search param", async () => {
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-          customRoutePath: "/?env=2",
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+        customRoutePath: "/?env=2",
+      });
 
       await waitFor(() =>
         expect(mockGetTopicOverview).toHaveBeenCalledWith({
@@ -313,15 +300,11 @@ describe("TopicDetails", () => {
         },
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       const tabList = screen.getByRole("tablist");
       const activeTab = within(tabList).getByRole("tab", { selected: true });
@@ -337,15 +320,11 @@ describe("TopicDetails", () => {
         },
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       const tabList = screen.getByRole("tablist");
       const activeTab = within(tabList).getByRole("tab", { selected: true });
@@ -368,15 +347,11 @@ describe("TopicDetails", () => {
         },
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       const tabList = screen.getByRole("tablist");
 
@@ -391,15 +366,11 @@ describe("TopicDetails", () => {
         },
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       const tabList = screen.queryByRole("tablist");
 
@@ -423,15 +394,11 @@ describe("TopicDetails", () => {
       ]);
       mockGetTopicOverview.mockResolvedValue(testTopicOverview);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 
@@ -455,15 +422,11 @@ describe("TopicDetails", () => {
         topicInfo: { ...testTopicOverview.topicInfo, topicOwner: false },
       });
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 
@@ -496,15 +459,11 @@ describe("TopicDetails", () => {
         topicInfo: { ...testTopicOverview.topicInfo, topicOwner: false },
       });
 
-      customRender(
-        <AquariumContext>
-          <TopicDetails topicName={testTopicName} />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(() => {

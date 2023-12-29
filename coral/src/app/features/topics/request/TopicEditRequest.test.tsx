@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import * as ReactQuery from "@tanstack/react-query";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
@@ -306,16 +305,13 @@ describe("<TopicEditRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-update"
-            element={
-              <AquariumContext>
-                <TopicEditRequest />
-              </AquariumContext>
-            }
+            element={<TopicEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -408,16 +404,13 @@ describe("<TopicEditRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-update"
-            element={
-              <AquariumContext>
-                <TopicEditRequest />
-              </AquariumContext>
-            }
+            element={<TopicEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -541,16 +534,13 @@ describe("<TopicEditRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-update"
-            element={
-              <AquariumContext>
-                <TopicEditRequest />
-              </AquariumContext>
-            }
+            element={<TopicEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -582,16 +572,13 @@ describe("<TopicEditRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-update"
-            element={
-              <AquariumContext>
-                <TopicEditRequest />
-              </AquariumContext>
-            }
+            element={<TopicEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/topic/${WRONG_TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -632,16 +619,13 @@ describe("<TopicEditRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-update"
-            element={
-              <AquariumContext>
-                <TopicEditRequest />
-              </AquariumContext>
-            }
+            element={<TopicEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${WRONG_ENV_ID}`,
         }
       );
