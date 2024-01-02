@@ -248,8 +248,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
                       Warning: This will override standard validation process of
                       the schema registry.{" "}
                       <a
-                        target="_blank"
-                        rel="noreferrer"
                         href={
                           "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
                         }
@@ -266,13 +264,17 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton
-              disabled={isValidationError && !form.watch("forceRegister")}
+              disabled={
+                (isValidationError && !form.watch("forceRegister")) ||
+                schemaRequestMutation.isLoading
+              }
             >
               {isValidationError
                 ? "Submit request to force register"
                 : "Submit request"}
             </SubmitButton>
             <Button
+              disabled={schemaRequestMutation.isLoading}
               type="button"
               kind={"secondary"}
               onClick={

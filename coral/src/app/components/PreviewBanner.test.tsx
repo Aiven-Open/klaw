@@ -23,8 +23,6 @@ describe("PreviewBanner.tsx", () => {
       "href",
       "https://github.com/aiven/klaw/issues/new?template=03_feature.md"
     );
-    expect(feedbackLink).toHaveAttribute("target", "_blank");
-    expect(feedbackLink).toHaveAttribute("rel", "noreferrer");
   });
 
   it("allows user to navigate back to old interface", () => {
