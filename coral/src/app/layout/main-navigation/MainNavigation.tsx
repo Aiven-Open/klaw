@@ -84,8 +84,9 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={list}
-            to={`/activityLog`}
-            linkText={"Audit log"}
+            to={`/activity-log`}
+            linkText={"Activity log"}
+            active={pathname.startsWith(Routes.ACTIVITY_LOG)}
           />
         </li>
         <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>

@@ -17,6 +17,7 @@ enum Routes {
   SCHEMA_REQUEST = "/request/schema",
   REQUESTS = "/requests",
   APPROVALS = "/approvals",
+  ACTIVITY_LOG = "/activity-log",
   CONFIGURATION = "/configuration",
   ENVIRONMENTS = "/configuration/environments",
   TEAMS = "/configuration/teams",

@@ -43,7 +43,7 @@ const navLinks = [
   },
   { name: "Approve requests", linkTo: "/approvals" },
   { name: "My team's requests", linkTo: "/requests" },
-  { name: "Audit log", linkTo: "/activityLog" },
+  { name: "Activity log", linkTo: "/activity-log" },
 ];
 
 const submenuItems = [
@@ -90,7 +90,7 @@ const navOrderFirstLevel = [
   { name: "Connectors", isSubmenu: false },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },
-  { name: "Audit log", isSubmenu: false },
+  { name: "Activity log", isSubmenu: false },
   { name: "Configuration", isSubmenu: true },
   { name: "User information", isSubmenu: true },
 ];
