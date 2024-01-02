@@ -264,13 +264,17 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           )}
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton
-              disabled={isValidationError && !form.watch("forceRegister")}
+              disabled={
+                (isValidationError && !form.watch("forceRegister")) ||
+                schemaRequestMutation.isLoading
+              }
             >
               {isValidationError
                 ? "Submit request to force register"
                 : "Submit request"}
             </SubmitButton>
             <Button
+              disabled={schemaRequestMutation.isLoading}
               type="button"
               kind={"secondary"}
               onClick={

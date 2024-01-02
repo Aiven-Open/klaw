@@ -326,7 +326,9 @@ function TopicEditRequest() {
         </Box.Flex>
 
         <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-          <SubmitButton>Submit update request</SubmitButton>
+          <SubmitButton loading={editIsLoading}>
+            Submit update request
+          </SubmitButton>
           <Button
             type="button"
             kind={"secondary"}
