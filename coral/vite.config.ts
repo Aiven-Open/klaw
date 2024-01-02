@@ -1,4 +1,10 @@
-import { defineConfig, loadEnv, PluginOption, ProxyOptions } from "vite";
+import {
+  defineConfig,
+  loadEnv,
+  PluginOption,
+  ProxyOptions,
+  UserConfig,
+} from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import svgr from "vite-plugin-svgr";
@@ -44,9 +50,10 @@ function getApiBaseUrl(
  * and $VITE_SERVER_CERTIFICATE_KEY_PATH are defined. This is needed when
  * using a remote backend that is running under HTTPS.
  */
-function getServerHTTPSConfig(
-  environment: Record<string, string>
-): false | { key: Buffer; cert: Buffer } {
+function getServerHTTPSConfig(environment: Record<string, string>): {
+  key: Buffer;
+  cert: Buffer;
+} {
   if (
     environment.VITE_SERVER_CERTIFICATE_PATH &&
     environment.VITE_SERVER_CERTIFICATE_KEY_PATH
@@ -56,7 +63,7 @@ function getServerHTTPSConfig(
       cert: fs.readFileSync(environment.VITE_SERVER_CERTIFICATE_PATH),
     };
   }
-  return false;
+  return null;
 }
 
 /**
@@ -121,7 +128,7 @@ function getPlugins(environment: Record<string, string>): PluginOption[] {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }): UserConfig => {
   const environment = loadEnv(mode, process.cwd(), "");
   const usesNodeProxy = mode === "local-api";
 
@@ -167,6 +174,14 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: (id: string) => {
+            if (id.includes("/monaco-editor@")) {
+              return "monaco-editor";
+            }
+
+            if (id.includes("/@aivenio+aquarium@")) {
+              return "aquarium";
+            }
+
             if (id.includes("node_modules")) {
               return "vendor";
             }
