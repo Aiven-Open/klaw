@@ -59,8 +59,6 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   {
@@ -246,12 +244,10 @@ const routes: Array<RouteObject> = [
             path: Routes.USERS,
             element: <UsersPage />,
           },
-          createRouteBehindFeatureFlag({
+          {
             path: Routes.CLUSTERS,
-            featureFlag: FeatureFlag.FEATURE_FLAG_VIEW_CLUSTER,
-            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
             element: <ClustersPage />,
-          }),
+          },
         ],
       },
       {
