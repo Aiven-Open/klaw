@@ -248,8 +248,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
                       Warning: This will override standard validation process of
                       the schema registry.{" "}
                       <a
-                        target="_blank"
-                        rel="noreferrer"
                         href={
                           "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
                         }

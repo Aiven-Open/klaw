@@ -25,8 +25,6 @@ function SchemaPromotableOnlyAlert({
         <span>
           {isNewVersionRequest ? textVersion : textNewCreation}{" "}
           <a
-            target="_blank"
-            rel="noreferrer"
             href={
               "https://www.klaw-project.io/docs/Concepts/promotion#schema-promotion"
             }
