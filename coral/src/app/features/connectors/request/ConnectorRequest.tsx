@@ -190,6 +190,7 @@ function ConnectorRequest() {
               Submit request
             </SubmitButton>
             <Button
+              disabled={connectorRequestMutation.isLoading}
               type="button"
               kind={"secondary"}
               onClick={
