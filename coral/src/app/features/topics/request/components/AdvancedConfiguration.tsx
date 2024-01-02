@@ -73,11 +73,7 @@ function AdvancedConfiguration({ name }: Props) {
       </Typography.Subheading>
       <Typography.Caption>
         For advanced topic-level configurations, refer to the official{" "}
-        <Link
-          href="https://kafka.apache.org/documentation/#topicconfigs"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <Link href="https://kafka.apache.org/documentation/#topicconfigs">
           Apache Kafka Documentation
         </Link>
         .
