@@ -43,8 +43,6 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
               Warning: This schema is being force registered. This will override
               standard validation process of the schema registry.{" "}
               <a
-                target="_blank"
-                rel="noreferrer"
                 href={
                   "https://www.klaw-project.io/docs/HowTo/schemas/Promote-a-schema/#how-does-force-register-work"
                 }

@@ -15,8 +15,6 @@ function PreviewBanner({ linkTarget }: { linkTarget: string }) {
             href={
               "https://github.com/aiven/klaw/issues/new?template=03_feature.md"
             }
-            target={"_blank"}
-            rel="noreferrer"
           >
             feedback
           </Link>{" "}

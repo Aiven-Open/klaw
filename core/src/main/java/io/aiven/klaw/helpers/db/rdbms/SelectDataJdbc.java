@@ -1361,11 +1361,14 @@ public class SelectDataJdbc {
     Map<String, String> mapProps;
     List<KwTenants> tenants = getTenants();
 
-    for (KwTenants tenant : tenants) {
-      List<KwProperties> kwProps = kwPropertiesRepo.findAllByTenantId(tenant.getTenantId());
-
+    Map<Integer, List<KwProperties>> tenantId2kwPropsMap =
+        kwPropertiesRepo
+            .findAllByTenantIdsOrdered(tenants.stream().map(KwTenants::getTenantId).toList())
+            .stream()
+            .collect(Collectors.groupingBy(KwProperties::getTenantId));
+    for (var entry : tenantId2kwPropsMap.entrySet()) {
       Map<String, Map<String, String>> fullMap = new HashMap<>();
-      for (KwProperties kwProp : kwProps) {
+      for (KwProperties kwProp : entry.getValue()) {
         mapProps = new HashMap<>();
         mapProps.put("kwkey", kwProp.getKwKey());
         mapProps.put("kwvalue", kwProp.getKwValue());
@@ -1374,7 +1377,7 @@ public class SelectDataJdbc {
 
         fullMap.put(kwProp.getKwKey(), mapProps);
       }
-      tenantProps.put(tenant.getTenantId(), fullMap);
+      tenantProps.put(entry.getKey(), fullMap);
     }
 
     return tenantProps;

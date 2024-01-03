@@ -98,7 +98,7 @@ function ChangePasswordForm() {
             labelText="Confirm new password"
             name="confirmPassword"
           />
-          <SubmitButton>Update password</SubmitButton>
+          <SubmitButton loading={isLoading}>Update password</SubmitButton>
         </Form>
       </Box>
     </>
