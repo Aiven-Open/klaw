@@ -268,6 +268,19 @@ public class SchemaRegistryControllerService {
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
         if (responseDb.equals(ApiResultStatus.SUCCESS.value)) {
           saveToTopicHistory(userDetails, tenantId, schemaRequest);
+          dbHandle.insertIntoActivityLog(
+              RequestEntityType.SCHEMA.value,
+              tenantId,
+              schemaRequest.getRequestOperationType(),
+              schemaRequest.getTeamId(),
+              "Topic : "
+                  + schemaRequest.getTopicname()
+                  + " version : "
+                  + registerSchemaCustomResponse.get("version")
+                  + " id : "
+                  + registerSchemaCustomResponse.get("id"),
+              schemaRequest.getEnvironment(),
+              schemaRequest.getRequestor());
         }
 
         // send mail to producers and consumers

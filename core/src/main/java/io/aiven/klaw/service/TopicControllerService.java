@@ -761,6 +761,14 @@ public class TopicControllerService {
     }
 
     if (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
+      dbHandle.insertIntoActivityLog(
+          RequestEntityType.TOPIC.value,
+          tenantId,
+          topicRequest.getRequestOperationType(),
+          topicRequest.getTeamId(),
+          RequestEntityType.TOPIC.value + " : " + topicRequest.getTopicname(),
+          topicRequest.getEnvironment(),
+          topicRequest.getRequestor());
       commonUtilsService.updateMetadata(
           tenantId, EntityType.TOPICS, MetadataOperationType.CREATE, null);
     }

@@ -38,6 +38,7 @@ import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
@@ -711,6 +712,14 @@ public class KafkaConnectControllerService {
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
         updateConnectorReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
+        dbHandle.insertIntoActivityLog(
+            RequestEntityType.CONNECTOR.value,
+            tenantId,
+            connectorRequest.getRequestOperationType(),
+            connectorRequest.getTeamId(),
+            "Connector : " + connectorRequest.getConnectorName(),
+            connectorRequest.getEnvironment(),
+            connectorRequest.getRequestor());
         mailService.sendMail(
             connectorRequest.getConnectorName(),
             null,

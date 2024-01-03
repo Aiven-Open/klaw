@@ -667,6 +667,22 @@ public class AclControllerService {
       notifyUserType = ACL_REQUEST_FAILURE;
     } else {
       saveToTopicHistory(userDetails, tenantId, aclReq);
+      dbHandle.insertIntoActivityLog(
+          RequestEntityType.ACL.value,
+          tenantId,
+          aclReq.getRequestOperationType(),
+          aclReq.getTeamId(),
+          aclReq.getAcl_ip()
+              + "-"
+              + aclReq.getTopicname()
+              + "-"
+              + aclReq.getAcl_ssl()
+              + "-"
+              + aclReq.getConsumergroup()
+              + "-"
+              + aclReq.getAclType(),
+          aclReq.getEnvironment(),
+          aclReq.getRequestor());
     }
 
     return emailAndReturnClaimUpdate(aclReq, dbHandle, notifyUserType, updateAclReqStatus);

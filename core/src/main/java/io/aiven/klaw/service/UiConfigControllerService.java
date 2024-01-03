@@ -81,12 +81,12 @@ public class UiConfigControllerService {
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if ("SchemaRequest".equals(activityName)) {
+    if ("SchemaRequest".equalsIgnoreCase(activityName)) {
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    } else if ("ConnectorRequest".equals(activityName)) {
+    } else if ("ConnectorRequest".equalsIgnoreCase(activityName)) {
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
