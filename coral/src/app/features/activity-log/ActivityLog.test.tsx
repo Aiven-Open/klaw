@@ -5,7 +5,7 @@ import {
 } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import ActivityLog from "src/app/features/activity-log/ActivityLog";
-import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment/environment-api";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
 import { getActivityLog } from "src/domain/requests/requests-api";
 import { activityLogTransformer } from "src/domain/requests/requests-transformers";
@@ -15,10 +15,9 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 jest.mock("src/domain/requests/requests-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironmentRequest =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockGetActivityLog = getActivityLog as jest.MockedFunction<
   typeof getActivityLog
@@ -87,7 +86,7 @@ describe("ActivityLog", () => {
       // while making sure to not swallow other console.errors
       console.error = jest.fn();
 
-      mockGetEnvironmentRequest.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetActivityLog.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -136,7 +135,7 @@ describe("ActivityLog", () => {
 
   describe("user can browse the requests in paged sets", () => {
     beforeEach(() => {
-      mockGetEnvironmentRequest.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetActivityLog.mockResolvedValue({
         totalPages: 1,
         currentPage: 1,
@@ -238,7 +237,7 @@ describe("ActivityLog", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
-      mockGetEnvironmentRequest.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetActivityLog.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -283,7 +282,7 @@ describe("ActivityLog", () => {
 
   describe("user can filter connector requests by 'environment'", () => {
     beforeEach(async () => {
-      mockGetEnvironmentRequest.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetActivityLog.mockResolvedValue(mockGetActivityLogResponse);
       customRender(<ActivityLog />, {
         queryClient: true,

@@ -9,6 +9,7 @@ import {
 } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { getAllEnvironments } from "src/domain/environment/environment-api";
 
 jest.mock("src/domain/environment/environment-api.ts");
 
@@ -21,6 +22,10 @@ const mockGetSyncConnectorsEnvironments =
   getAllEnvironmentsForConnector as jest.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
+
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockEnvironments = [
   createMockEnvironmentDTO({
@@ -44,6 +49,7 @@ describe("EnvironmentFilter.tsx", () => {
     beforeEach(() => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
     });
     afterEach(() => {
       cleanup();
@@ -74,6 +80,7 @@ describe("EnvironmentFilter.tsx", () => {
 
       expect(mockGetEnvironments).toHaveBeenCalled();
       expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+      expect(mockGetAllEnvironments).not.toHaveBeenCalled();
     });
 
     it("fetches environments for 'CONNECTOR'", () => {
@@ -87,6 +94,21 @@ describe("EnvironmentFilter.tsx", () => {
 
       expect(mockGetSyncConnectorsEnvironments).toHaveBeenCalled();
       expect(mockGetEnvironments).not.toHaveBeenCalled();
+      expect(mockGetAllEnvironments).not.toHaveBeenCalled();
+    });
+
+    it("fetches environments for 'ALL'", () => {
+      const WrappedEnvironmentFilter = withFiltersContext({
+        element: <EnvironmentFilter environmentsFor={"ALL"} />,
+      });
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      expect(mockGetAllEnvironments).toHaveBeenCalled();
+      expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+      expect(mockGetEnvironments).not.toHaveBeenCalled();
     });
   });
 
@@ -94,6 +116,7 @@ describe("EnvironmentFilter.tsx", () => {
     beforeAll(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
@@ -170,6 +193,7 @@ describe("EnvironmentFilter.tsx", () => {
     beforeAll(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironmentsSchema);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       const WrappedEnvironmentFilter = withFiltersContext({
         element: <EnvironmentFilter environmentsFor={"SCHEMA"} />,
@@ -244,6 +268,7 @@ describe("EnvironmentFilter.tsx", () => {
 
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
@@ -274,6 +299,7 @@ describe("EnvironmentFilter.tsx", () => {
     beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<WrappedEnvironmentFilter />, {
         queryClient: true,
@@ -307,6 +333,7 @@ describe("EnvironmentFilter.tsx", () => {
     beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<WrappedEnvironmentFilter />, {
         queryClient: true,

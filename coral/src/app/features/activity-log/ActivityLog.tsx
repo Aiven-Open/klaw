@@ -47,10 +47,7 @@ function ActivityLog() {
     <>
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key="environment"
-            environmentsFor="TOPIC_AND_ACL"
-          />,
+          <EnvironmentFilter key="environment" environmentsFor="ALL" />,
         ]}
         table={
           <ActivityLogTable
