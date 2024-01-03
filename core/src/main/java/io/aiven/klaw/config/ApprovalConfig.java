@@ -86,12 +86,12 @@ public class ApprovalConfig {
         String suffix = keyStr.toUpperCase().substring(ALL_ENTITY_TYPES.length());
         setAllEntityTypesApproves(
             suffix,
-            processApprovalsFromSettings(type, splitPropertyConfigValues(properties, keyStr)),
+            processApprovalsFromSettings(splitPropertyConfigValues(properties, keyStr)),
             entityToApprovers);
       } else {
         entityToApprovers.put(
             keyStr.toUpperCase(),
-            processApprovalsFromSettings(type, splitPropertyConfigValues(properties, keyStr)));
+            processApprovalsFromSettings(splitPropertyConfigValues(properties, keyStr)));
       }
     }
 
@@ -138,11 +138,14 @@ public class ApprovalConfig {
 
   private Map<String, List<Approval>> createDefaultApprovalMap(RequestEntityType type) {
     Map<String, List<Approval>> entityToApprovers = new HashMap<>();
-    setAllEntityTypesApproves(
-        null,
-        processApprovalsFromSettings(type, ApprovalType.RESOURCE_TEAM_OWNER.name()),
-        entityToApprovers);
+    setAllEntityTypesApproves(null, processApprovalsFromSettings(type.name()), entityToApprovers);
+    // Set all Defaults.
     if (type.equals(RequestEntityType.ACL)) {
+      // By Default ACl will also have the Topic Team Owner as an approver
+      setAllEntityTypesApproves(
+          null,
+          processApprovalsFromSettings(ApprovalType.TOPIC_TEAM_OWNER.name()),
+          entityToApprovers);
       // If ACL by default add the additional ACL approval on the CLAIM
       entityToApprovers
           .get(RequestOperationType.CLAIM.name())
@@ -152,6 +155,16 @@ public class ApprovalConfig {
       entityToApprovers
           .get(RequestOperationType.DELETE.name())
           .add(createDefaultApproval(ApprovalType.ACL_TEAM_OWNER));
+    } else if (type.equals(RequestEntityType.TOPIC) || type.equals(RequestEntityType.SCHEMA)) {
+      setAllEntityTypesApproves(
+          null,
+          processApprovalsFromSettings(ApprovalType.TOPIC_TEAM_OWNER.name()),
+          entityToApprovers);
+    } else if (type.equals(RequestEntityType.CONNECTOR)) {
+      setAllEntityTypesApproves(
+          null,
+          processApprovalsFromSettings(ApprovalType.CONNECTOR_TEAM_OWNER.name()),
+          entityToApprovers);
     }
 
     return entityToApprovers;
@@ -166,17 +179,13 @@ public class ApprovalConfig {
     }
   }
 
-  private List<Approval> processApprovalsFromSettings(
-      RequestEntityType type, String... configuredApprovals) {
+  private List<Approval> processApprovalsFromSettings(String... configuredApprovals) {
     List<Approval> approvals = new ArrayList<>();
 
     for (String str : configuredApprovals) {
 
-      if (str.equalsIgnoreCase(ApprovalType.RESOURCE_TEAM_OWNER.name())) {
-        approvals.add(createDefaultApproval(ApprovalType.RESOURCE_TEAM_OWNER));
-      } else if (str.equalsIgnoreCase(ApprovalType.ACL_TEAM_OWNER.name())
-          && type.equals(RequestEntityType.ACL)) {
-        approvals.add(createDefaultApproval(ApprovalType.ACL_TEAM_OWNER));
+      if (ApprovalType.isApprovalType(str)) {
+        approvals.add(createDefaultApproval(ApprovalType.of(str)));
       } else {
         Approval teamApproval = createDefaultApproval(ApprovalType.TEAM);
         teamApproval.setRequiredApprover(str);

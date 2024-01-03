@@ -83,7 +83,8 @@ public class ApprovalService {
       throws KlawException {
     List<Approval> approvals = getApprovers(entityType, operationType, envName);
     for (Approval app : approvals) {
-      if (app.getApprovalType() == ApprovalType.RESOURCE_TEAM_OWNER) {
+      if (app.getApprovalType() == ApprovalType.TOPIC_TEAM_OWNER
+          || app.getApprovalType() == ApprovalType.CONNECTOR_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, resourceNameId));
       } else if (app.getApprovalType() == ApprovalType.ACL_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, aclOwnerId));
@@ -207,7 +208,7 @@ public class ApprovalService {
         if ((completedApprovalTypes.isEmpty() || allowMultiApproval)
             && completedApprovalTypes.add(approval.getApprovalType())) {
           switch (approval.getApprovalType()) {
-            case RESOURCE_TEAM_OWNER -> isResourceApprovalSatisfied(
+            case TOPIC_TEAM_OWNER, CONNECTOR_TEAM_OWNER -> isResourceApprovalSatisfied(
                 user.get(), resourceOwnerId, approval, approvals);
 
             case ACL_TEAM_OWNER -> isAclApprovalSatisfied(

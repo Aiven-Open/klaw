@@ -51,20 +51,19 @@ class ApprovalConfigurationTest {
 
     List<Approval> connectorApprovals =
         defaultList.getApprovalsForRequest(
-            RequestEntityType.SCHEMA, RequestOperationType.UPDATE, PRD_ENV, 10, null, 101);
+            RequestEntityType.CONNECTOR, RequestOperationType.UPDATE, PRD_ENV, 10, null, 101);
 
     assertThat(aclApprovals.size()).isEqualTo(2);
     assertThat(topicApprovals.size()).isEqualTo(1);
     assertThat(schemaApprovals.size()).isEqualTo(1);
     assertThat(connectorApprovals.size()).isEqualTo(1);
 
-    assertThat(aclApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+    assertThat(aclApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
     assertThat(aclApprovals.get(1).getApprovalType()).isEqualTo(ApprovalType.ACL_TEAM_OWNER);
-    assertThat(topicApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
-    assertThat(schemaApprovals.get(0).getApprovalType())
-        .isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+    assertThat(topicApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
+    assertThat(schemaApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
     assertThat(connectorApprovals.get(0).getApprovalType())
-        .isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+        .isEqualTo(ApprovalType.CONNECTOR_TEAM_OWNER);
   }
 
   @Test
@@ -94,13 +93,12 @@ class ApprovalConfigurationTest {
     assertThat(schemaApprovals.size()).isEqualTo(1);
     assertThat(connectorApprovals.size()).isEqualTo(1);
 
-    assertThat(aclApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+    assertThat(aclApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
     assertThat(aclApprovals.get(1).getApprovalType()).isEqualTo(ApprovalType.ACL_TEAM_OWNER);
-    assertThat(topicApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
-    assertThat(schemaApprovals.get(0).getApprovalType())
-        .isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+    assertThat(topicApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
+    assertThat(schemaApprovals.get(0).getApprovalType()).isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
     assertThat(connectorApprovals.get(0).getApprovalType())
-        .isEqualTo(ApprovalType.RESOURCE_TEAM_OWNER);
+        .isEqualTo(ApprovalType.TOPIC_TEAM_OWNER);
   }
 
   @Test

@@ -5,7 +5,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Slf4j
 public enum ApprovalType {
-  RESOURCE_TEAM_OWNER,
+  TOPIC_TEAM_OWNER,
+  CONNECTOR_TEAM_OWNER,
   ACL_TEAM_OWNER,
   TEAM;
 
@@ -18,5 +19,9 @@ public enum ApprovalType {
     }
     log.warn("Unknown ApprovalType value '{}'", value);
     return null;
+  }
+
+  public static boolean isApprovalType(@Nullable String value) {
+    return of(value) != null;
   }
 }
