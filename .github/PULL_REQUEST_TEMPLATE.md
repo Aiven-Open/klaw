@@ -7,6 +7,7 @@ Resolves: #xxxxx
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
+- [ ] Dependency update
 - [ ] Docs update
 - [ ] CI update
 
