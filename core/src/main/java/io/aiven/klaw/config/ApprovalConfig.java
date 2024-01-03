@@ -185,6 +185,9 @@ public class ApprovalConfig {
     for (String str : configuredApprovals) {
 
       if (ApprovalType.isApprovalType(str)) {
+        // TODO If this is expanded to allow multi approval to be used with connectors and topics
+        // add a check to make sure a CONNECTOR_TEAM_OWNER OR ACL_TEAM_OWNER can't be added to a
+        // TOPIC or SCHEMA Approval etc.
         approvals.add(createDefaultApproval(ApprovalType.of(str)));
       } else {
         Approval teamApproval = createDefaultApproval(ApprovalType.TEAM);

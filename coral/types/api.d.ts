@@ -875,7 +875,7 @@ export type components = {
       /** Format: int32 */
       approvalId?: number;
       /** @enum {string} */
-      approvalType?: "RESOURCE_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
+      approvalType?: "TOPIC_TEAM_OWNER" | "CONNECTOR_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
       requiredApprover?: string;
       approverName?: string;
       /** Format: int32 */

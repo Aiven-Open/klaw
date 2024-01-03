@@ -17,10 +17,6 @@ public class AclApproval extends Approval implements Serializable {
   // Json Ignore here stops a recursive pull of data causing a stack overflow
   private AclRequests parent;
 
-  public AclApproval(AclApproval approval) {
-    super(approval);
-  }
-
   public AclApproval(Approval approval) {
     super(approval);
   }
