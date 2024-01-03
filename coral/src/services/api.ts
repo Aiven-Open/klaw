@@ -209,6 +209,7 @@ const API_PATHS = {
     | "getSchemaRegEnv"
     | "addEnvToCache"
     | "removeEnvFromCache"
+    | "claimAcl"
   >]: keyof ApiPaths;
 };
 
@@ -231,7 +232,7 @@ type RemoveEnvFromCache = (params: {
   tenantId: string;
   id: string;
 }) => keyof ApiPaths;
-
+type ClaimAcl = (params: { aclId: number }) => keyof ApiPaths;
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
     source,
@@ -254,6 +255,8 @@ const DYNAMIC_API_PATHS = {
     `/cache/tenant/${tenantId}/entityType/environment` as keyof ApiPaths,
   removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
     `/cache/tenant/${tenantId}/entityType/environment/id/${id}` as keyof ApiPaths,
+  claimAcl: ({ aclId }: Parameters<ClaimAcl>[0]) =>
+    `/acl/claim/${aclId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
@@ -265,6 +268,7 @@ const DYNAMIC_API_PATHS = {
     | "getSchemaRegEnv"
     | "addEnvToCache"
     | "removeEnvFromCache"
+    | "claimAcl"
   >]:
     | GetSchemaOfTopicFromSource
     | GetSwitchTeams
@@ -273,7 +277,8 @@ const DYNAMIC_API_PATHS = {
     | GetConnectEnv
     | GetSchemaRegEnv
     | AddEnvToCache
-    | RemoveEnvFromCache;
+    | RemoveEnvFromCache
+    | ClaimAcl;
 };
 
 type Params = URLSearchParams;

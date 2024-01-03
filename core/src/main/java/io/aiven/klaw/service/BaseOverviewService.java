@@ -249,6 +249,7 @@ public abstract class BaseOverviewService {
                     .getKafkaFlavor()));
         if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam)) {
           mp.setShowDeleteAcl(true);
+
           // Only add ACL info if it is the owning team that is requesting it
           mp.setAcl_ip(aclSotItem.getAclip());
           mp.setAcl_ssl(aclSotItem.getAclssl());
@@ -256,7 +257,10 @@ public abstract class BaseOverviewService {
           mp.setAcl_ip(MASKED_FOR_SECURITY);
           mp.setAcl_ssl(MASKED_FOR_SECURITY);
         }
-
+        // Claim Acl is available to teams that are unable to delete the Acl as they do not own the
+        // ACL.
+        // Will need to add an extra check when an acl claim is opened.
+        mp.setShowClaimAcl(!mp.isShowDeleteAcl());
         aclList.add(mp);
       }
     }
