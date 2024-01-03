@@ -88,6 +88,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 0,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
     {
@@ -102,6 +103,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 0,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
     {
@@ -116,6 +118,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 0,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
   ],

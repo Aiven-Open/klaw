@@ -13,6 +13,7 @@ public class AclOverviewInfo {
   @NotNull private String environmentName;
   @NotNull private KafkaFlavors kafkaFlavorType;
   @NotNull private boolean showDeleteAcl;
+  @NotNull private boolean showClaimAcl;
   @NotNull private int teamid;
   @NotNull private String teamname;
   @NotNull private String topicname;

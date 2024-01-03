@@ -1217,4 +1217,54 @@ databaseChangeLog:
           - dropColumn:
               columnName: licenseexpiry
               tableName: kwtenants
+    - changeSet:
+        id: 29-11-2023 Add acl approval table
+        author: aindriu-aiven
+        changes:
+          - createTable:
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: approvalid
+                    autoIncrement: true
+                    name: approvalid
+                    type: INT
+                - column:
+                    constraints:
+                      nullable: false
+                    name: req_no
+                    type: INT
+                - column:
+                    constraints:
+                      nullable: false
+                    name: tenantid
+                    type: INT
+                - column:
+                    name: approvaltype
+                    type: VARCHAR(25)
+                - column:
+                    name: requiredapprover
+                    type: VARCHAR(25)
+                - column:
+                    name: approvername
+                    type: VARCHAR2(25)
+                - column:
+                    name: approverteamid
+                    type: VARCHAR2(25)
+                - column:
+                    name: approverteamname
+                    type: VARCHAR2(25)
+              tableName: kwaclapprovals
+    - changeSet:
+        id: 13-12-2023 Add the ACLId column to acl requests table.
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: associatedaclid
+                    type: INT
+              tableName: kwaclrequests
 

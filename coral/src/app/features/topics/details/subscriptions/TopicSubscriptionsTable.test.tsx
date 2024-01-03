@@ -18,6 +18,7 @@ const mockUserSubs: AclOverviewInfo[] = [
     teamid: 0,
     aclPatternType: "LITERAL",
     showDeleteAcl: true,
+    showClaimAcl: false,
     kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
   },
   {
@@ -32,6 +33,7 @@ const mockUserSubs: AclOverviewInfo[] = [
     teamid: 0,
     aclPatternType: "LITERAL",
     showDeleteAcl: true,
+    showClaimAcl: false,
     kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
   },
   {
@@ -46,6 +48,7 @@ const mockUserSubs: AclOverviewInfo[] = [
     teamid: 0,
     aclPatternType: "LITERAL",
     showDeleteAcl: true,
+    showClaimAcl: false,
     kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
   },
 ];
@@ -58,6 +61,7 @@ const mockedPrefixedSubs: AclOverviewInfo[] = [
     environmentName: "TST",
     kafkaFlavorType: "APACHE_KAFKA",
     showDeleteAcl: true,
+    showClaimAcl: false,
     teamid: 1003,
     teamname: "Ospo",
     topicname: "aivendemot",
@@ -74,6 +78,7 @@ const mockedTransactionalSubs: AclOverviewInfo[] = [
     environmentName: "TST",
     kafkaFlavorType: "APACHE_KAFKA",
     showDeleteAcl: true,
+    showClaimAcl: false,
     teamid: 1003,
     teamname: "Ospo",
     topicname: "aivendemotopic",
