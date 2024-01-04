@@ -44,7 +44,7 @@ interface RequestsWaitingForApprovalWithTotal
   TOTAL_NOTIFICATIONS: number;
 }
 
-type ActivityLog = KlawApiModel<"ActivityLog">;
+type ActivityLog = KlawApiModel<"ActivityLogModel">;
 
 export type {
   ActivityLog,
