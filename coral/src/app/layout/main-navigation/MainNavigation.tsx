@@ -38,8 +38,9 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={database}
-            to={`/index`}
+            to={Routes.DASHBOARD}
             linkText={"Dashboard"}
+            active={pathname === Routes.DASHBOARD}
           />
         </li>
         <li>
