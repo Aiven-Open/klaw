@@ -127,19 +127,6 @@ public class InsertDataJdbc {
     connectorRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
-    //    ActivityLog activityLog = new ActivityLog();
-    //    activityLog.setReq_no(getNextActivityLogRequestId(connectorRequest.getTenantId()));
-    //    activityLog.setActivityName("ConnectorRequest");
-    //    activityLog.setActivityType(connectorRequest.getRequestOperationType());
-    //    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    //    activityLog.setTeamId(userInfo.getTeamId());
-    //    activityLog.setDetails(
-    //        connectorRequest.getConnectorName() + "," +
-    // connectorRequest.getRequestOperationType());
-    //    activityLog.setUser(connectorRequest.getRequestor());
-    //    activityLog.setEnv(connectorRequest.getEnvironment());
-    //    activityLog.setTenantId(connectorRequest.getTenantId());
-
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
 
     return hashMap;
@@ -249,18 +236,6 @@ public class InsertDataJdbc {
     operationalRequest.setRequestStatus(RequestStatus.CREATED.value);
     operationalRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     operationalRequestsRepo.save(operationalRequest);
-
-    //    ActivityLog activityLog = new ActivityLog();
-    //    activityLog.setReq_no(getNextActivityLogRequestId(operationalRequest.getTenantId()));
-    //    activityLog.setActivityName("OperationalRequest");
-    //    activityLog.setActivityType(operationalRequest.getOperationalRequestType().value);
-    //    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    //    activityLog.setTeamId(userInfo.getTeamId());
-    //    activityLog.setDetails(
-    //        operationalRequest.getTopicname() + "-" + operationalRequest.getConsumerGroup());
-    //    activityLog.setUser(operationalRequest.getRequestor());
-    //    activityLog.setEnv(operationalRequest.getEnvironment());
-    //    activityLog.setTenantId(operationalRequest.getTenantId());
 
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     return hashMap;
