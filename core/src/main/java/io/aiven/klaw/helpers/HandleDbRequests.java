@@ -57,6 +57,15 @@ public interface HandleDbRequests {
 
   String insertMetrics(KwMetrics kwMetrics);
 
+  void insertIntoActivityLog(
+      String requestType,
+      int tenantId,
+      String operationType,
+      int teamId,
+      String details,
+      String envId,
+      String requestor);
+
   /*--------------------Select */
 
   List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(

@@ -666,10 +666,28 @@ public class AclControllerService {
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
       notifyUserType = ACL_REQUEST_FAILURE;
     } else {
-      saveToTopicHistory(userDetails, tenantId, aclReq);
+      updateAuditAndHistory(userDetails, tenantId, dbHandle, aclReq);
     }
 
     return emailAndReturnClaimUpdate(aclReq, dbHandle, notifyUserType, updateAclReqStatus);
+  }
+
+  private void updateAuditAndHistory(
+      String userDetails, int tenantId, HandleDbRequests dbHandle, AclRequests aclReq) {
+    saveToTopicHistory(userDetails, tenantId, aclReq);
+    dbHandle.insertIntoActivityLog(
+        RequestEntityType.ACL.value,
+        tenantId,
+        aclReq.getRequestOperationType(),
+        aclReq.getTeamId(),
+        aclReq.getTopicname()
+            + "-"
+            + aclReq.getAclType()
+            + (aclReq.getAcl_ip() != null ? aclReq.getAcl_ip() + "-" : "")
+            + (aclReq.getAcl_ssl() != null ? aclReq.getAcl_ssl() + "-" : "")
+            + (aclReq.getConsumergroup() != null ? aclReq.getConsumergroup() : ""),
+        aclReq.getEnvironment(),
+        aclReq.getRequestor());
   }
 
   private ApiResponse approveClaimAcl(

@@ -1762,26 +1762,26 @@ export type components = {
       password?: string;
       accountFound?: boolean;
     };
-    ActivityLog: {
+    ActivityLogModel: {
       /** Format: int32 */
-      req_no?: number;
-      /** Format: int32 */
-      tenantId?: number;
-      activityName?: string;
-      activityType?: string;
+      req_no: number;
+      activityName: string;
+      activityType: string;
       /** Format: date-time */
-      activityTime?: string;
-      activityTimeString?: string;
-      details?: string;
-      user?: string;
+      activityTime: string;
+      activityTimeString: string;
+      details: string;
+      user: string;
+      team: string;
       /** Format: int32 */
-      teamId?: number;
-      env?: string;
-      envName?: string;
-      team?: string;
-      totalNoPages?: string;
-      currentPage?: string;
-      allPageNos?: string[];
+      teamId: number;
+      env: string;
+      /** Format: int32 */
+      tenantId: number;
+      envName: string;
+      totalNoPages: string;
+      allPageNos: string[];
+      currentPage: string;
     };
     AclsCountPerEnv: {
       status?: string;
@@ -4247,7 +4247,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ActivityLog"][];
+          "application/json": components["schemas"]["ActivityLogModel"][];
         };
       };
     };

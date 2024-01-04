@@ -124,6 +124,19 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public void insertIntoActivityLog(
+      String requestType,
+      int tenantId,
+      String operationType,
+      int teamId,
+      String details,
+      String envId,
+      String requestor) {
+    jdbcInsertHelper.insertIntoActivityLog(
+        requestType, tenantId, operationType, teamId, details, envId, requestor);
+  }
+
+  @Override
   public List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
       String topicName, int teamId, int tenantId) {
     return jdbcSelectHelper.getTopicsByTopicNameAndTeamId(topicName, teamId, tenantId);

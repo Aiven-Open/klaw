@@ -25,6 +25,7 @@ import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -441,6 +442,20 @@ public class OperationalRequestsService {
         updateOffsetReqStatus =
             dbHandle.updateOperationalChangeRequest(
                 operationalRequest, userName, RequestStatus.APPROVED);
+
+        dbHandle.insertIntoActivityLog(
+            RequestEntityType.OPERATIONAL.value,
+            tenantId,
+            OperationalRequestType.RESET_CONSUMER_OFFSETS.value,
+            operationalRequest.getRequestingTeamId(),
+            "Topic : "
+                + operationalRequest.getTopicname()
+                + " ConsumerGroup : "
+                + operationalRequest.getConsumerGroup()
+                + " ResetType :"
+                + operationalRequest.getOffsetResetType(),
+            operationalRequest.getEnvironment(),
+            operationalRequest.getRequestor());
 
         mailService.sendMail(
             operationalRequest.getTopicname(),

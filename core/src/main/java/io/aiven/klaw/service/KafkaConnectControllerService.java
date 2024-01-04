@@ -38,6 +38,7 @@ import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
@@ -709,8 +710,8 @@ public class KafkaConnectControllerService {
               tenantId);
 
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
-        setConnectorHistory(connectorRequest, userDetails, tenantId);
         updateConnectorReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
+        updateAuditAndHistory(userDetails, tenantId, connectorRequest, dbHandle);
         mailService.sendMail(
             connectorRequest.getConnectorName(),
             null,
@@ -726,6 +727,22 @@ public class KafkaConnectControllerService {
     return ApiResultStatus.SUCCESS.value.equalsIgnoreCase(updateConnectorReqStatus)
         ? ApiResponse.ok(updateConnectorReqStatus)
         : ApiResponse.notOk(updateConnectorReqStatus);
+  }
+
+  private void updateAuditAndHistory(
+      String userDetails,
+      int tenantId,
+      KafkaConnectorRequest connectorRequest,
+      HandleDbRequests dbHandle) {
+    setConnectorHistory(connectorRequest, userDetails, tenantId);
+    dbHandle.insertIntoActivityLog(
+        RequestEntityType.CONNECTOR.value,
+        tenantId,
+        connectorRequest.getRequestOperationType(),
+        connectorRequest.getTeamId(),
+        "Connector : " + connectorRequest.getConnectorName(),
+        connectorRequest.getEnvironment(),
+        connectorRequest.getRequestor());
   }
 
   private void setConnectorHistory(
