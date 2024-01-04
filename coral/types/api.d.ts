@@ -556,7 +556,7 @@ export type components = {
       errCode?: string;
       message: string;
       debugMessage?: string;
-      data?: Record<string, never>;
+      data?: unknown;
       /** Format: date-time */
       timestamp?: string;
     };
@@ -573,10 +573,6 @@ export type components = {
       switchAllowedTeamNames?: string[];
       /** Format: int32 */
       tenantId?: number;
-    };
-    TopicConfigEntry: {
-      configKey?: string;
-      configValue?: string;
     };
     TopicUpdateRequestModel: {
       /** @enum {string} */
@@ -639,7 +635,7 @@ export type components = {
       sourceEnv?: string;
       selectedTeam?: string;
       typeOfSync?: string;
-      topicDetails?: Record<string, never>[];
+      topicDetails?: unknown[];
       topicSearchFilter?: string;
     };
     SyncConnectorUpdates: {
@@ -871,60 +867,6 @@ export type components = {
       connectorName: string;
       env: string;
     };
-    AclApproval: {
-      /** Format: int32 */
-      approvalId?: number;
-      /** @enum {string} */
-      approvalType?: "TOPIC_TEAM_OWNER" | "CONNECTOR_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
-      requiredApprover?: string;
-      approverName?: string;
-      /** Format: int32 */
-      approverTeamId?: number;
-      approverTeamName?: string;
-      parent?: components["schemas"]["AclRequests"];
-    };
-    AclRequests: {
-      /** Format: int32 */
-      req_no?: number;
-      /** Format: int32 */
-      tenantId?: number;
-      topicname?: string;
-      environment?: string;
-      environmentName?: string;
-      /** Format: int32 */
-      teamId?: number;
-      /** Format: int32 */
-      requestingteam?: number;
-      appname?: string;
-      aclType?: string;
-      consumergroup?: string;
-      requestor?: string;
-      /** Format: date-time */
-      requesttime?: string;
-      requesttimestring?: string;
-      requestStatus?: string;
-      remarks?: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      requestOperationType?: string;
-      aclPatternType?: string;
-      aclResourceType?: string;
-      transactionalId?: string;
-      otherParams?: string;
-      jsonParams?: {
-        [key: string]: string;
-      };
-      /** @enum {string} */
-      aclIpPrincipleType?: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /** Format: int32 */
-      associatedAclId?: number;
-      totalNoPages?: string;
-      currentPage?: string;
-      allPageNos?: string[];
-    };
     AclRequestsModel: {
       /** @enum {string} */
       requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
@@ -1102,19 +1044,6 @@ export type components = {
       totalNoPages?: string;
       allPageNos?: string[];
     };
-    SchemaSubjectInfoResponse: {
-      topic?: string;
-      schemaVersions?: number[];
-      teamname?: string;
-      /** Format: int32 */
-      teamId?: number;
-      possibleTeams?: string[];
-      remarks?: string;
-      envId?: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-    };
     SyncSchemasList: {
       schemaSubjectInfoResponseList?: components["schemas"]["SchemaSubjectInfoResponse"][];
       /** Format: int32 */
@@ -1159,26 +1088,8 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
-    RequestEntityStatusCount: {
-      /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      requestStatusCountSet?: components["schemas"]["RequestStatusCount"][];
-      requestsOperationTypeCountSet?: components["schemas"]["RequestsOperationTypeCount"][];
-    };
-    RequestStatusCount: {
-      /** @enum {string} */
-      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: int64 */
-      count?: number;
-    };
     RequestsCountOverview: {
       requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
-    };
-    RequestsOperationTypeCount: {
-      /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** Format: int64 */
-      count?: number;
     };
     OperationalRequestsResponseModel: {
       topicname: string;
@@ -1255,27 +1166,6 @@ export type components = {
       error?: string;
       status: boolean;
     };
-    AclOverviewInfo: {
-      req_no: string;
-      aclPatternType: string;
-      environment: string;
-      environmentName: string;
-      /** @enum {string} */
-      kafkaFlavorType: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
-      showDeleteAcl: boolean;
-      showClaimAcl: boolean;
-      /** Format: int32 */
-      teamid: number;
-      teamname: string;
-      topicname: string;
-      topictype: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      acl_ips?: string[];
-      acl_ssls?: string[];
-      consumergroup?: string;
-      transactionalId?: string;
-    };
     PromotionStatus: {
       /** @enum {string} */
       status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
@@ -1284,15 +1174,6 @@ export type components = {
       targetEnvId?: string;
       error?: string;
       topicName?: string;
-    };
-    ResourceHistory: {
-      environmentName: string;
-      teamName: string;
-      requestedBy: string;
-      requestedTime: string;
-      approvedBy: string;
-      approvedTime: string;
-      remarks: string;
     };
     TopicOverview: {
       topicExists: boolean;
@@ -1310,36 +1191,6 @@ export type components = {
       topicDocumentation?: string;
       /** Format: int32 */
       topicIdForDocumentation: number;
-    };
-    TopicOverviewInfo: {
-      topicName: string;
-      /** Format: int32 */
-      noOfPartitions: number;
-      noOfReplicas: string;
-      description: string;
-      advancedTopicConfiguration?: {
-        [key: string]: string;
-      };
-      teamname: string;
-      /** Format: int32 */
-      teamId: number;
-      envId: string;
-      envName: string;
-      showEditTopic: boolean;
-      showDeleteTopic: boolean;
-      topicDeletable: boolean;
-      topicOwner: boolean;
-      highestEnv: boolean;
-      hasOpenRequest: boolean;
-      hasOpenTopicRequest: boolean;
-      hasOpenACLRequest: boolean;
-      hasOpenSchemaRequest: boolean;
-      hasOpenClaimRequest: boolean;
-      hasOpenRequestOnAnyEnv: boolean;
-      hasACL: boolean;
-      hasSchema: boolean;
-      /** Format: int32 */
-      clusterId: number;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1404,12 +1255,6 @@ export type components = {
       fontFamily?: string;
       fontStyle?: string;
     };
-    YAx: {
-      id?: string;
-      type?: string;
-      display?: boolean;
-      position?: string;
-    };
     SyncTopicsList: {
       resultSet?: components["schemas"]["TopicSyncResponseModel"][];
       /** Format: int32 */
@@ -1417,47 +1262,6 @@ export type components = {
       /** Format: int32 */
       allTopicWarningsCount?: number;
       topicsLoadingStatus?: boolean;
-    };
-    TopicSyncResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      /** Format: int32 */
-      topicid: number;
-      deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
-      approvingTeamId?: string;
-      sequence?: string;
-      possibleTeams?: string[];
-      validationStatus?: string;
-      validatedTopic?: boolean;
-      deletable?: boolean;
-      editable?: boolean;
     };
     KafkaConnectorModelResponse: {
       /** Format: int32 */
@@ -1762,26 +1566,26 @@ export type components = {
       password?: string;
       accountFound?: boolean;
     };
-    ActivityLog: {
+    ActivityLogModel: {
       /** Format: int32 */
-      req_no?: number;
-      /** Format: int32 */
-      tenantId?: number;
-      activityName?: string;
-      activityType?: string;
+      req_no: number;
+      activityName: string;
+      activityType: string;
       /** Format: date-time */
-      activityTime?: string;
-      activityTimeString?: string;
-      details?: string;
-      user?: string;
+      activityTime: string;
+      activityTimeString: string;
+      details: string;
+      user: string;
+      team: string;
       /** Format: int32 */
-      teamId?: number;
-      env?: string;
-      envName?: string;
-      team?: string;
-      totalNoPages?: string;
-      currentPage?: string;
-      allPageNos?: string[];
+      teamId: number;
+      env: string;
+      /** Format: int32 */
+      tenantId: number;
+      envName: string;
+      totalNoPages: string;
+      allPageNos: string[];
+      currentPage: string;
     };
     AclsCountPerEnv: {
       status?: string;
@@ -2248,25 +2052,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
@@ -2285,25 +2089,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
@@ -2322,25 +2126,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
@@ -4247,7 +4051,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ActivityLog"][];
+          "application/json": components["schemas"]["ActivityLogModel"][];
         };
       };
     };
