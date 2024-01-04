@@ -22,7 +22,7 @@ import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
 import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
 import RequestConnector from "src/app/pages/connectors/request";
-import Dashboard from "src/app/pages/dashboard";
+import DashboardPage from "src/app/pages/dashboard";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
 import AclRequestsPage from "src/app/pages/requests/acls";
@@ -70,7 +70,7 @@ const routes: Array<RouteObject> = [
     children: [
       createRouteBehindFeatureFlag({
         path: Routes.DASHBOARD,
-        element: <Dashboard />,
+        element: <DashboardPage />,
         featureFlag: FeatureFlag.FEATURE_FLAG_DASHBOARD,
         redirectRouteWithoutFeatureFlag: Routes.TOPICS,
       }),

@@ -1,7 +1,7 @@
 import { PageHeader } from "@aivenio/aquarium";
 import PreviewBanner from "src/app/components/PreviewBanner";
 
-const Dashboard = () => {
+const DashboardPage = () => {
   return (
     <>
       <PreviewBanner linkTarget={"/index"} />
@@ -11,4 +11,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
