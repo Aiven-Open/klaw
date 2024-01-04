@@ -1,5 +1,5 @@
 import { Box, Card, Grid } from "@aivenio/aquarium";
-import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import StatsDisplay from "src/app/components/StatsDisplay";
 import upperFirst from "lodash/upperFirst";
 
 type SchemaStatsProps = {

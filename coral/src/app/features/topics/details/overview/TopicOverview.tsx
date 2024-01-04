@@ -3,7 +3,7 @@ import add from "@aivenio/aquarium/dist/src/icons/add";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import StatsDisplay from "src/app/components/StatsDisplay";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { getTopicStats } from "src/app/features/topics/details/utils";
 import { useQuery } from "@tanstack/react-query";
