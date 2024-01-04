@@ -1,23 +1,15 @@
 import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
 import { ActivityLog } from "src/domain/requests/requests-types";
 
-// type ActivityLogsTableRow = {
-//   id: ActivityLog["req_no"];
-//   activityName: ActivityLog["activityName"];
-//   environmentName: ActivityLog["envName"];
-//   user: ActivityLog["user"];
-//   team: ActivityLog["team"];
-//   details: ActivityLog["details"];
-//   activityTimeString: ActivityLog["activityTimeString"];
-// };
 type ActivityLogsTableRow = {
-  id: number;
-  activityName: string;
-  environmentName: string;
-  user: string;
-  team: string;
-  details: string;
-  activityTimeString: string;
+  id: ActivityLog["req_no"];
+  activityName: ActivityLog["activityName"];
+  activityType: ActivityLog["activityType"];
+  environmentName: ActivityLog["envName"];
+  user: ActivityLog["user"];
+  team: ActivityLog["team"];
+  details: ActivityLog["details"];
+  activityTimeString: ActivityLog["activityTimeString"];
 };
 
 type Props = {
@@ -28,6 +20,14 @@ type Props = {
 function ActivityLogTable({ ariaLabel, activityLogs }: Props) {
   const columns: Array<DataTableColumn<ActivityLogsTableRow>> = [
     { type: "text", field: "activityName", headerName: "Activity" },
+    {
+      type: "status",
+      headerName: "Type",
+      status: ({ activityType }) => ({
+        status: "neutral",
+        text: activityType,
+      }),
+    },
     {
       type: "status",
       headerName: "Environment",
@@ -52,13 +52,14 @@ function ActivityLogTable({ ariaLabel, activityLogs }: Props) {
   const rows: ActivityLogsTableRow[] = activityLogs.map(
     (activity: ActivityLog) => {
       return {
-        id: activity.req_no || 0,
-        activityName: activity.activityName || "",
-        environmentName: activity.envName || "",
-        user: activity.user || "",
-        team: activity.team || "",
-        details: activity.details || "",
-        activityTimeString: activity.activityTimeString || "",
+        id: activity.req_no,
+        activityName: activity.activityName,
+        activityType: activity.activityType,
+        environmentName: activity.envName,
+        user: activity.user,
+        team: activity.team,
+        details: activity.details,
+        activityTimeString: activity.activityTimeString,
       };
     }
   );
