@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -12,25 +13,33 @@ import lombok.ToString;
 @ToString
 public class ActivityLogModel implements Serializable {
 
-  private Integer req_no;
+  @NotNull private Integer req_no;
 
-  private String activityName;
+  @NotNull private String activityName;
 
-  private String activityType;
+  @NotNull private String activityType;
 
-  private Timestamp activityTime;
+  @NotNull private Timestamp activityTime;
 
-  private String activityTimeString;
+  @NotNull private String activityTimeString;
 
-  private String details;
+  @NotNull private String details;
 
-  private String user;
+  @NotNull private String user;
 
-  private String team;
+  @NotNull private String team;
 
-  private String env;
+  @NotNull private Integer teamId;
 
-  private String totalNoPages;
+  @NotNull private String env;
 
-  private List<String> allPageNos;
+  @NotNull private int tenantId;
+
+  @NotNull private String envName;
+
+  @NotNull private String totalNoPages;
+
+  @NotNull private List<String> allPageNos;
+
+  @NotNull private String currentPage;
 }

@@ -212,6 +212,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
+    schemaRequest.setTeamId(1001);
 
     stubUserInfo();
     when(handleDbRequests.getSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);

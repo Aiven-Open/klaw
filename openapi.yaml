@@ -5268,7 +5268,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/ActivityLog"
+                    "$ref" : "#/components/schemas/ActivityLogModel"
                   }
                 }
               }
@@ -6865,7 +6865,7 @@
           },
           "approvalType" : {
             "type" : "string",
-            "enum" : [ "RESOURCE_TEAM_OWNER", "ACL_TEAM_OWNER", "TEAM" ]
+            "enum" : [ "TOPIC_TEAM_OWNER", "CONNECTOR_TEAM_OWNER", "ACL_TEAM_OWNER", "TEAM" ]
           },
           "requiredApprover" : {
             "type" : "string"
@@ -9403,13 +9403,9 @@
           }
         }
       },
-      "ActivityLog" : {
+      "ActivityLogModel" : {
         "properties" : {
           "req_no" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "tenantId" : {
             "type" : "integer",
             "format" : "int32"
           },
@@ -9432,6 +9428,9 @@
           "user" : {
             "type" : "string"
           },
+          "team" : {
+            "type" : "string"
+          },
           "teamId" : {
             "type" : "integer",
             "format" : "int32"
@@ -9439,16 +9438,14 @@
           "env" : {
             "type" : "string"
           },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "envName" : {
             "type" : "string"
           },
-          "team" : {
-            "type" : "string"
-          },
           "totalNoPages" : {
-            "type" : "string"
-          },
-          "currentPage" : {
             "type" : "string"
           },
           "allPageNos" : {
@@ -9456,8 +9453,12 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "currentPage" : {
+            "type" : "string"
           }
-        }
+        },
+        "required" : [ "activityName", "activityTime", "activityTimeString", "activityType", "allPageNos", "currentPage", "details", "env", "envName", "req_no", "team", "teamId", "tenantId", "totalNoPages", "user" ]
       },
       "AclsCountPerEnv" : {
         "properties" : {
