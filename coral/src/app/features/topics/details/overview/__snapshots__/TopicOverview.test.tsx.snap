@@ -71,9 +71,6 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             class="flex w-full flex-col"
           >
             <div
-              class="typography-subheading text-grey-100 whitespace-nowrap mb-3"
-            />
-            <div
               class="typography-default text-grey-70 flex-grow"
             >
               <div
