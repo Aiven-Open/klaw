@@ -1,11 +1,13 @@
 package io.aiven.klaw.model.requests;
 
+import io.aiven.klaw.dao.AclApproval;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,4 +58,6 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
   private String aclResourceType;
 
   private String otherParams;
+
+  List<AclApproval> approvals;
 }

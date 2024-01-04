@@ -55,6 +55,7 @@ const testSelectedSubAiven: AclOverviewInfo = {
   teamid: 1003,
   aclPatternType: "LITERAL",
   showDeleteAcl: true,
+  showClaimAcl: false,
   kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
 };
 
@@ -70,6 +71,7 @@ const testSelectedSubNonAiven: AclOverviewInfo = {
   teamid: 1003,
   aclPatternType: "IP",
   showDeleteAcl: true,
+  showClaimAcl: false,
   kafkaFlavorType: "APACHE_KAFKA",
 };
 
@@ -85,6 +87,7 @@ const testNotOwnerSelectedSubAiven: AclOverviewInfo = {
   teamid: 1003,
   aclPatternType: "LITERAL",
   showDeleteAcl: true,
+  showClaimAcl: false,
   kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
 };
 

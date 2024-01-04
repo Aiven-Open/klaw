@@ -361,6 +361,32 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public String claimAclRequest(AclRequests aclRequests, RequestStatus requestStatus) {
+    log.debug("claimAclRequest {} {}", aclRequests.getTopicname());
+
+    aclRequests.setRequestStatus(requestStatus.value);
+    if (requestStatus.equals(RequestStatus.APPROVED)) {
+      aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+    }
+    if (aclRequests.getApprovals() != null) {
+      AclRequests parent = new AclRequests();
+      parent.setReq_no(aclRequests.getReq_no());
+      parent.setTenantId(aclRequests.getTenantId());
+      for (AclApproval req : aclRequests.getApprovals()) {
+        req.setParent(parent);
+      }
+    }
+    aclRequestsRepo.save(aclRequests);
+
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  public String updateAcl(Acl acl) {
+
+    aclRepo.save(acl);
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   public String updatePassword(String username, String password) {
     log.debug("updatePassword {}", username);
     Optional<UserInfo> userRec = userInfoRepo.findById(username);
