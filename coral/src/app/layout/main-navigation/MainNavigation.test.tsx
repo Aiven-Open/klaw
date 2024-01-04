@@ -31,7 +31,7 @@ jest.mock("src/services/feature-flags/utils", () => ({
 const navLinks = [
   {
     name: "Dashboard",
-    linkTo: "/index",
+    linkTo: "/",
   },
   {
     name: "Topics",
