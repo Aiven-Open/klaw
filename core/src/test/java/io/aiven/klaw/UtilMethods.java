@@ -187,6 +187,14 @@ public class UtilMethods {
     return activityLogs;
   }
 
+  public List<ActivityLogModel> getLogModels() {
+    List<ActivityLogModel> activityLogs = new ArrayList<>();
+    ActivityLogModel activityLog = new ActivityLogModel();
+    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
+    activityLogs.add(activityLog);
+    return activityLogs;
+  }
+
   public Topic getTopic(String topicName) {
     Topic topic = new Topic();
     topic.setTeamId(3);
