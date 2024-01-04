@@ -761,14 +761,6 @@ public class TopicControllerService {
     }
 
     if (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
-      dbHandle.insertIntoActivityLog(
-          RequestEntityType.TOPIC.value,
-          tenantId,
-          topicRequest.getRequestOperationType(),
-          topicRequest.getTeamId(),
-          RequestEntityType.TOPIC.value + " : " + topicRequest.getTopicname(),
-          topicRequest.getEnvironment(),
-          topicRequest.getRequestor());
       commonUtilsService.updateMetadata(
           tenantId, EntityType.TOPICS, MetadataOperationType.CREATE, null);
     }
@@ -802,7 +794,7 @@ public class TopicControllerService {
     updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getMessage();
 
     if (response.getBody().isSuccess()) {
-      saveToTopicHistory(userName, tenantId, topicRequest);
+      updateAuditAndHistory(userName, tenantId, topicRequest, dbHandle);
 
       updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userName).getResultStatus();
       mailService.sendMail(
@@ -818,6 +810,19 @@ public class TopicControllerService {
     }
     updateEnvStatus(response, manageDatabase, tenantId, topicRequest.getEnvironment());
     return updateTopicReqStatus;
+  }
+
+  private void updateAuditAndHistory(
+      String userName, int tenantId, TopicRequest topicRequest, HandleDbRequests dbHandle) {
+    saveToTopicHistory(userName, tenantId, topicRequest);
+    dbHandle.insertIntoActivityLog(
+        RequestEntityType.TOPIC.value,
+        tenantId,
+        topicRequest.getRequestOperationType(),
+        topicRequest.getTeamId(),
+        RequestEntityType.TOPIC.value + " : " + topicRequest.getTopicname(),
+        topicRequest.getEnvironment(),
+        topicRequest.getRequestor());
   }
 
   private void saveToTopicHistory(String userName, int tenantId, TopicRequest topicRequest) {

@@ -548,7 +548,7 @@ public class InsertDataJdbc {
       String requestor) {
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(tenantId));
-    activityLog.setActivityName(requestType + "Request");
+    activityLog.setActivityName(requestType + " Request");
     activityLog.setActivityType(operationType);
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(teamId);

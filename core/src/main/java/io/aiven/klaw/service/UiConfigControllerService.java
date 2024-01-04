@@ -10,9 +10,11 @@ import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -85,12 +87,12 @@ public class UiConfigControllerService {
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if ("SchemaRequest".equalsIgnoreCase(activityName)) {
+    if (StringUtils.containsIgnoreCase(activityName, RequestEntityType.SCHEMA.value)) {
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    } else if ("ConnectorRequest".equalsIgnoreCase(activityName)) {
+    } else if (StringUtils.containsIgnoreCase(activityName, RequestEntityType.CONNECTOR.value)) {
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
