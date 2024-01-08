@@ -43,12 +43,12 @@ function RequestsDropdown() {
       <DropdownMenu.Trigger>
         <Button.Ghost
           aria-label={
-            TOTAL_NOTIFICATIONS > 0
+            TOTAL_NOTIFICATIONS !== undefined && TOTAL_NOTIFICATIONS > 0
               ? `See ${TOTAL_NOTIFICATIONS} pending requests`
               : `No pending requests`
           }
         >
-          {TOTAL_NOTIFICATIONS > 0 ? (
+          {TOTAL_NOTIFICATIONS !== undefined && TOTAL_NOTIFICATIONS > 0 ? (
             <Badge.Notification>
               <Icon icon={notifications} fontSize={"20px"} color={"grey-0"} />
             </Badge.Notification>
