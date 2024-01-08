@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
@@ -87,12 +86,10 @@ describe("TopicDocumentation", () => {
             success: true,
             message: "",
           });
-          customRender(
-            <AquariumContext>
-              <TopicDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<TopicDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(cleanup);
@@ -119,12 +116,10 @@ describe("TopicDocumentation", () => {
             success: true,
             message: "",
           });
-          customRender(
-            <AquariumContext>
-              <TopicDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<TopicDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterEach(cleanup);
@@ -192,12 +187,10 @@ describe("TopicDocumentation", () => {
             message: "",
           });
 
-          customRender(
-            <AquariumContext>
-              <TopicDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<TopicDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(cleanup);
@@ -241,12 +234,10 @@ describe("TopicDocumentation", () => {
             },
           });
 
-          customRender(
-            <AquariumContext>
-              <TopicDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<TopicDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterEach(cleanup);
@@ -289,12 +280,10 @@ describe("TopicDocumentation", () => {
           message: "",
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -342,12 +331,10 @@ describe("TopicDocumentation", () => {
           success: true,
           message: "",
         });
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -443,12 +430,10 @@ describe("TopicDocumentation", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -492,12 +477,10 @@ describe("TopicDocumentation", () => {
           message: "this is error",
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -545,12 +528,10 @@ describe("TopicDocumentation", () => {
     describe("if the topic has no documentation yet", () => {
       beforeAll(() => {
         mockUseTopicDetails.mockReturnValue(mockTopicDetailsNotTopicOwner);
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -581,12 +562,10 @@ describe("TopicDocumentation", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);

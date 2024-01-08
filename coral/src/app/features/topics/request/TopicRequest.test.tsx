@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
@@ -51,12 +50,10 @@ describe("<TopicRequest />", () => {
           createMockEnvironmentDTO({ name: "PROD", id: "3" }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
       afterAll(() => {
         cleanup();
@@ -108,12 +105,10 @@ describe("<TopicRequest />", () => {
           createMockEnvironmentDTO({ name: "PROD", id: "3" }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -175,12 +170,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -217,12 +210,10 @@ describe("<TopicRequest />", () => {
             },
           }),
         ]);
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -260,12 +251,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -299,12 +288,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -343,12 +330,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -397,12 +382,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -471,12 +454,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
       afterAll(() => {
         cleanup();
@@ -536,12 +517,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -606,12 +585,10 @@ describe("<TopicRequest />", () => {
           }),
         ]);
 
-        customRender(
-          <AquariumContext>
-            <TopicRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<TopicRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -721,12 +698,10 @@ describe("<TopicRequest />", () => {
         }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<TopicRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
     afterAll(cleanup);
 
@@ -787,12 +762,10 @@ describe("<TopicRequest />", () => {
         }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<TopicRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
     afterEach(cleanup);
 
@@ -861,12 +834,10 @@ describe("<TopicRequest />", () => {
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<TopicRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
     afterAll(cleanup);
 
@@ -910,12 +881,10 @@ describe("<TopicRequest />", () => {
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<TopicRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       // Wait all API calls to resolve, which are required for the render
       await screen.findByRole("combobox", {
@@ -1087,12 +1056,10 @@ describe("<TopicRequest />", () => {
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<TopicRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       // Wait all API calls to resolve, which are required for the render
       await screen.findByRole("combobox", {

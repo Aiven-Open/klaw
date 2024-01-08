@@ -89,49 +89,65 @@ describe("TopicDetailsModalContent", () => {
       expect(findTerm("Environment")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.environment)).toBeVisible();
     });
+
     it("renders Request type", () => {
       expect(findTerm("Request type")).toBeVisible();
       expect(
         findDefinition(noAdvancedConfigRequest.requestOperationType)
       ).toBeVisible();
     });
+
     it("renders Topic", () => {
       expect(findTerm("Topic")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.topicname)).toBeVisible();
     });
+
     it("renders Topic description", () => {
       expect(findTerm("Topic description")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.description)).toBeVisible();
     });
+
     it("renders Topic partition", () => {
       expect(findTerm("Topic partition")).toBeVisible();
       expect(
         findDefinition(String(noAdvancedConfigRequest.topicpartitions))
       ).toBeVisible();
     });
+
     it("renders Topic replication factor", () => {
       expect(findTerm("Topic replication factor")).toBeVisible();
       expect(
         findDefinition(noAdvancedConfigRequest.replicationfactor)
       ).toBeVisible();
     });
+
     it("renders Message for approval", () => {
       expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.remarks)).toBeVisible();
     });
+
     it("renders Requested by", () => {
       expect(findTerm("Requested by")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.requestor)).toBeVisible();
     });
+
     it("renders Requested on", () => {
       expect(findTerm("Requested on")).toBeVisible();
       expect(
         findDefinition(`${noAdvancedConfigRequest.requesttimestring} UTC`)
       ).toBeVisible();
     });
+
+    it("does not render team information", () => {
+      const term = screen.queryByText("Team");
+      const definition = screen.queryByText(noAdvancedConfigRequest.teamname);
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
   });
 
-  describe("renders correct content for Topic request (no description,  no remarks, with config)", () => {
+  describe("renders correct content for Topic request (no description, no remarks, with config)", () => {
     beforeAll(() => {
       render(
         <TopicDetailsModalContent topicRequest={withAdvancedConfigRequest} />
@@ -143,51 +159,117 @@ describe("TopicDetailsModalContent", () => {
       expect(findTerm("Environment")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.environment)).toBeVisible();
     });
+
     it("renders Request type", () => {
       expect(findTerm("Request type")).toBeVisible();
       expect(
         findDefinition(noAdvancedConfigRequest.requestOperationType)
       ).toBeVisible();
     });
+
     it("renders Topic", () => {
       expect(findTerm("Topic")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.topicname)).toBeVisible();
     });
+
     it("renders Topic description", () => {
       expect(findTerm("Topic description")).toBeVisible();
       expect(
         findDefinition("This topic description is mandatory!")
       ).toBeVisible();
     });
+
     it("renders Topic partition", () => {
       expect(findTerm("Topic partition")).toBeVisible();
       expect(
         findDefinition(String(noAdvancedConfigRequest.topicpartitions))
       ).toBeVisible();
     });
+
     it("renders Topic replication factor", () => {
       expect(findTerm("Topic replication factor")).toBeVisible();
       expect(
         findDefinition(noAdvancedConfigRequest.replicationfactor)
       ).toBeVisible();
     });
+
     it("renders Message for approval", () => {
       expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition("No message")).toBeVisible();
     });
+
     it("renders Requested by", () => {
       expect(findTerm("Requested by")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.requestor)).toBeVisible();
     });
+
     it("renders Requested on", () => {
       expect(findTerm("Requested on")).toBeVisible();
       expect(
         findDefinition(`${noAdvancedConfigRequest.requesttimestring} UTC`)
       ).toBeVisible();
     });
+
     it("renders Advanced configuration", () => {
       expect(findTerm("Advanced configuration")).toBeVisible();
       expect(screen.getByTestId("topic-advanced-config")).toBeVisible();
+    });
+
+    it("does not render team information", () => {
+      const term = screen.queryByText("Team");
+      const definition = screen.queryByText(withAdvancedConfigRequest.teamname);
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+  });
+
+  describe("renders correct content for Topic CLAIM request (no description, partition, replication)", () => {
+    beforeAll(() => {
+      render(
+        <TopicDetailsModalContent
+          topicRequest={{
+            ...noAdvancedConfigRequest,
+            requestOperationType: "CLAIM",
+          }}
+        />
+      );
+    });
+    afterAll(cleanup);
+
+    it("does not renders Topic description", () => {
+      const term = screen.queryByText("Topic description");
+      const definition = screen.queryByText(
+        noAdvancedConfigRequest.description
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+
+    it("does not renders Topic partition", () => {
+      const term = screen.queryByText("Topic partition");
+      const definition = screen.queryByText(
+        String(noAdvancedConfigRequest.topicpartitions)
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+
+    it("does not render Topic replication factor", () => {
+      const term = screen.queryByText("Topic replication factor");
+      const definition = screen.queryByText(
+        noAdvancedConfigRequest.replicationfactor
+      );
+
+      expect(term).not.toBeInTheDocument();
+      expect(definition).not.toBeInTheDocument();
+    });
+
+    it("renders team that started CLAIM request", () => {
+      expect(findTerm("Team")).toBeVisible();
+      expect(findDefinition(noAdvancedConfigRequest.teamname)).toBeVisible();
     });
   });
 });
