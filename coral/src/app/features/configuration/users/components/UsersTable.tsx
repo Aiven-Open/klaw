@@ -53,7 +53,7 @@ const UsersTable = ({ users, ariaLabel }: UsersProps) => {
       headerName: "Switch teams",
       status: ({ switchTeams }) => ({
         status: switchTeams ? "success" : "neutral",
-        text: switchTeams ? "enabled" : "false",
+        text: switchTeams ? "Enabled" : "Disabled",
       }),
     },
     {

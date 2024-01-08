@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -36,15 +35,11 @@ describe("TopicOverviewPage", () => {
         },
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicDetailsPage />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicDetailsPage />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(() => {
@@ -74,6 +69,7 @@ describe("TopicOverviewPage", () => {
       customRender(<TopicDetailsPage />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 

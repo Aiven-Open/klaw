@@ -1,6 +1,6 @@
 package io.aiven.klaw.controller;
 
-import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import io.aiven.klaw.service.UiConfigControllerService;
@@ -50,7 +50,7 @@ public class UiConfigController {
       value = "/getActivityLogPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<ActivityLog>> showActivityLog(
+  public ResponseEntity<List<ActivityLogModel>> showActivityLog(
       @RequestParam(value = "env", defaultValue = "") String env,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage) {

@@ -1101,6 +1101,7 @@ public class AclControllerServiceTest {
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setRequestor("kwuserb");
+    aclReq.setTeamId(1001);
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setAcl_ip("1.2.3.4");
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);

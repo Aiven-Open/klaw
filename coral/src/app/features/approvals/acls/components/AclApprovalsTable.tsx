@@ -23,6 +23,7 @@ import {
   RequestStatus,
 } from "src/domain/requests/requests-types";
 import upperFirst from "lodash/upperFirst";
+import { Link } from "react-router-dom";
 
 interface AclRequestTableRow {
   id: number;
@@ -164,14 +165,18 @@ export default function AclApprovalsTable({
       },
     },
     {
-      type: "text",
-      field: "requestor",
+      type: "custom",
       headerName: "Requested by",
+      UNSAFE_render: ({ requestor }: AclRequestTableRow) => {
+        return <Link to={"/configuration/users"}>{requestor}</Link>;
+      },
     },
     {
-      type: "text",
-      field: "teamname",
+      type: "custom",
       headerName: "Team",
+      UNSAFE_render: ({ teamname }: AclRequestTableRow) => {
+        return <Link to={"/configuration/teams"}>{teamname}</Link>;
+      },
     },
     {
       type: "text",

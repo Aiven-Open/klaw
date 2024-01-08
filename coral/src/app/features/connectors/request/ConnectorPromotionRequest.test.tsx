@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { ConnectorPromotionRequest } from "src/app/features/connectors/request/ConnectorPromotionRequest";
 import { cleanup, waitFor, screen } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -66,16 +65,13 @@ function renderConnectorPromotionRequest({
     <Routes>
       <Route
         path="/connector/:connectorName/request-promotion"
-        element={
-          <AquariumContext>
-            <ConnectorPromotionRequest />
-          </AquariumContext>
-        }
+        element={<ConnectorPromotionRequest />}
       />
     </Routes>,
     {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
       customRoutePath: `/connector/${testConnectorName}/request-promotion?${
         sourceEnv ? `sourceEnv=${sourceEnv}` : ""
       }${targetEnv ? `&targetEnv=${targetEnv}` : ""}`,

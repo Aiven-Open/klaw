@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen } from "@testing-library/react";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
@@ -43,14 +42,10 @@ describe("TeamInfo", () => {
 
     beforeAll(() => {
       mockGetTeamsOfUser.mockResolvedValue([]);
-      customRender(
-        <AquariumContext>
-          <TeamInfo />
-        </AquariumContext>,
-        {
-          queryClient: true,
-        }
-      );
+      customRender(<TeamInfo />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
     afterAll(cleanup);
 
@@ -84,14 +79,10 @@ describe("TeamInfo", () => {
 
     beforeAll(() => {
       mockGetTeamsOfUser.mockResolvedValue(testTeams);
-      customRender(
-        <AquariumContext>
-          <TeamInfo />
-        </AquariumContext>,
-        {
-          queryClient: true,
-        }
-      );
+      customRender(<TeamInfo />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
     afterAll(cleanup);
 

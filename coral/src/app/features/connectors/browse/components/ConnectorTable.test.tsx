@@ -162,18 +162,19 @@ describe("ConnectorTable.tsx", () => {
         );
       });
 
-      it(`renders the team for ${connector.connectorName} `, () => {
+      it(`renders the team with link to overview page for ${connector.connectorName} `, () => {
         const table = screen.getByRole("table", {
           name: "Connectors overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${connector.connectorName}`, "i"),
         });
-        const team = within(row).getByRole("cell", {
+        const team = within(row).getByRole("link", {
           name: connector.teamName,
         });
 
         expect(team).toBeVisible();
+        expect(team).toHaveAttribute("href", "/configuration/teams");
       });
 
       it(`renders a list of Environments for connector ${connector}`, () => {
@@ -235,16 +236,34 @@ describe("ConnectorTable.tsx", () => {
 
     afterEach(cleanup);
 
-    mockConnectors.forEach((connector, index) => {
-      const numbersOfTabs = index + 1;
-      it(`sets focus on "${connector.connectorName}" when user tabs ${numbersOfTabs} times`, async () => {
+    let numberOfTabs = 0;
+    mockConnectors.forEach((connector) => {
+      it(`sets focus on "${connector.connectorName}" when user tabs ${
+        numberOfTabs + 1
+      } times`, async () => {
+        numberOfTabs++;
         const link = screen.getByRole("link", {
           name: connector.connectorName,
         });
 
         expect(link).not.toHaveFocus();
 
-        await tabThroughForward(numbersOfTabs);
+        await tabThroughForward(numberOfTabs);
+
+        expect(link).toHaveFocus();
+      });
+
+      it(`sets focus on "${connector.teamName}" when user tabs ${
+        numberOfTabs + 1
+      } times`, async () => {
+        numberOfTabs++;
+        const link = screen.getByRole("link", {
+          name: connector.teamName,
+        });
+
+        expect(link).not.toHaveFocus();
+
+        await tabThroughForward(numberOfTabs);
 
         expect(link).toHaveFocus();
       });

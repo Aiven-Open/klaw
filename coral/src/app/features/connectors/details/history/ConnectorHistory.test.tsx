@@ -257,6 +257,12 @@ describe("ConnectorHistory", () => {
       });
 
       testConnectorHistoryList.forEach((historyEntry, index) => {
+        const isTeamLink = column.columnHeader === "Team";
+        const isUserLink = column.columnHeader === "Requested by";
+        const isFormattedDate =
+          column.columnHeader === "Requested on" ||
+          column.columnHeader === "Approved on";
+
         it(`shows field ${column.relatedField} for history entry number ${index}`, () => {
           const table = screen.getByRole("table", {
             name: "Connector history",
@@ -266,17 +272,34 @@ describe("ConnectorHistory", () => {
           //@ts-ignore
           const field = historyEntry[column.relatedField];
 
-          let text = field;
-          if (
-            column.columnHeader === "Requested on" ||
-            column.columnHeader === "Approved on"
-          ) {
-            text = `${field}${"\u00A0"}UTC`;
+          if (isTeamLink) {
+            const cell = within(table).getByRole("cell", { name: field });
+            const link = within(cell).getByRole("link", { name: field });
+
+            expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", "/configuration/teams");
+
+            // formatting for readability
+          } else if (isUserLink) {
+            const cell = within(table).getByRole("cell", { name: field });
+            const link = within(cell).getByRole("link", { name: field });
+
+            expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", "/configuration/users");
+
+            // formatting for readability
+          } else if (isFormattedDate) {
+            const cell = within(table).getByRole("cell", {
+              name: `${field}${"\u00A0"}UTC`,
+            });
+
+            expect(cell).toBeVisible();
+
+            // formatting for readability
+          } else {
+            const cell = within(table).getByRole("cell", { name: field });
+            expect(cell).toBeVisible();
           }
-
-          const cell = within(table).getByRole("cell", { name: text });
-
-          expect(cell).toBeVisible();
         });
       });
     });

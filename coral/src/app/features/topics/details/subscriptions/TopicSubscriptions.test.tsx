@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   screen,
@@ -242,16 +241,11 @@ describe("TopicSubscriptions.tsx", () => {
     mockGetTeams.mockResolvedValue(mockedTeamsResponse);
     mockAuthUser.mockReturnValue(mockAuthUserReturnValue);
 
-    customRender(
-      // Aquarium context is needed for useToast
-      <AquariumContext>
-        <TopicSubscriptions />
-      </AquariumContext>,
-      {
-        memoryRouter: true,
-        queryClient: true,
-      }
-    );
+    customRender(<TopicSubscriptions />, {
+      memoryRouter: true,
+      queryClient: true,
+      aquariumContext: true,
+    });
     await waitForElementToBeRemoved(screen.getByTestId("select-team-loading"));
   });
 

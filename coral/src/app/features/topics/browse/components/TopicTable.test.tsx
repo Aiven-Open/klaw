@@ -6,9 +6,14 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
 const mockedTopicNames = ["Name-one", "Name-two", "Name-three", "Name-four"];
-const mockedTopics = mockedTopicNames.map((name, index) =>
-  createMockTopic({ topicName: name, topicId: index })
-);
+const mockedTopicTeams = ["DevRel", "Infra", "Sec", "QA"];
+const mockedTopics = mockedTopicNames.map((name, index) => {
+  return createMockTopic({
+    topicName: name,
+    topicId: index,
+    teamName: mockedTopicTeams[index],
+  });
+});
 
 const tableRowHeader = ["Topic", "Environments", "Team"];
 
@@ -83,16 +88,17 @@ describe("TopicTable.tsx", () => {
         );
       });
 
-      it(`renders the team for ${topic.topicName} `, () => {
+      it(`renders the team with link to overview page for ${topic.topicName} `, () => {
         const table = screen.getByRole("table", {
           name: "Topics overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
         });
-        const team = within(row).getByRole("cell", { name: topic.teamname });
+        const team = within(row).getByRole("link", { name: topic.teamname });
 
         expect(team).toBeVisible();
+        expect(team).toHaveAttribute("href", "/configuration/teams");
       });
 
       it(`renders a list of Environments for topic ${topic}`, () => {
@@ -131,16 +137,34 @@ describe("TopicTable.tsx", () => {
 
     afterEach(cleanup);
 
-    mockedTopics.forEach((topic, index) => {
-      const numbersOfTabs = index + 1;
-      it(`sets focus on "${topic.topicName}" when user tabs ${numbersOfTabs} times`, async () => {
+    let numberOfTabs = 0;
+    mockedTopics.forEach((topic) => {
+      it(`sets focus on "${topic.topicName}" when user tabs ${
+        numberOfTabs + 1
+      } times`, async () => {
+        numberOfTabs++;
         const link = screen.getByRole("link", {
           name: topic.topicName,
         });
 
         expect(link).not.toHaveFocus();
 
-        await tabThroughForward(numbersOfTabs);
+        await tabThroughForward(numberOfTabs);
+
+        expect(link).toHaveFocus();
+      });
+
+      it(`sets focus on "${topic.teamname}" when user tabs ${
+        numberOfTabs + 1
+      } times`, async () => {
+        numberOfTabs++;
+        const link = screen.getByRole("link", {
+          name: topic.teamname,
+        });
+
+        expect(link).not.toHaveFocus();
+
+        await tabThroughForward(numberOfTabs);
 
         expect(link).toHaveFocus();
       });

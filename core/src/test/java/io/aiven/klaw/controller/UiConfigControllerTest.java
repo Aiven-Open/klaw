@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -391,7 +391,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(20)
   public void showActivityLog() throws Exception {
-    List<ActivityLog> activityLogs = utilMethods.getLogs();
+    List<ActivityLogModel> activityLogs = utilMethods.getLogModels();
     when(uiConfigControllerService.showActivityLog(anyString(), anyString(), anyString()))
         .thenReturn(activityLogs);
 

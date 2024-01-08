@@ -1,10 +1,11 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import AclApprovalsTable, {
   type Props,
 } from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import { AclRequest } from "src/domain/acl/acl-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const aclRequests: AclRequest[] = [
   {
@@ -77,7 +78,7 @@ const aclRequests: AclRequest[] = [
 
 describe("AclApprovalsTable", () => {
   function renderFromProps(props?: Partial<Props>): void {
-    render(
+    customRender(
       <AclApprovalsTable
         aclRequests={aclRequests}
         ariaLabel={"ACL approval requests, page 1 of 10"}
@@ -87,7 +88,8 @@ describe("AclApprovalsTable", () => {
         onDecline={jest.fn()}
         onDetails={jest.fn()}
         {...props}
-      />
+      />,
+      { memoryRouter: true }
     );
   }
 
@@ -132,7 +134,7 @@ describe("AclApprovalsTable", () => {
     );
   });
 
-  it("has column to decsribe the status", () => {
+  it("has column to describe the status", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[2]
@@ -174,12 +176,14 @@ describe("AclApprovalsTable", () => {
       within(getNthRow(0)).getAllByRole("columnheader")[8]
     ).toHaveTextContent("Team");
 
-    expect(within(getNthRow(1)).getAllByRole("cell")[8]).toHaveTextContent(
-      "Ospo"
-    );
+    const cell = within(getNthRow(1)).getAllByRole("cell")[8];
+    const link = within(cell).getByRole("link", { name: "Ospo" });
+
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute("href", "/configuration/teams");
   });
 
-  it("has column to decsribe the acl type", () => {
+  it("has column to describe the acl type", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[5]
@@ -199,17 +203,21 @@ describe("AclApprovalsTable", () => {
     );
   });
 
-  it("has column to decsribe the author of the request", () => {
+  it("has column to describe the author of the request", () => {
     renderFromProps();
+
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[7]
     ).toHaveTextContent("Requested by");
-    expect(within(getNthRow(1)).getAllByRole("cell")[7]).toHaveTextContent(
-      "amathieu"
-    );
+
+    const cell = within(getNthRow(1)).getAllByRole("cell")[7];
+    const link = within(cell).getByRole("link", { name: "amathieu" });
+
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute("href", "/configuration/users");
   });
 
-  it("has column to decsribe the timestamp when the request was made", () => {
+  it("has column to describe the timestamp when the request was made", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[9]

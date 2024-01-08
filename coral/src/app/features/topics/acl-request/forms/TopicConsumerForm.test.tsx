@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   renderHook,
@@ -99,13 +98,8 @@ describe("<TopicConsumerForm />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...baseProps}
-            topicConsumerForm={result.current}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm {...baseProps} topicConsumerForm={result.current} />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
@@ -218,13 +212,11 @@ describe("<TopicConsumerForm />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...basePropsIsAivenCluster}
-            topicConsumerForm={result.current}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm
+          {...basePropsIsAivenCluster}
+          topicConsumerForm={result.current}
+        />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
@@ -337,13 +329,11 @@ describe("<TopicConsumerForm />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...basePropsNotAivenCluster}
-            topicConsumerForm={result.current}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm
+          {...basePropsNotAivenCluster}
+          topicConsumerForm={result.current}
+        />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
@@ -469,14 +459,12 @@ describe("<TopicConsumerForm isSubscription />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...isSubscriptionBaseProps}
-            topicConsumerForm={result.current}
-            topicNames={["hello"]}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm
+          {...isSubscriptionBaseProps}
+          topicConsumerForm={result.current}
+          topicNames={["hello"]}
+        />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
@@ -588,14 +576,12 @@ describe("<TopicConsumerForm isSubscription />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...isSubscriptionBasePropsIsAivenCluster}
-            topicNames={["hello"]}
-            topicConsumerForm={result.current}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm
+          {...isSubscriptionBasePropsIsAivenCluster}
+          topicNames={["hello"]}
+          topicConsumerForm={result.current}
+        />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
@@ -709,14 +695,12 @@ describe("<TopicConsumerForm isSubscription />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicConsumerForm
-            {...isSubscriptionBasePropsNotAivenCluster}
-            topicConsumerForm={result.current}
-            topicNames={["hello"]}
-          />
-        </AquariumContext>,
-        { queryClient: true, memoryRouter: true }
+        <TopicConsumerForm
+          {...isSubscriptionBasePropsNotAivenCluster}
+          topicConsumerForm={result.current}
+          topicNames={["hello"]}
+        />,
+        { queryClient: true, memoryRouter: true, aquariumContext: true }
       );
     });
 
