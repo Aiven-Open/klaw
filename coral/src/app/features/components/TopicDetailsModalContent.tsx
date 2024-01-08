@@ -47,6 +47,7 @@ const TopicDetailsModalContent = ({
     remarks,
     requestor,
     requesttimestring,
+    teamname,
   } = topicRequest;
 
   const hasAdvancedConfig =
@@ -73,20 +74,30 @@ const TopicDetailsModalContent = ({
           <dd>{topicname}</dd>
         </Box.Flex>
       </Grid.Item>
-      <Grid.Item xs={2}>
-        <Box.Flex flexDirection={"column"}>
-          <Label>Topic description</Label>
-          <dd>{description}</dd>
-        </Box.Flex>
-      </Grid.Item>
-      <Box.Flex flexDirection={"column"}>
-        <Label>Topic partition</Label>
-        <dd>{topicpartitions}</dd>
-      </Box.Flex>
-      <Box.Flex flexDirection={"column"}>
-        <Label>Topic replication factor</Label>
-        <dd>{replicationfactor}</dd>
-      </Box.Flex>
+      {/*getTopicRequestsForApprover for a CLAIM request*/}
+      {/*does not contain topicpartitions, replicationfactor and description*/}
+      {/*even though the openapi definition implies it*/}
+      {/*In case it's a CLAIM request we don't want to show those options.*/}
+      {requestOperationType !== "CLAIM" && (
+        <>
+          <Grid.Item xs={2}>
+            <Box.Flex flexDirection={"column"}>
+              <Label>Topic description</Label>
+              <dd>{description}</dd>
+            </Box.Flex>
+          </Grid.Item>
+
+          <Box.Flex flexDirection={"column"}>
+            <Label>Topic partition</Label>
+            <dd>{topicpartitions}</dd>
+          </Box.Flex>
+
+          <Box.Flex flexDirection={"column"}>
+            <Label>Topic replication factor</Label>
+            <dd>{replicationfactor}</dd>
+          </Box.Flex>
+        </>
+      )}
       {hasAdvancedConfig && (
         <Grid.Item xs={2}>
           <Box.Flex flexDirection={"column"}>
@@ -123,6 +134,12 @@ const TopicDetailsModalContent = ({
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
+      {requestOperationType === "CLAIM" && (
+        <Box.Flex flexDirection={"column"}>
+          <Label>Team</Label>
+          <dd>{teamname}</dd>
+        </Box.Flex>
+      )}
       <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
