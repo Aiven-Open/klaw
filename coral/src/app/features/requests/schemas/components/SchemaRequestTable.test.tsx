@@ -1,5 +1,5 @@
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import {
@@ -9,6 +9,7 @@ import {
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { mockedApiResponses } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { userEvent } from "@testing-library/user-event";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const schemaRequests = [...mockedApiResponses];
 const deletableRequests = schemaRequests.filter((entry) => entry.deletable);
@@ -32,13 +33,14 @@ describe("SchemaRequestTable", () => {
 
   describe("shows information that table is empty when requests are empty", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaRequestTable
           requests={[]}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
           ariaLabel={"Schema requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -53,13 +55,14 @@ describe("SchemaRequestTable", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaRequestTable
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
           ariaLabel={"Schema requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -151,13 +154,14 @@ describe("SchemaRequestTable", () => {
 
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <SchemaRequestTable
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
           ariaLabel={"Schema requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -188,6 +192,11 @@ describe("SchemaRequestTable", () => {
 
       if (column.relatedField) {
         schemaRequests.forEach((request) => {
+          const isUserLink = column.columnHeader === "Requested by";
+          const isFormattedDate = column.columnHeader === "Requested on";
+          const isStatus = column.columnHeader === "Status";
+          const isRequestType = column.columnHeader === "Request type";
+
           it(`shows field ${column.relatedField} for request number ${request.req_no}`, () => {
             const table = screen.getByRole("table", {
               name: "Schema requests, page 1 of 10",
@@ -197,21 +206,44 @@ describe("SchemaRequestTable", () => {
             //@ts-ignore
             const field = request[column.relatedField];
 
-            let text = field;
-            if (column.columnHeader === "Requested on") {
-              text = `${field}${"\u00A0"}UTC`;
-            }
+            if (isUserLink) {
+              const cell = within(table).getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", { name: field });
 
-            if (column.columnHeader === "Status") {
-              text = requestStatusNameMap[field as RequestStatus];
-            }
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", "/configuration/users");
 
-            if (column.columnHeader === "Request type") {
-              text = requestOperationTypeNameMap[field as RequestOperationType];
-            }
-            const cell = within(table).getByRole("cell", { name: text });
+              // formatting for readability
+            } else if (isFormattedDate) {
+              const cell = within(table).getByRole("cell", {
+                name: `${field}${"\u00A0"}UTC`,
+              });
 
-            expect(cell).toBeVisible();
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isStatus) {
+              const cell = within(table).getByRole("cell", {
+                name: requestStatusNameMap[field as RequestStatus],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isRequestType) {
+              const cell = within(table).getByRole("cell", {
+                name: requestOperationTypeNameMap[
+                  field as RequestOperationType
+                ],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else {
+              const cell = within(table).getByRole("cell", { name: field });
+              expect(cell).toBeVisible();
+            }
           });
         });
       }
@@ -220,13 +252,14 @@ describe("SchemaRequestTable", () => {
 
   describe("triggers opening of a modal with all details if user clicks button 'View'", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaRequestTable
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
           ariaLabel={"Schema requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(() => {
@@ -261,13 +294,14 @@ describe("SchemaRequestTable", () => {
 
   describe("triggers opening of a Dialog confirming the deletion when users clicks 'Delete'", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <SchemaRequestTable
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
           ariaLabel={"Schema requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
