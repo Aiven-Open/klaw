@@ -10,6 +10,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { SchemaRequest } from "src/domain/schema-request";
+import { Link } from "react-router-dom";
 
 interface SchemaRequestTableRow {
   deletable: SchemaRequest["deletable"];
@@ -66,7 +67,13 @@ function SchemaRequestTable({
         };
       },
     },
-    { type: "text", field: "requestedBy", headerName: "Requested by" },
+    {
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestedBy }: SchemaRequestTableRow) => {
+        return <Link to={"/configuration/users"}>{requestedBy}</Link>;
+      },
+    },
     {
       type: "text",
       field: "requestedOn",

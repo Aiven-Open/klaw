@@ -10,6 +10,7 @@ import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { Link } from "react-router-dom";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -46,7 +47,13 @@ function TopicRequestsTable({
         text: environmentName,
       }),
     },
-    { type: "text", field: "teamname", headerName: "Owned by" },
+    {
+      type: "custom",
+      headerName: "Owned by",
+      UNSAFE_render: ({ teamname }: TopicRequestTableRow) => {
+        return <Link to={"/configuration/teams"}>{teamname}</Link>;
+      },
+    },
     {
       type: "status",
       headerName: "Status",
@@ -67,7 +74,13 @@ function TopicRequestsTable({
         };
       },
     },
-    { type: "text", field: "requestor", headerName: "Requested by" },
+    {
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestor }: TopicRequestTableRow) => {
+        return <Link to={"/configuration/users"}>{requestor}</Link>;
+      },
+    },
     {
       type: "text",
       field: "requesttimestring",

@@ -7,6 +7,7 @@ import {
 import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 import { ConnectorOverview } from "src/domain/connector";
 import { LoadingTable } from "src/app/features/components/layouts/LoadingTable";
+import { Link } from "react-router-dom";
 
 interface ConnectorHistoryRow {
   id: number;
@@ -30,8 +31,20 @@ function ConnectorHistory() {
         text: logs,
       }),
     },
-    { type: "text", field: "team", headerName: "Team" },
-    { type: "text", field: "requestedBy", headerName: "Requested by" },
+    {
+      type: "custom",
+      headerName: "Team",
+      UNSAFE_render: ({ team }: ConnectorHistoryRow) => {
+        return <Link to={"/configuration/teams"}>{team}</Link>;
+      },
+    },
+    {
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestedBy }: ConnectorHistoryRow) => {
+        return <Link to={"/configuration/users"}>{requestedBy}</Link>;
+      },
+    },
     {
       type: "text",
       field: "requestedTime",

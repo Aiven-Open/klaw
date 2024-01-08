@@ -7,6 +7,7 @@ import {
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
 import { LoadingTable } from "src/app/features/components/layouts/LoadingTable";
+import { Link } from "react-router-dom";
 
 interface TopicHistoryRow {
   id: number;
@@ -30,8 +31,20 @@ function TopicHistory() {
         text: logs,
       }),
     },
-    { type: "text", field: "team", headerName: "Team" },
-    { type: "text", field: "requestedBy", headerName: "Requested by" },
+    {
+      type: "custom",
+      headerName: "Team",
+      UNSAFE_render: ({ team }: TopicHistoryRow) => {
+        return <Link to={"/configuration/teams"}>{team}</Link>;
+      },
+    },
+    {
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestedBy }: TopicHistoryRow) => {
+        return <Link to={"/configuration/users"}>{requestedBy}</Link>;
+      },
+    },
     {
       type: "text",
       field: "requestedTime",

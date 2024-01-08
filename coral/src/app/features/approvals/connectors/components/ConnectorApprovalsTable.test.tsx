@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import ConnectorApprovalsTable from "src/app/features/approvals/connectors/components/ConnectorApprovalsTable";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
@@ -9,6 +9,7 @@ import {
   RequestStatus,
 } from "src/domain/requests/requests-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedConnectorRequests: ConnectorRequest[] = [
   {
@@ -82,7 +83,7 @@ describe("ConnectorApprovalsTable", () => {
   ];
 
   it("shows a message to user in case there are no requests that match the search criteria", () => {
-    render(
+    customRender(
       <ConnectorApprovalsTable
         requests={[]}
         onDetails={jest.fn()}
@@ -91,7 +92,8 @@ describe("ConnectorApprovalsTable", () => {
         isBeingApproved={jest.fn()}
         isBeingDeclined={jest.fn()}
         ariaLabel={"Connector approval requests, page 1 of 10"}
-      />
+      />,
+      { memoryRouter: true }
     );
     screen.getByText("No Kafka connector requests");
     screen.getByText("No Kafka connector request matched your criteria.");
@@ -99,7 +101,7 @@ describe("ConnectorApprovalsTable", () => {
 
   describe("user is able to view all the necessary Kafka connector request data and actions", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={jest.fn()}
@@ -108,7 +110,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterAll(cleanup);
@@ -212,7 +215,7 @@ describe("ConnectorApprovalsTable", () => {
 
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={jest.fn()}
@@ -221,7 +224,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -252,6 +256,12 @@ describe("ConnectorApprovalsTable", () => {
 
       if (column.relatedField) {
         mockedConnectorRequests.forEach((request) => {
+          const isTeamLink = column.columnHeader === "Team";
+          const isUserLink = column.columnHeader === "Requested by";
+          const isFormattedDate = column.columnHeader === "Requested on";
+          const isStatus = column.columnHeader === "Status";
+          const isRequestType = column.columnHeader === "Request type";
+
           it(`shows field ${column.relatedField} for request number ${request.connectorId}`, () => {
             const table = screen.getByRole("table", {
               name: "Connector approval requests, page 1 of 10",
@@ -261,22 +271,52 @@ describe("ConnectorApprovalsTable", () => {
             //@ts-ignore
             const field = request[column.relatedField];
 
-            let text = field;
-            if (column.columnHeader === "Requested on") {
-              text = `${field}${"\u00A0"}UTC`;
+            if (isTeamLink) {
+              const cell = within(table).getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", { name: field });
+
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", "/configuration/teams");
+
+              // formatting for readability
+            } else if (isUserLink) {
+              const cell = within(table).getByRole("cell", { name: field });
+              const link = within(cell).getByRole("link", { name: field });
+
+              expect(link).toBeVisible();
+              expect(link).toHaveAttribute("href", "/configuration/users");
+
+              // formatting for readability
+            } else if (isFormattedDate) {
+              const cell = within(table).getByRole("cell", {
+                name: `${field}${"\u00A0"}UTC`,
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isStatus) {
+              const cell = within(table).getByRole("cell", {
+                name: requestStatusNameMap[field as RequestStatus],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else if (isRequestType) {
+              const cell = within(table).getByRole("cell", {
+                name: requestOperationTypeNameMap[
+                  field as RequestOperationType
+                ],
+              });
+
+              expect(cell).toBeVisible();
+
+              // formatting for readability
+            } else {
+              const cell = within(table).getByRole("cell", { name: field });
+              expect(cell).toBeVisible();
             }
-
-            if (column.columnHeader === "Status") {
-              text = requestStatusNameMap[field as RequestStatus];
-            }
-
-            if (column.columnHeader === "Request type") {
-              text = requestOperationTypeNameMap[field as RequestOperationType];
-            }
-
-            const cell = within(table).getByRole("cell", { name: text });
-
-            expect(cell).toBeVisible();
           });
         });
       }
@@ -286,7 +326,7 @@ describe("ConnectorApprovalsTable", () => {
   describe("triggers opening of a modal with all details if user clicks button for overview", () => {
     const onDetails = jest.fn();
     beforeEach(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={onDetails}
@@ -295,7 +335,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(() => {
@@ -322,7 +363,7 @@ describe("ConnectorApprovalsTable", () => {
     const onApprove = jest.fn();
     const onDecline = jest.fn();
     beforeEach(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={jest.fn()}
@@ -331,7 +372,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -365,7 +407,7 @@ describe("ConnectorApprovalsTable", () => {
 
   describe("user is unable to approve and decline non pending requests", () => {
     beforeEach(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={jest.fn()}
@@ -374,7 +416,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -406,7 +449,7 @@ describe("ConnectorApprovalsTable", () => {
     const isBeingApproved = jest.fn(() => true);
     const isBeingDeclined = jest.fn(() => true);
     beforeEach(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={jest.fn()}
@@ -415,7 +458,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
     afterEach(cleanup);
@@ -454,7 +498,7 @@ describe("ConnectorApprovalsTable", () => {
     ];
 
     beforeAll(() => {
-      render(
+      customRender(
         <ConnectorApprovalsTable
           requests={requestsWithStatusCreated}
           actionsDisabled={true}
@@ -464,7 +508,8 @@ describe("ConnectorApprovalsTable", () => {
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
