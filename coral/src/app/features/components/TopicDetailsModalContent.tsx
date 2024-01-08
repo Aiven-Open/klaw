@@ -47,6 +47,7 @@ const TopicDetailsModalContent = ({
     remarks,
     requestor,
     requesttimestring,
+    teamname,
   } = topicRequest;
 
   const hasAdvancedConfig =
@@ -133,6 +134,12 @@ const TopicDetailsModalContent = ({
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
       </Box.Flex>
+      {requestOperationType === "CLAIM" && (
+        <Box.Flex flexDirection={"column"}>
+          <Label>Team</Label>
+          <dd>{teamname}</dd>
+        </Box.Flex>
+      )}
       <Box.Flex flexDirection={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
