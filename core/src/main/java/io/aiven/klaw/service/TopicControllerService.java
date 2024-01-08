@@ -1227,8 +1227,7 @@ public class TopicControllerService {
           String prefixVar = "--";
           if (tmpTopicFull.endsWith(
               prefixVar + AclPatternType.PREFIXED + prefixVar)) { // has prefixed acl
-            tmpTopicSub =
-                tmpTopicFull.replaceAll(prefixVar + AclPatternType.PREFIXED + prefixVar, "");
+            tmpTopicSub = tmpTopicFull.replace(prefixVar + AclPatternType.PREFIXED + prefixVar, "");
             if (topicInfo.getTopicname().startsWith(tmpTopicSub)
                 && topicInfo
                     .getEnvironmentsSet()

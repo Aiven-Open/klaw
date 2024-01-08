@@ -323,7 +323,7 @@ public class UiControllerLoginService {
         registerUserInfoModel.setPwd("");
         if (fullName != null) {
           String fullNameStr =
-              ((String) fullName).replaceAll(",", ""); // Look for other characters in names
+              ((String) fullName).replace(",", ""); // Look for other characters in names
           registerUserInfoModel.setFullname(fullNameStr);
         }
 
