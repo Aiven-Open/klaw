@@ -4,18 +4,21 @@ import { ReactElement, ReactNode } from "react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
+import { AtLeastOneProperty } from "types/utils";
+
+type RenderConfigOptions = {
+  queryClient: boolean;
+  memoryRouter: boolean;
+  browserRouter: boolean;
+  aquariumContext: boolean;
+  customRoutePath: string;
+};
 
 /***
  * browserRouter: Only use if needed, e.g., for testing URL states (i.e., search params)
  * in general, prefer memoryRouter for tests.
  */
-type RenderConfig = {
-  queryClient?: boolean;
-  memoryRouter?: boolean;
-  browserRouter?: boolean;
-  aquariumContext?: boolean;
-  customRoutePath?: string;
-};
+type RenderConfig = AtLeastOneProperty<RenderConfigOptions>;
 
 type WrapperProps = {
   children?: ReactNode;
@@ -35,12 +38,6 @@ function createWrapper(
   } = config;
 
   const wrappers: React.FC<WrapperProps>[] = [];
-
-  if (!queryClient && !memoryRouter && !browserRouter) {
-    console.error(
-      "You have not passed any renderWith options, which returns the non-custom render."
-    );
-  }
 
   if (queryClient) {
     const queryClientWrapper: React.FC<WrapperProps> = ({ children }) => (
@@ -91,7 +88,7 @@ function createWrapper(
 
 function customRender(
   ui: ReactElement,
-  config: RenderConfig = {},
+  config: RenderConfig,
   options?: RenderOptions
 ) {
   return createWrapper(ui, config, options);
