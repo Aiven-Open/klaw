@@ -107,7 +107,7 @@ public class EmailService {
       message.setReplyTo(new Address[] {address});
       message.setFrom(new InternetAddress(fromMailId, noReplyMailIdDisplay));
 
-      text = text.replace("\\\\n", "<br>");
+      text = text.replace("\\n", "<br>");
 
       text =
           text
