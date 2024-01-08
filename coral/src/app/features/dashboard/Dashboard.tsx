@@ -24,7 +24,6 @@ const Dashboard = () => {
     }
   );
 
-  console.log(chartData);
   const {
     data: statsData,
     isLoading: isLoadingStatsData,
