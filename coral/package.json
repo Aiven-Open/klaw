@@ -103,7 +103,7 @@
     "typescript": "^5.0.4",
     "vite": "^4.5.1",
     "vite-plugin-svgr": "^4.2.0",
-    "whatwg-fetch": "^3.6.19"
+    "whatwg-fetch": "^3.6.20"
   },
   "peerDependencies": {
     "json5": ">=1.0.2",

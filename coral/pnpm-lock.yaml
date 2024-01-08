@@ -197,8 +197,8 @@ devDependencies:
     specifier: ^4.2.0
     version: 4.2.0(typescript@5.0.4)(vite@4.5.1)
   whatwg-fetch:
-    specifier: ^3.6.19
-    version: 3.6.19
+    specifier: ^3.6.20
+    version: 3.6.20
 
 packages:
 
@@ -10830,8 +10830,8 @@ packages:
       iconv-lite: 0.6.3
     dev: true
 
-  /whatwg-fetch@3.6.19:
-    resolution: {integrity: sha512-d67JP4dHSbm2TrpFj8AbO8DnL1JXL5J9u0Kq2xW6d0TFDbCA3Muhdt8orXC22utleTVj7Prqt82baN6RBvnEgw==}
+  /whatwg-fetch@3.6.20:
+    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
     dev: true
 
   /whatwg-mimetype@3.0.0:
