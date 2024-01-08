@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
@@ -90,15 +89,11 @@ describe("ConnectorSettings", () => {
         },
       });
 
-      customRender(
-        <AquariumContext>
-          <ConnectorSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<ConnectorSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -151,15 +146,11 @@ describe("ConnectorSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<ConnectorSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -212,15 +203,11 @@ describe("ConnectorSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<ConnectorSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -275,15 +262,11 @@ describe("ConnectorSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<ConnectorSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -339,15 +322,11 @@ describe("ConnectorSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<ConnectorSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -382,15 +361,11 @@ describe("ConnectorSettings", () => {
       mockDeleteConnector.mockImplementation(jest.fn());
       mockedUseConnectorDetails.mockReturnValue(mockConnectorDetails);
 
-      customRender(
-        <AquariumContext>
-          <ConnectorSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<ConnectorSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -450,15 +425,11 @@ describe("ConnectorSettings", () => {
         },
       });
 
-      customRender(
-        <AquariumContext>
-          <ConnectorSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<ConnectorSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -508,15 +479,11 @@ describe("ConnectorSettings", () => {
       mockDeleteConnector.mockImplementation(jest.fn());
       mockedUseConnectorDetails.mockReturnValue(mockConnectorDetails);
 
-      customRender(
-        <AquariumContext>
-          <ConnectorSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<ConnectorSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(() => {

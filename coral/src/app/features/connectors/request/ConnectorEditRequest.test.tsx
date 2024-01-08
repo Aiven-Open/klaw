@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
@@ -89,16 +88,13 @@ describe("<ConnectorEditRequest />", () => {
         <Routes>
           <Route
             path="/connector/:connectorName/request-update"
-            element={
-              <AquariumContext>
-                <ConnectorEditRequest />
-              </AquariumContext>
-            }
+            element={<ConnectorEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/connector/${CONNECTOR_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -190,16 +186,13 @@ describe("<ConnectorEditRequest />", () => {
         <Routes>
           <Route
             path="/connector/:connectorName/request-update"
-            element={
-              <AquariumContext>
-                <ConnectorEditRequest />
-              </AquariumContext>
-            }
+            element={<ConnectorEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/connector/${CONNECTOR_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -304,16 +297,13 @@ describe("<ConnectorEditRequest />", () => {
         <Routes>
           <Route
             path="/connector/:connectorName/request-update"
-            element={
-              <AquariumContext>
-                <ConnectorEditRequest />
-              </AquariumContext>
-            }
+            element={<ConnectorEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/connector/${CONNECTOR_NAME}/request-update?env=${ENV_ID}`,
         }
       );
@@ -418,16 +408,13 @@ describe("<ConnectorEditRequest />", () => {
         <Routes>
           <Route
             path="/connector/:connectorName/request-update"
-            element={
-              <AquariumContext>
-                <ConnectorEditRequest />
-              </AquariumContext>
-            }
+            element={<ConnectorEditRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: `/connector/${CONNECTOR_NAME}/request-update?env=${ENV_ID}`,
         }
       );

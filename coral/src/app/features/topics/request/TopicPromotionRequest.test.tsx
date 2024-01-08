@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
@@ -301,16 +300,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/test-topic-name/request-promotion?sourceEnv=1&targetEnv=2",
         }
@@ -405,16 +401,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/test-topic-name/request-promotion?sourceEnv=1&targetEnv=2",
         }
@@ -560,16 +553,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/test-topic-name/request-promotion?sourceEnv=1&targetEnv=2",
         }
@@ -601,16 +591,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/DOESNOTEXIST/request-promotion?sourceEnv=1&targetEnv=2",
         }
@@ -652,16 +639,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/test-topic-name/request-promotion?sourceEnv=1&targetEnv=99999",
         }
@@ -706,16 +690,13 @@ describe("<TopicPromotionRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/request-promotion"
-            element={
-              <AquariumContext>
-                <TopicPromotionRequest />
-              </AquariumContext>
-            }
+            element={<TopicPromotionRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath:
             "/topic/test-topic-name/request-promotion?sourceEnv=99999&targetEnv=2",
         }
