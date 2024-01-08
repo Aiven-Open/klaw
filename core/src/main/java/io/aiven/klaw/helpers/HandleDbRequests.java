@@ -57,6 +57,15 @@ public interface HandleDbRequests {
 
   String insertMetrics(KwMetrics kwMetrics);
 
+  void insertIntoActivityLog(
+      String requestType,
+      int tenantId,
+      String operationType,
+      int teamId,
+      String details,
+      String envId,
+      String requestor);
+
   /*--------------------Select */
 
   List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
@@ -282,7 +291,9 @@ public interface HandleDbRequests {
 
   RegisterUserInfo getRegisterUsersInfo(String username);
 
-  AclRequests getAcl(int req_no, int tenantId);
+  AclRequests getAclRequest(int req_no, int tenantId);
+
+  Optional<Acl> getAcl(int aclId, int tenantId);
 
   OperationalRequest getOperationalRequest(int reqId, int tenantId);
 
@@ -399,6 +410,8 @@ public interface HandleDbRequests {
 
   String updateConnectorRequestStatus(KafkaConnectorRequest topicRequest, String approver);
 
+  String claimAclRequest(AclRequests aclReq, RequestStatus status);
+
   String updateAclRequest(
       AclRequests aclRequests,
       String approver,
@@ -418,6 +431,8 @@ public interface HandleDbRequests {
   String declineConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
   String declineAclRequest(AclRequests aclRequests, String approver);
+
+  String updateAcl(Acl acl);
 
   String updatePassword(String username, String pwd);
 

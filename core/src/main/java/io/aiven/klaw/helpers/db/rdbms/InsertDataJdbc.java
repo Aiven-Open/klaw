@@ -108,24 +108,7 @@ public class InsertDataJdbc {
     topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     topicRequestsRepo.save(topicRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getRequestor());
-
-    ActivityLog activityLog = new ActivityLog();
-    activityLog.setReq_no(getNextActivityLogRequestId(topicRequest.getTenantId()));
-    activityLog.setActivityName("TopicRequest");
-    activityLog.setActivityType(topicRequest.getRequestOperationType());
-    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    activityLog.setTeamId(userInfo.getTeamId());
-    activityLog.setDetails(topicRequest.getTopicname());
-    activityLog.setUser(topicRequest.getRequestor());
-    activityLog.setEnv(topicRequest.getEnvironment());
-    activityLog.setTenantId(topicRequest.getTenantId());
-
-    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", ApiResultStatus.SUCCESS.value);
-    } else {
-      hashMap.put("result", ApiResultStatus.FAILURE.value);
-    }
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
 
     return hashMap;
   }
@@ -144,25 +127,7 @@ public class InsertDataJdbc {
     connectorRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(connectorRequest.getRequestor());
-
-    ActivityLog activityLog = new ActivityLog();
-    activityLog.setReq_no(getNextActivityLogRequestId(connectorRequest.getTenantId()));
-    activityLog.setActivityName("ConnectorRequest");
-    activityLog.setActivityType(connectorRequest.getRequestOperationType());
-    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    activityLog.setTeamId(userInfo.getTeamId());
-    activityLog.setDetails(
-        connectorRequest.getConnectorName() + "," + connectorRequest.getRequestOperationType());
-    activityLog.setUser(connectorRequest.getRequestor());
-    activityLog.setEnv(connectorRequest.getEnvironment());
-    activityLog.setTenantId(connectorRequest.getTenantId());
-
-    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", ApiResultStatus.SUCCESS.value);
-    } else {
-      hashMap.put("result", ApiResultStatus.FAILURE.value);
-    }
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
 
     return hashMap;
   }
@@ -229,6 +194,24 @@ public class InsertDataJdbc {
         aclReq.setReq_no(aclId);
       }
     }
+    // Set foreign Keys for when you have approvals for the kwaclapprovals table
+    if (aclReq.getApprovals() != null) {
+      AclRequests parent = new AclRequests();
+      parent.setReq_no(aclReq.getReq_no());
+      parent.setTenantId(aclReq.getTenantId());
+      for (AclApproval req : aclReq.getApprovals()) {
+        req.setParent(parent);
+      }
+    }
+
+    if (aclReq.getApprovals() != null) {
+      AclRequests parent = new AclRequests();
+      parent.setReq_no(aclReq.getReq_no());
+      parent.setTenantId(aclReq.getTenantId());
+      for (AclApproval req : aclReq.getApprovals()) {
+        req.setParent(parent);
+      }
+    }
 
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
@@ -236,28 +219,6 @@ public class InsertDataJdbc {
     aclReq.setRequestingteam(userInfo.getTeamId());
     aclRequestsRepo.save(aclReq);
 
-    ActivityLog activityLog = new ActivityLog();
-    activityLog.setReq_no(getNextActivityLogRequestId(aclReq.getTenantId()));
-    activityLog.setActivityName("AclRequest");
-    activityLog.setActivityType(aclReq.getRequestOperationType());
-    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    activityLog.setTeamId(userInfo.getTeamId());
-    activityLog.setDetails(
-        aclReq.getAcl_ip()
-            + "-"
-            + aclReq.getTopicname()
-            + "-"
-            + aclReq.getAcl_ssl()
-            + "-"
-            + aclReq.getConsumergroup()
-            + "-"
-            + aclReq.getAclType());
-    activityLog.setUser(aclReq.getRequestor());
-    activityLog.setEnv(aclReq.getEnvironment());
-    activityLog.setTenantId(aclReq.getTenantId());
-
-    // Insert into acl activity log
-    insertIntoActivityLog(activityLog);
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     return hashMap;
   }
@@ -276,22 +237,6 @@ public class InsertDataJdbc {
     operationalRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     operationalRequestsRepo.save(operationalRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(operationalRequest.getRequestor());
-
-    ActivityLog activityLog = new ActivityLog();
-    activityLog.setReq_no(getNextActivityLogRequestId(operationalRequest.getTenantId()));
-    activityLog.setActivityName("OperationalRequest");
-    activityLog.setActivityType(operationalRequest.getOperationalRequestType().value);
-    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    activityLog.setTeamId(userInfo.getTeamId());
-    activityLog.setDetails(
-        operationalRequest.getTopicname() + "-" + operationalRequest.getConsumerGroup());
-    activityLog.setUser(operationalRequest.getRequestor());
-    activityLog.setEnv(operationalRequest.getEnvironment());
-    activityLog.setTenantId(operationalRequest.getTenantId());
-
-    // Insert into acl activity log
-    insertIntoActivityLog(activityLog);
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     return hashMap;
   }
@@ -321,22 +266,6 @@ public class InsertDataJdbc {
     schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
     schemaRequestRepo.save(schemaRequest);
-
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(schemaRequest.getRequestor());
-
-    ActivityLog activityLog = new ActivityLog();
-    activityLog.setReq_no(getNextActivityLogRequestId(schemaRequest.getTenantId()));
-    activityLog.setActivityName("SchemaRequest");
-    activityLog.setActivityType("new");
-    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
-    activityLog.setTeamId(userInfo.getTeamId());
-    activityLog.setDetails(schemaRequest.getTopicname() + "-" + schemaRequest.getRemarks());
-    activityLog.setUser(schemaRequest.getRequestor());
-    activityLog.setEnv(schemaRequest.getEnvironment());
-    activityLog.setTenantId(schemaRequest.getTenantId());
-
-    // Insert into acl activity log
-    insertIntoActivityLog(activityLog);
 
     return ApiResultStatus.SUCCESS.value;
   }
@@ -607,5 +536,26 @@ public class InsertDataJdbc {
   public String insertProductDetails(ProductDetails productDetails) {
     productDetailsRepo.save(productDetails);
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  public void insertIntoActivityLog(
+      String requestType,
+      int tenantId,
+      String operationType,
+      int teamId,
+      String details,
+      String envId,
+      String requestor) {
+    ActivityLog activityLog = new ActivityLog();
+    activityLog.setReq_no(getNextActivityLogRequestId(tenantId));
+    activityLog.setActivityName(requestType + " Request");
+    activityLog.setActivityType(operationType);
+    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
+    activityLog.setTeamId(teamId);
+    activityLog.setDetails(details);
+    activityLog.setUser(requestor);
+    activityLog.setEnv(envId);
+    activityLog.setTenantId(tenantId);
+    insertIntoActivityLog(activityLog);
   }
 }

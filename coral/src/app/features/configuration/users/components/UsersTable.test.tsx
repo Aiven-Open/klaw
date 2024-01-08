@@ -144,7 +144,7 @@ describe("UsersTable.tsx", () => {
 
         const positionOfSwitchTeamRow = tableRowHeader.indexOf("Switch teams");
         expect(cell[positionOfSwitchTeamRow]).toHaveTextContent(
-          user.switchTeams ? "enabled" : "false"
+          user.switchTeams ? "Enabled" : "Disabled"
         );
       });
 

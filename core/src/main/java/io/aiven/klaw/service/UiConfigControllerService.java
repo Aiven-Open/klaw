@@ -1,16 +1,20 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.helpers.Pager;
+import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +47,7 @@ public class UiConfigControllerService {
     return mailService.getUserName(getPrincipal());
   }
 
-  public List<ActivityLog> showActivityLog(String env, String pageNo, String currentPage) {
+  public List<ActivityLogModel> showActivityLog(String env, String pageNo, String currentPage) {
     log.debug("showActivityLog {} {}", env, pageNo);
     String userName = getUserName();
     List<ActivityLog> origActivityList;
@@ -66,27 +70,29 @@ public class UiConfigControllerService {
         currentPage,
         origActivityList,
         (pageContext, activityLog) -> {
-          activityLog.setEnvName(
+          ActivityLogModel activityLogModel = new ActivityLogModel();
+          copyProperties(activityLog, activityLogModel);
+          activityLogModel.setEnvName(
               getEnvName(activityLog.getEnv(), activityLog.getActivityName(), tenantId));
-          activityLog.setDetails(activityLog.getDetails().replaceAll("null", ""));
-          activityLog.setAllPageNos(pageContext.getAllPageNos());
-          activityLog.setTotalNoPages(pageContext.getTotalPages());
-          activityLog.setCurrentPage(pageContext.getPageNo());
-          activityLog.setTeam(
+          activityLogModel.setDetails(activityLog.getDetails().replaceAll("null", ""));
+          activityLogModel.setAllPageNos(pageContext.getAllPageNos());
+          activityLogModel.setTotalNoPages(pageContext.getTotalPages());
+          activityLogModel.setCurrentPage(pageContext.getPageNo());
+          activityLogModel.setTeam(
               manageDatabase.getTeamNameFromTeamId(tenantId, activityLog.getTeamId()));
-          return activityLog;
+          return activityLogModel;
         });
   }
 
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if ("SchemaRequest".equals(activityName)) {
+    if (StringUtils.containsIgnoreCase(activityName, RequestEntityType.SCHEMA.value)) {
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    } else if ("ConnectorRequest".equals(activityName)) {
+    } else if (StringUtils.containsIgnoreCase(activityName, RequestEntityType.CONNECTOR.value)) {
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))

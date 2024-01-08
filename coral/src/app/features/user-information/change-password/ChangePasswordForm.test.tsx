@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { ChangePasswordForm } from "src/app/features/user-information/change-password/ChangePasswordForm";
@@ -36,12 +35,10 @@ describe("<ChangePasswordForm />", () => {
   describe("ChangePasswordForm.tsx", () => {
     describe("renders all fields and submit button", () => {
       beforeAll(() => {
-        customRender(
-          <AquariumContext>
-            <ChangePasswordForm />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ChangePasswordForm />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
       afterAll(() => {
         cleanup();
@@ -89,12 +86,10 @@ describe("<ChangePasswordForm />", () => {
           message: "success",
         });
 
-        customRender(
-          <AquariumContext>
-            <ChangePasswordForm />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ChangePasswordForm />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -200,12 +195,10 @@ describe("<ChangePasswordForm />", () => {
           message: "error",
         });
 
-        customRender(
-          <AquariumContext>
-            <ChangePasswordForm />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ChangePasswordForm />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {

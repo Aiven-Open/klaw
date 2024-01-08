@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.model.ApiResponse;
@@ -232,7 +233,7 @@ class RequestControllerTest {
   @Order(13)
   @Test
   public void givenARequestToApproveMulitpleCallCorrectACLServiceAndReturnSuccessOK()
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     when(aclControllerService.approveAclRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
@@ -246,7 +247,7 @@ class RequestControllerTest {
   @Test
   public void
       givenARequestToApproveMulitpleCallCorrectACLServiceAndReturnSuccessMultiStatusResponse()
-          throws KlawException {
+          throws KlawException, KlawBadRequestException {
     when(aclControllerService.approveAclRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
@@ -260,7 +261,7 @@ class RequestControllerTest {
   @Order(15)
   @Test
   public void givenARequestToApproveCallCorrectACLServiceAndReturnISEResponse()
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     when(aclControllerService.approveAclRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
@@ -272,7 +273,7 @@ class RequestControllerTest {
   @Order(16)
   @Test
   public void givenMultipleRequestToApproveCallCorrectACLServiceAndReturnISEResponse()
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     when(aclControllerService.approveAclRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
@@ -285,7 +286,7 @@ class RequestControllerTest {
   @Order(17)
   @Test
   public void givenMultipleRequestToApproveCallCorrectUSERServiceAndReturnISEResponse()
-      throws KlawException, KlawRestException {
+      throws KlawException, KlawRestException, KlawBadRequestException {
 
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(

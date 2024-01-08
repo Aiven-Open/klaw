@@ -23,6 +23,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -482,11 +483,11 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(16)
-  public void approveAclRequests() throws KlawException {
+  public void approveAclRequests() throws KlawException, KlawBadRequestException {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
 
     ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -506,11 +507,11 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(17)
-  public void approveAclRequestsWithAivenAcl() throws KlawException {
+  public void approveAclRequestsWithAivenAcl() throws KlawException, KlawBadRequestException {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
 
     Map<String, String> dataObj = new HashMap<>();
     String aivenAclIdKey = "aivenaclid";
@@ -539,7 +540,7 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(18)
-  public void approveAclRequestsNotAuthorized() throws KlawException {
+  public void approveAclRequestsNotAuthorized() throws KlawException, KlawBadRequestException {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
@@ -548,11 +549,11 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(19)
-  public void approveAclRequestsOwnRequest() throws KlawException {
+  public void approveAclRequestsOwnRequest() throws KlawException, KlawBadRequestException {
     stubUserInfo();
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestor("kwusera");
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getMessage())
         .isEqualTo("You are not allowed to approve your own subscription requests.");
@@ -560,13 +561,13 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(20)
-  public void approveAclRequestsFailure1() throws KlawException {
+  public void approveAclRequestsFailure1() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     Topic t1 = new Topic();
     t1.setTopicname("testtopic");
     t1.setEnvironment("1");
@@ -582,12 +583,12 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(21)
-  public void approveAclRequestsFailure2() throws KlawException {
+  public void approveAclRequestsFailure2() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -608,13 +609,13 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(22)
-  public void approveAclRequestsFailure3() throws KlawException {
+  public void approveAclRequestsFailure3() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestStatus(RequestStatus.APPROVED.value);
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
@@ -629,7 +630,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.declineAclRequest(any(), any()))
@@ -646,7 +647,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -1050,12 +1051,12 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(37)
-  public void approveAclRequestsFailure4() throws KlawException {
+  public void approveAclRequestsFailure4() throws KlawException, KlawBadRequestException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -1100,9 +1101,11 @@ public class AclControllerServiceTest {
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setRequestor("kwuserb");
+    aclReq.setTeamId(1001);
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setAcl_ip("1.2.3.4");
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+    aclReq.setRequestOperationType(RequestOperationType.CREATE.value);
     return aclReq;
   }
 

@@ -267,7 +267,8 @@ public class SchemaRegistryControllerService {
         }
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
         if (responseDb.equals(ApiResultStatus.SUCCESS.value)) {
-          saveToTopicHistory(userDetails, tenantId, schemaRequest);
+          updateAuditAndHistory(
+              userDetails, tenantId, schemaRequest, dbHandle, registerSchemaCustomResponse);
         }
 
         // send mail to producers and consumers
@@ -298,6 +299,28 @@ public class SchemaRegistryControllerService {
       }
       return ApiResponse.notOk(String.format(SCHEMA_ERR_102, errStr));
     }
+  }
+
+  private void updateAuditAndHistory(
+      String userDetails,
+      int tenantId,
+      SchemaRequest schemaRequest,
+      HandleDbRequests dbHandle,
+      Map<String, Object> registerSchemaCustomResponse) {
+    saveToTopicHistory(userDetails, tenantId, schemaRequest);
+    dbHandle.insertIntoActivityLog(
+        RequestEntityType.SCHEMA.value,
+        tenantId,
+        schemaRequest.getRequestOperationType(),
+        schemaRequest.getTeamId(),
+        "Topic : "
+            + schemaRequest.getTopicname()
+            + " version : "
+            + registerSchemaCustomResponse.get("version")
+            + " id : "
+            + registerSchemaCustomResponse.get("id"),
+        schemaRequest.getEnvironment(),
+        schemaRequest.getRequestor());
   }
 
   public void notifySubscribers(SchemaRequest schemaRequest, int tenantId) {

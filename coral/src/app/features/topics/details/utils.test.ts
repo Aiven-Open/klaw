@@ -39,6 +39,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
       environmentName: "DEV",
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
       showDeleteAcl: true,
+      showClaimAcl: false,
       teamid: 1003,
       teamname: "Ospo",
       topicname: "aivendemotopic",
