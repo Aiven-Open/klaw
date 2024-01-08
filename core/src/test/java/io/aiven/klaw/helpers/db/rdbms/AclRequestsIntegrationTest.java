@@ -5,13 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.common.collect.Lists;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.*;
-import io.aiven.klaw.repository.AclRequestsRepo;
-import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
-import io.aiven.klaw.repository.SchemaRequestRepo;
-import io.aiven.klaw.repository.TopicRequestsRepo;
-import io.aiven.klaw.repository.UserInfoRepo;
+import io.aiven.klaw.repository.*;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +39,8 @@ public class AclRequestsIntegrationTest {
   @Autowired private TopicRequestsRepo topicRequestsRepo;
 
   @Autowired private UserInfoRepo userInfoRepo;
+
+  @Autowired private TeamRepo teamRepo;
 
   @Autowired TestEntityManager entityManager;
 
@@ -166,6 +165,32 @@ public class AclRequestsIntegrationTest {
         RequestStatus.CREATED.value,
         11,
         "Gorph");
+
+    Team t = new Team();
+    t.setTeamname("Octopus");
+    t.setTeamId(101);
+    t.setTenantId(101);
+    Team t2 = new Team();
+    t2.setTeamname("Crab");
+    t2.setTeamId(102);
+    t2.setTenantId(101);
+    Team t3 = new Team();
+    t3.setTeamname("Muscle");
+    t3.setTeamId(103);
+    t3.setTenantId(103);
+    Team t4 = new Team();
+    t4.setTeamname("Crustacean");
+    t4.setTeamId(104);
+    t4.setTenantId(104);
+    Team t5 = new Team();
+    t5.setTeamname("fish");
+    t5.setTeamId(101);
+    t5.setTenantId(103);
+    entityManager.persistAndFlush(t);
+    entityManager.persistAndFlush(t2);
+    entityManager.persistAndFlush(t3);
+    entityManager.persistAndFlush(t4);
+    entityManager.persistAndFlush(t5);
   }
 
   @BeforeEach
@@ -178,6 +203,7 @@ public class AclRequestsIntegrationTest {
         selectDataJdbc, "kafkaConnectorRequestsRepo", kafkaConnectorRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "topicRequestsRepo", topicRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "userInfoRepo", userInfoRepo);
+    ReflectionTestUtils.setField(selectDataJdbc, "teamRepo", teamRepo);
     loadData();
   }
 

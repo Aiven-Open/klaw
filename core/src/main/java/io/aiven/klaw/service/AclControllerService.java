@@ -10,24 +10,23 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
-import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_DENIED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_FAILURE;
+import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.*;
@@ -49,6 +48,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -72,6 +72,10 @@ public class AclControllerService {
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
   @Autowired private CommonUtilsService commonUtilsService;
+
+  @Qualifier("approvalService")
+  @Autowired
+  private ApprovalService approvalService;
 
   AclControllerService(ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
@@ -508,6 +512,67 @@ public class AclControllerService {
     }
   }
 
+  public ApiResponse claimAcl(int aclId) throws KlawException {
+    log.info("claimAcl {}", aclId);
+
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    final String userName = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
+    // Get ACL
+    Optional<Acl> aclOp = manageDatabase.getHandleDbRequests().getAcl(aclId, tenantId);
+    if (aclOp.isEmpty()) {
+      return ApiResponse.notOk("Acl does not exist.");
+    }
+
+    if (manageDatabase
+        .getHandleDbRequests()
+        .existsAclRequest(
+            aclOp.get().getTopicname(),
+            RequestStatus.CREATED.value,
+            aclOp.get().getEnvironment(),
+            tenantId)) {
+      return ApiResponse.notOk("A request for this ACL already exists.");
+    }
+
+    // Copy into ACL Request
+    AclRequests request = new AclRequests();
+    copyProperties(aclOp.get(), request);
+
+    // reset the request number
+    request.setReq_no(null);
+    // Store the original aclId in the other Params section
+
+    request.setAssociatedAclId(aclOp.get().getReq_no());
+    // Add Complex Approvers
+    request.setRequestingteam(commonUtilsService.getTeamId(userName));
+    request.setRequestor(userName);
+    request.setRequestOperationType(RequestOperationType.CLAIM.value);
+    request.setRequestStatus(RequestStatus.CREATED.value);
+    // approvals
+    List<Approval> approvals =
+        approvalService.getApprovalsForRequest(
+            RequestEntityType.ACL,
+            RequestOperationType.CLAIM,
+            aclOp.get().getEnvironment(),
+            aclOp.get().getReq_no(),
+            aclOp.get().getTeamId(),
+            tenantId);
+
+    request.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
+
+    String res = manageDatabase.getHandleDbRequests().requestForAcl(request).get("result");
+
+    approvalService.sendEmailToApprovers(
+        userName, request.getTopicname(), "", null, ACL_REQUESTED, approvals, tenantId);
+
+    return ApiResponse.ok(res);
+  }
+
   // this will create a delete subscription request
   public ApiResponse createDeleteAclSubscriptionRequest(String req_no) throws KlawException {
     log.info("createDeleteAclSubscriptionRequest {}", req_no);
@@ -564,7 +629,8 @@ public class AclControllerService {
     return executeAclRequestModel(userName, aclRequestsDao, ACL_DELETE_REQUESTED);
   }
 
-  public ApiResponse approveAclRequests(String req_no) throws KlawException {
+  public ApiResponse approveAclRequests(String req_no)
+      throws KlawException, KlawBadRequestException {
     log.info("approveAclRequests {}", req_no);
     final String userDetails = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
@@ -574,7 +640,11 @@ public class AclControllerService {
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    AclRequests aclReq = dbHandle.getAcl(Integer.parseInt(req_no), tenantId);
+    AclRequests aclReq = dbHandle.getAclRequest(Integer.parseInt(req_no), tenantId);
+
+    if (aclReq.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
+      return approveClaimAcl(aclReq, userDetails, tenantId, dbHandle);
+    }
 
     ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails, tenantId);
     if (!aclValidationResponse.isSuccess()) {
@@ -596,9 +666,75 @@ public class AclControllerService {
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
       notifyUserType = ACL_REQUEST_FAILURE;
     } else {
-      saveToTopicHistory(userDetails, tenantId, aclReq);
+      updateAuditAndHistory(userDetails, tenantId, dbHandle, aclReq);
     }
 
+    return emailAndReturnClaimUpdate(aclReq, dbHandle, notifyUserType, updateAclReqStatus);
+  }
+
+  private void updateAuditAndHistory(
+      String userDetails, int tenantId, HandleDbRequests dbHandle, AclRequests aclReq) {
+    saveToTopicHistory(userDetails, tenantId, aclReq);
+    dbHandle.insertIntoActivityLog(
+        RequestEntityType.ACL.value,
+        tenantId,
+        aclReq.getRequestOperationType(),
+        aclReq.getTeamId(),
+        aclReq.getTopicname()
+            + "-"
+            + aclReq.getAclType()
+            + (aclReq.getAcl_ip() != null ? aclReq.getAcl_ip() + "-" : "")
+            + (aclReq.getAcl_ssl() != null ? aclReq.getAcl_ssl() + "-" : "")
+            + (aclReq.getConsumergroup() != null ? aclReq.getConsumergroup() : ""),
+        aclReq.getEnvironment(),
+        aclReq.getRequestor());
+  }
+
+  private ApiResponse approveClaimAcl(
+      AclRequests aclReq, String userDetails, int tenantId, HandleDbRequests dbHandle)
+      throws KlawException, KlawBadRequestException {
+    MailType emailStatus = ACL_REQUEST_APPROVAL_ADDED;
+    Optional<Acl> acl =
+        manageDatabase.getHandleDbRequests().getAcl(aclReq.getAssociatedAclId(), tenantId);
+    if (acl.isEmpty()) {
+      return ApiResponse.notOk("Acl no longer exists");
+    }
+    Optional<Topic> topic =
+        manageDatabase.getTopicsForTenant(tenantId).stream()
+            .filter(topicSearch -> topicSearch.getTopicname().equals(acl.get().getTopicname()))
+            .findFirst();
+
+    if (topic.isEmpty()) {
+      return ApiResponse.notOk("Associated Topic to Acl not found exists");
+    }
+    List<Approval> approvals = KlawResourceUtils.aclApprovalsToApprovalsList(aclReq.getApprovals());
+
+    approvalService.addApproval(
+        approvals, userDetails, topic.get().getTeamId(), acl.get().getTeamId());
+
+    boolean fullyApproved = approvalService.isRequestFullyApproved(approvals);
+    if (fullyApproved) {
+      // changeAclOwnership
+      emailStatus = ACL_REQUEST_APPROVED;
+
+      acl.get().setTeamId(aclReq.getRequestingteam());
+      manageDatabase.getHandleDbRequests().updateAcl(acl.get());
+    }
+    aclReq.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
+    String status =
+        manageDatabase
+            .getHandleDbRequests()
+            .claimAclRequest(
+                aclReq, fullyApproved ? RequestStatus.APPROVED : RequestStatus.CREATED);
+
+    return emailAndReturnClaimUpdate(aclReq, dbHandle, emailStatus, status);
+  }
+
+  private ApiResponse emailAndReturnClaimUpdate(
+      AclRequests aclReq,
+      HandleDbRequests dbHandle,
+      MailType notifyUserType,
+      String updateAclReqStatus) {
     mailService.sendMail(
         aclReq.getTopicname(),
         aclReq.getAclType(),
@@ -768,7 +904,8 @@ public class AclControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq =
-        dbHandle.getAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
+        dbHandle.getAclRequest(
+            Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (aclReq.getReq_no() == null) {
       return ApiResponse.notOk(ACL_ERR_105);
@@ -901,7 +1038,7 @@ public class AclControllerService {
     String loggedInUser = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(loggedInUser);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    AclRequests aclReq = dbHandle.getAcl(aclRequestId, tenantId);
+    AclRequests aclReq = dbHandle.getAclRequest(aclRequestId, tenantId);
     if (aclReq != null) {
       aclReq.setEnvironmentName(
           commonUtilsService.getEnvDetails(aclReq.getEnvironment(), tenantId).getName());

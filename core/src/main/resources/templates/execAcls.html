@@ -583,7 +583,7 @@
 										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Requesting Team</h6><b>{{ aclRequest.requestingTeamName }}</b>
 										</div>
-										<div class="p-2 border-right" ng-show="aclRequest.requestOperationType == 'CREATE'" style="width:20%">
+										<div class="p-2 border-right" ng-show="aclRequest.requestOperationType == 'CREATE' || aclRequest.requestOperationType == 'CLAIM' " style="width:20%">
 											<h6 class="text-primary">Request Type</h6><b>
 											<span class="badge badge-info">{{ aclRequest.requestOperationType }} Acl</span></b>
 										</div>
@@ -603,8 +603,16 @@
 									</div>
 									<br>
 									<div class="d-flex flex-row">
-										<div class="p-2"  style="width:75%">
+										<div class="p-2"  style="width:65%">
 											<h6 class="text-primary">Remarks</h6><b>{{ aclRequest.remarks }}</b>
+										</div>
+										<div ng-show="aclRequest.requestStatus === 'CREATED' && aclRequest.requestOperationType == 'CLAIM'" class="p-2 border-left" style="width:10%">
+											<h6 class="text-primary">Required Approver(s)</h6>
+
+											<div ng-repeat="approval in aclRequest.approvals">
+												<b>{{ approval.requiredApprover}}</b>
+											</div>
+
 										</div>
 										<div ng-show="aclRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>

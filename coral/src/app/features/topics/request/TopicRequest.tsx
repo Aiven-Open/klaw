@@ -203,6 +203,7 @@ function TopicRequest() {
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
             <Button
+              disabled={isLoading}
               type="button"
               kind={"secondary"}
               onClick={

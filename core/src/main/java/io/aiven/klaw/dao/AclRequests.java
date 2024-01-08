@@ -6,6 +6,7 @@ import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
@@ -104,6 +105,12 @@ public class AclRequests implements Serializable {
   @Column(name = "aclipprincipletype")
   @Convert(converter = AclIPPrincipleTypeConverter.class)
   private AclIPPrincipleType aclIpPrincipleType;
+
+  @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private List<AclApproval> approvals = new ArrayList<>();
+
+  @Column(name = "associatedaclid")
+  private Integer associatedAclId;
 
   @Transient private String totalNoPages;
 

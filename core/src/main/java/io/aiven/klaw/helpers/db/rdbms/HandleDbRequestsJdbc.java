@@ -124,6 +124,19 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public void insertIntoActivityLog(
+      String requestType,
+      int tenantId,
+      String operationType,
+      int teamId,
+      String details,
+      String envId,
+      String requestor) {
+    jdbcInsertHelper.insertIntoActivityLog(
+        requestType, tenantId, operationType, teamId, details, envId, requestor);
+  }
+
+  @Override
   public List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
       String topicName, int teamId, int tenantId) {
     return jdbcSelectHelper.getTopicsByTopicNameAndTeamId(topicName, teamId, tenantId);
@@ -643,8 +656,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public AclRequests getAcl(int req_no, int tenantId) {
+  public AclRequests getAclRequest(int req_no, int tenantId) {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
+  }
+
+  @Override
+  public Optional<Acl> getAcl(int aclId, int tenantId) {
+    return jdbcSelectHelper.getAcl(aclId, tenantId);
   }
 
   @Override
@@ -914,6 +932,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public String declineAclRequest(AclRequests aclReq, String approver) {
     return jdbcUpdateHelper.declineAclRequest(aclReq, approver);
+  }
+
+  @Override
+  public String claimAclRequest(AclRequests aclReq, RequestStatus status) {
+    return jdbcUpdateHelper.claimAclRequest(aclReq, status);
+  }
+
+  @Override
+  public String updateAcl(Acl acl) {
+    return jdbcUpdateHelper.updateAcl(acl);
   }
 
   public String updateAclRequest(

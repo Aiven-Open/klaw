@@ -366,6 +366,54 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     });
     	}
 
+
+    	$scope.onClaimAcl = function(aclId){
+            	    $scope.alert = null;
+
+                    swal({
+                                title: "Are you sure?",
+                                text: "You would like to claim this Acl ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, request for ownership!",
+                                cancelButtonText: "No, cancel please!",
+                                closeOnConfirm: true,
+                                closeOnCancel: true
+                            }).then(function(isConfirm){
+                                if (isConfirm.value) {
+                                    $http({
+                                            method: "POST",
+                                            url: "acl/claim/" + aclId ,
+                                            headers : { 'Content-Type' : 'application/json' }
+                                        }).success(function(output) {
+
+                                            if(output.success){
+                                                swal({
+                                                     title: "",
+                                                     text: "Topic Claim Request : "+output.message,
+                                                     showConfirmButton: true
+                                                 }).then(function(isConfirm){
+                                                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +  "/myAclRequests?reqsType=CREATED&claimAclCreated=true";
+                                                     });
+                                            }
+                                            else{
+                                                    $scope.alertTopicDelete = "Acl Claim Request : "+output.message;
+                                                    $scope.alertnote = "Acl Claim Request : "+output.message;
+                                                    $scope.showSubmitFailed('','');
+                                                }
+                                        }).error(
+                                            function(error)
+                                            {
+                                                $scope.handleValidationErrors(error);
+                                            }
+                                        );
+                                } else {
+                                    return;
+                                }
+                            });
+            	}
+
 	$scope.deleteAcls = function(reqNo, teamAcl){
             $scope.alertTopicDelete = null;
             $scope.alert = null;

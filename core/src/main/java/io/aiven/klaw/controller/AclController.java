@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.AclGroupBy;
@@ -158,7 +159,7 @@ public class AclController {
       value = "/execAclRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveAclRequests(@RequestParam("req_no") String req_no)
-      throws KlawException {
+      throws KlawException, KlawBadRequestException {
     return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
   }
 
@@ -171,6 +172,13 @@ public class AclController {
         aclControllerService.createDeleteAclSubscriptionRequest(
             deleteAclRequestModel.getRequestId()),
         HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/acl/claim/{aclId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> claimAcl(@PathVariable int aclId) throws KlawException {
+    return new ResponseEntity<>(aclControllerService.claimAcl(aclId), HttpStatus.OK);
   }
 
   @PostMapping(

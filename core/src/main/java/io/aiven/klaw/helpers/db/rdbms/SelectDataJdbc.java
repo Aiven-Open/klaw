@@ -118,7 +118,8 @@ public class SelectDataJdbc {
     log.debug("selectAclRequests {}", requestor);
     List<AclRequests> aclList = new ArrayList<>();
     List<AclRequests> aclListSub;
-
+    Integer teamSelected = selectUserInfo(requestor).getTeamId();
+    Optional<Team> team = teamRepo.findById(new TeamID(teamSelected, tenantId));
     aclListSub =
         Lists.newArrayList(
             findAclRequestsByExample(
@@ -132,12 +133,18 @@ public class SelectDataJdbc {
     if (isApproval) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
+
       aclListSub =
           aclListSub.stream()
-              .filter(req -> !req.getRequestor().equals(requestor))
+              .filter(
+                  req ->
+                      !req.getRequestor().equals(requestor)
+                          && !req.getRequestOperationType()
+                              .equals(RequestOperationType.CLAIM.value))
               .collect(Collectors.toList());
+      getAclClaimRequestsForApproval(requestor, team, aclListSub, status);
     }
-    Integer teamSelected = selectUserInfo(requestor).getTeamId();
+
     if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
       aclListSub =
           aclListSub.stream()
@@ -160,6 +167,8 @@ public class SelectDataJdbc {
 
         if (RequestOperationType.DELETE.value.equals(rowRequestOperationType)) {
           teamId = row.getRequestingteam();
+        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)) {
+
         }
 
       } else {
@@ -168,7 +177,8 @@ public class SelectDataJdbc {
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
         aclList.add(row);
-      } else if (teamSelected != null && teamSelected.equals(teamId)) {
+      } else if ((teamSelected != null && teamSelected.equals(teamId))
+          || row.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         aclList.add(row);
       }
 
@@ -180,6 +190,27 @@ public class SelectDataJdbc {
     }
 
     return aclList;
+  }
+
+  private void getAclClaimRequestsForApproval(
+      String requestor, Optional<Team> team, List<AclRequests> aclListSub, String requestStatus) {
+    if (team.isPresent()) {
+
+      if (requestStatus == null || requestStatus.equals(RequestStatus.ALL.value)) {
+        aclListSub.addAll(
+            aclRequestsRepo.getAllByApprovalsRequiredApprover(team.get().getTeamname()));
+      } else if (requestStatus.equals(RequestStatus.CREATED.value)) {
+        // GET CLAIMS that have not been approved yet
+        aclListSub.addAll(
+            aclRequestsRepo
+                .getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApproverAndApprovalsApproverName(
+                    requestStatus, requestor, team.get().getTeamname(), null));
+      } else {
+        aclListSub.addAll(
+            aclRequestsRepo.getAllByRequestStatusAndRequestorNotAndApprovalsRequiredApprover(
+                requestStatus, requestor, team.get().getTeamname()));
+      }
+    }
   }
 
   /**
@@ -898,6 +929,10 @@ public class SelectDataJdbc {
 
     Optional<AclRequests> aclReq = aclRequestsRepo.findById(aclRequestID);
     return aclReq.orElse(null);
+  }
+
+  public Optional<Acl> getAcl(int aclId, int tenantId) {
+    return aclRepo.findById(new AclID(aclId, tenantId));
   }
 
   public List<UserInfo> selectAllUsersInfo(int tenantId) {
