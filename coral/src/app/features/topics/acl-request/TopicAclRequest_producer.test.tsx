@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { userEvent } from "@testing-library/user-event";
@@ -106,16 +105,13 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={
-              <AquariumContext>
-                <TopicAclRequest />
-              </AquariumContext>
-            }
+            element={<TopicAclRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
@@ -404,16 +400,13 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={
-              <AquariumContext>
-                <TopicAclRequest />
-              </AquariumContext>
-            }
+            element={<TopicAclRequest />}
           />
         </Routes>,
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
           customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
@@ -730,15 +723,11 @@ describe("<TopicAclRequest />", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: false });
 
-      customRender(
-        <AquariumContext>
-          <TopicAclRequest />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicAclRequest />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(() => {
@@ -1069,15 +1058,11 @@ describe("<TopicAclRequest />", () => {
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
-      customRender(
-        <AquariumContext>
-          <TopicAclRequest />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicAclRequest />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(() => {

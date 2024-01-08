@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import * as ReactQuery from "@tanstack/react-query";
 import { waitFor, within } from "@testing-library/react";
 import {
@@ -95,15 +94,11 @@ describe("TopicSchemaRequest", () => {
         testTopicName,
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
 
       const form = getForm();
       expect(form).toBeVisible();
@@ -119,15 +114,11 @@ describe("TopicSchemaRequest", () => {
     it("redirects user if topicName prop does not exist in list of topicNames", async () => {
       mockGetTopicNames.mockResolvedValue(["topic-1", "topic-2"]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
 
       await waitFor(() => {
         expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
@@ -151,16 +142,12 @@ describe("TopicSchemaRequest", () => {
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-          customRoutePath: "/topic/testtopic/request-schema?env=1",
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=1",
+      });
 
       const form = getForm();
       expect(form).toBeVisible();
@@ -190,16 +177,12 @@ describe("TopicSchemaRequest", () => {
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-          customRoutePath: "/topic/testtopic/request-schema?env=INFRA",
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=INFRA",
+      });
 
       const form = getForm();
       expect(form).toBeVisible();
@@ -229,16 +212,12 @@ describe("TopicSchemaRequest", () => {
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-          customRoutePath: "/topic/testtopic/request-schema?env=999",
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=999",
+      });
 
       await waitFor(() => {
         expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
@@ -250,16 +229,12 @@ describe("TopicSchemaRequest", () => {
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-          customRoutePath: "/topic/testtopic/request-schema?env=HELLO",
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=HELLO",
+      });
 
       await waitFor(() => {
         expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
@@ -276,15 +251,11 @@ describe("TopicSchemaRequest", () => {
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(() => {
@@ -316,15 +287,11 @@ describe("TopicSchemaRequest", () => {
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("environments-select-loading")
       );
@@ -456,15 +423,11 @@ describe("TopicSchemaRequest", () => {
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
-      customRender(
-        <AquariumContext>
-          <TopicSchemaRequest presetTopicName={testTopicName} />
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("environments-select-loading")
       );
@@ -542,6 +505,7 @@ describe("TopicSchemaRequest", () => {
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -661,6 +625,7 @@ describe("TopicSchemaRequest", () => {
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -766,6 +731,7 @@ describe("TopicSchemaRequest", () => {
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -953,6 +919,7 @@ describe("TopicSchemaRequest", () => {
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -1032,6 +999,7 @@ describe("TopicSchemaRequest", () => {
         {
           queryClient: true,
           memoryRouter: true,
+          aquariumContext: true,
         }
       );
       await waitForElementToBeRemoved(

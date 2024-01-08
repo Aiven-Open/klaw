@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -112,15 +111,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -218,15 +213,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -278,15 +269,11 @@ describe("TopicDetailsSchema", () => {
             topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
           },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -345,15 +332,11 @@ describe("TopicDetailsSchema", () => {
             topicInfo: { topicOwner: true, hasOpenSchemaRequest: false },
           },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -394,15 +377,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -465,15 +444,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -533,15 +508,11 @@ describe("TopicDetailsSchema", () => {
             topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
           },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -592,15 +563,11 @@ describe("TopicDetailsSchema", () => {
             setSchemaVersion: mockSetSchemaVersion,
             topicOverview: { topicInfo: { topicOwner: true } },
           });
-          customRender(
-            <AquariumContext>
-              <TopicDetailsSchema />
-            </AquariumContext>,
-            {
-              memoryRouter: true,
-              queryClient: true,
-            }
-          );
+          customRender(<TopicDetailsSchema />, {
+            memoryRouter: true,
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(() => {
@@ -659,15 +626,11 @@ describe("TopicDetailsSchema", () => {
             setSchemaVersion: mockSetSchemaVersion,
             topicOverview: { topicInfo: { topicOwner: true } },
           });
-          customRender(
-            <AquariumContext>
-              <TopicDetailsSchema />
-            </AquariumContext>,
-            {
-              memoryRouter: true,
-              queryClient: true,
-            }
-          );
+          customRender(<TopicDetailsSchema />, {
+            memoryRouter: true,
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(cleanup);
@@ -706,15 +669,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -819,15 +778,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -860,15 +815,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -904,15 +855,11 @@ describe("TopicDetailsSchema", () => {
           topicOverview: { topicInfo: { topicOwner: true } },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -995,15 +942,11 @@ describe("TopicDetailsSchema", () => {
           topicOverview: { topicInfo: { topicOwner: true } },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -1164,15 +1107,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: false } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
@@ -1217,15 +1156,11 @@ describe("TopicDetailsSchema", () => {
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: false } },
         });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicDetailsSchema />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(() => {
