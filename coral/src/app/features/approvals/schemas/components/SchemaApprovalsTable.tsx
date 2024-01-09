@@ -17,6 +17,7 @@ import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { Link } from "react-router-dom";
 
 interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
@@ -83,11 +84,19 @@ function SchemaApprovalsTable({
         };
       },
     },
-    { type: "text", field: "requestor", headerName: "Requested by" },
     {
-      type: "text",
-      field: "teamname",
+      type: "custom",
+      headerName: "Requested by",
+      UNSAFE_render: ({ requestor }: SchemaRequestTableData) => {
+        return <Link to={"/configuration/users"}>{requestor}</Link>;
+      },
+    },
+    {
+      type: "custom",
       headerName: "Team",
+      UNSAFE_render: ({ teamname }: SchemaRequestTableData) => {
+        return <Link to={"/configuration/teams"}>{teamname}</Link>;
+      },
     },
     {
       type: "text",

@@ -57,9 +57,11 @@ function ConnectorTable(props: ConnectorTableProps) {
       },
     },
     {
-      type: "text",
-      field: "teamName",
+      type: "custom",
       headerName: "Team",
+      UNSAFE_render: ({ teamName }: ConnectorTableRow) => {
+        return <Link to={"/configuration/teams"}>{teamName}</Link>;
+      },
     },
   ];
 
