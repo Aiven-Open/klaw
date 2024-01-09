@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import {
@@ -6,6 +6,7 @@ import {
   type TopicRequestsTableProps,
 } from "src/app/features/requests/topics/components/TopicRequestsTable";
 import { userEvent } from "@testing-library/user-event";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedRequests: TopicRequest[] = [
   {
@@ -75,14 +76,15 @@ const mockedRequests: TopicRequest[] = [
 
 describe("TopicRequestsTable", () => {
   function renderFromProps(props?: Partial<TopicRequestsTableProps>): void {
-    render(
+    customRender(
       <TopicRequestsTable
         requests={mockedRequests}
         onDetails={jest.fn()}
         onDelete={jest.fn()}
         ariaLabel={"Topic requests, page 1 of 10"}
         {...props}
-      />
+      />,
+      { memoryRouter: true }
     );
   }
 
@@ -127,9 +129,12 @@ describe("TopicRequestsTable", () => {
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[2]
     ).toHaveTextContent("Owned by");
-    expect(within(getNthRow(1)).getAllByRole("cell")[2]).toHaveTextContent(
-      "NCC1701D"
-    );
+
+    const cell = within(getNthRow(1)).getAllByRole("cell")[2];
+    const link = within(cell).getByRole("link", { name: "NCC1701D" });
+
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute("href", "/configuration/teams");
   });
 
   it("has column to describe the status", () => {
@@ -157,9 +162,12 @@ describe("TopicRequestsTable", () => {
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[5]
     ).toHaveTextContent("Requested by");
-    expect(within(getNthRow(1)).getAllByRole("cell")[5]).toHaveTextContent(
-      "jlpicard"
-    );
+
+    const cell = within(getNthRow(1)).getAllByRole("cell")[5];
+    const link = within(cell).getByRole("link", { name: "jlpicard" });
+
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute("href", "/configuration/users");
   });
 
   it("has column to describe the timestamp when the request was made", () => {

@@ -22,6 +22,10 @@ type Paginated<T> = {
   entries: T;
 };
 
+type AtLeastOneProperty<T> = {
+  [K in keyof T]: { [P in K]: T[P] } & { [P in Exclude<keyof T, K>]?: T[P] };
+}[keyof T];
+
 export type {
   KlawApiResponse,
   KlawApiModel,
@@ -29,4 +33,5 @@ export type {
   KlawApiRequestQueryParameters,
   ResolveIntersectionTypes,
   Paginated,
+  AtLeastOneProperty,
 };

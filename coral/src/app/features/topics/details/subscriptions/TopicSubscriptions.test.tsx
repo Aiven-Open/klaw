@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   screen,
@@ -108,6 +107,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 1003,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
     {
@@ -122,6 +122,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 1003,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
     {
@@ -136,6 +137,7 @@ const testTopicOverview: TopicOverview = {
       teamid: 1004,
       aclPatternType: "LITERAL",
       showDeleteAcl: true,
+      showClaimAcl: false,
       kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
     },
   ],
@@ -147,6 +149,7 @@ const testTopicOverview: TopicOverview = {
       environmentName: "TST",
       kafkaFlavorType: "APACHE_KAFKA",
       showDeleteAcl: true,
+      showClaimAcl: false,
       teamid: 1003,
       teamname: "Ospo",
       topicname: "aivendemot",
@@ -162,6 +165,7 @@ const testTopicOverview: TopicOverview = {
       environmentName: "TST",
       kafkaFlavorType: "APACHE_KAFKA",
       showDeleteAcl: true,
+      showClaimAcl: false,
       teamid: 1003,
       teamname: "Ospo",
       topicname: "aivendemotopic",
@@ -237,16 +241,11 @@ describe("TopicSubscriptions.tsx", () => {
     mockGetTeams.mockResolvedValue(mockedTeamsResponse);
     mockAuthUser.mockReturnValue(mockAuthUserReturnValue);
 
-    customRender(
-      // Aquarium context is needed for useToast
-      <AquariumContext>
-        <TopicSubscriptions />
-      </AquariumContext>,
-      {
-        memoryRouter: true,
-        queryClient: true,
-      }
-    );
+    customRender(<TopicSubscriptions />, {
+      memoryRouter: true,
+      queryClient: true,
+      aquariumContext: true,
+    });
     await waitForElementToBeRemoved(screen.getByTestId("select-team-loading"));
   });
 

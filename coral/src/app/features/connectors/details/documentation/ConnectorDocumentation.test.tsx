@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
@@ -84,12 +83,10 @@ describe("ConnectorDocumentation", () => {
             success: true,
             message: "",
           });
-          customRender(
-            <AquariumContext>
-              <ConnectorDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<ConnectorDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(cleanup);
@@ -116,12 +113,10 @@ describe("ConnectorDocumentation", () => {
             success: true,
             message: "",
           });
-          customRender(
-            <AquariumContext>
-              <ConnectorDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<ConnectorDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterEach(cleanup);
@@ -189,12 +184,10 @@ describe("ConnectorDocumentation", () => {
             message: "",
           });
 
-          customRender(
-            <AquariumContext>
-              <ConnectorDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<ConnectorDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterAll(cleanup);
@@ -238,12 +231,10 @@ describe("ConnectorDocumentation", () => {
             },
           });
 
-          customRender(
-            <AquariumContext>
-              <ConnectorDocumentation />
-            </AquariumContext>,
-            { queryClient: true }
-          );
+          customRender(<ConnectorDocumentation />, {
+            queryClient: true,
+            aquariumContext: true,
+          });
         });
 
         afterEach(cleanup);
@@ -286,12 +277,10 @@ describe("ConnectorDocumentation", () => {
           message: "",
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -339,12 +328,10 @@ describe("ConnectorDocumentation", () => {
           success: true,
           message: "",
         });
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -440,12 +427,10 @@ describe("ConnectorDocumentation", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -489,12 +474,10 @@ describe("ConnectorDocumentation", () => {
           message: "this is error",
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(() => {
@@ -544,12 +527,10 @@ describe("ConnectorDocumentation", () => {
         mockUseConnectorDetails.mockReturnValue(
           mockConnectorDetailsIsNotConnectorOwner
         );
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -580,12 +561,10 @@ describe("ConnectorDocumentation", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <ConnectorDocumentation />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorDocumentation />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);

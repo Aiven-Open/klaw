@@ -213,9 +213,11 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 	$scope.getActivityLog = function(pageNoSelected) {
 
         var serviceInput = {};
-
-        if($scope.resultPageSelected && $scope.resultPageSelected == pageNoSelected)
-            return;
+        if($scope.resultPageSelected && $scope.resultPageSelected === pageNoSelected){
+            if(!$scope.getActivityLog.envId){
+                return;
+            }
+        }
 
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getActivityLog.envId;

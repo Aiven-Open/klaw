@@ -814,7 +814,7 @@ public class TopicSyncControllerService {
           tmpTopicFull = producerConsumerTopic.getTopicname();
 
           if (tmpTopicFull.endsWith("--PREFIXED--")) { // has prefixed acl
-            tmpTopicSub = tmpTopicFull.replaceAll("--PREFIXED--", "");
+            tmpTopicSub = tmpTopicFull.replace("--PREFIXED--", "");
             if (topicInfo.getTopicname().startsWith(tmpTopicSub)
                 && topicInfo
                     .getEnvironmentsSet()

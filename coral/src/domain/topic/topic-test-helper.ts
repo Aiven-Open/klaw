@@ -34,12 +34,14 @@ function createMockTopic({
     { id: "1", name: "DEV" },
     { id: "2", name: "TEST" },
   ],
+  teamName,
 }: {
   topicName: string;
   topicId: number;
   totalNoPages?: number;
   currentPage?: number;
   environmentsList?: EnvironmentInfo[];
+  teamName?: string;
 }): Topic {
   return {
     topicid: topicId,
@@ -51,7 +53,7 @@ function createMockTopic({
     noOfPartitions: 2,
     description: "Topic description",
     noOfReplicas: "2",
-    teamname: "DevRel",
+    teamname: teamName || "DevRel",
     teamId: 2,
     envId: "1",
     envName: "DEV",

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ResourceHistory;
@@ -462,6 +463,23 @@ public class TopicAclControllerIT {
 
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getActivityLogPerEnv")
+                    .with(user(user2).password(PASSWORD))
+                    .param("env", "1")
+                    .param("pageNo", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<ActivityLogModel> response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response2.size()).isEqualTo(1);
+    assertThat(response2.get(0).getDetails()).contains(topicName);
   }
 
   @Test

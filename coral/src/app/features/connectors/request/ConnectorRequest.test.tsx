@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import ConnectorRequest from "src/app/features/connectors/request/ConnectorRequest";
@@ -53,12 +52,10 @@ describe("<ConnectorRequest />", () => {
           createMockEnvironmentDTO({ id: "2", name: "TST" }),
           createMockEnvironmentDTO({ id: "3", name: "PROD" }),
         ]);
-        customRender(
-          <AquariumContext>
-            <ConnectorRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(cleanup);
@@ -109,12 +106,10 @@ describe("<ConnectorRequest />", () => {
           createMockEnvironmentDTO({ id: "2", name: "TST" }),
           createMockEnvironmentDTO({ id: "3", name: "PROD" }),
         ]);
-        customRender(
-          <AquariumContext>
-            <ConnectorRequest />
-          </AquariumContext>,
-          { queryClient: true }
-        );
+        customRender(<ConnectorRequest />, {
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterEach(cleanup);
@@ -168,12 +163,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "2", name: "TST" }),
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(cleanup);
@@ -197,12 +190,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "2", name: "TST" }),
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(cleanup);
@@ -288,12 +279,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "2", name: "TST" }),
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(cleanup);
@@ -318,12 +307,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "2", name: "TST" }),
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(cleanup);
@@ -343,12 +330,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "2", name: "TST" }),
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       await waitFor(() =>
         screen.getByRole("combobox", {
@@ -492,12 +477,10 @@ describe("<ConnectorRequest />", () => {
         createMockEnvironmentDTO({ id: "3", name: "PROD" }),
       ]);
 
-      customRender(
-        <AquariumContext>
-          <ConnectorRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      customRender(<ConnectorRequest />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       // Wait all API calls to resolve, which are required for the render
       await screen.findByRole("combobox", {

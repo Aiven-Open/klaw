@@ -13,11 +13,13 @@ import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
+  const dashBoardEnabled = useFeatureFlag(FeatureFlag.FEATURE_FLAG_DASHBOARD);
 
   return (
     <Box
@@ -38,8 +40,9 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={database}
-            to={`/index`}
+            to={dashBoardEnabled ? Routes.DASHBOARD : "/index"}
             linkText={"Dashboard"}
+            active={pathname === Routes.DASHBOARD}
           />
         </li>
         <li>

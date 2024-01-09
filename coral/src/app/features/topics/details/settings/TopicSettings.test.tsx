@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { TopicSettings } from "src/app/features/topics/details/settings/TopicSettings";
@@ -83,15 +82,11 @@ describe("TopicSettings", () => {
         },
       });
 
-      customRender(
-        <AquariumContext>
-          <TopicSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -144,15 +139,11 @@ describe("TopicSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -205,15 +196,11 @@ describe("TopicSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -268,15 +255,11 @@ describe("TopicSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -332,15 +315,11 @@ describe("TopicSettings", () => {
           },
         });
 
-        customRender(
-          <AquariumContext>
-            <TopicSettings />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
+        customRender(<TopicSettings />, {
+          memoryRouter: true,
+          queryClient: true,
+          aquariumContext: true,
+        });
       });
 
       afterAll(cleanup);
@@ -375,15 +354,11 @@ describe("TopicSettings", () => {
       mockDeleteTopic.mockImplementation(jest.fn());
       mockedUseTopicDetails.mockReturnValue(mockTopicDetails);
 
-      customRender(
-        <AquariumContext>
-          <TopicSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -443,15 +418,11 @@ describe("TopicSettings", () => {
         },
       });
 
-      customRender(
-        <AquariumContext>
-          <TopicSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterAll(cleanup);
@@ -501,15 +472,11 @@ describe("TopicSettings", () => {
       mockDeleteTopic.mockImplementation(jest.fn());
       mockedUseTopicDetails.mockReturnValue(mockTopicDetails);
 
-      customRender(
-        <AquariumContext>
-          <TopicSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<TopicSettings />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
     });
 
     afterEach(() => {
