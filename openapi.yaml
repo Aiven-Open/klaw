@@ -2540,8 +2540,8 @@
           }
         } ],
         "responses" : {
-          "default" : {
-            "description" : "default response",
+          "200" : {
+            "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
