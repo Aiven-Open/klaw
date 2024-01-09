@@ -7,7 +7,7 @@ import { userEvent } from "@testing-library/user-event";
 import ActivityLog from "src/app/features/activity-log/ActivityLog";
 import { getAllEnvironments } from "src/domain/environment/environment-api";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-test-helper";
-import { getActivityLog } from "src/domain/requests/requests-api";
+import { getActivityLog } from "src/domain/requests";
 import { activityLogTransformer } from "src/domain/requests/requests-transformers";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

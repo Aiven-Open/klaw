@@ -1,5 +1,5 @@
 import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
-import { ActivityLog } from "src/domain/requests/requests-types";
+import { ActivityLog } from "src/domain/requests";
 
 type ActivityLogsTableRow = {
   id: ActivityLog["req_no"];

@@ -9,7 +9,7 @@ import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
-} from "src/domain/requests/requests-types";
+} from "src/domain/requests";
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,

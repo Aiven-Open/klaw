@@ -14,7 +14,7 @@ import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
-} from "src/domain/requests/requests-types";
+} from "src/domain/requests";
 import api, { API_PATHS, KlawApiError } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {

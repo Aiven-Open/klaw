@@ -1,4 +1,4 @@
-import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests";
 import { KlawApiResponse } from "types/utils";
 import {
   activityLogTransformer,

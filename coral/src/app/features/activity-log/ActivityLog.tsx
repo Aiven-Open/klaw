@@ -8,7 +8,7 @@ import {
   withFiltersContext,
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
-import { getActivityLog } from "src/domain/requests/requests-api";
+import { getActivityLog } from "src/domain/requests";
 
 function ActivityLog() {
   const [searchParams, setSearchParams] = useSearchParams();

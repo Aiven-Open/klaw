@@ -3,7 +3,7 @@ import {
   ActivityLogTable,
   ActivityLogTableProps,
 } from "src/app/features/activity-log/components/ActivityLogTable";
-import { ActivityLog } from "src/domain/requests/requests-types";
+import { ActivityLog } from "src/domain/requests";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockedActivityLogs: ActivityLog[] = [

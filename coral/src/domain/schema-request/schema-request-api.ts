@@ -2,7 +2,7 @@ import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
-} from "src/domain/requests/requests-types";
+} from "src/domain/requests";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import {
   PromoteSchemaPayload,

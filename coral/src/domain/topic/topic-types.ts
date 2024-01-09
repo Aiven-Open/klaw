@@ -1,8 +1,5 @@
 import { MarkdownString } from "src/domain/helper/documentation-helper";
-import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
+import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import type {
   KlawApiModel,
   KlawApiResponse,

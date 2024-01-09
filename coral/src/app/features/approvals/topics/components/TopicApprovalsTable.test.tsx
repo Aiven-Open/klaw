@@ -4,10 +4,7 @@ import { TopicApprovalsTable } from "src/app/features/approvals/topics/component
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
-import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
+import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRequestsWaitingForApproval } from "src/domain/requests/requests-api";
+import { getRequestsWaitingForApproval } from "src/domain/requests";
 
 export const usePendingRequests = () => {
   const { data, isLoading } = useQuery(["getRequestsWaitingForApproval"], {

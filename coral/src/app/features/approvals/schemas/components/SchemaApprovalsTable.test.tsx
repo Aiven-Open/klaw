@@ -5,10 +5,7 @@ import { SchemaRequest } from "src/domain/schema-request";
 import { userEvent } from "@testing-library/user-event";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
-import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
+import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedRequests: SchemaRequest[] = [
