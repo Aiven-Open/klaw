@@ -313,6 +313,7 @@ public class UtilControllerService implements InitializingBean {
       Map<String, String> teamTopics =
           reqsHandle.getDashboardInfo(commonUtilsService.getTeamId(userName), tenantId);
       authenticationInfo.setMyteamtopics(teamTopics.get("myteamtopics"));
+      authenticationInfo.setMyOrgTopics(teamTopics.get("myOrgTopics"));
       authenticationInfo.setContextPath(kwContextPath);
       authenticationInfo.setTeamsize("" + manageDatabase.getTeamsForTenant(tenantId).size());
       authenticationInfo.setSchema_clusters_count(

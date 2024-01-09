@@ -38,6 +38,8 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
       nativeQuery = true)
   List<Object[]> findAllTopicsGroupByTeamId(@Param("tenantId") Integer tenantId);
 
+  int countByTenantId(int tenantId);
+
   @Query(value = "select count(*) from kwtopics", nativeQuery = true)
   int findAllTopicsCount();
 
