@@ -15,8 +15,8 @@ CORAL_DIST = $(CORAL_ROOT)/dist
 CORAL_ROOT_WIN = ..\coral
 CORAL_DIST_WIN = $(CORAL_ROOT_WIN)\dist
 
-CORAL_ROOT_WIN = ..\coral
-CORAL_DIST_WIN = $(CORAL_ROOT)\dist
+CORAL_ASSETS_OUTPUT_WIN = .\src\main\resources\static\assets\coral
+CORAL_INDEX_OUTPUT_WIN = .\src\main\resources\templates\coral
 
 # Make sure pnpm is pre installed
 PNPM = pnpm
@@ -25,7 +25,9 @@ VERSION = $(shell $(PNPM) -v)
 WIN: ..\coral\index.html $(shell cd $(CORAL_ROOT_WIN)/src && dir /s /b /o:gn)
 	@echo "Windows Coral Build"
 	cd $(CORAL_ROOT_WIN) && $(PNPM) install --frozen-lockfile
-	cd $(CORAL_ROOT_WIN) && $(PNPM) build --assetsDir assets\coral --mode springboot
+	cd $(CORAL_ROOT_WIN) && $(PNPM) build --assetsDir assets/coral --mode springboot
+	xcopy $(CORAL_DIST_WIN)\index.html $(CORAL_INDEX_OUTPUT_WIN)
+	xcopy $(CORAL_DIST_WIN)\assets\coral\* $(CORAL_ASSETS_OUTPUT_WIN)
 
 UNIX: ../coral/index.html $(shell find $(CORAL_ROOT)/src)
 	@echo "Linux Coral Build"
