@@ -31,6 +31,7 @@ function TopicOverview() {
       hasOpenTopicRequest,
       hasOpenClaimRequest,
       clusterId,
+      teamname,
     },
     topicPromotionDetails,
   } = topicOverview;
@@ -64,6 +65,11 @@ function TopicOverview() {
               entity={"Partitions"}
             />
           </Box.Flex>
+        </Card>
+      </Grid.Item>
+      <Grid.Item xs={2}>
+        <Card title="Topic owner" fullWidth>
+          <Typography htmlTag={"div"}>{teamname}</Typography>
         </Card>
       </Grid.Item>
 
