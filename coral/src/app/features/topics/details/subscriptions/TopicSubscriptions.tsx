@@ -24,7 +24,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import StatsDisplay from "src/app/components/StatsDisplay";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subscriptions/components/TopicSubscriptionsDetailsModal";
 import { getTopicStats } from "src/app/features/topics/details/utils";
