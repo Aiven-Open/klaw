@@ -3167,8 +3167,8 @@ export type operations = {
       };
     };
     responses: {
-      /** @description default response */
-      default: {
+      /** @description OK */
+      200: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
         };
