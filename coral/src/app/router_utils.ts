@@ -1,6 +1,7 @@
 import isString from "lodash/isString";
 
 enum Routes {
+  DASHBOARD = "/",
   TOPICS = "/topics",
   TOPIC_OVERVIEW = "/topic/:topicName",
   CONNECTORS = "/connectors",

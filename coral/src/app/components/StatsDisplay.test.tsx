@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import StatsDisplay from "src/app/components/StatsDisplay";
 
 describe("StatsDisplay", () => {
   describe("shows stats for numbers", () => {

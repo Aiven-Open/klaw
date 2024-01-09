@@ -23,6 +23,7 @@ import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
 import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
 import RequestConnector from "src/app/pages/connectors/request";
+import DashboardPage from "src/app/pages/dashboard";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
 import AclRequestsPage from "src/app/pages/requests/acls";
@@ -60,12 +61,20 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
+import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   {
     path: "/",
     element: <Layout />,
     children: [
+      createRouteBehindFeatureFlag({
+        path: Routes.DASHBOARD,
+        element: <DashboardPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_DASHBOARD,
+        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+      }),
       {
         path: Routes.TOPICS,
         element: <Topics />,
