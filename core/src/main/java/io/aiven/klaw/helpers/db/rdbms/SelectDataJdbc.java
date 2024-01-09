@@ -1031,7 +1031,9 @@ public class SelectDataJdbc {
     log.debug("getDashboardInfo {}", teamId);
     Map<String, String> dashboardInfo = new HashMap<>();
     Integer topicListSize = topicRepo.findDistinctCountTopicnameByTeamId(teamId, tenantId);
+    int topicListSizeForOrg = topicRepo.countByTenantId(tenantId);
     dashboardInfo.put("myteamtopics", "" + topicListSize);
+    dashboardInfo.put("myOrgTopics", "" + topicListSizeForOrg);
 
     return dashboardInfo;
   }

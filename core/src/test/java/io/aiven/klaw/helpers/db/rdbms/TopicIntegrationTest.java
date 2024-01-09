@@ -217,8 +217,8 @@ public class TopicIntegrationTest {
     Map<String, String> res1 = selectDataJdbc.getDashboardInfo(101, 101);
     Map<String, String> res2 = selectDataJdbc.getDashboardInfo(103, 103);
 
-    assertThat(res1.size()).isEqualTo(1);
-    assertThat(res2.size()).isEqualTo(1);
+    assertThat(res1.size()).isEqualTo(2); // team topics and tenant topics
+    assertThat(res2.size()).isEqualTo(2); // team topics and tenant topics
   }
 
   @Test
