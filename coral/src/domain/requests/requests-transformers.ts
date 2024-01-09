@@ -16,19 +16,8 @@ const getRequestsWaitingForApprovalTransformer = (
     TOTAL_NOTIFICATIONS: 0,
   };
 
-  if (requestEntityStatistics === undefined) {
-    return requestsWaitingForApproval;
-  }
-
   requestEntityStatistics.forEach((statistics) => {
     const { requestEntityType, requestStatusCountSet } = statistics;
-
-    if (
-      requestEntityType === undefined ||
-      requestStatusCountSet === undefined
-    ) {
-      return;
-    }
 
     const amountOfRequestsForEntity =
       requestStatusCountSet.find(

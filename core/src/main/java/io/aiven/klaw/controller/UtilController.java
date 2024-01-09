@@ -95,6 +95,8 @@ public class UtilController {
       summary = "Get counts of all request entity types for different status,operation types",
       responses = {
         @ApiResponse(
+            description = "OK",
+            responseCode = "200",
             content = @Content(schema = @Schema(implementation = RequestsCountOverview.class)))
       })
   @RequestMapping(

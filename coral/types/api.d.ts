@@ -1161,18 +1161,18 @@ export type components = {
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      requestStatusCountSet?: components["schemas"]["RequestStatusCount"][];
-      requestsOperationTypeCountSet?: components["schemas"]["RequestsOperationTypeCount"][];
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
+      requestStatusCountSet: components["schemas"]["RequestStatusCount"][];
+      requestsOperationTypeCountSet: components["schemas"]["RequestsOperationTypeCount"][];
     };
     RequestStatusCount: {
       /** @enum {string} */
-      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
       /** Format: int64 */
-      count?: number;
+      count: number;
     };
     RequestsCountOverview: {
-      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
+      requestEntityStatistics: components["schemas"]["RequestEntityStatusCount"][];
     };
     RequestsOperationTypeCount: {
       /** @enum {string} */
@@ -1744,6 +1744,7 @@ export type components = {
       adAuthRoleEnabled: string;
       supportlink: string;
       myteamtopics: string;
+      myOrgTopics: string;
       googleFeedbackFormLink: string;
     };
     KwPropertiesResponse: {
@@ -3166,8 +3167,8 @@ export type operations = {
       };
     };
     responses: {
-      /** @description default response */
-      default: {
+      /** @description OK */
+      200: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
         };
