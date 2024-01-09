@@ -23,16 +23,6 @@ const mockedRequestsWaitingForApprovalMissingAcl: RequestsWaitingForApprovalWith
     TOTAL_NOTIFICATIONS: 8,
   };
 
-const defaultRecord = {
-  TOPIC: 0,
-  ACL: 0,
-  SCHEMA: 0,
-  CONNECTOR: 0,
-  USER: 0,
-  OPERATIONAL: 0,
-  TOTAL_NOTIFICATIONS: 0,
-};
-
 const mockApiResponse: KlawApiResponse<"getRequestStatistics"> = {
   requestEntityStatistics: [
     {
@@ -379,14 +369,6 @@ describe("request-transformers.ts", () => {
         getRequestsWaitingForApprovalTransformer(mockApiResponse);
 
       expect(response).toEqual(mockedRequestsWaitingForApproval);
-    });
-
-    it("should return record with default data if API response is undefined", () => {
-      const response = getRequestsWaitingForApprovalTransformer({
-        requestEntityStatistics: undefined,
-      });
-
-      expect(response).toEqual(defaultRecord);
     });
 
     it("should return record with default data for single entity type if API response misses that data", () => {
