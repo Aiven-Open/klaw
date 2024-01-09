@@ -277,10 +277,12 @@ const routes: Array<RouteObject> = [
           },
         ],
       },
-      {
+      createRouteBehindFeatureFlag({
         path: Routes.ACTIVITY_LOG,
         element: <ActivityLogPage />,
-      },
+        featureFlag: FeatureFlag.FEATURE_FLAG_ACTIVITY_LOG,
+        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+      }),
     ],
   },
   {
