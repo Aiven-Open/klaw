@@ -11,13 +11,25 @@ function isNativeSelectComponent(
   child: ReactNode
 ): //eslint-disable-next-line @typescript-eslint/no-explicit-any
 child is ReactElement<NativeSelectProps | ComplexNativeSelectProps<any>> {
+  const isNativeSelectAquariumImport =
+    isValidElement(child) &&
+    /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+    (child.type as any)?.render?.displayName === NativeSelect.displayName;
+
+  const isNativeSelectFormImport =
+    isValidElement(child) &&
+    /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+    (child.type as any)?.name === NativeSelect.displayName;
+
+  const isComplexNativeSelect =
+    isValidElement(child) &&
+    /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+    (child.type as any)?.name === ComplexNativeSelect.name;
+
   return (
-    (isValidElement(child) &&
-      /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-      (child.type as any)?.render?.displayName === NativeSelect.displayName) ||
-    (isValidElement(child) &&
-      /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-      (child.type as any)?.name === ComplexNativeSelect.name)
+    isNativeSelectAquariumImport ||
+    isNativeSelectFormImport ||
+    isComplexNativeSelect
   );
 }
 
