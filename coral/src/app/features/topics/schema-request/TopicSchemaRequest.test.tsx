@@ -153,7 +153,7 @@ describe("TopicSchemaRequest", () => {
       expect(form).toBeVisible();
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
 
       const select = within(form).getByRole("combobox", {
@@ -188,7 +188,7 @@ describe("TopicSchemaRequest", () => {
       expect(form).toBeVisible();
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
 
       const select = within(form).getByRole("combobox", {
@@ -272,7 +272,7 @@ describe("TopicSchemaRequest", () => {
     it("shows a loading element while Environments are being fetched", () => {
       const form = getForm();
       const loadingEnvironments = within(form).getByTestId(
-        "environments-select-loading"
+        "async-select-loading-environments"
       );
 
       expect(loadingEnvironments).toBeVisible();
@@ -293,7 +293,7 @@ describe("TopicSchemaRequest", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -429,7 +429,7 @@ describe("TopicSchemaRequest", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -509,7 +509,7 @@ describe("TopicSchemaRequest", () => {
         }
       );
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -629,7 +629,7 @@ describe("TopicSchemaRequest", () => {
         }
       );
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -735,7 +735,7 @@ describe("TopicSchemaRequest", () => {
         }
       );
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -923,7 +923,7 @@ describe("TopicSchemaRequest", () => {
         }
       );
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 
@@ -1003,7 +1003,7 @@ describe("TopicSchemaRequest", () => {
         }
       );
       await waitForElementToBeRemoved(
-        screen.getByTestId("environments-select-loading")
+        screen.getAllByTestId(/async-select-loading/)
       );
     });
 

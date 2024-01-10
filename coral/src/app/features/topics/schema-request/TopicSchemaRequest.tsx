@@ -24,6 +24,7 @@ import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { KlawApiError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 type TopicSchemaRequestProps = {
   presetTopicName?: string;
@@ -64,10 +65,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     },
   });
 
-  const { data: topicNames, isLoading: topicNamesIsLoading } = useQuery<
-    TopicNames,
-    Error
-  >(["topic-names"], {
+  const {
+    data: topicNames,
+    isLoading: isLoadingTopicNames,
+    isError: isErrorTopicNames,
+    error: errorTopicNames,
+  } = useQuery<TopicNames, Error>(["topic-names"], {
     queryFn: () =>
       getTopicNames({
         onlyMyTeamTopics: true,
@@ -85,10 +88,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     }
   }, [topicNames, presetTopicName]);
 
-  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
-    Environment[],
-    Error
-  >({
+  const {
+    data: environments,
+    isLoading: isLoadingEnvironments,
+    isError: isErrorEnvironments,
+    error: errorEnvironments,
+  } = useQuery<Environment[], Error>({
     queryKey: ["getEnvs"],
     queryFn: () => getAllEnvironmentsForTopicAndAcl(),
     // not every Kafka Environment has an associated env for schemas,
@@ -153,17 +158,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
-      {!topicNamesIsLoading && topicNames === undefined && (
-        <Box marginBottom={"l1"}>
-          {" "}
-          <Alert type="error">Could not fetch topic names.</Alert>
-        </Box>
-      )}
-      {!environmentsIsLoading && environments === undefined && (
-        <Box marginBottom={"l1"}>
-          <Alert type="error">Could not fetch environments.</Alert>
-        </Box>
-      )}
       <Box>
         {schemaRequestMutation.isError && !isValidationError && (
           <Box marginBottom={"l1"}>
@@ -177,11 +171,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           ariaLabel={"Request a new schema"}
           onSubmit={onSubmitForm}
         >
-          {topicNamesIsLoading || topicNames === undefined ? (
-            <div data-testid={"topicNames-select-loading"}>
-              <NativeSelect.Skeleton />
-            </div>
-          ) : (
+          <AsyncNativeSelectWrapper
+            entity={"topic name"}
+            isLoading={isLoadingTopicNames}
+            isError={isErrorTopicNames}
+            error={errorTopicNames}
+          >
             <NativeSelect<TopicRequestFormSchema>
               name={"topicname"}
               labelText={
@@ -191,7 +186,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               readOnly={hasPresetTopicName}
               placeholder={"-- Please select --"}
             >
-              {topicNames.map((topic) => {
+              {topicNames?.map((topic) => {
                 return (
                   <option key={topic} value={topic}>
                     {topic}
@@ -199,12 +194,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
                 );
               })}
             </NativeSelect>
-          )}
-          {environmentsIsLoading || environments === undefined ? (
-            <div data-testid={"environments-select-loading"}>
-              <NativeSelect.Skeleton />
-            </div>
-          ) : (
+          </AsyncNativeSelectWrapper>
+          <AsyncNativeSelectWrapper
+            entity={"Environments"}
+            isLoading={isLoadingEnvironments}
+            isError={isErrorEnvironments}
+            error={errorEnvironments}
+          >
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
               labelText={
@@ -214,7 +210,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               readOnly={hasPresetEnvironment}
               required={!presetEnvironment}
             >
-              {environments.map((env) => {
+              {environments?.map((env) => {
                 return (
                   <option key={env.id} value={env.id}>
                     {env.name}
@@ -222,7 +218,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
                 );
               })}
             </NativeSelect>
-          )}
+          </AsyncNativeSelectWrapper>
           <TopicSchema
             name={"schemafull"}
             required={!props.schemafullValueForTest}
