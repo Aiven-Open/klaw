@@ -23,6 +23,9 @@ public class KwConstants {
   public static final String CLUSTER_CONN_URL_KEY = "klaw.clusterapi.url";
   public static final String EMAIL_NOTIFICATIONS_ENABLED_KEY = "klaw.mail.notifications.enable";
 
+  public static final String KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY =
+      "klaw.extra.permission.topic.promote";
+
   public static final String USER_ROLE = "USER";
 
   public static final String REQUESTOR_SUBSCRIPTIONS = "requestor_subscriptions";

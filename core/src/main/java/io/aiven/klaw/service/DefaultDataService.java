@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY;
+
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -46,6 +48,8 @@ public class DefaultDataService {
 
   @Value("${klaw.clusterapi.url:http://localhost:9343}")
   private String clusterApiUrl;
+
+  private boolean extraPermissionForTopicsPromotion;
 
   public UserInfo getUser(
       int tenantId,
@@ -302,6 +306,14 @@ public class DefaultDataService {
             KwConstants.MAIL_TOPICUPDATEREQUEST_CONTENT,
             "Email notification body for a new Topic Update Request");
     kwPropertiesList.add(kwProperties37);
+
+    KwProperties kwProperties38 =
+        new KwProperties(
+            KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY,
+            tenantId,
+            "false",
+            "Need of an extra permission APPROVE_TOPICS_PROMOTION to promote topics");
+    kwPropertiesList.add(kwProperties38);
     return kwPropertiesList;
   }
 

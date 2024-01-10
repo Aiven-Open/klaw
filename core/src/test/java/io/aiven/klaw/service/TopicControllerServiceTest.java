@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -1571,6 +1572,26 @@ public class TopicControllerServiceTest {
     Map<String, String> topicEventsMap =
         topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
     assertThat(topicEventsMap.get("status")).isEqualTo("false");
+  }
+
+  @Test
+  @Order(59)
+  public void approvePromoteTopicRequests() throws KlawException {
+    int topicId = 1001;
+    TopicRequest topicRequest = getTopicRequest(TOPIC_1);
+    topicRequest.setRequestOperationType(RequestOperationType.PROMOTE.value);
+
+    when(commonUtilsService.isNotAuthorizedUser("userDetails", PermissionType.APPROVE_TOPICS))
+        .thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(
+            "userDetails", PermissionType.APPROVE_TOPICS_PROMOTION))
+        .thenReturn(true);
+    when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
+    when(manageDatabase.getKwPropertyValue(KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY, 0))
+        .thenReturn("true");
+
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
+    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResponse.NOT_AUTHORIZED.getMessage());
   }
 
   private List<MessageSchema> getSchemas(int number) {
