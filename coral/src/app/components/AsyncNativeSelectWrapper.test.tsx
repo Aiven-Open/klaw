@@ -3,7 +3,10 @@ import { NativeSelect, Option, Typography } from "@aivenio/aquarium";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 import { KlawApiError } from "src/services/api";
+import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
+
 const mockedUseToast = jest.fn();
+
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToast: () => mockedUseToast,
@@ -17,6 +20,16 @@ const testNativeSelect = (
   </NativeSelect>
 );
 
+const testComplexNativeSelect = (
+  <ComplexNativeSelect<{ id: string; name: string }>
+    labelText={testSelectLabel}
+    identifierValue={"id"}
+    identifierName={"name"}
+    options={[]}
+    onBlur={() => null}
+  />
+);
+
 const testProps = {
   entity: "test stuff",
   isLoading: false,
@@ -27,7 +40,7 @@ const testProps = {
 describe("AsyncNativeSelectWrapper", () => {
   beforeAll(mockIntersectionObserver);
 
-  describe("only accepts a <NativeSelect> from design-system as child", () => {
+  describe("only accepts a <NativeSelect> or <ComplexNativeSelect> as child", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {
       console.error = jest.fn();
@@ -46,7 +59,9 @@ describe("AsyncNativeSelectWrapper", () => {
           </AsyncNativeSelectWrapper>
         )
       ).toThrow(
-        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` as a child."
+        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` or `ComplexNativeSelect` as" +
+          " a" +
+          " child."
       );
     });
 
@@ -58,7 +73,9 @@ describe("AsyncNativeSelectWrapper", () => {
           </AsyncNativeSelectWrapper>
         )
       ).toThrow(
-        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` as a child."
+        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` or `ComplexNativeSelect` as" +
+          " a" +
+          " child."
       );
     });
 
@@ -67,6 +84,16 @@ describe("AsyncNativeSelectWrapper", () => {
         render(
           <AsyncNativeSelectWrapper {...testProps}>
             {testNativeSelect}
+          </AsyncNativeSelectWrapper>
+        )
+      ).not.toThrow();
+    });
+
+    it("does not throw an error when child element is a ComplexNativeSelect", () => {
+      expect(() =>
+        render(
+          <AsyncNativeSelectWrapper {...testProps}>
+            {testComplexNativeSelect}
           </AsyncNativeSelectWrapper>
         )
       ).not.toThrow();
