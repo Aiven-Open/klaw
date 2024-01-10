@@ -27,6 +27,7 @@ describe("AclRequestsPage", () => {
 
     customRender(<AclRequestsPage />, {
       queryClient: true,
+      aquariumContext: true,
       memoryRouter: true,
     });
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

@@ -167,6 +167,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -218,6 +219,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -258,6 +260,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
@@ -302,6 +305,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
@@ -363,6 +367,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
@@ -422,6 +427,7 @@ describe("BrowseConnectors.tsx", () => {
       customRender(<BrowseConnectors />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });

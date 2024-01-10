@@ -152,6 +152,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -168,6 +169,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -193,6 +195,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -260,6 +263,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -275,6 +279,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -294,6 +299,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -314,6 +320,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -334,6 +341,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -358,6 +366,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -408,6 +417,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -577,6 +587,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -673,6 +684,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -769,6 +781,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -892,6 +905,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -1060,6 +1074,7 @@ describe("ConnectorApprovals", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
