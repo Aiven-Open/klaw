@@ -5,7 +5,7 @@ import dataflow02 from "@aivenio/aquarium/icons/dataflow02";
 import notifications from "@aivenio/aquarium/icons/notifications";
 import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -29,8 +29,9 @@ const approveRequestsPaths: { [key: string]: string } = {
 
 function RequestsDropdown() {
   const navigate = useNavigate();
-  const { TOTAL_NOTIFICATIONS, TOPIC, ACL, CONNECTOR, SCHEMA } =
-    usePendingRequests();
+  const {
+    pendingRequests: { TOTAL_NOTIFICATIONS, TOPIC, ACL, CONNECTOR, SCHEMA },
+  } = useAuthContext();
 
   return (
     <DropdownMenu

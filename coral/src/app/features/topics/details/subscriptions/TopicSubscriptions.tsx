@@ -279,12 +279,12 @@ const TopicSubscriptions = () => {
 // Because we need to set the default value of team filter as the user's current team
 // We need to use the FiltersProvider directly instead of withFiltersContext
 const WithCurrentTeamDefaultFilter = () => {
-  const authUser = useAuthContext();
+  const {
+    authUser: { teamId },
+  } = useAuthContext();
 
   return (
-    <FiltersProvider
-      defaultValues={{ paginated: false, teamId: authUser?.teamId }}
-    >
+    <FiltersProvider defaultValues={{ paginated: false, teamId: teamId }}>
       <TopicSubscriptions />
     </FiltersProvider>
   );

@@ -8,8 +8,8 @@ import person from "@aivenio/aquarium/dist/src/icons/person";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
@@ -18,7 +18,9 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
-  const { TOTAL_NOTIFICATIONS } = usePendingRequests();
+  const {
+    pendingRequests: { TOTAL_NOTIFICATIONS },
+  } = useAuthContext();
   const dashBoardEnabled = useFeatureFlag(FeatureFlag.FEATURE_FLAG_DASHBOARD);
   const activityLogEnabled = useFeatureFlag(
     FeatureFlag.FEATURE_FLAG_ACTIVITY_LOG

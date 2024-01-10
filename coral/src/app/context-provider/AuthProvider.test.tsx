@@ -14,9 +14,11 @@ jest.mock("src/domain/auth-user", () => ({
 }));
 
 const ChildComponent = () => {
-  const authUser = useAuthContext();
+  const {
+    authUser: { username },
+  } = useAuthContext();
 
-  return <div data-testid={"auth-provider-child"}>{authUser?.username}</div>;
+  return <div data-testid={"auth-provider-child"}>{username}</div>;
 };
 
 const mockAuthUser = { ...testAuthUser, username: "Jon Snow" };

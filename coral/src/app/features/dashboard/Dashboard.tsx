@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import {
   DashboardsAnalyticsData,
   getActivityLogForTeamOverview,
@@ -35,9 +34,10 @@ const Dashboard = () => {
     queryFn: getDashboardStats,
   });
 
-  const { TOPIC, ACL, SCHEMA, CONNECTOR } = usePendingRequests();
-
-  const { totalTeamTopics, totalOrgTopics } = useAuthContext();
+  const {
+    analytics: { totalTeamTopics, totalOrgTopics },
+    pendingRequests: { TOPIC, ACL, SCHEMA, CONNECTOR },
+  } = useAuthContext();
 
   // The following contraption is to allow charts to be responsive despite being rendered in a Card
   // Without it, the size of the charts calculated by the ResponsiveContainer they are crapped in under the hood

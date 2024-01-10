@@ -40,7 +40,9 @@ const menuItems: MenuItem[] = [
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
   const navigate = useNavigate();
-  const authUser = useAuthContext();
+  const {
+    authUser: { username, teamname },
+  } = useAuthContext();
   const [toast, dismiss] = useToastContext();
 
   function onDropdownClick(actionKey: React.Key) {
@@ -89,11 +91,9 @@ function ProfileDropdown() {
         <Box.Flex backgroundColor={"primary-10"} paddingLeft={"l1"}>
           <Box paddingTop={"l1"} className={"profile-dropdown-header"}>
             <Typography.Large color="grey-90" className="panel-header-title">
-              {authUser?.username}
+              {username}
             </Typography.Large>
-            <Typography.Caption color="grey-50">
-              {authUser?.teamname}
-            </Typography.Caption>
+            <Typography.Caption color="grey-50">{teamname}</Typography.Caption>
           </Box>
           <Icon
             color={"primary-30"}

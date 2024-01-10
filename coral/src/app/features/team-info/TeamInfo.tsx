@@ -3,23 +3,16 @@ import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { SwitchTeamsDropdown } from "src/app/features/team-info/SwitchTeamsDropdown";
 
 function TeamInfo() {
-  const authUser = useAuthContext();
+  const {
+    authUser: { canSwitchTeams, teamname, username },
+  } = useAuthContext();
 
   function renderTeamData() {
-    if (!authUser) {
-      return <></>;
+    if (canSwitchTeams !== "true") {
+      return <>{teamname}</>;
     }
 
-    if (authUser.canSwitchTeams !== "true") {
-      return <>{authUser.teamname}</>;
-    }
-
-    return (
-      <SwitchTeamsDropdown
-        userName={authUser.username}
-        currentTeam={authUser.teamname}
-      />
-    );
+    return <SwitchTeamsDropdown userName={username} currentTeam={teamname} />;
   }
 
   return (

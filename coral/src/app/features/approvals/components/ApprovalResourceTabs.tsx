@@ -1,6 +1,6 @@
 import { Tabs } from "@aivenio/aquarium";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -15,7 +15,7 @@ type Props = {
 function ApprovalResourceTabs({ currentTab }: Props) {
   const navigate = useNavigate();
 
-  const pendingRequests = usePendingRequests();
+  const { pendingRequests } = useAuthContext();
 
   return (
     <Tabs
