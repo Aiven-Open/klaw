@@ -212,11 +212,11 @@ public class UsersTeamsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<UserInfoModelResponse>> showUsers(
-      @RequestParam(value = "teamName", defaultValue = "") String teamName,
+      @RequestParam(value = "teamId", defaultValue = "") Integer teamId,
       @RequestParam(value = "pageNo", defaultValue = "1") String pageNo,
       @RequestParam(value = "searchUserParam", defaultValue = "") String searchUserParam) {
     return new ResponseEntity<>(
-        usersTeamsControllerService.showUsers(teamName, searchUserParam, pageNo), HttpStatus.OK);
+        usersTeamsControllerService.showUsers(teamId, searchUserParam, pageNo), HttpStatus.OK);
   }
 
   @RequestMapping(

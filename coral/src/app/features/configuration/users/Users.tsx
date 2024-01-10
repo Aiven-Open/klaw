@@ -13,7 +13,7 @@ import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 
 function UsersWithoutFilterContext() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { teamName, search } = useFiltersContext();
+  const { teamId, search } = useFiltersContext();
 
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
@@ -24,11 +24,11 @@ function UsersWithoutFilterContext() {
     isLoading,
     isError,
     error,
-  } = useQuery(["getUserList", currentPage, teamName, search], {
+  } = useQuery(["getUserList", currentPage, teamId, search], {
     queryFn: () =>
       getUserList({
         pageNo: String(currentPage),
-        teamName: teamName === "ALL" ? undefined : teamName,
+        teamId: teamId === "ALL" ? undefined : Number(teamId),
         searchUserParam: search.length === 0 ? undefined : search,
       }),
     keepPreviousData: true,

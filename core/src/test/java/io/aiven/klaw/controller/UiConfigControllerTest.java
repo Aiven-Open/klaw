@@ -365,7 +365,7 @@ public class UiConfigControllerTest {
     mvcUserTeams
         .perform(
             MockMvcRequestBuilders.get("/showUserList")
-                .param("teamName", "")
+                .param("teamId", "101")
                 .param("pageNo", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
