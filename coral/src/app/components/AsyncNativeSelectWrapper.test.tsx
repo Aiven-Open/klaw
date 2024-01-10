@@ -18,7 +18,7 @@ const testNativeSelect = (
 );
 
 const testProps = {
-  entity: "test-select",
+  entity: "test stuff",
   isLoading: false,
   isError: false,
   error: "",
@@ -85,9 +85,7 @@ describe("AsyncNativeSelectWrapper", () => {
     afterAll(cleanup);
 
     it("shows a loading information and animation", () => {
-      const loadingInfo = screen.getByTestId(
-        "async-select-loading-test-select"
-      );
+      const loadingInfo = screen.getByTestId("async-select-loading-test-stuff");
       expect(loadingInfo).toBeVisible();
     });
 
@@ -118,7 +116,7 @@ describe("AsyncNativeSelectWrapper", () => {
     afterAll(cleanup);
 
     it("renders a disabled select element with information about missing data", () => {
-      const select = screen.getByRole("combobox", { name: "No test-select" });
+      const select = screen.getByRole("combobox", { name: "No test stuff" });
 
       expect(select).toBeDisabled();
     });
@@ -133,19 +131,19 @@ describe("AsyncNativeSelectWrapper", () => {
     });
 
     it("marks the select element as invalid", () => {
-      const select = screen.getByRole("combobox", { name: "No test-select" });
+      const select = screen.getByRole("combobox", { name: "No test stuff" });
 
       expect(select).toBeInvalid();
     });
 
     it("shows an error information beneath the select element", () => {
-      const errorText = screen.getByText("test-select could not be loaded.");
+      const errorText = screen.getByText("Test stuff could not be loaded.");
       expect(errorText).toBeVisible();
     });
 
     it("notifies user about the error", () => {
       expect(mockedUseToast).toHaveBeenCalledWith({
-        message: "Error loading test-select: Oh nooooo",
+        message: "Error loading test stuff: Oh nooooo",
         position: "bottom-left",
         variant: "default",
       });

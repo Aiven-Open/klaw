@@ -398,7 +398,7 @@ describe("TeamFilter.tsx", () => {
 
     it("shows a disabled select with No teams", () => {
       const select = screen.getByRole("combobox", {
-        name: "No Teams",
+        name: "No teams",
       });
 
       expect(select).toBeDisabled();
@@ -413,7 +413,7 @@ describe("TeamFilter.tsx", () => {
     it("shows a toast notification with error", () => {
       expect(mockedUseToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: `Error loading Teams: ${testError.message}`,
+          message: `Error loading teams: ${testError.message}`,
         })
       );
       expect(console.error).toHaveBeenCalledWith(testError);

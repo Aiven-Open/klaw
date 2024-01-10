@@ -2,6 +2,7 @@ import { NativeSelect, NativeSelectProps, useToast } from "@aivenio/aquarium";
 import { isValidElement, ReactElement, ReactNode, useEffect } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import kebabCase from "lodash/kebabCase";
+import upperFirst from "lodash/upperFirst";
 import { isDevMode } from "src/services/is-dev-mode";
 
 function isNativeSelectComponent(
@@ -16,9 +17,9 @@ function isNativeSelectComponent(
 
 type AsyncNativeSelectWrapperProps = {
   /**
-   * `entity` is the entity which user filters by, e.g. "Team" or "Topic"
+   * `entity` is the entity which user filters by, e.g. "team" or "Environment"
    * It is used in e.g. placeholder and toast notification for error cases,
-   * like "Error loading <ENTITY>"
+   * like "Error loading <ENTITY>".
    */
   entity: string;
   isLoading: boolean;
@@ -70,7 +71,7 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
         labelText={children.props.labelText}
         aria-label={`No ${entity}`}
         placeholder={`No ${entity}`}
-        helperText={`${entity} could not be loaded.`}
+        helperText={`${upperFirst(entity)} could not be loaded.`}
       />
     );
   }
