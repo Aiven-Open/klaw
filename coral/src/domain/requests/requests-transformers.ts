@@ -1,5 +1,5 @@
 import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
-import { KlawApiModel } from "types/utils";
+import { KlawApiModel, KlawApiResponse } from "types/utils";
 
 const getRequestsWaitingForApprovalTransformer = (
   data: KlawApiModel<"RequestsCountOverview">
@@ -41,4 +41,22 @@ const getRequestsWaitingForApprovalTransformer = (
   return requestsWaitingForApproval;
 };
 
-export { getRequestsWaitingForApprovalTransformer };
+function activityLogTransformer(
+  apiResponse: KlawApiResponse<"showActivityLog">
+) {
+  if (apiResponse.length === 0) {
+    return {
+      totalPages: 0,
+      currentPage: 0,
+      entries: [],
+    };
+  }
+
+  return {
+    totalPages: Number(apiResponse[0].totalNoPages),
+    currentPage: Number(apiResponse[0].currentPage),
+    entries: apiResponse,
+  };
+}
+
+export { activityLogTransformer, getRequestsWaitingForApprovalTransformer };

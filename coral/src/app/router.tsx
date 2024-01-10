@@ -5,6 +5,7 @@ import { ConnectorOverview } from "src/app/features/connectors/details/overview/
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
+import ActivityLogPage from "src/app/pages/activity-log";
 import ApprovalsPage from "src/app/pages/approvals";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
 import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
@@ -276,6 +277,12 @@ const routes: Array<RouteObject> = [
           },
         ],
       },
+      createRouteBehindFeatureFlag({
+        path: Routes.ACTIVITY_LOG,
+        element: <ActivityLogPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_ACTIVITY_LOG,
+        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+      }),
     ],
   },
   {

@@ -1,5 +1,5 @@
 import { components } from "types/api";
-import { ResolveIntersectionTypes } from "types/utils";
+import { ResolveIntersectionTypes, KlawApiModel } from "types/utils";
 
 type RequestOperationType =
   | "CREATE"
@@ -44,7 +44,10 @@ interface RequestsWaitingForApprovalWithTotal
   TOTAL_NOTIFICATIONS: number;
 }
 
+type ActivityLog = KlawApiModel<"ActivityLogModel">;
+
 export type {
+  ActivityLog,
   RequestOperationType,
   RequestStatus,
   RequestEntityType,

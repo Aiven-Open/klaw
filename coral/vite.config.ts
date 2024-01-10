@@ -141,6 +141,9 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_DASHBOARD: ["development", "remote-api"]
           .includes(mode)
           .toString(),
+        FEATURE_FLAG_ACTIVITY_LOG: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {

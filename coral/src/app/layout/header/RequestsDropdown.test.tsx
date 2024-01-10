@@ -1,7 +1,7 @@
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
-import { getRequestsWaitingForApproval } from "src/domain/requests/requests-api";
+import { getRequestsWaitingForApproval } from "src/domain/requests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const noRequests = {
