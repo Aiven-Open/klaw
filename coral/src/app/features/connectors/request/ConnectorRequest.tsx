@@ -32,6 +32,7 @@ import {
   getAllEnvironmentsForConnector,
 } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 function ConnectorRequest() {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
@@ -43,10 +44,12 @@ function ConnectorRequest() {
     schema: connectorRequestFormSchema,
   });
 
-  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
-    Environment[],
-    Error
-  >({
+  const {
+    data: environments,
+    isLoading: isLoadingEnvironments,
+    isError: isErrorEnvironments,
+    error: errorEnvironments,
+  } = useQuery<Environment[], Error>({
     queryKey: ["getAllEnvironmentsForConnector"],
     queryFn: () => getAllEnvironmentsForConnector(),
   });
@@ -86,20 +89,19 @@ function ConnectorRequest() {
           ariaLabel={"Request a new connector"}
           onSubmit={onSubmitForm}
         >
-          {environmentsIsLoading && (
-            <div data-testid={"environments-select-loading"}>
-              <NativeSelect.Skeleton />
-            </div>
-          )}
-
-          {environments && (
+          <AsyncNativeSelectWrapper
+            entity={"Environments"}
+            isLoading={isLoadingEnvironments}
+            isError={isErrorEnvironments}
+            error={errorEnvironments}
+          >
             <NativeSelect<ConnectorRequestFormSchema>
               name={"environment"}
               labelText={"Environment"}
               placeholder={"-- Please select --"}
               required
             >
-              {environments.map((env) => {
+              {environments?.map((env) => {
                 return (
                   <option key={env.id} value={env.id}>
                     {env.name}
@@ -107,7 +109,7 @@ function ConnectorRequest() {
                 );
               })}
             </NativeSelect>
-          )}
+          </AsyncNativeSelectWrapper>
 
           <TextInput<ConnectorRequestFormSchema>
             name={"connectorName"}
