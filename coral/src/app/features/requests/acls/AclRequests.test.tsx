@@ -124,6 +124,7 @@ describe("AclRequests", () => {
     customRender(<AclRequests />, {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
     });
     expect(getAclRequests).toBeCalledTimes(1);
   });
@@ -146,6 +147,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -166,6 +168,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -190,6 +193,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -210,6 +214,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -230,6 +235,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -252,6 +258,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -301,6 +308,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?search=abc",
       });
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
@@ -318,6 +326,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
       const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeEnabled();
@@ -346,11 +355,12 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?environment=1",
       });
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading")
       );
 
       const envFilter = screen.getByRole("combobox", {
@@ -374,10 +384,11 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading")
       );
 
       const envFilter = screen.getByRole("combobox", {
@@ -409,6 +420,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?aclType=CONSUMER",
       });
 
@@ -434,6 +446,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const envFilter = screen.getByRole("combobox", {
@@ -465,6 +478,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?status=APPROVED",
       });
 
@@ -489,6 +503,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const envFilter = screen.getByRole("combobox", {
@@ -521,6 +536,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
 
@@ -545,6 +561,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const toggle = screen.getByRole("checkbox", {
@@ -580,6 +597,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?requestType=DELETE",
       });
 
@@ -604,6 +622,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const requestTypeFilter = screen.getByRole("combobox", {
@@ -636,6 +655,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -717,6 +737,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

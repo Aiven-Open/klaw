@@ -27,6 +27,7 @@ describe("SchemaRequestPage", () => {
 
     customRender(<SchemaRequestsPage />, {
       queryClient: true,
+      aquariumContext: true,
       memoryRouter: true,
     });
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

@@ -246,7 +246,7 @@ describe("TopicSubscriptions.tsx", () => {
       queryClient: true,
       aquariumContext: true,
     });
-    await waitForElementToBeRemoved(screen.getByTestId("select-team-loading"));
+    await waitForElementToBeRemoved(screen.getByTestId("async-select-loading"));
   });
 
   afterEach(() => {

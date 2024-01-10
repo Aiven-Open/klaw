@@ -101,6 +101,7 @@ describe("ConnectorRequests", () => {
     customRender(<ConnectorRequests />, {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
     });
     expect(getConnectorRequests).toBeCalledTimes(1);
   });
@@ -132,6 +133,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -148,6 +150,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -182,6 +185,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -201,6 +205,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -224,6 +229,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -244,6 +250,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -264,6 +271,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -289,6 +297,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -337,6 +346,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?search=",
       });
       expect(getConnectorRequests).toHaveBeenNthCalledWith(1, {
@@ -353,6 +363,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const search = screen.getByRole("search", {
@@ -386,6 +397,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -439,6 +451,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
       expect(getConnectorRequests).toHaveBeenNthCalledWith(1, {
@@ -455,6 +468,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
       const isMyRequestSwitch = screen.getByRole("checkbox", {
         name: "Show only my requests",
@@ -476,6 +490,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
       const isMyRequestSwitch = screen.getByRole("checkbox", {
@@ -507,6 +522,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -565,6 +581,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?requestType=DELETE",
       });
 
@@ -624,6 +641,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -787,6 +805,7 @@ describe("ConnectorRequests", () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
