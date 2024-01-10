@@ -43,7 +43,10 @@ const navLinks = [
   },
   { name: "Approve requests", linkTo: "/approvals" },
   { name: "My team's requests", linkTo: "/requests" },
-  { name: "Audit log", linkTo: "/activityLog" },
+  {
+    name: "Activity log",
+    linkTo: isFeatureFlagActiveMock() ? "/activity-log" : "/activityLog",
+  },
 ];
 
 const submenuItems = [
@@ -90,7 +93,7 @@ const navOrderFirstLevel = [
   { name: "Connectors", isSubmenu: false },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },
-  { name: "Audit log", isSubmenu: false },
+  { name: "Activity log", isSubmenu: false },
   { name: "Configuration", isSubmenu: true },
   { name: "User information", isSubmenu: true },
 ];
@@ -294,7 +297,7 @@ describe("MainNavigation.tsx", () => {
       });
     });
 
-    describe("renders links to cluster behind feature flag", () => {
+    describe("renders links to dashboard behind feature flag", () => {
       afterEach(() => {
         cleanup();
         jest.resetAllMocks();
@@ -323,6 +326,37 @@ describe("MainNavigation.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute("href", "/");
       });
+    });
+  });
+
+  describe("renders links to activity log behind feature flag", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders a link to the old UI when feature flag is false", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(false);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const link = screen.getByRole("link", { name: "Activity log" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/activityLog");
+    });
+
+    it("renders a link to the activity log page when feature flag is true", async () => {
+      isFeatureFlagActiveMock.mockReturnValue(true);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
+      const link = screen.getByRole("link", { name: "Activity log" });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/activity-log");
     });
   });
 });

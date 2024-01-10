@@ -1,10 +1,7 @@
 import { ReactNode, createContext, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AclType } from "src/domain/acl/acl-types";
-import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
+import { RequestOperationType, RequestStatus } from "src/domain/requests";
 
 type SetFiltersParams =
   | { name: "environment"; value: string }

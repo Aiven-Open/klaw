@@ -16,10 +16,7 @@ import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
-import {
-  RequestStatus,
-  RequestOperationType,
-} from "src/domain/requests/requests-types";
+import { RequestStatus, RequestOperationType } from "src/domain/requests";
 import upperFirst from "lodash/upperFirst";
 
 interface AclRequestTableRow {

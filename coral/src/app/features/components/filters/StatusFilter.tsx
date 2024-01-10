@@ -4,7 +4,7 @@ import {
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import { RequestStatus } from "src/domain/requests";
 
 function StatusFilter() {
   const { status, setFilterValue } = useFiltersContext();

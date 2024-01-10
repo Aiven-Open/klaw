@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import {
   Environment,
-  getAllEnvironmentsForTopicAndAcl,
   getAllEnvironmentsForConnector,
+  getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment/environment-api";
 import { HTTPError } from "src/services/api";
 
-type EnvironmentFor = "TOPIC_AND_ACL" | "SCHEMA" | "CONNECTOR";
+type EnvironmentFor = "TOPIC_AND_ACL" | "SCHEMA" | "CONNECTOR" | "ALL";
 interface EnvironmentFilterProps {
   environmentsFor: EnvironmentFor;
 }
@@ -32,6 +33,10 @@ const environmentEndpointMap: {
   CONNECTOR: {
     apiEndpoint: getAllEnvironmentsForConnector,
     queryFn: "getAllEnvironmentsForConnector",
+  },
+  ALL: {
+    apiEndpoint: getAllEnvironments,
+    queryFn: "getAllEnvironments",
   },
 };
 
