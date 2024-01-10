@@ -11,12 +11,12 @@ export const usePendingRequests = () => {
   }
 
   return {
-    TOPIC: 0,
-    ACL: 0,
-    SCHEMA: 0,
-    CONNECTOR: 0,
-    OPERATIONAL: 0,
-    USER: 0,
-    TOTAL_NOTIFICATIONS: 0,
+    TOPIC: undefined,
+    ACL: undefined,
+    SCHEMA: undefined,
+    CONNECTOR: undefined,
+    OPERATIONAL: undefined,
+    USER: undefined,
+    TOTAL_NOTIFICATIONS: undefined,
   };
 };

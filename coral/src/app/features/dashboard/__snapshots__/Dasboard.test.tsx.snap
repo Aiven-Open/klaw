@@ -1,0 +1,268 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dashboard.tsx renders correct DOM according to data received from getRequestsWaitingForApproval, getActivityLogForTeamOverview, getDashboardStats 1`] = `
+<div>
+  <div
+    style="display: grid; grid-template-columns: 1fr; gap: 24px;"
+  >
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          Topics
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));"
+          >
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                0
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                My team's topics
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                0
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                My organization's topics
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                My producer topics
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                My consumer topics
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          My team's pending requests
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));"
+          >
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Topic requests
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                ACL requests
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Schema requests
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-70"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Connector requests
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          My team's requests per day
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; justify-content: center; align-content: center; flex-wrap: wrap; min-height: 250px;"
+          >
+            <div
+              data-icon="<g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="3" transform="translate(1 1)"><circle cx="18" cy="18" r="18" stroke-opacity=".5"/><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" dur="1s" from="0 18 18" repeatCount="indefinite" to="360 18 18" type="rotate"/></path></g>"
+              data-testid="ds-icon"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          My team's topics per environment
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; justify-content: center; align-content: center; flex-wrap: wrap; min-height: 250px;"
+          >
+            <div
+              data-icon="<g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="3" transform="translate(1 1)"><circle cx="18" cy="18" r="18" stroke-opacity=".5"/><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" dur="1s" from="0 18 18" repeatCount="indefinite" to="360 18 18" type="rotate"/></path></g>"
+              data-testid="ds-icon"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

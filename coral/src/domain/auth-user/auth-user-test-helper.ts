@@ -6,6 +6,8 @@ const testAuthUser: AuthUser = {
   teamname: "awesome-bunch-of-people",
   username: "i-am-test-user",
   userrole: "USER",
+  totalTeamTopics: 0,
+  totalOrgTopics: 0,
 };
 
 export { testAuthUser };

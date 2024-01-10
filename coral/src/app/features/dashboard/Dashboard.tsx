@@ -1,184 +1,185 @@
-import { Box, Card, Template } from "@aivenio/aquarium";
-import zip from "lodash/zip";
-import StatsDisplay from "src/app/components/StatsDisplay";
+import { Alert, Box, Card, Grid, Icon, Template } from "@aivenio/aquarium";
 import { AreaChart, Axis, BarChart, Tooltip } from "@aivenio/aquarium/charts";
-
-const mockData = {
-  topicsPerTeamPerEnvOverview: {
-    data: [128, 32, 1],
-    labels: ["DEV", "TST", "PRD"],
-    colors: ["Green", "Green", "Green"],
-    options: {
-      title: {
-        display: true,
-        text: "Topics per cluster (Ospo) (Total 161)",
-        position: "bottom",
-        fontColor: "red",
-      },
-    },
-    titleForReport: "Topics per cluster (Ospo)",
-    xaxisLabel: "Clusters",
-    yaxisLabel: "Topics",
-  },
-  activityLogOverview: {
-    data: [
-      3, 2, 1, 2, 1, 1, 5, 3, 2, 1, 7, 2, 7, 32, 1, 6, 7, 2, 1, 3, 3, 4, 3, 2,
-      2, 3, 10, 7, 3, 1,
-    ],
-    labels: [
-      "17-Jun-2023",
-      "20-Jun-2023",
-      "21-Jun-2023",
-      "23-Jun-2023",
-      "26-Jun-2023",
-      "27-Jun-2023",
-      "28-Jun-2023",
-      "29-Jun-2023",
-      "30-Jun-2023",
-      "03-Jul-2023",
-      "04-Jul-2023",
-      "05-Jul-2023",
-      "06-Jul-2023",
-      "07-Jul-2023",
-      "10-Jul-2023",
-      "11-Jul-2023",
-      "12-Jul-2023",
-      "13-Jul-2023",
-      "14-Jul-2023",
-      "17-Jul-2023",
-      "19-Jul-2023",
-      "20-Jul-2023",
-      "21-Jul-2023",
-      "24-Jul-2023",
-      "25-Jul-2023",
-      "26-Jul-2023",
-      "27-Jul-2023",
-      "28-Jul-2023",
-      "31-Jul-2023",
-      "02-Aug-2023",
-    ],
-    colors: [
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-      "Green",
-    ],
-    options: {
-      title: {
-        display: true,
-        text: "Requests per day (Ospo) (Total 127)",
-        position: "bottom",
-        fontColor: "red",
-      },
-    },
-    titleForReport: "Requests per day (Ospo)",
-    xaxisLabel: "Days",
-    yaxisLabel: "Activities",
-  },
-};
+import loading from "@aivenio/aquarium/icons/loading";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import StatsDisplay from "src/app/components/StatsDisplay";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { usePendingRequests } from "src/app/hooks/usePendingRequests";
+import {
+  DashboardsAnalyticsData,
+  getActivityLogForTeamOverview,
+  getDashboardStats,
+} from "src/domain/analytics";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 const Dashboard = () => {
-  const requestsData = zip(
-    mockData.activityLogOverview.labels,
-    mockData.activityLogOverview.data
-  ).map((zippedElement) => {
-    return { date: zippedElement[0], Requests: zippedElement[1] };
+  const {
+    data: chartData,
+    isLoading: isLoadingChartData,
+    isError: isErrorChartData,
+    error: errorChartData,
+  } = useQuery<DashboardsAnalyticsData, Error>(
+    ["getActivityLogForTeamOverview"],
+    {
+      queryFn: () => getActivityLogForTeamOverview(),
+    }
+  );
+
+  const {
+    data: statsData,
+    isLoading: isLoadingStatsData,
+    isError: isErrorStatsData,
+    error: errorStatsData,
+  } = useQuery(["getDashboardStats"], {
+    queryFn: getDashboardStats,
   });
-  const analyticsData = zip(
-    mockData.topicsPerTeamPerEnvOverview.labels,
-    mockData.topicsPerTeamPerEnvOverview.data
-  ).map((zippedElement) => {
-    return { environment: zippedElement[0], Topics: zippedElement[1] };
-  });
+
+  const { TOPIC, ACL, SCHEMA, CONNECTOR } = usePendingRequests();
+
+  const { totalTeamTopics, totalOrgTopics } = useAuthContext();
+
+  // The following contraption is to allow charts to be responsive despite being rendered in a Card
+  // Without it, the size of the charts calculated by the ResponsiveContainer they are crapped in under the hood
+  // will only be calculated on the first render, which makes the entire Dashboard layout unresponsive on viewport resize
+  // This will remove the Chart components and show the loading state while resizing, and then render them again with the proper size
+  // Source: https://github.com/recharts/recharts/issues/1423#issuecomment-538670179
+  const [forceLoading, setForceLoading] = useState(false);
+  useEffect(() => {
+    let resizeThrottleTimeout: NodeJS.Timeout;
+    let skip = false;
+    const resizeCb = () => {
+      if (skip) {
+        return;
+      }
+
+      setForceLoading(true);
+      skip = true;
+      resizeThrottleTimeout = setTimeout(() => {
+        setForceLoading(false);
+        skip = false;
+      }, 100);
+    };
+    window.addEventListener("resize", resizeCb);
+
+    return () => {
+      clearTimeout(resizeThrottleTimeout);
+    };
+  }, [setForceLoading]);
 
   return (
     <Template columns={1} gap={"l2"}>
       <Card title="Topics" fullWidth>
-        <Box.Flex justifyContent={"space-between"}>
+        {isErrorStatsData && (
+          <Box marginBottom={"l1"}>
+            <Alert type={"error"}>
+              Could not gather the topics data: {parseErrorMsg(errorStatsData)}
+            </Alert>
+          </Box>
+        )}
+        <Grid cols={"4"}>
           <StatsDisplay
             isLoading={false}
-            amount={1}
+            amount={totalTeamTopics}
             entity={"My team's topics"}
           />
           <StatsDisplay
             isLoading={false}
-            amount={1}
+            amount={totalOrgTopics}
             entity={"My organization's topics"}
           />
           <StatsDisplay
-            isLoading={false}
-            amount={1}
+            isLoading={isLoadingStatsData}
+            amount={statsData?.producerCount}
             entity={"My producer topics"}
           />
           <StatsDisplay
-            isLoading={false}
-            amount={1}
+            isLoading={isLoadingStatsData}
+            amount={statsData?.consumerCount}
             entity={"My consumer topics"}
           />
-        </Box.Flex>
+        </Grid>
       </Card>
-      <Card title="Pending requests" fullWidth>
-        <Box.Flex justifyContent={"space-between"}>
+      <Card title="My team's pending requests" fullWidth>
+        <Grid cols={"4"}>
           <StatsDisplay
-            isLoading={false}
-            amount={1}
+            isLoading={TOPIC === undefined}
+            amount={TOPIC}
             entity={"Topic requests"}
           />
-          <StatsDisplay isLoading={false} amount={1} entity={"ACL requests"} />
           <StatsDisplay
-            isLoading={false}
-            amount={1}
+            isLoading={ACL === undefined}
+            amount={ACL}
+            entity={"ACL requests"}
+          />
+          <StatsDisplay
+            isLoading={SCHEMA === undefined}
+            amount={SCHEMA}
             entity={"Schema requests"}
           />
           <StatsDisplay
-            isLoading={false}
-            amount={1}
+            isLoading={CONNECTOR === undefined}
+            amount={CONNECTOR}
             entity={"Connector requests"}
           />
-        </Box.Flex>
+        </Grid>
       </Card>
-      <Card title="Requests per day" fullWidth>
-        <AreaChart height={250} data={requestsData}>
-          <Axis.XAxis dataKey="date" interval={"equidistantPreserveStart"} />
-          <Axis.YAxis width={10} />
-          <AreaChart.Area dataKey="Requests" />
-          <Tooltip />
-        </AreaChart>{" "}
+
+      <Card title="My team's requests per day" fullWidth>
+        {isErrorChartData && (
+          <Alert type={"error"}>
+            Could not gather the requests per day data :{" "}
+            {parseErrorMsg(errorChartData)}
+          </Alert>
+        )}
+        {isLoadingChartData || forceLoading ? (
+          <Box.Flex
+            justifyContent={"center"}
+            alignContent={"center"}
+            style={{ minHeight: "250px" }}
+            flexWrap={"wrap"}
+          >
+            <Icon icon={loading} fontSize={"30px"} />
+          </Box.Flex>
+        ) : (
+          <AreaChart height={250} data={chartData?.requestsPerDay}>
+            <Axis.XAxis dataKey="date" interval={"equidistantPreserveStart"} />
+            <Axis.YAxis width={10} />
+            <AreaChart.Area dataKey="Requests" />
+            <Tooltip />
+          </AreaChart>
+        )}
       </Card>
-      <Card title="Analytics" fullWidth>
-        <BarChart height={250} layout={"vertical"} data={analyticsData}>
-          <Axis.XAxis dataKey="environment" />
-          <Axis.YAxis width={10} />
-          {/* fill is --aquarium-colors-primary-100 */}
-          <BarChart.Bar dataKey="Topics" fill="#0788d1" />
-          <Tooltip />
-        </BarChart>
+
+      <Card title="My team's topics per environment" fullWidth>
+        {isErrorChartData && (
+          <Alert type={"error"}>
+            Could not gather the topics per environment data:{" "}
+            {parseErrorMsg(errorChartData)}
+          </Alert>
+        )}
+        {isLoadingChartData || forceLoading ? (
+          <Box.Flex
+            justifyContent={"center"}
+            alignContent={"center"}
+            style={{ minHeight: "250px" }}
+            flexWrap={"wrap"}
+          >
+            <Icon icon={loading} fontSize={"30px"} />
+          </Box.Flex>
+        ) : (
+          <BarChart
+            height={250}
+            layout={"vertical"}
+            data={chartData?.topicsPerEnv}
+          >
+            <Axis.XAxis dataKey="environment" />
+            <Axis.YAxis width={10} />
+            {/* fill is --aquarium-colors-primary-100 */}
+            <BarChart.Bar dataKey="Topics" fill="#0788d1" />
+            <Tooltip />
+          </BarChart>
+        )}
       </Card>
     </Template>
   );

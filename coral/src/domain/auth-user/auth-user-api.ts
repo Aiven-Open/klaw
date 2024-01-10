@@ -19,6 +19,8 @@ function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
     teamId: response.teamId,
     canSwitchTeams: response.canSwitchTeams,
     userrole: response.userrole,
+    totalTeamTopics: parseInt(response.myteamtopics),
+    totalOrgTopics: parseInt(response.myOrgTopics),
   };
 }
 
