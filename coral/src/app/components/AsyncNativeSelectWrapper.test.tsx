@@ -85,7 +85,9 @@ describe("AsyncNativeSelectWrapper", () => {
     afterAll(cleanup);
 
     it("shows a loading information and animation", () => {
-      const loadingInfo = screen.getByTestId("async-select-loading");
+      const loadingInfo = screen.getByTestId(
+        "async-select-loading-test-select"
+      );
       expect(loadingInfo).toBeVisible();
     });
 

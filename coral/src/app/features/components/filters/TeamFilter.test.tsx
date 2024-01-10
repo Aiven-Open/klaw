@@ -65,7 +65,7 @@ describe("TeamFilter.tsx", () => {
           aquariumContext: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -116,7 +116,7 @@ describe("TeamFilter.tsx", () => {
           customRoutePath: routePath,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -147,7 +147,7 @@ describe("TeamFilter.tsx", () => {
           memoryRouter: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -223,7 +223,7 @@ describe("TeamFilter.tsx", () => {
           aquariumContext: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -273,7 +273,7 @@ describe("TeamFilter.tsx", () => {
           customRoutePath: routePath,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -303,7 +303,7 @@ describe("TeamFilter.tsx", () => {
           memoryRouter: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("async-select-loading")
+          screen.getByTestId("async-select-loading-teams")
         );
       });
 
@@ -386,7 +386,7 @@ describe("TeamFilter.tsx", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-teams")
       );
     });
 

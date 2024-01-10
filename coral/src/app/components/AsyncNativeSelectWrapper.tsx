@@ -1,6 +1,7 @@
 import { NativeSelect, NativeSelectProps, useToast } from "@aivenio/aquarium";
 import { isValidElement, ReactElement, ReactNode, useEffect } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import kebabCase from "lodash/kebabCase";
 import { isDevMode } from "src/services/is-dev-mode";
 
 function isNativeSelectComponent(
@@ -76,7 +77,7 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
 
   if (isLoading) {
     return (
-      <div data-testid={"async-select-loading"}>
+      <div data-testid={`async-select-loading-${kebabCase(entity)}`}>
         <NativeSelect.Skeleton />
       </div>
     );
