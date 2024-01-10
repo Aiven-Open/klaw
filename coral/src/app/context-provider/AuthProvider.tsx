@@ -16,6 +16,8 @@ const AuthContext = createContext<AuthUser>({
   teamname: "",
   teamId: "",
   canSwitchTeams: "",
+  totalTeamTopics: 0,
+  totalOrgTopics: 0,
 });
 
 const useAuthContext = () => useContext(AuthContext);

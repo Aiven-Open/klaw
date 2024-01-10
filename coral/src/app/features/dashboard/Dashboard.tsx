@@ -4,6 +4,7 @@ import loading from "@aivenio/aquarium/icons/loading";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import {
   DashboardsAnalyticsData,
@@ -35,6 +36,8 @@ const Dashboard = () => {
   });
 
   const { TOPIC, ACL, SCHEMA, CONNECTOR } = usePendingRequests();
+
+  const { totalTeamTopics, totalOrgTopics } = useAuthContext();
 
   // The following contraption is to allow charts to be responsive despite being rendered in a Card
   // Without it, the size of the charts calculated by the ResponsiveContainer they are crapped in under the hood
@@ -77,12 +80,12 @@ const Dashboard = () => {
         <Grid cols={"4"}>
           <StatsDisplay
             isLoading={false}
-            amount={1}
+            amount={totalTeamTopics}
             entity={"My team's topics"}
           />
           <StatsDisplay
             isLoading={false}
-            amount={1}
+            amount={totalOrgTopics}
             entity={"My organization's topics"}
           />
           <StatsDisplay

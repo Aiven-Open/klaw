@@ -28,7 +28,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
               <div
                 class="typography-heading text-grey-70"
               >
-                1
+                0
               </div>
               <div
                 class="typography-small text-grey-50"
@@ -42,7 +42,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
               <div
                 class="typography-heading text-grey-70"
               >
-                1
+                0
               </div>
               <div
                 class="typography-small text-grey-50"

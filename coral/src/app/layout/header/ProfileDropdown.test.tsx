@@ -49,6 +49,8 @@ describe("ProfileDropdown", () => {
     username: "It is a me",
     userrole: "USER",
     canSwitchTeams: "false",
+    totalTeamTopics: 0,
+    totalOrgTopics: 0,
   };
 
   const user = userEvent.setup();

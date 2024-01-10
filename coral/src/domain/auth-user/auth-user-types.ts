@@ -6,6 +6,8 @@ type AuthUser = {
   teamname: KlawApiModel<"AuthenticationInfo">["teamname"];
   teamId: KlawApiModel<"AuthenticationInfo">["teamId"];
   canSwitchTeams: KlawApiModel<"AuthenticationInfo">["canSwitchTeams"];
+  totalTeamTopics: number;
+  totalOrgTopics: number;
 };
 
 export type { AuthUser };
