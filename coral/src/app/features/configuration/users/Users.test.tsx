@@ -81,7 +81,11 @@ describe("Users.tsx", () => {
         totalPages: 1,
         entries: [],
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
     });
 
     afterAll(() => {
@@ -103,7 +107,11 @@ describe("Users.tsx", () => {
         totalPages: 1,
         entries: [],
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -135,7 +143,11 @@ describe("Users.tsx", () => {
       console.error = jest.fn();
       mockGetTeams.mockResolvedValue([]);
       mockGetUsers.mockRejectedValue(testError);
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -170,7 +182,11 @@ describe("Users.tsx", () => {
         totalPages: 1,
         entries: mockUsers,
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -225,7 +241,11 @@ describe("Users.tsx", () => {
         totalPages: 4,
         entries: mockUsers,
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -273,7 +293,11 @@ describe("Users.tsx", () => {
         totalPages: 5,
         entries: mockUsers,
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -314,7 +338,11 @@ describe("Users.tsx", () => {
         totalPages: 5,
         entries: mockUsers,
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -394,7 +422,11 @@ describe("Users.tsx", () => {
         totalPages: 5,
         entries: mockUsers,
       });
-      customRender(<Users />, { queryClient: true, memoryRouter: true });
+      customRender(<Users />, {
+        queryClient: true,
+        aquariumContext: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 

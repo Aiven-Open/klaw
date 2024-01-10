@@ -95,7 +95,7 @@ describe("BrowseTopics.tsx", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-team-loading")
+        screen.getAllByTestId("async-select-loading")
       );
     });
 
@@ -291,7 +291,7 @@ describe("BrowseTopics.tsx", () => {
       });
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-team-loading")
+        screen.getAllByTestId("async-select-loading")
       );
     });
 

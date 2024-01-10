@@ -5,6 +5,7 @@ import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { getTeams } from "src/domain/team/team-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { KlawApiError } from "src/services/api";
 
 jest.mock("src/domain/team/team-api");
 
@@ -37,6 +38,12 @@ const mockedTeamsResponse = [
   },
 ];
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 const WrappedTeamFilter = withFiltersContext({
   element: <TeamFilter />,
 });
@@ -55,9 +62,10 @@ describe("TeamFilter.tsx", () => {
         customRender(<WrappedTeamFilter />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -104,10 +112,11 @@ describe("TeamFilter.tsx", () => {
         customRender(<WrappedTeamFilter />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
           customRoutePath: routePath,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -134,10 +143,11 @@ describe("TeamFilter.tsx", () => {
 
         customRender(<WrappedTeamFilter />, {
           queryClient: true,
+          aquariumContext: true,
           memoryRouter: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -167,6 +177,7 @@ describe("TeamFilter.tsx", () => {
         mockGetTeams.mockResolvedValue(mockedTeamsResponse);
         customRender(<WrappedTeamFilter />, {
           queryClient: true,
+          aquariumContext: true,
           browserRouter: true,
         });
         await waitFor(() => {
@@ -209,9 +220,10 @@ describe("TeamFilter.tsx", () => {
         customRender(<WrappedTeamFilterForTeamName />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -257,10 +269,11 @@ describe("TeamFilter.tsx", () => {
         customRender(<WrappedTeamFilterForTeamName />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
           customRoutePath: routePath,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -286,10 +299,11 @@ describe("TeamFilter.tsx", () => {
 
         customRender(<WrappedTeamFilterForTeamName />, {
           queryClient: true,
+          aquariumContext: true,
           memoryRouter: true,
         });
         await waitForElementToBeRemoved(
-          screen.getByTestId("select-team-loading")
+          screen.getByTestId("async-select-loading")
         );
       });
 
@@ -318,6 +332,7 @@ describe("TeamFilter.tsx", () => {
         mockGetTeams.mockResolvedValue(mockedTeamsResponse);
         customRender(<WrappedTeamFilterForTeamName />, {
           queryClient: true,
+          aquariumContext: true,
           browserRouter: true,
         });
         await waitFor(() => {
@@ -351,6 +366,57 @@ describe("TeamFilter.tsx", () => {
           );
         });
       });
+    });
+  });
+
+  describe("gives user information if fetching teams failed", () => {
+    const testError: KlawApiError = {
+      message: "Oh no, this did not work",
+      success: false,
+    };
+
+    const originalConsoleError = jest.fn();
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetTeams.mockRejectedValue(testError);
+      customRender(<WrappedTeamFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+      await waitForElementToBeRemoved(
+        screen.getByTestId("async-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a disabled select with No teams", () => {
+      const select = screen.getByRole("combobox", {
+        name: "No Teams",
+      });
+
+      expect(select).toBeDisabled();
+    });
+
+    it("shows an error message below the select element", () => {
+      const errorText = screen.getByText("Teams could not be loaded.");
+
+      expect(errorText).toBeVisible();
+    });
+
+    it("shows a toast notification with error", () => {
+      expect(mockedUseToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: `Error loading Teams: ${testError.message}`,
+        })
+      );
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 });
