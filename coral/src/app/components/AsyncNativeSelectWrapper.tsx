@@ -60,7 +60,7 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
       <NativeSelect
         valid={false}
         disabled={true}
-        labelText={`Filter by ${entity}`}
+        labelText={children.props.labelText}
         aria-label={`No ${entity}`}
         placeholder={`No ${entity}`}
         helperText={`${entity} could not be loaded.`}

@@ -121,6 +121,15 @@ describe("AsyncNativeSelectWrapper", () => {
       expect(select).toBeDisabled();
     });
 
+    it("shows the label text given to the child NativeSelect", () => {
+      const labelElement = screen.getByLabelText(
+        testNativeSelect.props.labelText
+      );
+      const select = screen.getByRole("combobox");
+
+      expect(select).toBe(labelElement);
+    });
+
     it("marks the select element as invalid", () => {
       const select = screen.getByRole("combobox", { name: "No test-select" });
 
