@@ -17,7 +17,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
-import static io.aiven.klaw.helpers.KwConstants.KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
@@ -701,20 +701,25 @@ public class TopicControllerService {
    */
   public ApiResponse approveTopicRequests(String topicId) throws KlawException {
     log.info("approveTopicRequests {}", topicId);
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
-      return ApiResponse.NOT_AUTHORIZED;
-    }
-
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     TopicRequest topicRequest = getTopicRequestFromTopicId(Integer.parseInt(topicId), tenantId);
 
-    String needOfExtraPermissionForPromote =
-        manageDatabase.getKwPropertyValue(KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY, tenantId);
-    if (topicRequest.getRequestOperationType().equals(RequestOperationType.PROMOTE.value)
-        && Boolean.parseBoolean(needOfExtraPermissionForPromote)) {
-      if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.APPROVE_TOPICS_PROMOTION)) {
+    String isOptionalExtraPermissionForPromote =
+        manageDatabase.getKwPropertyValue(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY, tenantId);
+    if (topicRequest.getRequestOperationType().equals(RequestOperationType.PROMOTE.value)) {
+      if (Boolean.parseBoolean(isOptionalExtraPermissionForPromote)) {
+        if (commonUtilsService.isNotAuthorizedUser(
+            getPrincipal(), PermissionType.APPROVE_TOPICS_PROMOTION)) {
+          return ApiResponse.NOT_AUTHORIZED;
+        }
+      } else {
+        if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
+          return ApiResponse.NOT_AUTHORIZED;
+        }
+      }
+    } else {
+      if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
         return ApiResponse.NOT_AUTHORIZED;
       }
     }

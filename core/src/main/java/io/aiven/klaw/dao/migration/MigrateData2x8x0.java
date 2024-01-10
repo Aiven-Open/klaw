@@ -1,6 +1,6 @@
 package io.aiven.klaw.dao.migration;
 
-import static io.aiven.klaw.helpers.KwConstants.KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwProperties;
@@ -37,17 +37,22 @@ public class MigrateData2x8x0 {
 
     for (int tenantId : tenantIds) {
       List<KwProperties> kwPropertiesList = selectDataJdbc.selectAllKwPropertiesPerTenant(tenantId);
-      KwProperties kwProperties38 =
-          new KwProperties(
-              KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY,
-              tenantId,
-              "false",
-              "Need of an extra permission APPROVE_TOPICS_PROMOTION to promote topics");
-      kwPropertiesList.add(kwProperties38);
+      if (kwPropertiesList.stream()
+          .noneMatch(
+              kwProperties ->
+                  kwProperties.getKwKey().equals(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY))) {
+        KwProperties kwProperties38 =
+            new KwProperties(
+                KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
+                tenantId,
+                "false",
+                "Need of an extra permission APPROVE_TOPICS_PROMOTION to promote topics");
+        kwPropertiesList.add(kwProperties38);
 
-      insertDataJdbc.insertDefaultKwProperties(List.of(kwProperties38));
-      manageDatabase.loadEnvMapForOneTenant(tenantId);
-      manageDatabase.loadKwPropsPerOneTenant(null, tenantId);
+        insertDataJdbc.insertDefaultKwProperties(List.of(kwProperties38));
+        manageDatabase.loadEnvMapForOneTenant(tenantId);
+        manageDatabase.loadKwPropsPerOneTenant(null, tenantId);
+      }
     }
 
     return true;

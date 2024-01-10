@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.helpers.KwConstants.KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.KwConstants;
@@ -48,8 +48,6 @@ public class DefaultDataService {
 
   @Value("${klaw.clusterapi.url:http://localhost:9343}")
   private String clusterApiUrl;
-
-  private boolean extraPermissionForTopicsPromotion;
 
   public UserInfo getUser(
       int tenantId,
@@ -309,10 +307,10 @@ public class DefaultDataService {
 
     KwProperties kwProperties38 =
         new KwProperties(
-            KLAW_EXTRA_PERMISSION_TOPIC_PROMOTION_KEY,
+            KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
             tenantId,
             "false",
-            "Need of an extra permission APPROVE_TOPICS_PROMOTION to promote topics");
+            "Optional permission APPROVE_TOPICS_PROMOTION to allow users to promote topics but not create topics");
     kwPropertiesList.add(kwProperties38);
     return kwPropertiesList;
   }
