@@ -5,7 +5,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
-import { RequestOperationType } from "src/domain/requests/requests-types";
+import { RequestOperationType } from "src/domain/requests";
 import { ResolveIntersectionTypes } from "types/utils";
 
 type RequestOperationTypeOptions = ResolveIntersectionTypes<

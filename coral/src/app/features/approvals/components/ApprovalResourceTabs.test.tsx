@@ -2,7 +2,7 @@ import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
 import { ApprovalsTabEnum } from "src/app/router_utils";
-import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApprovalWithTotal } from "src/domain/requests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import * as hook from "src/app/hooks/usePendingRequests";
 

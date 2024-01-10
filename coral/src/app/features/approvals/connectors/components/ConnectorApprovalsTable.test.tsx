@@ -4,10 +4,7 @@ import ConnectorApprovalsTable from "src/app/features/approvals/connectors/compo
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { ConnectorRequest } from "src/domain/connector";
-import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
+import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
