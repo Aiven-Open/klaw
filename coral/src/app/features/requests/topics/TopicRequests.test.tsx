@@ -87,6 +87,7 @@ describe("TopicRequests", () => {
     customRender(<TopicRequests />, {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
     });
     expect(getTopicRequests).toBeCalledTimes(1);
   });
@@ -101,6 +102,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?search=",
       });
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
@@ -117,6 +119,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
       const search = screen.getByRole("search", { name: "Search Topic" });
       expect(search).toBeVisible();
@@ -145,6 +148,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
@@ -161,6 +165,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
       const isMyRequestSwitch = screen.getByRole("checkbox", {
         name: "Show only my requests",
@@ -182,6 +187,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
       const isMyRequestSwitch = screen.getByRole("checkbox", {
@@ -222,6 +228,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -241,6 +248,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -264,6 +272,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -284,6 +293,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -304,6 +314,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -329,6 +340,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -376,6 +388,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -429,6 +442,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -484,6 +498,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -573,6 +588,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -735,6 +751,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?requestType=DELETE",
       });
 

@@ -45,7 +45,11 @@ describe("Topics", () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
 
-      customRender(<Topics />, { memoryRouter: true, queryClient: true });
+      customRender(<Topics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 

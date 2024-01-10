@@ -8,6 +8,7 @@ import {
 } from "src/domain/environment";
 import { getAllEnvironments } from "src/domain/environment/environment-api";
 import { HTTPError } from "src/services/api";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 type EnvironmentFor = "TOPIC_AND_ACL" | "SCHEMA" | "CONNECTOR" | "ALL";
 interface EnvironmentFilterProps {
@@ -59,7 +60,12 @@ function filterEnvironmentsForSchema(
 function EnvironmentFilter({ environmentsFor }: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersContext();
 
-  const { data: environments } = useQuery<Environment[], HTTPError>(
+  const {
+    data: environments,
+    isError,
+    isLoading,
+    error,
+  } = useQuery<Environment[], HTTPError>(
     [environmentEndpointMap[environmentsFor].queryFn],
     {
       queryFn: environmentEndpointMap[environmentsFor].apiEndpoint,
@@ -72,14 +78,13 @@ function EnvironmentFilter({ environmentsFor }: EnvironmentFilterProps) {
     }
   );
 
-  if (!environments) {
-    return (
-      <div data-testid={"select-environment-loading"}>
-        <NativeSelect.Skeleton />
-      </div>
-    );
-  } else {
-    return (
+  return (
+    <AsyncNativeSelectWrapper
+      entity={"Environments"}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+    >
       <NativeSelect
         labelText="Filter by Environment"
         value={environment}
@@ -91,14 +96,14 @@ function EnvironmentFilter({ environmentsFor }: EnvironmentFilterProps) {
           All Environments
         </Option>
 
-        {environments.map((env: Environment) => (
+        {environments?.map((env: Environment) => (
           <Option key={env.id} value={env.id}>
             {env.name}
           </Option>
         ))}
       </NativeSelect>
-    );
-  }
+    </AsyncNativeSelectWrapper>
+  );
 }
 
 export default EnvironmentFilter;

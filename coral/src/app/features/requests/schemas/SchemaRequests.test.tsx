@@ -80,6 +80,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -96,6 +97,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -119,6 +121,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -203,6 +206,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -218,6 +222,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -237,6 +242,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -257,6 +263,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -277,6 +284,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -302,6 +310,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -346,6 +355,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -398,6 +408,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?requestType=TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -445,6 +456,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -492,6 +504,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?search=TEST_SEARCH_VALUE",
       });
 
@@ -537,6 +550,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?showOnlyMyRequests=true",
       });
 
@@ -582,6 +596,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -678,6 +693,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

@@ -75,6 +75,7 @@ describe("ActivityLog", () => {
     customRender(<ActivityLog />, {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
     });
     expect(mockGetActivityLog).toHaveBeenCalledTimes(1);
   });
@@ -104,6 +105,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -120,6 +122,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -152,6 +155,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -166,6 +170,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -184,6 +189,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -204,6 +210,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -224,6 +231,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -247,6 +255,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -287,6 +296,7 @@ describe("ActivityLog", () => {
       customRender(<ActivityLog />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath:
           "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });

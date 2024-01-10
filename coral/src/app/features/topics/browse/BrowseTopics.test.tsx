@@ -89,7 +89,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTopics.mockResolvedValue(mockedGetTopicsResponseSinglePage);
 
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
       );
@@ -150,7 +154,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockedGetTopicsResponseMultiplePages);
 
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -174,7 +182,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockedGetTopicsResponseMultiplePages);
 
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -213,7 +225,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTopics.mockResolvedValue(mockedResponseTransformed);
 
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
@@ -268,7 +284,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockedResponseTransformed);
 
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
 
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
@@ -328,7 +348,11 @@ describe("BrowseTopics.tsx", () => {
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockedResponseTransformed);
-      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
