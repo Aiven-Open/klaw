@@ -708,10 +708,10 @@ public class TopicControllerService {
 
     String isOptionalExtraPermissionForPromote =
         manageDatabase.getKwPropertyValue(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY, tenantId);
-    if (topicRequest.getRequestOperationType().equals(RequestOperationType.PROMOTE.value)
+    if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)
         && Boolean.parseBoolean(isOptionalExtraPermissionForPromote)
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.APPROVE_TOPICS_PROMOTION)) {
+            getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
       return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value + ". " + TOPICS_ERR_116);
     } else if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_TOPICS)) {

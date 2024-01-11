@@ -1579,12 +1579,12 @@ public class TopicControllerServiceTest {
   public void approvePromoteTopicRequests() throws KlawException {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(TOPIC_1);
-    topicRequest.setRequestOperationType(RequestOperationType.PROMOTE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
 
     when(commonUtilsService.isNotAuthorizedUser("userDetails", PermissionType.APPROVE_TOPICS))
         .thenReturn(false);
     when(commonUtilsService.isNotAuthorizedUser(
-            "userDetails", PermissionType.APPROVE_TOPICS_PROMOTION))
+            "userDetails", PermissionType.APPROVE_TOPICS_CREATE))
         .thenReturn(true);
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(manageDatabase.getKwPropertyValue(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY, 0))
