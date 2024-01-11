@@ -47,7 +47,7 @@ public class MigrateData2x8x0 {
                 KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
                 tenantId,
                 "false",
-                "Need of an extra permission " + APPROVE_TOPICS_CREATE + " to promote topics");
+                "Need of an extra permission " + APPROVE_TOPICS_CREATE + " to create new topics");
         kwPropertiesList.add(kwProperties38);
 
         insertDataJdbc.insertDefaultKwProperties(List.of(kwProperties38));

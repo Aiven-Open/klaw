@@ -313,7 +313,7 @@ public class DefaultDataService {
             "false",
             "Optional permission "
                 + APPROVE_TOPICS_CREATE
-                + " to allow users to promote topics but not create topics");
+                + " to allow users to create new topics");
     kwPropertiesList.add(kwProperties38);
     return kwPropertiesList;
   }
