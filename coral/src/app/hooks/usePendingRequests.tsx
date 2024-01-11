@@ -19,7 +19,7 @@ export const usePendingRequests = () => {
       toast({
         message: `Could not fetch pending requests: ${parseErrorMsg(error)}`,
         position: "bottom-left",
-        variant: "default",
+        variant: "danger",
       });
     }
   }, [isError]);
