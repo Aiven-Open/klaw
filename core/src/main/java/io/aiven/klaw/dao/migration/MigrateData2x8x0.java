@@ -1,6 +1,7 @@
 package io.aiven.klaw.dao.migration;
 
 import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.model.enums.PermissionType.APPROVE_TOPICS_CREATE;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwProperties;
@@ -46,7 +47,7 @@ public class MigrateData2x8x0 {
                 KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
                 tenantId,
                 "false",
-                "Need of an extra permission APPROVE_TOPICS_PROMOTION to promote topics");
+                "Need of an extra permission " + APPROVE_TOPICS_CREATE + " to promote topics");
         kwPropertiesList.add(kwProperties38);
 
         insertDataJdbc.insertDefaultKwProperties(List.of(kwProperties38));
