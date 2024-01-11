@@ -18,7 +18,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_116;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
-import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
 import static io.aiven.klaw.model.enums.MailType.*;
@@ -707,7 +707,8 @@ public class TopicControllerService {
     TopicRequest topicRequest = getTopicRequestFromTopicId(Integer.parseInt(topicId), tenantId);
 
     String isOptionalExtraPermissionForPromote =
-        manageDatabase.getKwPropertyValue(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY, tenantId);
+        manageDatabase.getKwPropertyValue(
+            KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY, tenantId);
     if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)
         && Boolean.parseBoolean(isOptionalExtraPermissionForPromote)
         && commonUtilsService.isNotAuthorizedUser(

@@ -1,6 +1,6 @@
 package io.aiven.klaw.dao.migration;
 
-import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.model.enums.PermissionType.APPROVE_TOPICS_CREATE;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -41,10 +41,12 @@ public class MigrateData2x8x0 {
       if (kwPropertiesList.stream()
           .noneMatch(
               kwProperties ->
-                  kwProperties.getKwKey().equals(KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY))) {
+                  kwProperties
+                      .getKwKey()
+                      .equals(KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY))) {
         KwProperties kwProperties38 =
             new KwProperties(
-                KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
+                KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY,
                 tenantId,
                 "false",
                 "Need of an extra permission " + APPROVE_TOPICS_CREATE + " to create new topics");

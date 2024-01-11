@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.model.enums.PermissionType.APPROVE_TOPICS_CREATE;
 
 import io.aiven.klaw.dao.*;
@@ -308,7 +308,7 @@ public class DefaultDataService {
 
     KwProperties kwProperties38 =
         new KwProperties(
-            KLAW_OPTIONAL_PERMISSION_TOPIC_PROMOTION_KEY,
+            KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY,
             tenantId,
             "false",
             "Optional permission "
