@@ -54,6 +54,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
       afterAll(cleanup);
@@ -87,6 +88,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const button = screen.getByRole("button", {
           name: "No pending requests",
@@ -140,6 +142,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 
@@ -220,6 +223,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 
@@ -254,6 +258,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const button = await screen.findByRole("button", {
           name: "See 4 pending requests",
@@ -307,6 +312,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 

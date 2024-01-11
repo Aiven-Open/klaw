@@ -109,6 +109,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -182,6 +183,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -238,6 +240,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const nav = screen.getByRole("navigation", { name: "Main navigation" });
         nav.focus();
@@ -268,6 +271,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const lastNavItem = screen.getByRole(
           lastElement.isSubmenu ? "button" : "link",
@@ -308,6 +312,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
 
         const link = screen.getByRole("link", { name: "Dashboard" });
@@ -320,6 +325,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
 
         const link = screen.getByRole("link", { name: "Dashboard" });
@@ -340,6 +346,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       const link = screen.getByRole("link", { name: "Activity log" });
@@ -352,6 +359,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       const link = screen.getByRole("link", { name: "Activity log" });
