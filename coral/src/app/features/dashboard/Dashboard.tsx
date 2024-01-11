@@ -1,43 +1,29 @@
-import { Alert, Box, Card, Grid, Icon, Template } from "@aivenio/aquarium";
+import { Box, Card, Grid, Icon, Template, useToast } from "@aivenio/aquarium";
 import { AreaChart, Axis, BarChart, Tooltip } from "@aivenio/aquarium/charts";
 import loading from "@aivenio/aquarium/icons/loading";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { usePendingRequests } from "src/app/hooks/usePendingRequests";
-import {
-  DashboardsAnalyticsData,
-  getActivityLogForTeamOverview,
-  getDashboardStats,
-} from "src/domain/analytics";
-import { parseErrorMsg } from "src/services/mutation-utils";
+import { useDashboardData } from "src/app/features/dashboard/hooks/useDashboardData";
 
 const Dashboard = () => {
   const {
-    data: chartData,
-    isLoading: isLoadingChartData,
-    isError: isErrorChartData,
-    error: errorChartData,
-  } = useQuery<DashboardsAnalyticsData, Error>(
-    ["getActivityLogForTeamOverview"],
-    {
-      queryFn: () => getActivityLogForTeamOverview(),
+    data: { chartsData, statsData },
+    isLoading,
+    isError,
+    error,
+  } = useDashboardData();
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (isError) {
+      toast({
+        message: error,
+        position: "bottom-left",
+        variant: "default",
+      });
     }
-  );
-
-  const {
-    data: statsData,
-    isLoading: isLoadingStatsData,
-    isError: isErrorStatsData,
-    error: errorStatsData,
-  } = useQuery(["getDashboardStats"], {
-    queryFn: getDashboardStats,
-  });
-
-  const { TOPIC, ACL, SCHEMA, CONNECTOR } = usePendingRequests();
-
-  const { totalTeamTopics, totalOrgTopics } = useAuthContext();
+  }, [isError]);
 
   // The following contraption is to allow charts to be responsive despite being rendered in a Card
   // Without it, the size of the charts calculated by the ResponsiveContainer they are crapped in under the hood
@@ -45,6 +31,7 @@ const Dashboard = () => {
   // This will remove the Chart components and show the loading state while resizing, and then render them again with the proper size
   // Source: https://github.com/recharts/recharts/issues/1423#issuecomment-538670179
   const [forceLoading, setForceLoading] = useState(false);
+
   useEffect(() => {
     let resizeThrottleTimeout: NodeJS.Timeout;
     let skip = false;
@@ -70,32 +57,25 @@ const Dashboard = () => {
   return (
     <Template columns={1} gap={"l2"}>
       <Card title="Topics" fullWidth>
-        {isErrorStatsData && (
-          <Box marginBottom={"l1"}>
-            <Alert type={"error"}>
-              Could not gather the topics data: {parseErrorMsg(errorStatsData)}
-            </Alert>
-          </Box>
-        )}
         <Grid cols={"4"}>
           <StatsDisplay
-            isLoading={false}
-            amount={totalTeamTopics}
+            isLoading={isLoading}
+            amount={statsData.totalTeamTopics}
             entity={"My team's topics"}
           />
           <StatsDisplay
-            isLoading={false}
-            amount={totalOrgTopics}
+            isLoading={isLoading}
+            amount={statsData.totalOrgTopics}
             entity={"My organization's topics"}
           />
           <StatsDisplay
-            isLoading={isLoadingStatsData}
-            amount={statsData?.producerCount}
+            isLoading={isLoading}
+            amount={statsData.producerCount}
             entity={"My producer topics"}
           />
           <StatsDisplay
-            isLoading={isLoadingStatsData}
-            amount={statsData?.consumerCount}
+            isLoading={isLoading}
+            amount={statsData.consumerCount}
             entity={"My consumer topics"}
           />
         </Grid>
@@ -103,36 +83,30 @@ const Dashboard = () => {
       <Card title="My team's pending requests" fullWidth>
         <Grid cols={"4"}>
           <StatsDisplay
-            isLoading={TOPIC === undefined}
-            amount={TOPIC}
+            isLoading={isLoading}
+            amount={statsData.pendingTopicRequests}
             entity={"Topic requests"}
           />
           <StatsDisplay
-            isLoading={ACL === undefined}
-            amount={ACL}
+            isLoading={isLoading}
+            amount={statsData.pendingAclRequests}
             entity={"ACL requests"}
           />
           <StatsDisplay
-            isLoading={SCHEMA === undefined}
-            amount={SCHEMA}
+            isLoading={isLoading}
+            amount={statsData.pendingSchemaRequests}
             entity={"Schema requests"}
           />
           <StatsDisplay
-            isLoading={CONNECTOR === undefined}
-            amount={CONNECTOR}
+            isLoading={isLoading}
+            amount={statsData.pendingConnectorRequests}
             entity={"Connector requests"}
           />
         </Grid>
       </Card>
 
       <Card title="My team's requests per day" fullWidth>
-        {isErrorChartData && (
-          <Alert type={"error"}>
-            Could not gather the requests per day data :{" "}
-            {parseErrorMsg(errorChartData)}
-          </Alert>
-        )}
-        {isLoadingChartData || forceLoading ? (
+        {isLoading || forceLoading ? (
           <Box.Flex
             justifyContent={"center"}
             alignContent={"center"}
@@ -142,7 +116,7 @@ const Dashboard = () => {
             <Icon icon={loading} fontSize={"30px"} />
           </Box.Flex>
         ) : (
-          <AreaChart height={250} data={chartData?.requestsPerDay}>
+          <AreaChart height={250} data={chartsData?.requestsPerDay}>
             <Axis.XAxis dataKey="date" interval={"equidistantPreserveStart"} />
             <Axis.YAxis width={10} />
             <AreaChart.Area dataKey="Requests" />
@@ -152,13 +126,7 @@ const Dashboard = () => {
       </Card>
 
       <Card title="My team's topics per environment" fullWidth>
-        {isErrorChartData && (
-          <Alert type={"error"}>
-            Could not gather the topics per environment data:{" "}
-            {parseErrorMsg(errorChartData)}
-          </Alert>
-        )}
-        {isLoadingChartData || forceLoading ? (
+        {isLoading || forceLoading ? (
           <Box.Flex
             justifyContent={"center"}
             alignContent={"center"}
@@ -171,7 +139,7 @@ const Dashboard = () => {
           <BarChart
             height={250}
             layout={"vertical"}
-            data={chartData?.topicsPerEnv}
+            data={chartsData?.topicsPerEnv}
           >
             <Axis.XAxis dataKey="environment" />
             <Axis.YAxis width={10} />
