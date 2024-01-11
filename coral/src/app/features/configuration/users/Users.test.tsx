@@ -377,9 +377,10 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, option);
 
       //first call on load
-      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        teamName: "NCC-1701-D",
+        searchUserParam: undefined,
+        teamId: undefined,
       });
     });
 
@@ -395,9 +396,10 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, optionOne);
 
       //first call on load
-      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        teamName: "NCC-1701-D",
+        searchUserParam: undefined,
+        teamId: undefined,
       });
 
       const optionTwo = within(select).getByRole("option", {
@@ -407,8 +409,10 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, optionTwo);
 
       //first call on load, second for the first filter
-      expect(mockGetUsers).toHaveBeenNthCalledWith(3, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
+        searchUserParam: undefined,
+        teamId: undefined,
       });
     });
   });
