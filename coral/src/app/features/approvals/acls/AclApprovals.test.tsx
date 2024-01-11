@@ -154,6 +154,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
       const skeleton = screen.getByTestId("skeleton-table");
 
@@ -168,6 +169,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const skeleton = screen.getByTestId("skeleton-table");
@@ -194,6 +196,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -265,6 +268,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -449,6 +453,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: "/?requestType=DELETE",
       });
 
@@ -489,6 +494,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -581,6 +587,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -700,6 +707,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -862,6 +870,7 @@ describe("AclApprovals", () => {
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

@@ -171,6 +171,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const table = screen.queryByRole("table");
@@ -189,6 +190,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       const skeleton = screen.getByTestId("skeleton-table");
@@ -217,6 +219,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -289,6 +292,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
 
@@ -304,6 +308,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -323,6 +328,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -343,6 +349,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -363,6 +370,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -387,6 +395,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -434,6 +443,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -529,6 +539,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -685,6 +696,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -779,6 +791,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -900,6 +913,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -1066,6 +1080,7 @@ describe("TopicApprovals", () => {
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
+        aquariumContext: true,
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));

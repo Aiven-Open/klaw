@@ -195,6 +195,7 @@ describe("Dashboard.tsx", () => {
     component = customRender(<Dashboard />, {
       memoryRouter: true,
       queryClient: true,
+      aquariumContext: true,
     });
   });
 

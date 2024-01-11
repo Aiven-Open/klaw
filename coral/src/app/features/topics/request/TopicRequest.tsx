@@ -7,7 +7,6 @@ import {
   Textarea,
   TextInput,
   useForm,
-  NativeSelect,
   ComplexNativeSelect,
 } from "src/app/components/Form";
 import formSchema, {
@@ -25,6 +24,7 @@ import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import isString from "lodash/isString";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 function parseNumberOrUndefined(value: string | undefined): number | undefined {
   return isString(value) ? parseInt(value, 10) : undefined;
@@ -36,14 +36,16 @@ function TopicRequest() {
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
-  const { data: environments } = useQuery<EnvironmentForTopicForm[], Error>(
-    ["environments-for-team"],
-    {
-      queryFn: getEnvironmentsForTopicRequest,
-      select: (data) =>
-        data.map(({ name, id, params }) => ({ name, id, params })),
-    }
-  );
+  const {
+    data: environments,
+    isLoading: isLoadingEnvironments,
+    isError: isErrorEnvironments,
+    error: errorEnvironments,
+  } = useQuery<EnvironmentForTopicForm[], Error>(["environments-for-team"], {
+    queryFn: getEnvironmentsForTopicRequest,
+    select: (data) =>
+      data.map(({ name, id, params }) => ({ name, id, params })),
+  });
 
   const defaultValues = Array.isArray(environments)
     ? {
@@ -119,19 +121,22 @@ function TopicRequest() {
           onError={onError}
         >
           <Box width={"full"}>
-            {Array.isArray(environments) ? (
+            <AsyncNativeSelectWrapper
+              entity={"Environments"}
+              isLoading={isLoadingEnvironments}
+              isError={isErrorEnvironments}
+              error={errorEnvironments}
+            >
               <ComplexNativeSelect<Schema, EnvironmentForTopicForm>
                 name="environment"
                 labelText={"Environment"}
                 placeholder={"-- Please select --"}
-                options={environments}
+                options={Array.isArray(environments) ? environments : []}
                 identifierValue={"id"}
                 identifierName={"name"}
                 required
               />
-            ) : (
-              <NativeSelect.Skeleton></NativeSelect.Skeleton>
-            )}
+            </AsyncNativeSelectWrapper>
           </Box>
           <Box>
             <Box paddingY={"l1"}>
