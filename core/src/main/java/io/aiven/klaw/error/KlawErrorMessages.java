@@ -346,6 +346,9 @@ public class KlawErrorMessages {
   public static final String TOPICS_ERR_115 =
       "PartitionId cannot be empty or less than zero. Number of Offsets cannot be less than zero.";
 
+  public static final String TOPICS_ERR_116 =
+      "Please check if permission APPROVE_TOPICS_PROMOTION is assigned to you.";
+
   // Topic Validation
   public static final String TOPICS_VLD_ERR_101 =
       "Failure. Invalid Topic request type. Possible Value : Create/Promote";

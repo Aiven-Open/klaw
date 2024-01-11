@@ -1591,7 +1591,7 @@ public class TopicControllerServiceTest {
         .thenReturn("true");
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResponse.NOT_AUTHORIZED.getMessage());
+    assertThat(apiResponse1.getMessage()).contains(ApiResponse.NOT_AUTHORIZED.getMessage());
   }
 
   private List<MessageSchema> getSchemas(int number) {
