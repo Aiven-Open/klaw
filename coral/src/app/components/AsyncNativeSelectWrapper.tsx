@@ -63,7 +63,7 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
     if (!isNativeSelectComponent(children)) {
       const errorMessage =
         "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` or `ComplexNativeSelect` as" +
-          " a child.";
+        " a child.";
 
       if (isDevMode()) {
         throw new Error(errorMessage);
