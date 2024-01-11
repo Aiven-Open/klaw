@@ -1,6 +1,7 @@
 import { NativeSelect, NativeSelectProps, useToast } from "@aivenio/aquarium";
 import { isValidElement, ReactElement, ReactNode, useEffect } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { isDevMode } from "src/services/is-dev-mode";
 
 function isNativeSelectComponent(
   child: ReactNode
@@ -39,9 +40,14 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
   // <NativeSelect> as a child component
   useEffect(() => {
     if (!isNativeSelectComponent(children)) {
-      throw new Error(
-        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` as a child."
-      );
+      const errorMessage =
+        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` as a child.";
+
+      if (isDevMode()) {
+        throw new Error(errorMessage);
+      } else {
+        console.error(errorMessage);
+      }
     }
   }, [children]);
 

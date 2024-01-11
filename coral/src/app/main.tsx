@@ -18,8 +18,9 @@ import { AuthProvider } from "src/app/context-provider/AuthProvider";
 import { BasePage } from "src/app/layout/page/BasePage";
 // https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
 import "/src/services/configure-monaco-editor";
+import { isDevMode } from "src/services/is-dev-mode";
 
-const DEV_MODE = import.meta.env.DEV;
+const DEV_MODE = isDevMode();
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
