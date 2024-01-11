@@ -27,6 +27,7 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +43,6 @@ public class MigrationUtility {
   @Value("${klaw.data.migration.packageToScan:io.aiven.klaw.dao.migration}")
   private String packageToScan;
 
-  @Value("${klaw.version}")
   private String currentKlawVersion;
 
   @Value("${klaw.db.hoursFor.tableCreation:1}")
@@ -54,12 +54,16 @@ public class MigrationUtility {
 
   @Autowired private SpringLiquibase liquibase;
 
+  @Autowired BuildProperties buildProperties;
+
   @SchedulerLock(
       name = "TaskScheduler_MigrationUtility",
       lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
       lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void startMigration() throws Exception {
-
+    // Set the Klaw version from the build properties.
+    currentKlawVersion = buildProperties.getVersion();
+    log.debug("Klaw build version {}", currentKlawVersion);
     // Find the latest version in DB
     DataVersion currentDataVersion = getLatestDataVersion();
 
