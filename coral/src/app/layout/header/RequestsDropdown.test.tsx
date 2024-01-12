@@ -1,7 +1,8 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
 import { getRequestsWaitingForApproval } from "src/domain/requests";
+import { KlawApiError } from "src/services/api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const noRequests = {
@@ -30,6 +31,12 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 jest.mock("src/domain/requests/requests-api");
 
 const mockGetRequestsWaitingForApproval =
@@ -39,6 +46,15 @@ const mockGetRequestsWaitingForApproval =
 
 describe("RequestsDropdown", () => {
   const user = userEvent.setup();
+  const originalConsoleError = console.error;
+
+  beforeAll(() => {
+    console.error = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalConsoleError;
+  });
 
   describe("has no pending requests", () => {
     beforeAll(() => {
@@ -54,6 +70,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
       afterAll(cleanup);
@@ -87,6 +104,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const button = screen.getByRole("button", {
           name: "No pending requests",
@@ -140,6 +158,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 
@@ -220,6 +239,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 
@@ -254,6 +274,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const button = await screen.findByRole("button", {
           name: "See 4 pending requests",
@@ -307,6 +328,7 @@ describe("RequestsDropdown", () => {
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
       });
 
@@ -370,6 +392,36 @@ describe("RequestsDropdown", () => {
 
         expect(mockedNavigate).toHaveBeenCalledWith("/approvals/connectors");
       });
+    });
+  });
+
+  describe("shows an toast error notification when fetching pending requests fails", () => {
+    const testError: KlawApiError = {
+      message: "Oh no, this did not work",
+      success: false,
+    };
+
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("calls useToast with correct error message", async () => {
+      mockGetRequestsWaitingForApproval.mockRejectedValue(testError);
+
+      customRender(<RequestsDropdown />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: `Could not fetch pending requests: ${testError.message}`,
+          })
+        )
+      );
     });
   });
 });

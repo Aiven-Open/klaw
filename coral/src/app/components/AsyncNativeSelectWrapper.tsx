@@ -1,29 +1,50 @@
 import { NativeSelect, NativeSelectProps, useToast } from "@aivenio/aquarium";
 import { isValidElement, ReactElement, ReactNode, useEffect } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import kebabCase from "lodash/kebabCase";
+import upperFirst from "lodash/upperFirst";
+import { ComplexNativeSelectProps } from "src/app/components/ComplexNativeSelect";
+import { ComplexNativeSelect } from "src/app/components/Form";
 import { isDevMode } from "src/services/is-dev-mode";
 
 function isNativeSelectComponent(
   child: ReactNode
-): child is ReactElement<NativeSelectProps> {
-  return (
+): //eslint-disable-next-line @typescript-eslint/no-explicit-any
+child is ReactElement<NativeSelectProps | ComplexNativeSelectProps<any>> {
+  const isNativeSelectAquariumImport =
     isValidElement(child) &&
     /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-    (child.type as any)?.render?.displayName === NativeSelect.displayName
+    (child.type as any)?.render?.displayName === NativeSelect.displayName;
+
+  const isNativeSelectFormImport =
+    isValidElement(child) &&
+    /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+    (child.type as any)?.name === NativeSelect.displayName;
+
+  const isComplexNativeSelect =
+    isValidElement(child) &&
+    /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+    (child.type as any)?.name === ComplexNativeSelect.name;
+
+  return (
+    isNativeSelectAquariumImport ||
+    isNativeSelectFormImport ||
+    isComplexNativeSelect
   );
 }
 
 type AsyncNativeSelectWrapperProps = {
   /**
-   * `entity` is the entity which user filters by, e.g. "Team" or "Topic"
+   * `entity` is the entity which user filters by, e.g. "team" or "Environment"
    * It is used in e.g. placeholder and toast notification for error cases,
-   * like "Error loading <ENTITY>"
+   * like "Error loading <ENTITY>".
    */
   entity: string;
   isLoading: boolean;
   isError: boolean;
   error: unknown;
-  children: ReactElement<NativeSelectProps>;
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  children: ReactElement<NativeSelectProps | ComplexNativeSelectProps<any>>;
 };
 
 /** <AsyncNativeSelectWrapper> handles loading
@@ -41,7 +62,8 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
   useEffect(() => {
     if (!isNativeSelectComponent(children)) {
       const errorMessage =
-        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` as a child.";
+        "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` or `ComplexNativeSelect` as" +
+        " a child.";
 
       if (isDevMode()) {
         throw new Error(errorMessage);
@@ -69,14 +91,14 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
         labelText={children.props.labelText}
         aria-label={`No ${entity}`}
         placeholder={`No ${entity}`}
-        helperText={`${entity} could not be loaded.`}
+        helperText={`${upperFirst(entity)} could not be loaded.`}
       />
     );
   }
 
   if (isLoading) {
     return (
-      <div data-testid={"async-select-loading"}>
+      <div data-testid={`async-select-loading-${kebabCase(entity)}`}>
         <NativeSelect.Skeleton />
       </div>
     );

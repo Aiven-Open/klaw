@@ -360,7 +360,7 @@ describe("AclRequests", () => {
       });
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
 
       const envFilter = screen.getByRole("combobox", {
@@ -388,7 +388,7 @@ describe("AclRequests", () => {
       });
 
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
 
       const envFilter = screen.getByRole("combobox", {

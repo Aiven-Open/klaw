@@ -1,12 +1,13 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+import { KlawApiError } from "src/services/api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 jest.mock("src/domain/team/team-api.ts");
 
@@ -26,6 +27,19 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
 const isFeatureFlagActiveMock = jest.fn();
 jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
+const mockedUseToast = jest.fn();
+
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+  // This is mocked at the test-setup level, but we need to do it again
+  // Because we requireActual("@aivenio/aquarium") to mock useToast here
+  // And this overrides the requireActual at test-setup level
+  Icon: jest.fn((props) => {
+    return <div data-testid={"ds-icon"} data-icon={props.icon.body} />;
+  }),
 }));
 
 const navLinks = [
@@ -99,9 +113,17 @@ const navOrderFirstLevel = [
 ];
 
 describe("MainNavigation.tsx", () => {
+  const originalConsoleError = console.error;
+
   beforeEach(() => {
+    console.error = jest.fn();
+
     mockGetRequestsStatistics.mockResolvedValue([]);
     mockGetRequestsWaitingForApproval.mockResolvedValue([]);
+  });
+
+  afterAll(() => {
+    console.error = originalConsoleError;
   });
 
   describe("renders the main navigation in default state", () => {
@@ -109,6 +131,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -182,6 +205,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -238,6 +262,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const nav = screen.getByRole("navigation", { name: "Main navigation" });
         nav.focus();
@@ -268,6 +293,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
         const lastNavItem = screen.getByRole(
           lastElement.isSubmenu ? "button" : "link",
@@ -308,6 +334,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
 
         const link = screen.getByRole("link", { name: "Dashboard" });
@@ -320,6 +347,7 @@ describe("MainNavigation.tsx", () => {
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
+          aquariumContext: true,
         });
 
         const link = screen.getByRole("link", { name: "Dashboard" });
@@ -340,6 +368,7 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       const link = screen.getByRole("link", { name: "Activity log" });
@@ -352,11 +381,42 @@ describe("MainNavigation.tsx", () => {
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       const link = screen.getByRole("link", { name: "Activity log" });
       expect(link).toBeVisible();
       expect(link).toHaveAttribute("href", "/activity-log");
+    });
+  });
+
+  describe("shows an toast error notification when fetching pending requests fails", () => {
+    const testError: KlawApiError = {
+      message: "Oh no, this did not work",
+      success: false,
+    };
+
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("calls useToast with correct error message", async () => {
+      mockGetRequestsWaitingForApproval.mockRejectedValue(testError);
+
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: `Could not fetch pending requests: ${testError.message}`,
+          })
+        )
+      );
     });
   });
 });
