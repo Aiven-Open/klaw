@@ -28,7 +28,16 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
               <div
                 class="typography-heading text-grey-70"
               >
-                0
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
               </div>
               <div
                 class="typography-small text-grey-50"
@@ -42,7 +51,16 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
               <div
                 class="typography-heading text-grey-70"
               >
-                0
+                <span
+                  class="visually-hidden"
+                >
+                  Loading information
+                </span>
+                <div
+                  aria-label="Loading..."
+                  class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  role="progressbar"
+                />
               </div>
               <div
                 class="typography-small text-grey-50"
@@ -264,5 +282,6 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       </div>
     </div>
   </div>
+  <div />
 </div>
 `;

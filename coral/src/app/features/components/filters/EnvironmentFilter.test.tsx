@@ -9,6 +9,7 @@ import {
 } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { KlawApiError } from "src/services/api";
 import { getAllEnvironments } from "src/domain/environment/environment-api";
 
 jest.mock("src/domain/environment/environment-api.ts");
@@ -38,6 +39,12 @@ const mockEnvironments = [
   }),
 ];
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 const filterLabel = "Filter by Environment";
 
 const WrappedEnvironmentFilter = withFiltersContext({
@@ -63,6 +70,7 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       expect(mockGetEnvironments).toHaveBeenCalled();
@@ -76,6 +84,7 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       expect(mockGetEnvironments).toHaveBeenCalled();
@@ -90,6 +99,7 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
 
       expect(mockGetSyncConnectorsEnvironments).toHaveBeenCalled();
@@ -121,9 +131,10 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -202,9 +213,10 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -273,10 +285,11 @@ describe("EnvironmentFilter.tsx", () => {
       customRender(<WrappedEnvironmentFilter />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
         customRoutePath: routePath,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -303,10 +316,11 @@ describe("EnvironmentFilter.tsx", () => {
 
       customRender(<WrappedEnvironmentFilter />, {
         queryClient: true,
+        aquariumContext: true,
         memoryRouter: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -337,10 +351,11 @@ describe("EnvironmentFilter.tsx", () => {
 
       customRender(<WrappedEnvironmentFilter />, {
         queryClient: true,
+        aquariumContext: true,
         browserRouter: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("select-environment-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -385,6 +400,59 @@ describe("EnvironmentFilter.tsx", () => {
       await waitFor(() => {
         expect(window.location.search).toEqual("?page=1");
       });
+    });
+  });
+
+  describe("gives user information if fetching environments failed", () => {
+    const testError: KlawApiError = {
+      message: "Oh no, this did not work",
+      success: false,
+    };
+
+    const originalConsoleError = jest.fn();
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetEnvironments.mockRejectedValue(testError);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+      await waitForElementToBeRemoved(
+        screen.getByTestId("async-select-loading-environments")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("shows a disabled select with No Environments", () => {
+      const select = screen.getByRole("combobox", {
+        name: "No Environments",
+      });
+
+      expect(select).toBeDisabled();
+    });
+
+    it("shows an error message below the select element", () => {
+      const errorText = screen.getByText("Environments could not be loaded.");
+
+      expect(errorText).toBeVisible();
+    });
+
+    it("shows a toast notification with error", () => {
+      expect(mockedUseToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: `Error loading Environments: ${testError.message}`,
+        })
+      );
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 });

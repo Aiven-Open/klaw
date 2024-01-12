@@ -32,6 +32,7 @@ describe("ConnectorRequestsPage", () => {
     customRender(<ConnectorRequestsPage />, {
       queryClient: true,
       memoryRouter: true,
+      aquariumContext: true,
     });
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
