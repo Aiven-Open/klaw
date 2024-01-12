@@ -752,7 +752,7 @@ public class UsersTeamsControllerService {
   }
 
   public List<UserInfoModelResponse> showUsers(
-      String teamName, String userSearchStr, String pageNo) {
+      Integer teamId, String userSearchStr, String pageNo) {
 
     List<UserInfoModelResponse> userInfoModels = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -770,10 +770,8 @@ public class UsersTeamsControllerService {
           UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
           copyProperties(userListItem, userInfoModel);
           updateSwitchTeamsList(userInfoModel, userListItem, tenantId, true);
-          if (teamName != null && !teamName.equals("")) {
-            if (Objects.equals(
-                manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()),
-                teamName)) {
+          if (teamId != null) {
+            if (Objects.equals(userInfoModel.getTeamId(), teamId)) {
               userInfoModels.add(userInfoModel);
             }
           } else {

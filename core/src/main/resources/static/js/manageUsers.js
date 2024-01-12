@@ -736,23 +736,44 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if(teamSel === "null" || teamSel == null || !teamSel)
                 teamSel = "";
 
-            $http({
-                method: "GET",
-                url: "showUserList",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'teamName' : decodeURI(teamSel) , 'pageNo' : pageNo, 'searchUserParam' : $scope.usersearch},
-            }).success(function(output) {
-                $scope.userList = output;
-                if(output && output.length > 0 && output[0] != null){
-                    $scope.resultPages = output[0].allPageNos;
-                    $scope.resultPageSelected = pageNo;
-                }
-            }).error(
-                function(error)
-                {
+            async function fetchTeamIdAndUpdateUserList() {
+                try {
+                    const teamsResponse = await $http({
+                        method: "GET",
+                        url: "getAllTeamsSU",
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    let teams = teamsResponse.data;
+                    let teamId = null;
+                    if (teamSel !== "") {
+                        const foundTeam = teams.find(team => team.teamname === teamSel);
+                        if (foundTeam) {
+                            teamId = foundTeam.teamId;
+                        }
+                    }
+
+                    const userListResponse = await $http({
+                        method: "GET",
+                        url: "showUserList",
+                        headers: { 'Content-Type': 'application/json' },
+                        params: { 'teamId': teamId, 'pageNo': pageNo, 'searchUserParam': $scope.usersearch }
+                    });
+
+                    $scope.userList = userListResponse.data;
+                    if ($scope.userList && $scope.userList.length > 0 && $scope.userList[0] != null) {
+                        $scope.resultPages = $scope.userList[0].allPageNos;
+                        $scope.resultPageSelected = pageNo;
+                    }
+
+                    $scope.$apply();
+                } catch (error) {
                     $scope.alert = error;
+                    $scope.$apply();
                 }
-            );
+            }
+
+            fetchTeamIdAndUpdateUserList();
         }
 
      $scope.updatedEnvArray = [];

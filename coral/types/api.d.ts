@@ -3100,7 +3100,7 @@ export type operations = {
   showUsers: {
     parameters: {
       query?: {
-        teamName?: string;
+        teamId?: number;
         pageNo?: string;
         searchUserParam?: string;
       };

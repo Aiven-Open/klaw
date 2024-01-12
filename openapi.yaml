@@ -2388,12 +2388,12 @@
         "tags" : [ "users-teams-controller" ],
         "operationId" : "showUsers",
         "parameters" : [ {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string",
-            "default" : ""
+            "type" : "integer",
+            "format" : "int32"
           }
         }, {
           "name" : "pageNo",
@@ -7445,10 +7445,10 @@
               "type" : "string"
             }
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -7679,10 +7679,10 @@
           "schemaversion" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -7844,10 +7844,10 @@
               "type" : "string"
             }
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -8323,13 +8323,13 @@
       },
       "Scales" : {
         "properties" : {
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
@@ -8535,10 +8535,10 @@
           "validatedTopic" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -9034,10 +9034,10 @@
           "approvingTeamId" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -9592,10 +9592,10 @@
           "aclResourceType" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
