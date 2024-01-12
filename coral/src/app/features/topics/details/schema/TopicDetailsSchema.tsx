@@ -29,6 +29,7 @@ import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
 import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
 import { OpenSchemaRequestAlert } from "src/app/features/topics/details/schema/components/OpenSchemaRequestAlert";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
@@ -146,32 +147,32 @@ function TopicDetailsSchema() {
       <PageHeader title="Schema" />
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
-          {topicSchemasIsRefetching ? (
-            <>
-              <div className={"visually-hidden"}>Versions loading</div>
-              <NativeSelect.Skeleton />
-            </>
-          ) : (
-            <>
-              <NativeSelect
-                style={{ width: "300px" }}
-                aria-label={"Select version"}
-                onChange={(e) => setSchemaVersion(Number(e.target.value))}
-                defaultValue={schemaDetailsPerEnv.version}
-              >
-                {allSchemaVersions.map((version) => (
-                  <Option key={version} value={version}>
-                    Version {version} {version === latestVersion && "(latest)"}
-                  </Option>
-                ))}
-              </NativeSelect>
-              <Typography.SmallStrong color={"grey-40"}>
-                <Box display={"flex"} marginTop={"3"} colGap={"2"}>
-                  <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
-                  <span>{allSchemaVersions.length} versions</span>
-                </Box>
-              </Typography.SmallStrong>
-            </>
+          <AsyncNativeSelectWrapper
+            entity={"versions"}
+            isLoading={topicSchemasIsRefetching}
+            isError={false}
+            error={""}
+          >
+            <NativeSelect
+              style={{ width: "300px" }}
+              aria-label={"Select version"}
+              onChange={(e) => setSchemaVersion(Number(e.target.value))}
+              defaultValue={schemaDetailsPerEnv.version}
+            >
+              {allSchemaVersions.map((version) => (
+                <Option key={version} value={version}>
+                  Version {version} {version === latestVersion && "(latest)"}
+                </Option>
+              ))}
+            </NativeSelect>
+          </AsyncNativeSelectWrapper>
+          {!topicSchemasIsRefetching && (
+            <Typography.SmallStrong color={"grey-40"}>
+              <Box display={"flex"} marginTop={"3"} colGap={"2"}>
+                <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
+                <span>{allSchemaVersions.length} versions</span>
+              </Box>
+            </Typography.SmallStrong>
           )}
         </Box>
 

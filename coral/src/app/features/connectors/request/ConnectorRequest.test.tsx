@@ -5,6 +5,7 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { requestConnectorCreation } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
@@ -32,54 +33,46 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 describe("<ConnectorRequest />", () => {
-  const originalConsoleError = console.error;
-  let user: ReturnType<typeof userEvent.setup>;
-
-  beforeEach(() => {
-    console.error = jest.fn();
-    user = userEvent.setup();
-  });
-
-  afterEach(() => {
-    console.error = originalConsoleError;
-  });
+  const user = userEvent.setup();
 
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
-      beforeEach(() => {
+      beforeAll(async () => {
         mockGetConnectorEnvironmentRequest.mockResolvedValue([
           createMockEnvironmentDTO({ id: "1", name: "DEV" }),
           createMockEnvironmentDTO({ id: "2", name: "TST" }),
           createMockEnvironmentDTO({ id: "3", name: "PROD" }),
         ]);
+
         customRender(<ConnectorRequest />, {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
-      afterEach(cleanup);
+      afterAll(cleanup);
 
-      it("shows a required select element for 'Environment'", async () => {
-        const select = await screen.findByRole("combobox", {
+      it("shows a required select element for 'Environment'", () => {
+        const select = screen.getByRole("combobox", {
           name: "Environment *",
         });
         expect(select).toBeEnabled();
         expect(select).toBeRequired();
       });
 
-      it("shows an placeholder text for the select", async () => {
-        const select = await screen.findByRole("combobox", {
+      it("shows an placeholder text for the select", () => {
+        const select = screen.getByRole("combobox", {
           name: "Environment *",
         });
 
         expect(select).toHaveDisplayValue("-- Please select --");
       });
 
-      it("shows all environment names as options", async () => {
-        await screen.findByRole("combobox", {
-          name: "Environment *",
-        });
+      it("shows all environment names as options", () => {
         const options = screen.getAllByRole("option");
         // 3 environments + option for placeholder
         expect(options.length).toBe(4);
@@ -368,7 +361,9 @@ describe("<ConnectorRequest />", () => {
     });
 
     describe("handles an error from the api", () => {
+      const originalConsoleError = console.error;
       beforeEach(() => {
+        console.error = jest.fn();
         mockCreateConnectorRequest.mockRejectedValue({
           success: false,
           message: "Something went wrong",
@@ -376,6 +371,7 @@ describe("<ConnectorRequest />", () => {
       });
 
       afterEach(() => {
+        console.error = originalConsoleError;
         jest.clearAllMocks();
         cleanup();
       });
@@ -396,7 +392,12 @@ describe("<ConnectorRequest />", () => {
           remarks: "",
         });
         const alert = await screen.findByRole("alert");
+
         expect(alert).toHaveTextContent("Something went wrong");
+        expect(console.error).toHaveBeenCalledWith({
+          message: "Something went wrong",
+          success: false,
+        });
       });
     });
 

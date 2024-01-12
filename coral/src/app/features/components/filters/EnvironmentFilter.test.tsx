@@ -134,7 +134,7 @@ describe("EnvironmentFilter.tsx", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -216,7 +216,7 @@ describe("EnvironmentFilter.tsx", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -289,7 +289,7 @@ describe("EnvironmentFilter.tsx", () => {
         customRoutePath: routePath,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -320,7 +320,7 @@ describe("EnvironmentFilter.tsx", () => {
         memoryRouter: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -355,7 +355,7 @@ describe("EnvironmentFilter.tsx", () => {
         browserRouter: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 
@@ -422,7 +422,7 @@ describe("EnvironmentFilter.tsx", () => {
         aquariumContext: true,
       });
       await waitForElementToBeRemoved(
-        screen.getByTestId("async-select-loading")
+        screen.getByTestId("async-select-loading-environments")
       );
     });
 

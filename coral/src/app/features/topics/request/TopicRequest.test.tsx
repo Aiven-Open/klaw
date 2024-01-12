@@ -9,6 +9,7 @@ import {
 } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 jest.mock("src/domain/environment/environment-api.ts");
 const mockGetEnvironments =
@@ -42,7 +43,7 @@ describe("<TopicRequest />", () => {
 
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -54,7 +55,12 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
+
       afterAll(() => {
         cleanup();
       });
@@ -97,7 +103,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when field is clicked", () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -109,6 +115,9 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterEach(() => {
@@ -157,7 +166,7 @@ describe("<TopicRequest />", () => {
 
   describe("Topic name", () => {
     describe("informs user about valid input with placeholder per default", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -174,6 +183,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -198,7 +211,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("informs user about valid input with placeholder when regex should be applied", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -210,10 +223,15 @@ describe("<TopicRequest />", () => {
             },
           }),
         ]);
+
         customRender(<TopicRequest />, {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -238,7 +256,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("informs user about valid input with a prefix is needed", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -255,6 +273,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -279,7 +301,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when topic name does not have enough characters", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -292,6 +314,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -321,7 +347,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when topic name does not match the default pattern", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -334,6 +360,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -363,7 +393,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when environment params have topicPrefix defined", () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -386,6 +416,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterEach(() => {
@@ -442,7 +476,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when environment params have topicSuffix defined", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({
@@ -458,7 +492,12 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
+
       afterAll(() => {
         cleanup();
       });
@@ -488,7 +527,7 @@ describe("<TopicRequest />", () => {
 
   describe("Replication factor", () => {
     describe("renders all necessary elements on default", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -521,6 +560,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterAll(() => {
@@ -556,7 +599,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when environment is changed", () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
         mockGetEnvironments.mockResolvedValue([
           createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -589,6 +632,10 @@ describe("<TopicRequest />", () => {
           queryClient: true,
           aquariumContext: true,
         });
+
+        await waitForElementToBeRemoved(
+          screen.getByTestId("async-select-loading-environments")
+        );
       });
 
       afterEach(() => {
@@ -669,7 +716,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("Topic partitions", () => {
-    beforeAll(() => {
+    beforeAll(async () => {
       mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -702,7 +749,12 @@ describe("<TopicRequest />", () => {
         queryClient: true,
         aquariumContext: true,
       });
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("async-select-loading-environments")
+      );
     });
+
     afterAll(cleanup);
 
     describe("input components", () => {
@@ -733,7 +785,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("when environment is changed", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -766,7 +818,12 @@ describe("<TopicRequest />", () => {
         queryClient: true,
         aquariumContext: true,
       });
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("async-select-loading-environments")
+      );
     });
+
     afterEach(cleanup);
 
     it('changes topic partitions value to 4 when environment params have "defaultPartitions"', async () => {
@@ -828,7 +885,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("AdvancedConfiguration", () => {
-    beforeAll(() => {
+    beforeAll(async () => {
       mockGetTopicAdvancedConfigOptions.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([
         createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -838,7 +895,12 @@ describe("<TopicRequest />", () => {
         queryClient: true,
         aquariumContext: true,
       });
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("async-select-loading-environments")
+      );
     });
+
     afterAll(cleanup);
 
     it("renders a sub heading", () => {

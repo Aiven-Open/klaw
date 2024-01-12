@@ -64,6 +64,7 @@ describe("ActivityLog", () => {
   beforeEach(() => {
     mockIntersectionObserver();
     mockGetActivityLog.mockResolvedValue(mockGetActivityLogResponse);
+    mockGetAllEnvironments.mockResolvedValue([]);
   });
 
   afterEach(() => {
