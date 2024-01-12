@@ -5,18 +5,19 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
 
-  @Value("${klaw.version}")
-  private String kwVersion;
+  @Autowired BuildProperties buildProperties;
 
   @Bean
   public OpenAPI klawOpenAPI() {
+
     return new OpenAPI()
         .info(
             new Info()
@@ -25,7 +26,7 @@ public class OpenApiConfig {
                 .description(
                     "This specification is still a work in progress and is not yet implemented in any API."
                         + " The purpose of this specification is to facilitate developers discussions.")
-                .version(kwVersion)
+                .version(buildProperties.getVersion())
                 .license(
                     new License()
                         .name("Apache 2.0")
