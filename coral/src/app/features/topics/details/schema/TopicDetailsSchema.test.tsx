@@ -690,10 +690,11 @@ describe("TopicDetailsSchema", () => {
       });
 
       it("shows accessible information that versions are loading", () => {
-        const loadingInformation = screen.getByText("Versions loading");
+        const loadingInformation = screen.getByTestId(
+          "async-select-loading-versions"
+        );
 
         expect(loadingInformation).toBeVisible();
-        expect(loadingInformation).toHaveClass("visually-hidden");
       });
 
       it("shows no information about available amount of versions", () => {

@@ -21,7 +21,7 @@ function TeamFilter({ useTeamName }: TeamFilterProps) {
 
   return (
     <AsyncNativeSelectWrapper
-      entity={"Teams"}
+      entity={"teams"}
       isLoading={isLoading}
       isError={isError}
       error={error}

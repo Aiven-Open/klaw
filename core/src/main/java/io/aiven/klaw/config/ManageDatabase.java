@@ -43,6 +43,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -123,9 +124,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.superadmin.default.password}")
   private String superAdminDefaultPwd;
 
-  @Value("${klaw.version}")
-  private String kwVersion;
-
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
@@ -135,6 +133,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.superadmin.default.username}")
   private String superAdminDefaultUserName;
 
+  @Autowired BuildProperties buildProperties;
   private ApplicationContext contextApp;
 
   @Override
@@ -250,13 +249,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     String productName = "Klaw";
     Optional<ProductDetails> productDetails = handleDbRequests.getProductDetails(productName);
     if (productDetails.isPresent()) {
-      if (!Objects.equals(productDetails.get().getVersion(), kwVersion)) {
+      if (!Objects.equals(productDetails.get().getVersion(), buildProperties.getVersion())) {
         handleDbRequests.insertProductDetails(
-            defaultDataService.getProductDetails(productName, kwVersion));
+            defaultDataService.getProductDetails(productName, buildProperties.getVersion()));
       }
     } else {
       handleDbRequests.insertProductDetails(
-          defaultDataService.getProductDetails(productName, kwVersion));
+          defaultDataService.getProductDetails(productName, buildProperties.getVersion()));
     }
   }
 
