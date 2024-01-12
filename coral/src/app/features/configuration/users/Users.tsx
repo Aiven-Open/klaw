@@ -61,7 +61,7 @@ function UsersWithoutFilterContext() {
   return (
     <TableLayout
       filters={[
-        <TeamFilter useTeamName key={"team"} />,
+        <TeamFilter key={"team"} />,
         <SearchFilter
           key="search"
           label="Search username"

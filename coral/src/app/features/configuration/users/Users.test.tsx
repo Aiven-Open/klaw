@@ -361,8 +361,8 @@ describe("Users.tsx", () => {
       // one option for "All teams"
       expect(options).toHaveLength(mockedTeams.length + 1);
       expect(options[0]).toHaveValue("ALL");
-      expect(options[1]).toHaveValue(mockedTeams[0].teamname);
-      expect(options[2]).toHaveValue(mockedTeams[1].teamname);
+      expect(options[1]).toHaveValue(mockedTeams[0].teamId.toString());
+      expect(options[2]).toHaveValue(mockedTeams[1].teamId.toString());
     });
 
     it("fetches new data when user filters by a team", async () => {
@@ -377,10 +377,10 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, option);
 
       //first call on load
-      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         searchUserParam: undefined,
-        teamId: undefined,
+        teamId: mockedTeams[0].teamId,
       });
     });
 
@@ -396,10 +396,10 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, optionOne);
 
       //first call on load
-      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         searchUserParam: undefined,
-        teamId: undefined,
+        teamId: mockedTeams[0].teamId,
       });
 
       const optionTwo = within(select).getByRole("option", {
@@ -409,10 +409,8 @@ describe("Users.tsx", () => {
       await user.selectOptions(select, optionTwo);
 
       //first call on load, second for the first filter
-      expect(mockGetUsers).toHaveBeenNthCalledWith(1, {
+      expect(mockGetUsers).toHaveBeenNthCalledWith(3, {
         pageNo: "1",
-        searchUserParam: undefined,
-        teamId: undefined,
       });
     });
   });
