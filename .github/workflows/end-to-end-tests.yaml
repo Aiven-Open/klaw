@@ -2,7 +2,8 @@
 # It will build and deploy Klaw and run E2E tests against it.
 name: E2E tests
 on:
-  workflow_dispatch:
+  - workflow_dispatch
+  - workflow_call
 
 jobs:
   end-to-end-tests:
