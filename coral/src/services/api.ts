@@ -595,6 +595,24 @@ const patch = <TBody extends SomeObject | URLSearchParams>(
 const delete_ = (pathname: keyof ApiPaths) =>
   withoutPayloadAndWithVerb(HTTPMethod.DELETE, pathname);
 
+const login = (payload: { username: string; password: string }) => {
+  const formattedPayload = new URLSearchParams(
+    Object.entries(payload)
+  ).toString();
+
+  return fetch("/login", {
+    body: formattedPayload,
+    method: "POST",
+    headers: new Headers({
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "*/*",
+      "Accept-Language": "en-GB",
+      "Accept-Encoding": "gzip, deflate",
+      Connection: "Keep-alive",
+    }),
+  });
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   get,
@@ -602,6 +620,7 @@ export default {
   put,
   patch,
   delete: delete_,
+  login,
 };
 
 export type { HTTPError, KlawApiResponse, KlawApiError };

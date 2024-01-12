@@ -28,6 +28,7 @@ public class ConfigUtils {
                 "/register**",
                 "/authenticate",
                 "/login**",
+                "/coral-login",
                 "/terms**",
                 "/registrationReview**",
                 "/forgotPassword",

@@ -28,6 +28,7 @@ enum Routes {
   USER_PROFILE = "/user/profile",
   USER_CHANGE_PASSWORD = "/user/change-password",
   USER_TENANT_INFO = "/user/tenant-info",
+  LOGIN = "/coral-login",
 }
 
 enum EnvironmentsTabEnum {

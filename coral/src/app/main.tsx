@@ -14,7 +14,7 @@ import { isUnauthorizedError } from "src/services/api";
 import "/src/app/accessibility.module.css";
 import "/src/app/main.module.css";
 import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
-import { AuthProvider } from "src/app/context-provider/AuthProvider";
+// import { AuthProvider } from "src/app/context-provider/AuthProvider";
 import { BasePage } from "src/app/layout/page/BasePage";
 // https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
 import "/src/services/configure-monaco-editor";
@@ -29,7 +29,7 @@ const queryClient = new QueryClient({
     onError: (error) => {
       const isUnauthorized = isUnauthorizedError(error);
       if (isUnauthorized) {
-        window.location.assign("/login");
+        window.location.assign("/coral-login");
         root.render(
           <BasePage
             headerContent={<></>}
@@ -55,12 +55,12 @@ const queryClient = new QueryClient({
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AquariumContext>
-          <RouterProvider router={router} />
-          {DEV_MODE && <ReactQueryDevtools />}
-        </AquariumContext>
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      <AquariumContext>
+        <RouterProvider router={router} />
+        {DEV_MODE && <ReactQueryDevtools />}
+      </AquariumContext>
+      {/* </AuthProvider> */}
     </QueryClientProvider>
   </React.StrictMode>
 );

@@ -63,7 +63,7 @@ function ProfileDropdown() {
           });
           console.error(error);
         } else {
-          window.location.assign(`${window.origin}/login`);
+          window.location.assign(`${window.origin}/coral-login`);
         }
       });
       return;

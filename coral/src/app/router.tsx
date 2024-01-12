@@ -5,6 +5,7 @@ import { ConnectorOverview } from "src/app/features/connectors/details/overview/
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
+import Login from "src/app/pages/Login";
 import ActivityLogPage from "src/app/pages/activity-log";
 import ApprovalsPage from "src/app/pages/approvals";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
@@ -65,6 +66,10 @@ import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-u
 import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
+  {
+    path: Routes.LOGIN,
+    element: <Login />,
+  },
   {
     path: "/",
     element: <Layout />,

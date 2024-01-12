@@ -90,9 +90,9 @@ public class SecurityConfigNoSSO {
                     .failureHandler(kwAuthenticationFailureHandler)
                     .failureForwardUrl("/login?error")
                     .failureUrl("/login?error")
-                    .loginPage("/login")
+                    .loginPage("/coral/coral-login")
                     .permitAll())
-        .logout(logout -> logout.logoutSuccessUrl("/login"));
+        .logout(logout -> logout.logoutSuccessUrl("/coral/coral-login"));
 
     return http.build();
   }
