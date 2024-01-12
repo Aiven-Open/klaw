@@ -311,7 +311,7 @@ public class DefaultDataService {
             KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY,
             tenantId,
             "false",
-            "Optional permission "
+            "Enforce extra permission  "
                 + APPROVE_TOPICS_CREATE
                 + " to allow users to create new topics");
     kwPropertiesList.add(kwProperties38);
