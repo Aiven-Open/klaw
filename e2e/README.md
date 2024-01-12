@@ -2,6 +2,8 @@
 
 This is a work in progress, so a documentation will follow!
 
+Most importantly, we need to make sure that the tests run on a Klaw instance with a clean and reproducible database which they don't at the moment.
+
 ## Current state
 
 - to run tests on a local machine, use `pnpm test-local`
