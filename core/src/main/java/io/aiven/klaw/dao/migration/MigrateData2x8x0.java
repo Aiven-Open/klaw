@@ -30,7 +30,8 @@ public class MigrateData2x8x0 {
   @MigrationRunner()
   public boolean migrate() {
     log.info(
-        "Start to migrate 2.8.0 data. Add new server property klaw.extra.permission.topic.promote.");
+        "Start to migrate 2.8.0 data. Add new server property "
+            + KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY);
 
     List<UserInfo> allUserInfo = selectDataJdbc.selectAllUsersAllTenants();
     Set<Integer> tenantIds =
@@ -49,7 +50,7 @@ public class MigrateData2x8x0 {
                 KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY,
                 tenantId,
                 "false",
-                "Need of an extra permission " + APPROVE_TOPICS_CREATE + " to create new topics");
+                "Enforce extra permission " + APPROVE_TOPICS_CREATE + " to create new topics");
         kwPropertiesList.add(kwProperties38);
 
         insertDataJdbc.insertDefaultKwProperties(List.of(kwProperties38));
