@@ -5,7 +5,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
-import static io.aiven.klaw.model.enums.MailType.RESET_CONSUMER_OFFSET_DENIED;
+import static io.aiven.klaw.service.MailUtils.MailType.RESET_CONSUMER_OFFSET_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -21,7 +21,6 @@ import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
 import io.aiven.klaw.model.cluster.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -131,7 +130,7 @@ public class OperationalRequestsService {
         operationalRequest.getApprover(),
         operationalRequest.getRequestingTeamId(),
         dbHandle,
-        MailType.RESET_CONSUMER_OFFSET_REQUESTED,
+        MailUtils.MailType.RESET_CONSUMER_OFFSET_REQUESTED,
         commonUtilsService.getLoginUrl());
 
     return ApiResultStatus.SUCCESS.value.equals(result)
@@ -465,7 +464,7 @@ public class OperationalRequestsService {
             operationalRequest.getApprover(),
             operationalRequest.getRequestingTeamId(),
             dbHandle,
-            MailType.RESET_CONSUMER_OFFSET_APPROVED,
+            MailUtils.MailType.RESET_CONSUMER_OFFSET_APPROVED,
             commonUtilsService.getLoginUrl());
       }
     }

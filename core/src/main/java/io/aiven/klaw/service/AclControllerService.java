@@ -10,7 +10,12 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
-import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_DELETE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_APPROVAL_ADDED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_APPROVED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_DENIED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_FAILURE;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +39,7 @@ import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
+import io.aiven.klaw.service.MailUtils.MailType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -206,7 +212,8 @@ public class AclControllerService {
   }
 
   private ApiResponse executeAclRequestModel(
-      String userDetails, AclRequests aclRequestsDao, MailType mailType) throws KlawException {
+      String userDetails, AclRequests aclRequestsDao, MailUtils.MailType mailType)
+      throws KlawException {
     try {
       String execRes =
           manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
@@ -662,7 +669,7 @@ public class AclControllerService {
     updateAclReqStatus =
         handleAclRequestClusterApiResponse(userDetails, dbHandle, aclReq, response, tenantId);
 
-    MailType notifyUserType = ACL_REQUEST_APPROVED;
+    MailUtils.MailType notifyUserType = ACL_REQUEST_APPROVED;
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
       notifyUserType = ACL_REQUEST_FAILURE;
     } else {

@@ -12,7 +12,10 @@ import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_109;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_110;
 import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_111;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
-import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.service.MailUtils.MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS;
+import static io.aiven.klaw.service.MailUtils.MailType.SCHEMA_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.SCHEMA_REQUEST_APPROVED;
+import static io.aiven.klaw.service.MailUtils.MailType.SCHEMA_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
