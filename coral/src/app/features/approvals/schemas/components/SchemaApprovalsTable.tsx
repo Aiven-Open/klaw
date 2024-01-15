@@ -108,7 +108,6 @@ function SchemaApprovalsTable({
     },
     {
       type: "custom",
-      field: "forceRegister",
       headerName: "Additional notes",
       UNSAFE_render: ({ forceRegister }: { forceRegister: boolean }) => {
         if (forceRegister) {
