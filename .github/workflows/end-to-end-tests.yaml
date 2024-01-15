@@ -1,8 +1,11 @@
 # The workflow can be triggered manually.
 # It will build and deploy Klaw and run E2E tests against it.
+# The E2E test is very basic and only makes sure that the app
+# including Coral is built successfully.
 name: E2E tests
 on:
-  workflow_dispatch:
+  - workflow_dispatch
+  - workflow_call
 
 jobs:
   end-to-end-tests:
