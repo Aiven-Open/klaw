@@ -361,10 +361,10 @@ public class InsertDataJdbc {
   }
 
   public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
-    List<KwEntitySequence> kwEntitySequenceList =
-        kwEntitySequenceRepo.findAllByEntityNameAndTenantId(entityName, tenantId);
-    if (!kwEntitySequenceList.isEmpty()) {
-      Integer lastId = kwEntitySequenceList.get(0).getSeqId();
+    Optional<KwEntitySequence> kwEntitySequence =
+        kwEntitySequenceRepo.findFirstByEntityNameAndTenantId(entityName, tenantId);
+    if (kwEntitySequence.isPresent()) {
+      Integer lastId = kwEntitySequence.get().getSeqId();
       insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
       return lastId;
     } else {
