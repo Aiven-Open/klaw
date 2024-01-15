@@ -424,23 +424,13 @@ public class SelectDataJdbc {
 
   public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
     DashboardStats dashboardStats = new DashboardStats();
-    int countProducers = 0, countConsumers = 0;
-    List<Acl> acls =
-        aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
-    List<String> topicList = new ArrayList<>();
-    if (acls != null) {
-      acls.forEach(a -> topicList.add(a.getTopicname()));
-      countProducers = (int) topicList.stream().distinct().count();
-    }
-    dashboardStats.setProducerCount(countProducers);
+    dashboardStats.setProducerCount(
+        aclRepo.countDistinctTopicNameByAclTypeAndTeamIdAndTenantId(
+            AclType.PRODUCER.value, teamId, tenantId));
 
-    acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
-    List<String> topicListCons = new ArrayList<>();
-    if (acls != null) {
-      acls.forEach(a -> topicListCons.add(a.getTopicname()));
-      countConsumers = (int) topicListCons.stream().distinct().count();
-    }
-    dashboardStats.setConsumerCount(countConsumers);
+    dashboardStats.setConsumerCount(
+        aclRepo.countDistinctTopicNameByAclTypeAndTeamIdAndTenantId(
+            AclType.CONSUMER.value, teamId, tenantId));
 
     dashboardStats.setTeamMembersCount(userInfoRepo.countByTeamIdAndTenantId(teamId, tenantId));
 
