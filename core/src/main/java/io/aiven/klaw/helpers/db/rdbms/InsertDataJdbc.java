@@ -375,12 +375,12 @@ public class InsertDataJdbc {
 
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {
     log.debug("insertIntoRegisterUsers {}", userInfo.getUsername());
-    Optional<RegisterUserInfo> userExists = registerInfoRepo.findById(userInfo.getUsername());
 
     Optional<UserInfo> userNameExists = userInfoRepo.findById(userInfo.getUsername());
     if (userNameExists.isPresent()) return "Failure. User already exists";
 
     // STAGING status comes from AD users
+    Optional<RegisterUserInfo> userExists = registerInfoRepo.findById(userInfo.getUsername());
     if (userExists.isPresent()) {
       if ("APPROVED".equals(userExists.get().getStatus())) {
         // do nothing -- user is deleted

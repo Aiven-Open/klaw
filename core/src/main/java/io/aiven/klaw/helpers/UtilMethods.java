@@ -22,8 +22,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 @Slf4j
 public class UtilMethods {
   public static String getUserName(Object principal, String preferredUsername) {
-    if (principal instanceof DefaultOAuth2User) {
-      DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
+    if (principal instanceof DefaultOAuth2User defaultOAuth2User) {
       return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
     } else if (principal instanceof String) {
       return (String) principal;
