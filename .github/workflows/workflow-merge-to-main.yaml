@@ -48,6 +48,8 @@ jobs:
     if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
     name: Run Playwright e2e test before enabling merge to main
     needs: checkout-code
+    permissions:
+      actions: write
     uses: ./.github/workflows/end-to-end-tests.yaml
 
   merge-to-main:
