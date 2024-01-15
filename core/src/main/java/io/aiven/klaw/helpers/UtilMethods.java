@@ -92,11 +92,11 @@ public class UtilMethods {
   public static void updateLatestStatus(
       ClusterStatus clusterStatus, ManageDatabase manageDatabase, int tenantId, int envId) {
 
-    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
     Optional<Env> opt = manageDatabase.getEnv(tenantId, envId);
 
     if (opt.isPresent()) {
       Env e = opt.get();
+      final LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
       e.setEnvStatus(clusterStatus);
       e.setEnvStatusTime(statusTime);
       e.setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
