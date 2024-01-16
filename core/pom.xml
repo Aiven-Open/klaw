@@ -246,6 +246,10 @@
                                     <includes>index.html</includes>
                                 </fileset>
                                 <fileset>
+                                    <directory>${basedir}/src/main/resources/static/coral</directory>
+                                    <includes>index.html</includes>
+                                </fileset>
+                                <fileset>
                                     <directory>${basedir}/src/main/resources/static/assets/coral</directory>
                                     <includes>
                                         <include>**/*</include>
@@ -294,6 +298,47 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/target/classes/templates/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-coral-index-to-second-resource</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/static/coral</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../coral/dist/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-coral-index-to-second-target</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/static/coral</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../coral/dist/</directory>

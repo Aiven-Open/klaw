@@ -49,6 +49,7 @@ public class ConfigUtils {
 
     if (coralEnabled) {
       staticResourcesHtmlArray.add("/assets/coral/**");
+      staticResourcesHtmlArray.add("/coral/**");
     }
 
     AntPathRequestMatcher[] antPathRequestMatchersArray =

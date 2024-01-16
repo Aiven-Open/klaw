@@ -3,7 +3,7 @@ package io.aiven.klaw.constants;
 public class UriConstants {
   /* Page constants */
   // Default pages
-  public static final String DEFAULT_PAGE = "login.html";
+  public static final String DEFAULT_PAGE = "/coral/index.html";
   public static final String DEFAULT_PAGE_SAAS = "loginSaas.html";
   // Other pages
   public static final String INDEX_PAGE = "index.html";
