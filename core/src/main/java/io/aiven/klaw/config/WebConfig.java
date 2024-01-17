@@ -14,7 +14,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   public void addViewControllers(ViewControllerRegistry registry) {
-    registry.addViewController("/notFound").setViewName("forward:/coral/index.html");
+    registry.addViewController("/notFound").setViewName("forward:/index.html");
+    registry.addViewController("/login").setViewName("forward:/coral/index.html");
+    registry.addViewController("/coral/coral-login").setViewName("forward:/coral/index.html");
+    registry.addViewController("/coral-login").setViewName("forward:/coral/index.html");
   }
 
   @Bean
@@ -27,6 +30,21 @@ public class WebConfig implements WebMvcConfigurer {
     registry
         .addResourceHandler("/static/assets/images/**")
         .addResourceLocations("classpath:/static/assets/images/")
+        .setCachePeriod(604800); // 1 week in seconds;
+
+    registry
+        .addResourceHandler("/static/coral/**")
+        .addResourceLocations("classpath:/static/coral/", "classpath:/static/coral/assets/")
+        .setCachePeriod(604800); // 1 week in seconds
+
+    registry
+        .addResourceHandler("/static/coral/index.html")
+        .addResourceLocations("classpath:/static/coral/index.html")
+        .setCachePeriod(604800); // 1 week in seconds
+
+    registry
+        .addResourceHandler("/static/coral/assets")
+        .addResourceLocations("classpath:/static/coral/assets/")
         .setCachePeriod(604800); // 1 week in seconds
   }
 }

@@ -88,11 +88,11 @@ public class SecurityConfigNoSSO {
                 formLogin
                     .successHandler(kwAuthenticationSuccessHandler)
                     .failureHandler(kwAuthenticationFailureHandler)
-                    .failureForwardUrl("/login?error")
-                    .failureUrl("/login?error")
-                    .loginPage(coralEnabled ? "/coral/index.html" : "/login")
+                    .failureForwardUrl(coralEnabled ? "/coral/coral-login?error" : "/login?error")
+                    .failureUrl(coralEnabled ? "/coral/coral-login?error" : "/login?error")
+                    .loginPage(coralEnabled ? "/coral/coral-login" : "/login")
                     .permitAll())
-        .logout(logout -> logout.logoutSuccessUrl("/coral/coral-login"));
+        .logout(logout -> logout.logoutSuccessUrl(coralEnabled ? "/coral/coral-login" : "/login"));
 
     return http.build();
   }

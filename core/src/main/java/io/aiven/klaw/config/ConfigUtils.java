@@ -27,8 +27,8 @@ public class ConfigUtils {
                 "/home/**",
                 "/register**",
                 "/authenticate",
-                "/login**",
-                "/coral-login",
+                "/coral-login**",
+                "/coral/coral-login**",
                 "/terms**",
                 "/registrationReview**",
                 "/forgotPassword",
@@ -50,6 +50,8 @@ public class ConfigUtils {
     if (coralEnabled) {
       staticResourcesHtmlArray.add("/assets/coral/**");
       staticResourcesHtmlArray.add("/coral/**");
+    } else {
+      staticResourcesHtmlArray.add("/login**");
     }
 
     AntPathRequestMatcher[] antPathRequestMatchersArray =
