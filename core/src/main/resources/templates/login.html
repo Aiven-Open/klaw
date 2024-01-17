@@ -61,26 +61,52 @@
   </script>
 
   <body class="fix-header card-no-border logo-center">
-    <!-- ============================================================== -->
-    <!-- Preloader - style you can find in spinners.css -->
-    <!-- ============================================================== -->
-    <div class="preloader">
-      <svg class="circular" viewBox="25 25 50 50">
-        <circle
-          class="path"
-          cx="50"
-          cy="50"
-          r="20"
-          fill="none"
-          stroke-width="2"
-          stroke-miterlimit="10"
-        />
-      </svg>
-    </div>
-    <!-- ============================================================== -->
-    <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
     <div id="main-wrapper" style="overflow-y: auto">
+      <div
+        style="
+          padding-right: 24px;
+          padding-left: 24px;
+          background-color: #0788d1;
+          height: 64px;
+        "
+      >
+        <header
+          style="
+            display: flex;
+            place-content: center space-between;
+            align-items: center;
+            height: 100%;
+            background-color: #0788d1;
+          "
+        >
+          <img
+            aria-hidden="true"
+            alt=""
+            src="/assets/coral/klaw_logo-8b4dc757.png"
+            height="47"
+            width="150"
+          />
+        </header>
+      </div>
+      <!-- ============================================================== -->
+      <!-- Preloader - style you can find in spinners.css -->
+      <!-- ============================================================== -->
+      <div class="preloader">
+        <svg class="circular" viewBox="25 25 50 50">
+          <circle
+            class="path"
+            cx="50"
+            cy="50"
+            r="20"
+            fill="none"
+            stroke-width="2"
+            stroke-miterlimit="10"
+          />
+        </svg>
+      </div>
+      <!-- ============================================================== -->
+      <!-- Main wrapper - style you can find in pages.scss -->
+      <!-- ============================================================== -->
       <div
         class="login-register login-sidebar"
         style="
@@ -90,9 +116,18 @@
           justify-content: center;
           align-content: center;
           flex-wrap: wrap;
+          background-color: #f7f7fa;
         "
       >
-        <div class="login-box card">
+        <div
+          class="login-box"
+          style="
+            border-radius: 12px;
+            border: 1px solid var(--Grey-5, #ededf0);
+            background: #fff;
+            margin-bottom: 5rem;
+          "
+        >
           <div class="card-body">
             <form
               class="form-horizontal form-material"
@@ -102,16 +137,19 @@
               method="post"
             >
               <input type="hidden" name="urlbar" />
-              <table width="100%">
-                <tr>
-                  <td width="50%" align="left">
-                    <h3 class="p-2 rounded-title mb-3">Sign In</h3>
-                  </td>
-                  <td align="right">
-                    <img width="90%" src="assets/images/klaw_logo_dark.png" />
-                  </td>
-                </tr>
-              </table>
+
+              <h1
+                style="
+                  color: #000;
+                  font-size: 24px;
+                  font-style: normal;
+                  font-weight: 700;
+                  line-height: 36px;
+                  margin-bottom: 1rem;
+                "
+              >
+                Log in
+              </h1>
 
               <div class="form-group">
                 <div class="col-xs-12">
@@ -120,7 +158,8 @@
                     type="text"
                     required=""
                     name="username"
-                    placeholder="Username"
+                    label="Username"
+                    placeholder="Enter username"
                   />
                 </div>
               </div>
@@ -131,7 +170,8 @@
                     type="password"
                     required=""
                     name="password"
-                    placeholder="Password"
+                    label="Password"
+                    placeholder="Enter password"
                   />
                 </div>
               </div>
@@ -147,44 +187,42 @@
               <div class="form-group text-center mt-3">
                 <div class="col-xs-12">
                   <button
-                    class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light"
+                    class="btn btn-info btn-lg btn-block waves-effect waves-light"
                     id="grad1"
                     onClick="callLogin()"
                     type="submit"
                   >
-                    Log In
+                    Continue
                   </button>
                 </div>
               </div>
             </form>
-            <div th:if="${param.error}">Invalid username and/or password.</div>
-
-            <div th:if="${param.logout}">You have been logged out.</div>
-            <div class="row">
-              <div class="col-md-6 text-center">
-                <div class="form-group">
-                  <a href="forgotPassword" class="p-2"
-                    ><b>Forgot Password</b></a
-                  >
-                </div>
-              </div>
-              <div class="col-md-6 text-center">
-                <div class="form-group">
-                  <a
-                    href="register"
-                    class="p-2 border-left"
-                    style="color: black"
-                    ><b>Sign Up</b></a
-                  >
-                </div>
-              </div>
+            <div
+              class="text-center"
+              th:if="${param.error}"
+              style="margin-bottom: 12px; color: #e62728"
+            >
+              Invalid username and/or password.
+            </div>
+            <div
+              class="text-center"
+              th:if="${param.logout}"
+              style="margin-bottom: 12px; color: #e62728"
+            >
+              You have been logged out.
+            </div>
+            <div class="text-center" style="margin-bottom: 12px" ;>
+              <a href="forgotPassword" class="p-2"
+                ><b>Forgot your password?</b></a
+              >
+            </div>
+            <div class="text-center">
+              New to Klaw ?
+              <a href="register"><b>Sign up</b></a>
             </div>
           </div>
         </div>
       </div>
-      <footer class="footer" style="border: 0px; color: white">
-        <a href="https://klaw-project.io">klaw-project.io</a>
-      </footer>
       <!-- End Page wrapper  -->
       <!-- ============================================================== -->
     </div>
