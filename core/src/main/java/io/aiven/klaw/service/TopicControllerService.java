@@ -19,7 +19,13 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
-import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_CLAIM_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_CREATE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_DELETE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_PROMOTION_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_REQUEST_APPROVED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_REQUEST_DENIED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_UPDATE_REQUESTED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -173,7 +179,7 @@ public class TopicControllerService {
         : ApiResponse.notOk(result);
   }
 
-  private static MailType getMailType(TopicRequestModel topicRequestReq) {
+  private static MailUtils.MailType getMailType(TopicRequestModel topicRequestReq) {
     // default to Topic_CREATE which is the old hard coded
     return topicRequestReq.getRequestOperationType().equals(RequestOperationType.CREATE)
         ? TOPIC_CREATE_REQUESTED

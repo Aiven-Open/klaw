@@ -7445,10 +7445,10 @@
               "type" : "string"
             }
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -7679,10 +7679,10 @@
           "schemaversion" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -7844,10 +7844,10 @@
               "type" : "string"
             }
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -8323,13 +8323,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
@@ -8535,10 +8535,10 @@
           "validatedTopic" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -9034,10 +9034,10 @@
           "approvingTeamId" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -9592,10 +9592,10 @@
           "aclResourceType" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },

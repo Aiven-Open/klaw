@@ -13,7 +13,6 @@ import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.ApprovalType;
-import io.aiven.klaw.model.enums.MailType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -329,7 +328,7 @@ public class ApprovalServiceTest {
             createApproval(ALICE, 2, ApprovalType.TOPIC_TEAM_OWNER, null, null, null));
 
     approvalService.sendEmailToApprovers(
-        JOHN, "SimpleTopic", null, null, MailType.TOPIC_CREATE_REQUESTED, approvals, 101);
+        JOHN, "SimpleTopic", null, null, MailUtils.MailType.TOPIC_CREATE_REQUESTED, approvals, 101);
   }
 
   @Test
