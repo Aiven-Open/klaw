@@ -121,29 +121,20 @@ public class MailUtils {
       String ccOwnerTeamMailId,
       int tenantId,
       String loginUrl) {
-    String subject, formattedStr;
     if (mailType == MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS) {
-      subject = "New schema on a topic";
-      formattedStr =
-          "A schema has been uploaded on Topic :"
-              + topicName
-              + " Environment : "
-              + envName
-              + " by team : "
-              + teamName;
-      String finalSubject = subject;
-      String finalFormattedStr = formattedStr;
       CompletableFuture.runAsync(
-          () -> {
-            emailService.sendSimpleMessage(
-                toMailIds,
-                Collections.singletonList(ccOwnerTeamMailId),
-                Collections.emptyList(),
-                finalSubject,
-                finalFormattedStr,
-                tenantId,
-                loginUrl);
-          });
+          () ->
+              emailService.sendSimpleMessage(
+                  toMailIds,
+                  Collections.singletonList(ccOwnerTeamMailId),
+                  Collections.emptyList(),
+                  mailType.subject,
+                  mailType.apply(
+                      manageDatabase,
+                      tenantId,
+                      MailInfo.of(topicName, envName, null, teamName, null)),
+                  tenantId,
+                  loginUrl));
     }
   }
 
