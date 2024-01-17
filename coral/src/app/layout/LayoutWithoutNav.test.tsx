@@ -34,6 +34,7 @@ describe("LayoutWithoutNav.tsx", () => {
       customRender(<LayoutWithoutNav />, {
         browserRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -68,6 +69,7 @@ describe("LayoutWithoutNav.tsx", () => {
       customRender(<LayoutWithoutNav />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 

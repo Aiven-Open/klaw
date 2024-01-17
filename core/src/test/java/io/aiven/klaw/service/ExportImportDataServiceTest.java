@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,6 +32,10 @@ public class ExportImportDataServiceTest {
   @Mock private HandleDbRequestsJdbc handleDbRequests;
   private ExportImportDataService exportImportDataService;
 
+  @Mock BuildProperties buildProperties;
+
+  private static final String KLAW_VERSION = "2.7.0";
+
   @BeforeEach
   public void setUp() throws Exception {
     exportImportDataService = new ExportImportDataService();
@@ -38,6 +43,8 @@ public class ExportImportDataServiceTest {
     ReflectionTestUtils.setField(exportImportDataService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(exportImportDataService, "encryptorSecretKey", "testkey");
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+    ReflectionTestUtils.setField(exportImportDataService, "buildProperties", buildProperties);
+    when(buildProperties.getVersion()).thenReturn(KLAW_VERSION);
   }
 
   @Test

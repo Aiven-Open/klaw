@@ -44,12 +44,19 @@ jobs:
     needs: checkout-code
     uses: ./.github/workflows/jobs-maven.yaml
 
+  run-e2e-tests:
+    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+    name: Run Playwright e2e test before enabling merge to main
+    needs: checkout-code
+    permissions:
+      actions: write
+    uses: ./.github/workflows/end-to-end-tests.yaml
 
   merge-to-main:
     name: Status check for enabling merging to main
     if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
     runs-on: ubuntu-latest
-    needs: [ run-maven-jobs, run-coral-jobs ]
+    needs: [ run-maven-jobs, run-coral-jobs, run-e2e-tests ]
 
     steps:
       - name: Confirm check

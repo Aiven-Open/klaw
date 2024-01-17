@@ -14,7 +14,7 @@ async function getUserList(
 ): Promise<UserListApiResponse> {
   const queryParams = convertQueryValuesToString({
     ...params,
-    ...(params?.teamName && { teamName: params.teamName }),
+    ...(params?.teamId && { teamId: params.teamId }),
     ...(params?.searchUserParam && { searchUserParam: params.searchUserParam }),
   });
 

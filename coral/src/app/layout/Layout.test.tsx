@@ -34,6 +34,7 @@ describe("Layout.tsx", () => {
       customRender(<Layout />, {
         browserRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 
@@ -68,6 +69,7 @@ describe("Layout.tsx", () => {
       customRender(<Layout />, {
         memoryRouter: true,
         queryClient: true,
+        aquariumContext: true,
       });
     });
 

@@ -24,6 +24,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -69,8 +70,7 @@ public class ExportImportDataService {
   @Value("${klaw.import.kwrequestsdata.file.path:path}")
   private String klawImportKwRequestsDataFilePath;
 
-  @Value("${klaw.version}")
-  private String klawVersion;
+  @Autowired BuildProperties buildProperties;
 
   private static final ObjectMapper OBJECT_MAPPER =
       new ObjectMapper()
@@ -206,7 +206,7 @@ public class ExportImportDataService {
             .users(userList)
             .properties(handleDbRequests.getKwProperties())
             .productDetails(handleDbRequests.getProductDetails("Klaw").orElse(new ProductDetails()))
-            .klawVersion(klawVersion)
+            .klawVersion(buildProperties.getVersion())
             .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Admin Config --- ENDED");
@@ -231,7 +231,7 @@ public class ExportImportDataService {
             .subscriptions(handleDbRequests.getAllSubscriptions())
             .schemas(handleDbRequests.getAllSchemas())
             .kafkaConnectors(handleDbRequests.getAllConnectors())
-            .klawVersion(klawVersion)
+            .klawVersion(buildProperties.getVersion())
             .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Data --- STARTED");
@@ -248,7 +248,7 @@ public class ExportImportDataService {
             .subscriptionRequests(handleDbRequests.getAllAclRequests())
             .schemaRequests(handleDbRequests.getAllSchemaRequests())
             .connectorRequests(handleDbRequests.getAllConnectorRequests())
-            .klawVersion(klawVersion)
+            .klawVersion(buildProperties.getVersion())
             .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Requests Data --- ENDED");

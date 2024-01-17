@@ -60,16 +60,11 @@ function AsyncNativeSelectWrapper(props: AsyncNativeSelectWrapperProps) {
   // Type-guard to make sure we're only passing
   // <NativeSelect> as a child component
   useEffect(() => {
-    if (!isNativeSelectComponent(children)) {
+    if (isDevMode() && !isNativeSelectComponent(children)) {
       const errorMessage =
         "Invalid child component. `AsyncNativeSelectWrapper` only accepts `NativeSelect` or `ComplexNativeSelect` as" +
         " a child.";
-
-      if (isDevMode()) {
-        throw new Error(errorMessage);
-      } else {
-        console.error(errorMessage);
-      }
+      throw new Error(errorMessage);
     }
   }, [children]);
 
