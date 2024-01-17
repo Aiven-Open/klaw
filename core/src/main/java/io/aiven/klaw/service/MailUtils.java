@@ -332,7 +332,8 @@ public class MailUtils {
     formattedStr = String.format(newUserAdded, username, pwd);
     subject = "Access to Klaw";
 
-    sendMail(username, dbHandle, formattedStr, subject, false, false, null, tenantId, loginUrl);
+    sendMail(
+        username, dbHandle, formattedStr, subject, false, false, null, tenantId, loginUrl, false);
   }
 
   void sendMailResetPwd(
@@ -416,7 +417,8 @@ public class MailUtils {
         false,
         registerUserInfo.getMailid(),
         tenantId,
-        loginUrl);
+        loginUrl,
+        true);
   }
 
   void sendMailRegisteredUser(
@@ -459,7 +461,8 @@ public class MailUtils {
           false,
           registerUserInfo.getMailid(),
           tenantId,
-          loginUrl);
+          loginUrl,
+          true);
     } catch (Exception e) {
       log.error(registerUserInfo.toString(), e);
     }
@@ -505,7 +508,8 @@ public class MailUtils {
       boolean requiresApproval,
       String otherMailId,
       int tenantId,
-      String loginUrl) {
+      String loginUrl,
+      boolean copyTeam) {
 
     CompletableFuture.runAsync(
         () -> {
@@ -540,7 +544,9 @@ public class MailUtils {
               log.debug("emailId: {} Team: {}", emailId, emailIdTeam);
 
               CollectionUtils.addIgnoreNull(to, emailId);
-              CollectionUtils.addIgnoreNull(to, emailIdTeam);
+              if (copyTeam) {
+                CollectionUtils.addIgnoreNull(to, emailIdTeam);
+              }
               emailService.sendSimpleMessage(
                   to, cc, allApprovers, subject, formattedStr, tenantId, loginUrl);
             } else {
