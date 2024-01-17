@@ -661,7 +661,6 @@ public class MailUtils {
                 + m.approverUsername
                 + "because : "
                 + m.reasonToDecline),
-    REGISTER_USER_REQUEST("TODO", (Function<MailInfo, String>) null),
     TOPIC_UPDATE_REQUESTED(
         "Topic Update Request",
         (manageDatabase, tenantId, mailInfo) ->
@@ -682,7 +681,6 @@ public class MailUtils {
                 + m.acl
                 + " by team : "
                 + m.username),
-    NEW_USER_ADDED("TODO", (Function<MailInfo, String>) null),
     RESET_CONSUMER_OFFSET_REQUESTED(
         "Reset Consumer Offsets Request",
         m -> "Reset Consumer Offsets topic :" + m.topicName + "consumerGroup : " + m.acl,
