@@ -32,7 +32,7 @@ public class EmailService {
       "https://klaw-project.io/wp-content/uploads/2021/01/KW-logo-gold-sm.png";
 
   private static String headerString =
-      "<html><table style=\"height:40px;width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+      "<html><table style=\"height:40px;width:60%;background-color:#0788d1;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
           + "\t<tr>\n"
           + "\t\t\n"
           + "\t\t<td>\n"
@@ -43,20 +43,20 @@ public class EmailService {
           + "\t</tr>\n"
           + "</table><br>\n"
           + "\n"
-          + "<table style=\"width:60%;color:#016BA7;text-align:left;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "<table style=\"width:60%;color:#0788d1;text-align:left;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
           + "\t<tr>\n"
           + "\t\t<td>";
 
   private static final String footerString =
       "<br>\n"
-          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "<table style=\"height:40px; width:60%;background-color:#0788d1;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
           + "\t<tr>\n"
           + "\t\t<td>\n"
           + "\t\t\t© 2023 <a href=\"https://klaw-project.io\" style=\"color:white;\">www.klaw-project.io</a>\n"
           + "\t\t</td>\n"
           + "\t</tr>\n"
           + "</table>\n"
-          + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
+          + "<table style=\"height:40px; width:60%;background-color:#0788d1;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
           + "</table></html>";
   @Autowired private JavaMailSender emailSender;
 

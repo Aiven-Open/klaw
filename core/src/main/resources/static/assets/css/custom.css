@@ -1,18 +1,18 @@
 .loader {
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
 }
 
 #alertbarbulk {
   visibility: hidden;
   width: 100%;
   left: 0;
-  background-color: #F96B58;
+  background-color: #f96b58;
   color: #fff;
   text-align: center;
   position: fixed;
@@ -29,15 +29,15 @@
 
 #successbar {
   visibility: hidden;
-    width: 100%;
-    left: 0;
-    background-color: #016BA7;
-    color: #fff;
-    text-align: center;
-    position: fixed;
-    z-index: 1;
-    bottom: 30px;
-    font-size: 17px;
+  width: 100%;
+  left: 0;
+  background-color: #0788d1;
+  color: #fff;
+  text-align: center;
+  position: fixed;
+  z-index: 1;
+  bottom: 30px;
+  font-size: 17px;
 }
 
 #successbar.show {
@@ -50,7 +50,7 @@
   visibility: hidden;
   width: 100%;
   left: 0;
-  background-color: #F96B58;
+  background-color: #f96b58;
   color: #fff;
   text-align: center;
   position: fixed;
@@ -66,35 +66,62 @@
 }
 
 @-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
 }
 
 @keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }
 
 @keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
-
 
 .notificationbar {
   margin: 0 auto;
   width: 100%;
-  background-color: #ADD8E6;
+  background-color: #add8e6;
   color: black;
   text-align: center;
   position: fixed;
