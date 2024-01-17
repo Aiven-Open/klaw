@@ -24,7 +24,7 @@ test("user can login with default superadmin user", async ({ page }) => {
 
   await page.getByPlaceholder("Username").fill(superAdminUserName);
   await page.getByPlaceholder("Password").fill(superAdminPassword);
-  await page.getByRole("button", { name: "LOG IN" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
 
   const profileForSuperAdmin = await page.getByRole("button", {
     name: "superadmin",
@@ -41,7 +41,7 @@ test("coral is build", async ({ page }) => {
 
   await page.getByPlaceholder("Username").fill(superAdminUserName);
   await page.getByPlaceholder("Password").fill(superAdminPassword);
-  await page.getByRole("button", { name: "LOG IN" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
 
   const profileForSuperAdmin = await page.getByRole("button", {
     name: "superadmin",
