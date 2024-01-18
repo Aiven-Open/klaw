@@ -11,15 +11,22 @@ import {
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
 import { getTopics } from "src/domain/topic";
+import { TopicTypeFilter } from "src/app/features/components/filters/TopicTypeFilter";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function BrowseTopics() {
+  const topicTypeFilterEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_TOPIC_TYPE_FILTER
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { search, environment, teamId } = useFiltersContext();
+  const { search, environment, teamId, topicType } = useFiltersContext();
 
   const {
     data: topics,
@@ -27,13 +34,21 @@ function BrowseTopics() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["browseTopics", currentPage, search, environment, teamId],
+    queryKey: [
+      "browseTopics",
+      currentPage,
+      search,
+      environment,
+      teamId,
+      topicType,
+    ],
     queryFn: () =>
       getTopics({
         pageNo: currentPage.toString(),
         env: environment,
         teamId: teamId === "ALL" ? undefined : Number(teamId),
         topicnamesearch: search.length === 0 ? undefined : search,
+        topicType: topicType === "ALL" ? undefined : topicType,
       }),
     keepPreviousData: true,
     refetchOnWindowFocus: true,
@@ -60,6 +75,9 @@ function BrowseTopics() {
           key="environment"
           environmentsFor={"TOPIC_AND_ACL"}
         />,
+        ...(topicTypeFilterEnabled
+          ? [<TopicTypeFilter key={"topicType"} />]
+          : []),
         <SearchTopicFilter key={"search"} />,
       ]}
       table={
