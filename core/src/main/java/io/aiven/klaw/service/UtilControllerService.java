@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.APPROVER_SUBSCRIPTIONS;
 import static io.aiven.klaw.helpers.KwConstants.CORAL_INDEX_FILE_PATH;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
@@ -597,6 +598,20 @@ public class UtilControllerService implements InitializingBean {
           && !broadCastTextGlobal.equals("")
           && tenantId != KwConstants.DEFAULT_TENANT_ID) {
         broadCastText += " Announcement : " + broadCastTextGlobal;
+      }
+
+      String isOptionalExtraPermissionForTopicCreateEnabled =
+          manageDatabase.getKwPropertyValue(
+              KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY, tenantId);
+
+      authenticationInfo.setKlawOptionalPermissionNewTopicCreationEnabled(
+          isOptionalExtraPermissionForTopicCreateEnabled);
+
+      if (commonUtilsService.isNotAuthorizedUser(
+          getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
+        authenticationInfo.setKlawOptionalPermissionNewTopicCreation("false");
+      } else {
+        authenticationInfo.setKlawOptionalPermissionNewTopicCreation("true");
       }
 
       UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userName);
