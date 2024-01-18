@@ -600,7 +600,7 @@ const login = (payload: { username: string; password: string }) => {
     Object.entries(payload)
   ).toString();
 
-  return fetch("/login", {
+  return fetch("/coral/coral-login", {
     body: formattedPayload,
     method: "POST",
     headers: new Headers({
