@@ -32,6 +32,9 @@ public class TemplateMapController {
   @Value("${klaw.enable.sso:false}")
   private String ssoEnabled;
 
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
+
   @Autowired UiControllerLoginService uiControllerLoginService;
 
   private String checkAuth(
@@ -81,7 +84,7 @@ public class TemplateMapController {
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
       return checkAuth(
           UriConstants.LOGIN_SAAS_PAGE, request, response, abstractAuthenticationToken);
-    return UriConstants.LOGIN_PAGE;
+    return coralEnabled ? "/coral/coral-login" : UriConstants.LOGIN_PAGE;
   }
 
   @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
