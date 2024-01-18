@@ -785,7 +785,8 @@ public class TopicSyncControllerService {
     if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
         && teamId != 0) {
       producerConsumerTopics =
-          handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+          handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+              topicType, teamId, tenantId, env);
 
       // tenant filtering, not really necessary though, as based on team is searched.
       //      producerConsumerTopics =

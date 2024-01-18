@@ -809,9 +809,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<Topic> getAllTopicsByTopictypeAndTeamname(
-      String topicType, Integer teamId, int tenantId) {
-    return jdbcSelectHelper.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+  public List<Topic> getAllTopicsByTopictypeAndTeamnameAndEnv(
+      String topicType, Integer teamId, int tenantId, String env) {
+    return jdbcSelectHelper.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId, env);
   }
 
   @Override

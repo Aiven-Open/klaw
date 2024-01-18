@@ -945,7 +945,8 @@ public class TopicControllerServiceTest {
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM);
-    when(handleDbRequests.getAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
         .thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
@@ -977,7 +978,8 @@ public class TopicControllerServiceTest {
     List<Topic> syncTopics = getSyncTopics("topic", 4);
     syncTopics.get(0).setEnvironmentsSet(Set.of("1", "2"));
     syncTopics.get(0).setTopicname("testtopic");
-    when(handleDbRequests.getAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
         .thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));

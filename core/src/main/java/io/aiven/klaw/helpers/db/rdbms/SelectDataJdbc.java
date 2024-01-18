@@ -438,7 +438,7 @@ public class SelectDataJdbc {
   }
 
   public List<Topic> selectAllTopicsByTopictypeAndTeamname(
-      String isProducerConsumer, Integer teamId, int tenantId) {
+      String isProducerConsumer, Integer teamId, int tenantId, String env) {
     log.debug("selectAllByTopictypeAndTeamname {} {}", isProducerConsumer, teamId);
     List<Topic> topics = new ArrayList<>();
     String topicType, aclPatternType;
@@ -447,8 +447,16 @@ public class SelectDataJdbc {
     } else {
       topicType = AclType.CONSUMER.value;
     }
+    List<Acl> acls;
 
-    List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
+    if (Objects.isNull(env) || Objects.equals(env, "ALL")) {
+      acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
+    } else {
+      acls =
+          aclRepo.findAllByAclTypeAndTeamIdAndTenantIdAndEnvironment(
+              topicType, teamId, tenantId, env);
+    }
+
     Topic t;
     Map<String, Set<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
