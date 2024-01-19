@@ -1245,6 +1245,8 @@ public class TopicControllerService {
               && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
             topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
+            // we have matched the topic and env no need to continue the inner loop.
+            break;
           }
         }
       }

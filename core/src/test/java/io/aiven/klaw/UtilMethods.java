@@ -759,6 +759,21 @@ public class UtilMethods {
     envList.add(env);
     env.setClusterId(1);
     env.setTenantId(101);
+
+    Env env2 = new Env();
+    env2.setId("2");
+    env2.setName("TST");
+    env2.setClusterId(2);
+    env2.setTenantId(101);
+    envList.add(env2);
+
+    Env env3 = new Env();
+    env3.setId("3");
+    env3.setName("PRD");
+    env3.setClusterId(3);
+    env3.setTenantId(101);
+    envList.add(env3);
+
     return envList;
   }
 
