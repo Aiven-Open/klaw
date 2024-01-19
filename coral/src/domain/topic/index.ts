@@ -22,6 +22,7 @@ import {
   TopicRequestStatus,
   TopicSchemaOverview,
   TopicTeam,
+  TopicType,
 } from "src/domain/topic/topic-types";
 
 export {
@@ -48,4 +49,5 @@ export type {
   TopicRequestStatus,
   TopicSchemaOverview,
   TopicTeam,
+  TopicType,
 };

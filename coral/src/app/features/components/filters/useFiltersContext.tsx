@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AclType } from "src/domain/acl/acl-types";
 import { RequestOperationType, RequestStatus } from "src/domain/requests";
+import { TopicType } from "src/domain/topic";
 
 type SetFiltersParams =
   | { name: "environment"; value: string }
@@ -11,7 +12,8 @@ type SetFiltersParams =
   | { name: "showOnlyMyRequests"; value: boolean }
   | { name: "requestType"; value: RequestOperationType }
   | { name: "search"; value: string }
-  | { name: "teamName"; value: string };
+  | { name: "teamName"; value: string }
+  | { name: "topicType"; value: TopicType | "ALL" };
 
 interface UseFiltersDefaultValues {
   environment: string;
@@ -23,6 +25,7 @@ interface UseFiltersDefaultValues {
   search: string;
   paginated: boolean;
   teamName: string;
+  topicType: TopicType | "ALL";
 }
 
 interface UseFiltersReturnedValues
@@ -40,6 +43,7 @@ const emptyValues: UseFiltersDefaultValues = {
   requestType: "ALL",
   search: "",
   paginated: true,
+  topicType: "ALL",
 };
 
 const FiltersContext = createContext<UseFiltersReturnedValues>({
@@ -74,6 +78,8 @@ const FiltersProvider = ({
   const search = searchParams.get("search") ?? initialValues.search;
   const paginated = initialValues.paginated;
   const teamName = searchParams.get("teamName") ?? initialValues.teamName;
+  const topicType =
+    (searchParams.get("topicType") as TopicType) ?? initialValues.topicType;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     const parsedValue = typeof value === "boolean" ? String(value) : value;
@@ -99,6 +105,7 @@ const FiltersProvider = ({
     showOnlyMyRequests,
     requestType,
     search,
+    topicType,
     setFilterValue,
   };
 

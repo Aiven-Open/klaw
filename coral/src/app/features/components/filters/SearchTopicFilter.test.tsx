@@ -24,7 +24,7 @@ describe("SearchTopicFilter.tsx", () => {
       name: "Search Topic",
     });
 
-    expect(searchInput.placeholder).toEqual("my-topic-billings");
+    expect(searchInput.placeholder).toEqual("topic-billings");
   });
 
   it("shows a description", () => {
