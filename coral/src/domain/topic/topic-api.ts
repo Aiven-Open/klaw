@@ -18,6 +18,7 @@ import {
 } from "src/domain/topic/topic-transformer";
 import {
   DeleteTopicPayload,
+  GetTopicsQueryParameter,
   NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
@@ -37,7 +38,7 @@ import {
 } from "types/utils";
 
 const getTopics = async (
-  params: KlawApiRequestQueryParameters<"getTopics">
+  params: GetTopicsQueryParameter
 ): Promise<TopicApiResponse> => {
   const queryParams = convertQueryValuesToString({
     pageNo: params.pageNo,
@@ -46,6 +47,7 @@ const getTopics = async (
     ...(params.topicnamesearch && {
       topicnamesearch: params.topicnamesearch,
     }),
+    ...(params.topicType && { topicType: params.topicType }),
   });
 
   return api

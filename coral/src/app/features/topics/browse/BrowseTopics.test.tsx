@@ -10,14 +10,15 @@ import { mockedEnvironmentResponse } from "src/domain/environment/environment-te
 import { getTeams, Team } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
 import {
-  mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
+  mockedResponseTransformed,
 } from "src/domain/topic/topic-test-helper";
-
 import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import { setupFeatureFlagMock } from "src/services/feature-flags/test-helper";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 jest.mock("src/domain/team/team-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
@@ -32,6 +33,7 @@ const mockGetEnvironments =
 
 const filterByEnvironmentLabel = "Filter by Environment";
 const filterByTeamLabel = "Filter by team";
+const filterByTopicTypeLabel = "Filter by Topic type";
 
 const mockedGetTopicsResponseSinglePage: TopicApiResponse =
   mockedResponseTransformed;
@@ -82,6 +84,53 @@ describe("BrowseTopics.tsx", () => {
     topicnamesearch: undefined,
     teamId: undefined,
   };
+
+  describe("renders a select element for Topic types based on a feature flag", () => {
+    beforeEach(() => {
+      mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTopics.mockResolvedValue(mockedGetTopicsResponseSinglePage);
+    });
+
+    afterEach(cleanup);
+
+    it("does not show the select for Topic type when feature flag is not enabled", async () => {
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+
+      const select = screen.queryByRole("combobox", {
+        name: filterByTopicTypeLabel,
+      });
+
+      expect(select).not.toBeInTheDocument();
+    });
+
+    it("shows a select for Topic type when feature flag is enabled", async () => {
+      setupFeatureFlagMock(FeatureFlag.FEATURE_FLAG_TOPIC_TYPE_FILTER, true);
+
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+
+      const select = screen.getByRole("combobox", {
+        name: filterByTopicTypeLabel,
+      });
+
+      expect(select).toBeEnabled();
+    });
+  });
 
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
@@ -338,6 +387,71 @@ describe("BrowseTopics.tsx", () => {
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
         teamId: 2,
+      });
+    });
+  });
+
+  describe("handles user filtering topics by type when feature flag is active", () => {
+    beforeEach(async () => {
+      setupFeatureFlagMock(FeatureFlag.FEATURE_FLAG_TOPIC_TYPE_FILTER, true);
+      mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedResponseTransformed);
+
+      customRender(<BrowseTopics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a select element for Topic type with `All topics` preselected", () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTopicTypeLabel,
+      });
+
+      expect(select).toHaveValue("ALL");
+    });
+
+    it("changes active selected option when user selects 'Consumer Topics'", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTopicTypeLabel,
+      });
+
+      const option = await screen.findByRole("option", {
+        name: "Consumer",
+      });
+
+      expect(select).toHaveValue("ALL");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Consumer");
+      expect(select).toHaveValue("Consumer");
+    });
+
+    it("fetches new data when user selects 'Consumer Topics'", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTopicTypeLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "Consumer",
+      });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        topicType: "Consumer",
       });
     });
   });
