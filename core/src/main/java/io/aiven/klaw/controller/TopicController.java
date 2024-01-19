@@ -230,7 +230,8 @@ public class TopicController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamId", required = false) Integer teamId,
-      @RequestParam(value = "topicType", required = false) AclType topicType) throws KlawNotAuthorizedException {
+      @RequestParam(value = "topicType", required = false) AclType topicType)
+      throws KlawNotAuthorizedException {
 
     return new ResponseEntity<>(
         topicControllerService.getTopics(

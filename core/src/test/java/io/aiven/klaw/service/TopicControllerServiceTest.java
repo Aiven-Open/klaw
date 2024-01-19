@@ -904,7 +904,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(35)
-  public void getTopics() {
+  public void getTopics() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -930,7 +930,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(36)
-  public void getTopicsWithProducerFilterAndEnvNoResults() {
+  public void getTopicsWithProducerFilterAndEnvNoResults() throws KlawNotAuthorizedException {
     String envSel = "2", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -960,7 +960,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(37)
-  public void getTopicsWithPatternFilter() {
+  public void getTopicsWithPatternFilter() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "toppic";
 
     stubUserInfo();
@@ -996,7 +996,7 @@ public class TopicControllerServiceTest {
   // topicSearch does not exist in topic names
   @Test
   @Order(38)
-  public void getTopicsSearchFailureNotExistingSearch() {
+  public void getTopicsSearchFailureNotExistingSearch() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "demo";
     stubUserInfo();
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
@@ -1577,7 +1577,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(59)
-  public void getTopicsWithProducerFilterAndEnv() {
+  public void getTopicsWithProducerFilterAndEnv() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1";
 
     stubUserInfo();
@@ -1607,7 +1607,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(60)
-  public void getTopicsWithConsumerFilterNoResults() {
+  public void getTopicsWithConsumerFilterNoResults() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -1637,7 +1637,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(61)
-  public void getTopicsWithPatternFilterOneResult() {
+  public void getTopicsWithPatternFilterOneResult() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "2";
 
     stubUserInfo();
