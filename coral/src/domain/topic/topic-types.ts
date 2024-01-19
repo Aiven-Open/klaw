@@ -20,7 +20,9 @@ type NoContent = {
   status: boolean;
 };
 
-type TopicType = "Consumer" | "Producer";
+type TopicType = NonNullable<
+  KlawApiRequestQueryParameters<"getTopics">["topicType"]
+>;
 
 type GetTopicsQueryParameter = KlawApiRequestQueryParameters<"getTopics"> & {
   topicType?: TopicType;

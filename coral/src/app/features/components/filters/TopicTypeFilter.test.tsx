@@ -68,7 +68,7 @@ describe("TopicTypeFilter", () => {
   });
 
   describe("sets the active Topic type based on a query param", () => {
-    const producerTopic = "Producer";
+    const producerTopic = "PRODUCER";
     beforeEach(async () => {
       const routePath = `/?topicType=${producerTopic}`;
 
@@ -86,7 +86,7 @@ describe("TopicTypeFilter", () => {
         name: filterLabel,
       });
 
-      expect(select).toHaveValue("Producer");
+      expect(select).toHaveValue("PRODUCER");
       expect(select).toHaveDisplayValue("Producer");
     });
   });
@@ -119,7 +119,7 @@ describe("TopicTypeFilter", () => {
 
       await user.selectOptions(select, option);
 
-      expect(select).toHaveValue("Consumer");
+      expect(select).toHaveValue("CONSUMER");
       expect(select).toHaveDisplayValue("Consumer");
     });
 
@@ -134,10 +134,10 @@ describe("TopicTypeFilter", () => {
 
       await user.selectOptions(select, option);
 
-      expect(select).toHaveValue("Consumer");
+      expect(select).toHaveValue("CONSUMER");
 
       await waitFor(() => {
-        expect(window.location.search).toEqual(`?topicType=Consumer&page=1`);
+        expect(window.location.search).toEqual(`?topicType=CONSUMER&page=1`);
       });
     });
   });

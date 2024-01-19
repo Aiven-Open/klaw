@@ -6,8 +6,8 @@ import upperFirst from "lodash/upperFirst";
 type TopicTypeForFilter = TopicType | "ALL";
 const topicTypesForFilter: TopicTypeForFilter[] = [
   "ALL",
-  "Consumer",
-  "Producer",
+  "CONSUMER",
+  "PRODUCER",
 ];
 function TopicTypeFilter() {
   const { topicType, setFilterValue } = useFiltersContext();

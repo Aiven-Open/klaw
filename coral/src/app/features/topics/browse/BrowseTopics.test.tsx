@@ -436,7 +436,7 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.selectOptions(select, option);
 
       expect(select).toHaveDisplayValue("Consumer");
-      expect(select).toHaveValue("Consumer");
+      expect(select).toHaveValue("CONSUMER");
     });
 
     it("fetches new data when user selects 'Consumer Topics'", async () => {
@@ -451,7 +451,7 @@ describe("BrowseTopics.tsx", () => {
 
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
-        topicType: "Consumer",
+        topicType: "CONSUMER",
       });
     });
   });

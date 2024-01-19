@@ -248,7 +248,6 @@ public class TopicControllerTest {
                 .param("pageNo", "1")
                 .param("topicnamesearch", "testtopic")
                 .param("teamId", "1001")
-                .param("topicType", "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
