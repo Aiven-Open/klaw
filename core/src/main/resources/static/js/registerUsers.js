@@ -441,12 +441,6 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                 data: serviceInput
             }).success(function(output) {
                 if(output.success){
-                    swal({
-                         title: "",
-                         text: "Registration Request : "+output.message,
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/registrationReview";
                  }else {
                        $scope.registrationStarted = 'false';
@@ -515,13 +509,6 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                            return;
                        }
                     }
-
-                  if(!$scope.registerUser.agreeterms)
-                  {
-                      $scope.alertnote = "Please agree to the terms.";
-                      $scope.showAlertToast();
-                      return;
-                  }
 
                   $scope.registrationStarted = 'true';
 
