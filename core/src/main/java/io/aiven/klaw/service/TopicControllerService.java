@@ -1253,7 +1253,7 @@ public class TopicControllerService {
       topicsFromSOT = filterProducerConsumerList;
     } else {
       // no matching consumers or producers so return an empty list
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return topicsFromSOT;
   }
