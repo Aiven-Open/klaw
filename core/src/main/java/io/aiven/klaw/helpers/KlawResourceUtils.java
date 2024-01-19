@@ -20,7 +20,6 @@ public class KlawResourceUtils {
     for (Env env1 : allEnvs) {
       if (selectedEnvs.contains(env1.getId())) {
         newEnvSet.add(new EnvIdInfo(env1.getId(), env1.getName()));
-        break;
       }
     }
 
