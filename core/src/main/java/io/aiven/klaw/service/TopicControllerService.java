@@ -1080,9 +1080,10 @@ public class TopicControllerService {
       String currentPage,
       String topicNameSearch,
       Integer teamId,
-      String topicType) {
+      String topicType) throws KlawNotAuthorizedException {
     log.debug("getTopics {}", topicNameSearch);
     String userName = getUserName();
+    checkIsAuthorized(PermissionType.VIEW_TOPICS);
     List<TopicInfo> topicListUpdated =
         getTopicsPaginated(
             env,
