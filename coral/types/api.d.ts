@@ -3272,7 +3272,7 @@ export type operations = {
         currentPage?: string;
         topicnamesearch?: string;
         teamId?: number;
-        topicType?: string;
+        topicType?: "PRODUCER" | "CONSUMER";
       };
     };
     responses: {
