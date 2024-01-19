@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.enums.ClusterStatus;
@@ -101,5 +102,9 @@ public class UtilMethods {
       e.setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
       manageDatabase.addEnvToCache(tenantId, e, false);
     }
+  }
+
+  public static UserInfo getUserInfoFromAuthentication(ManageDatabase db, String username) {
+    return db.getHandleDbRequests().getUsersInfo(username);
   }
 }

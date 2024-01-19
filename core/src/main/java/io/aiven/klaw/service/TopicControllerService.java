@@ -1117,15 +1117,13 @@ public class TopicControllerService {
     HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
 
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
-    List<Topic> producerConsumerTopics = new ArrayList<>();
-    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
-        && teamId != 0) {
-      producerConsumerTopics =
-          handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+    List<Topic> producerConsumerTopics = null;
+    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))) {
+      UserInfo user = UtilMethods.getUserInfoFromAuthentication(manageDatabase, getUserName());
 
-      // select all topics and then filter
-      env = "ALL";
-      teamId = 1;
+      producerConsumerTopics =
+          handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+              topicType, user.getTeamId(), tenantId, env);
     }
 
     // Get Sync topics
@@ -1138,10 +1136,12 @@ public class TopicControllerService {
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
 
-    topicsFromSOT =
-        getProducerConsumerFilterTopics(
-            producerConsumerTopics, topicsFromSOT, filterProducerConsumerList);
-
+    // only filter if there is any if it is empty that means no matches.
+    if (producerConsumerTopics != null) {
+      topicsFromSOT =
+          getProducerConsumerFilterTopics(
+              producerConsumerTopics, topicsFromSOT, filterProducerConsumerList);
+    }
     List<Topic> topicFilteredList = topicsFromSOT;
     topicFilteredList =
         getTopicsFromTopicSearchFilters(topicNameSearch, topicsFromSOT, topicFilteredList);
@@ -1245,10 +1245,15 @@ public class TopicControllerService {
               && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
             topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
+            // we have matched the topic and env no need to continue the inner loop.
+            break;
           }
         }
       }
       topicsFromSOT = filterProducerConsumerList;
+    } else {
+      // no matching consumers or producers so return an empty list
+      return Collections.emptyList();
     }
     return topicsFromSOT;
   }
