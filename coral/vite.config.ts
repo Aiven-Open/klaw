@@ -144,6 +144,9 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_ACTIVITY_LOG: ["development", "remote-api"]
           .includes(mode)
           .toString(),
+        FEATURE_FLAG_TOPIC_TYPE_FILTER: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {
