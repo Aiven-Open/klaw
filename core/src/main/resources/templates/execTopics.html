@@ -536,6 +536,16 @@
 														<i class="fa fa-check"></i>
 													</button>
 
+													<button type="button"
+															ng-show="topicRequest.requestOperationType === 'CREATE' &&
+															dashboardDetails.klawOptionalPermissionNewTopicCreationEnabled === 'true' &&
+															dashboardDetails.klawOptionalPermissionNewTopicCreation === 'false'"
+															ng-click="execTopicRequestUp(topicRequest.topicid);"
+															class="btn btn-success btn-circle" disabled
+															title="You do not have permission to approve this request">
+														<i class="fa fa-check"></i>
+													</button>
+
 													<button type="button" ng-show="topicRequest.requestOperationType !== 'CREATE'"
 															ng-click="execTopicRequestUp(topicRequest.topicid);"
 															class="btn btn-success btn-circle">
