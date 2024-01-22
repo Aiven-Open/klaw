@@ -61,4 +61,6 @@ public class AuthenticationInfo {
   @NotNull private String myteamtopics;
   @NotNull private String myOrgTopics;
   @NotNull private String googleFeedbackFormLink;
+  @NotNull private String klawOptionalPermissionNewTopicCreationEnabled;
+  @NotNull private String klawOptionalPermissionNewTopicCreation;
 }
