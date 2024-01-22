@@ -603,7 +603,6 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setCanSwitchTeams("" + userInfo.isSwitchTeams());
 
       authenticationInfo.setBroadcastText(broadCastText);
-      authenticationInfo.setSaasEnabled(kwInstallationType);
       authenticationInfo.setTenantActiveStatus(
           manageDatabase.getTenantFullConfig(tenantId).getIsActive());
       authenticationInfo.setUsername(userName);

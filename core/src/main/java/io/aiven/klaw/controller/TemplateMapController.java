@@ -1,7 +1,6 @@
 package io.aiven.klaw.controller;
 
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 
 import io.aiven.klaw.constants.UriConstants;
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @Slf4j
 public class TemplateMapController {
-
-  private static final String SAAS = "saas";
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -78,9 +75,7 @@ public class TemplateMapController {
     if (ssoEnabled.equals("true")) {
       return UriConstants.OAUTH_LOGIN;
     }
-    if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth(
-          UriConstants.LOGIN_SAAS_PAGE, request, response, abstractAuthenticationToken);
+
     return UriConstants.LOGIN_PAGE;
   }
 
@@ -103,17 +98,9 @@ public class TemplateMapController {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)
         || "true".equals(ssoEnabled)) {
-      if (SAAS.equals(kwInstallationType)) {
-        return checkAuth(
-            UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
-      } else {
-        return checkAuth(
-            UriConstants.REGISTER_LDAP_PAGE, request, response, abstractAuthenticationToken);
-      }
-    } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
       return checkAuth(
-          UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
-    else
+          UriConstants.REGISTER_LDAP_PAGE, request, response, abstractAuthenticationToken);
+    } else
       return checkAuth(UriConstants.REGISTER_PAGE, request, response, abstractAuthenticationToken);
   }
 
@@ -123,9 +110,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth(
-          "registrationReviewSaas.html", request, response, abstractAuthenticationToken);
+
     return checkAuth(
         UriConstants.REGISTRATION_REVIEW_PAGE, request, response, abstractAuthenticationToken);
   }

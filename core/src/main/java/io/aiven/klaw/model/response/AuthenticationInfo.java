@@ -12,7 +12,6 @@ public class AuthenticationInfo {
   @NotNull private String kafkaconnect_clusters_count;
   @NotNull private String canSwitchTeams;
   @NotNull private String broadcastText;
-  @NotNull private String saasEnabled;
   @NotNull private String tenantActiveStatus;
   @NotNull private String username;
   @NotNull private String authenticationType;

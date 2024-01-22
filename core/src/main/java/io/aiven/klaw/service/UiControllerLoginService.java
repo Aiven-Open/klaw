@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -74,9 +73,6 @@ public class UiControllerLoginService {
 
         if (userInfo == null) {
           SecurityContextHolder.getContext().setAuthentication(null);
-          if (SAAS.equals(kwInstallationType)) {
-            return UriConstants.REGISTER_SAAS_PAGE;
-          }
 
           if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
             return UriConstants.REGISTER_LDAP_PAGE;
@@ -93,7 +89,6 @@ public class UiControllerLoginService {
 
         log.debug("Authenticated user : {}", userName);
         if (UriConstants.LOGIN_PAGE.equals(uri)
-            || UriConstants.LOGIN_SAAS_PAGE.equals(uri)
             || UriConstants.HOME_PAGE.equals(uri)
             || UriConstants.REGISTER_PAGE.equals(uri)
             || uri.contains(UriConstants.REGISTRATION_REVIEW)
@@ -104,16 +99,13 @@ public class UiControllerLoginService {
         }
         return uri;
       }
-      if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
-        return UriConstants.DEFAULT_PAGE_SAAS;
-      } else {
-        return UriConstants.DEFAULT_PAGE;
-      }
+
+      return UriConstants.DEFAULT_PAGE;
+
     } catch (Exception e) {
       log.error("Exception:", e);
       if (UriConstants.LOGIN_PAGE.equals(uri)
           || UriConstants.REGISTER_PAGE.equals(uri)
-          || UriConstants.REGISTER_SAAS_PAGE.equals(uri)
           || UriConstants.REGISTER_LDAP_PAGE.equals(uri)
           || uri.contains(UriConstants.REGISTRATION_REVIEW)
           || uri.contains(UriConstants.USER_ACTIVATION)
@@ -122,11 +114,7 @@ public class UiControllerLoginService {
           || UriConstants.TERMS_PAGE.equals(uri)
           || UriConstants.FEEDBACK_PAGE.equals(uri)) return uri;
 
-      if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
-        return UriConstants.DEFAULT_PAGE_SAAS;
-      } else {
-        return UriConstants.DEFAULT_PAGE;
-      }
+      return UriConstants.DEFAULT_PAGE;
     }
   }
 

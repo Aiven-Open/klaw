@@ -71,14 +71,6 @@ class UiControllerLoginServiceTest {
   }
 
   @Test
-  public void getReturningPage_UserNameNull_SAAS() {
-    ReflectionTestUtils.setField(uiControllerLoginService, "kwInstallationType", "saas");
-
-    Assertions.assertEquals(
-        UriConstants.DEFAULT_PAGE_SAAS, uiControllerLoginService.getReturningPage("", null));
-  }
-
-  @Test
   public void getReturningPage_UserNameNotNull_UserInfoNotNull() {
     UserInfo userInfo = new UserInfo();
 
@@ -111,7 +103,6 @@ class UiControllerLoginServiceTest {
   @ValueSource(
       strings = {
         UriConstants.LOGIN_PAGE,
-        UriConstants.LOGIN_SAAS_PAGE,
         UriConstants.HOME_PAGE,
         UriConstants.REGISTER_PAGE,
         UriConstants.FORGOT_PASSWORD_PAGE,
@@ -128,18 +119,6 @@ class UiControllerLoginServiceTest {
     Assertions.assertEquals(
         UriConstants.INDEX_PAGE,
         uiControllerLoginService.getReturningPage(uri, TestConstants.USERNAME));
-  }
-
-  @Test
-  public void getReturningPage_UserNameNotNull_UserInfoNull_SAAS() {
-    ReflectionTestUtils.setField(uiControllerLoginService, "kwInstallationType", "saas");
-
-    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
-    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
-
-    Assertions.assertEquals(
-        UriConstants.REGISTER_SAAS_PAGE,
-        uiControllerLoginService.getReturningPage("", TestConstants.USERNAME));
   }
 
   @Test
@@ -169,7 +148,6 @@ class UiControllerLoginServiceTest {
       strings = {
         UriConstants.LOGIN_PAGE,
         UriConstants.REGISTER_PAGE,
-        UriConstants.REGISTER_SAAS_PAGE,
         UriConstants.REGISTER_LDAP_PAGE,
         UriConstants.FORGOT_PASSWORD_PAGE,
         UriConstants.NEW_AD_USER_PAGE,
@@ -185,19 +163,6 @@ class UiControllerLoginServiceTest {
 
     Assertions.assertEquals(
         uri, uiControllerLoginService.getReturningPage(uri, TestConstants.USERNAME));
-  }
-
-  @Test
-  public void getReturningPage_Failure_SAAS() {
-    ReflectionTestUtils.setField(uiControllerLoginService, "kwInstallationType", "saas");
-
-    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
-    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME))
-        .thenThrow(new RuntimeException("Error Occurred"));
-
-    Assertions.assertEquals(
-        UriConstants.DEFAULT_PAGE_SAAS,
-        uiControllerLoginService.getReturningPage("", TestConstants.USERNAME));
   }
 
   @Test

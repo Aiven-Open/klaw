@@ -4,14 +4,11 @@ public class UriConstants {
   /* Page constants */
   // Default pages
   public static final String DEFAULT_PAGE = "login.html";
-  public static final String DEFAULT_PAGE_SAAS = "loginSaas.html";
   // Other pages
   public static final String INDEX_PAGE = "index.html";
-  public static final String REGISTER_SAAS_PAGE = "registerSaas.html";
   public static final String REGISTER_LDAP_PAGE = "registerLdap.html";
   public static final String REGISTER_PAGE = "register.html";
   public static final String LOGIN_PAGE = "login.html";
-  public static final String LOGIN_SAAS_PAGE = "loginSaas.html";
   public static final String HOME_PAGE = "home.html";
   public static final String FORGOT_PASSWORD_PAGE = "forgotPassword.html";
   public static final String NEW_AD_USER_PAGE = "newADUser.html";
