@@ -1,8 +1,11 @@
 # The workflow can be triggered manually.
 # It will build and deploy Klaw and run E2E tests against it.
+# The E2E test is very basic and only makes sure that the app
+# including Coral is built successfully.
 name: E2E tests
 on:
-  workflow_dispatch:
+  - workflow_dispatch
+  - workflow_call
 
 jobs:
   end-to-end-tests:
@@ -45,7 +48,7 @@ jobs:
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
-        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -127,7 +130,7 @@ jobs:
         run: BASE_URL=http://${{ steps.containerIp.outputs.CONTAINER_IP }}:9097 pnpm __test
 
       - name: Upload Playwright artifacts
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
         # Upload whether steps before where a failure, but only when the playwright tests did run
         # This way we make sure we don't attempt to upload files that are not there, bc.
         # for example the build has failed.

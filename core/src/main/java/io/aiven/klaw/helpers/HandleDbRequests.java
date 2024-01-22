@@ -351,7 +351,8 @@ public interface HandleDbRequests {
 
   DashboardStats getDashboardStats(Integer teamId, int tenantId);
 
-  List<Topic> getAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
+  List<Topic> getAllTopicsByTopictypeAndTeamnameAndEnv(
+      String topicType, Integer teamId, int tenantId, String env);
 
   List<CommonUtilsService.ChartsOverviewItem<String, Integer>> getActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId);

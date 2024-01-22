@@ -58,3 +58,6 @@ coral/.cert*
 # Coral bundle analysis
 coral/stats.html
 
+# E2E tests playwright
+
+e2e/playwright-report*

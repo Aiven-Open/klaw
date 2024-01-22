@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.enums.ClusterStatus;
@@ -22,8 +23,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 @Slf4j
 public class UtilMethods {
   public static String getUserName(Object principal, String preferredUsername) {
-    if (principal instanceof DefaultOAuth2User) {
-      DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
+    if (principal instanceof DefaultOAuth2User defaultOAuth2User) {
       return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
     } else if (principal instanceof String) {
       return (String) principal;
@@ -92,15 +92,19 @@ public class UtilMethods {
   public static void updateLatestStatus(
       ClusterStatus clusterStatus, ManageDatabase manageDatabase, int tenantId, int envId) {
 
-    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
     Optional<Env> opt = manageDatabase.getEnv(tenantId, envId);
 
     if (opt.isPresent()) {
       Env e = opt.get();
+      final LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
       e.setEnvStatus(clusterStatus);
       e.setEnvStatusTime(statusTime);
       e.setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
       manageDatabase.addEnvToCache(tenantId, e, false);
     }
+  }
+
+  public static UserInfo getUserInfoFromAuthentication(ManageDatabase db, String username) {
+    return db.getHandleDbRequests().getUsersInfo(username);
   }
 }

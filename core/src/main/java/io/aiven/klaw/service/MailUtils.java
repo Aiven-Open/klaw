@@ -8,7 +8,6 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +19,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.function.TriFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,34 +69,6 @@ public class MailUtils {
   private static final String REGISTER_USER_SAASADMIN_TOUSER_KEY =
       "klaw.mail.registerusertouser.saasadmin.content";
   private static final String RECONCILIATION_TOPICS_KEY = "klaw.mail.recontopics.content";
-  private String topicRequestMail;
-
-  private String topicPromotionRequestMail;
-  private String topicUpdateRequestMail;
-  private String topicDeleteRequestMail;
-  private String topicClaimRequestMail;
-  private String topicRequestApproved;
-  private String topicRequestDenied;
-  private String aclRequestMail;
-  private String aclDeleteRequestMail;
-  private String aclRequestApproved;
-  private String aclRequestDenied;
-
-  private void loadKwProps(int tenantId) {
-    this.topicRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_KEY, tenantId);
-
-    this.topicUpdateRequestMail = manageDatabase.getKwPropertyValue(TOPIC_UPDATE_REQ_KEY, tenantId);
-    this.topicPromotionRequestMail =
-        manageDatabase.getKwPropertyValue(TOPIC_PROMOTION_REQ_KEY, tenantId);
-    this.topicDeleteRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_DEL_KEY, tenantId);
-    this.topicClaimRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_CLAIM_KEY, tenantId);
-    this.topicRequestApproved = manageDatabase.getKwPropertyValue(TOPIC_REQ_APPRVL_KEY, tenantId);
-    this.topicRequestDenied = manageDatabase.getKwPropertyValue(TOPIC_REQ_DENY_KEY, tenantId);
-    this.aclRequestMail = manageDatabase.getKwPropertyValue(ACL_REQ_KEY, tenantId);
-    this.aclDeleteRequestMail = manageDatabase.getKwPropertyValue(ACL_DELETE_REQ_KEY, tenantId);
-    this.aclRequestApproved = manageDatabase.getKwPropertyValue(ACL_REQ_APPRVL_KEY, tenantId);
-    this.aclRequestDenied = manageDatabase.getKwPropertyValue(ACL_REQ_DENY_KEY, tenantId);
-  }
 
   @Autowired ManageDatabase manageDatabase;
 
@@ -119,168 +92,22 @@ public class MailUtils {
       HandleDbRequests dbHandle,
       MailType mailType,
       String loginUrl) {
-    String formattedStr = null, subject = null;
     int tenantId =
         manageDatabase
             .getHandleDbRequests()
             .getUsersInfo(
                 getUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
             .getTenantId();
-    loadKwProps(tenantId);
-    boolean requiresApproval = false;
-    switch (mailType) {
-      case TOPIC_CREATE_REQUESTED -> {
-        formattedStr = String.format(topicRequestMail, "'" + topicName + "'");
-        subject = "Create Topic Request";
-        requiresApproval = true;
-      }
-      case TOPIC_PROMOTION_REQUESTED -> {
-        formattedStr = String.format(topicPromotionRequestMail, "'" + topicName + "'");
-        subject = "Topic Promotion Request";
-        requiresApproval = true;
-      }
-      case TOPIC_UPDATE_REQUESTED -> {
-        formattedStr = String.format(topicUpdateRequestMail, "'" + topicName + "'");
-        subject = "Topic Update Request";
-        requiresApproval = true;
-      }
-      case TOPIC_DELETE_REQUESTED -> {
-        formattedStr = String.format(topicDeleteRequestMail, "'" + topicName + "'");
-        subject = "Delete Topic Request";
-        requiresApproval = true;
-      }
-      case TOPIC_CLAIM_REQUESTED -> {
-        formattedStr = String.format(topicClaimRequestMail, "'" + topicName + "'");
-        subject = "Claim Topic Request";
-        requiresApproval = true;
-      }
-      case TOPIC_REQUEST_APPROVED -> {
-        formattedStr = String.format(topicRequestApproved, "'" + topicName + "'");
-        subject = "Topic Request Approved";
-      }
-      case TOPIC_REQUEST_DENIED -> {
-        formattedStr =
-            String.format(topicRequestDenied, "'" + topicName + "'", "'" + reasonToDecline + "'");
-        subject = "Topic Request Denied";
-      }
-      case ACL_REQUESTED -> {
-        formattedStr = String.format(aclRequestMail, "'" + acl + "'", "'" + topicName + "'");
-        subject = "New Acl Request";
-        requiresApproval = true;
-      }
-      case ACL_DELETE_REQUESTED -> {
-        formattedStr = String.format(aclDeleteRequestMail, "'" + acl + "'", "'" + topicName + "'");
-        subject = "Acl Delete Request";
-        requiresApproval = true;
-      }
-      case ACL_REQUEST_APPROVED -> {
-        formattedStr = String.format(aclRequestApproved, "'" + acl + "'", "'" + topicName + "'");
-        subject = "Acl Request Approved";
-      }
-      case ACL_REQUEST_APPROVAL_ADDED -> {
-        formattedStr =
-            String.format(
-                "Acl Request %s for topic %s has had an approval added to it.",
-                "'" + acl + "'", "'" + topicName + "'");
-        subject = "Acl Request Approval Addded";
-      }
-      case ACL_REQUEST_DENIED -> {
-        formattedStr =
-            String.format(
-                aclRequestDenied,
-                "'" + acl + "'",
-                "'" + topicName + "'",
-                "'" + reasonToDecline + "'");
-        subject = "Acl Request Denied";
-      }
-      case ACL_REQUEST_FAILURE -> {
-        formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
-        subject = "Request processing failed.";
-      }
-      case SCHEMA_REQUESTED -> {
-        requiresApproval = true;
-        subject = "New Schema Request";
-        formattedStr = "New Schema Request on " + topicName;
-      }
-      case SCHEMA_PROMOTION_REQUESTED -> {
-        requiresApproval = true;
-        subject = "New Schema Promotion Request";
-        formattedStr = "New Schema Promotion Request on " + topicName;
-      }
-      case CONNECTOR_DELETE_REQUESTED, CONNECTOR_CREATE_REQUESTED -> {
-        // all remaining requests that require approvals are grouped here.
-        requiresApproval = true;
-        subject = "New Connector Request";
-        formattedStr = "New Connector Request on " + topicName;
-      }
-      case SCHEMA_REQUEST_APPROVED -> {
-        subject = "Schema Request Approved";
-        formattedStr = "Schema Request on " + topicName + " approved by " + approverUsername;
-      }
-      case SCHEMA_REQUEST_DENIED -> {
-        subject = "Schema Request Denied";
-        formattedStr =
-            "Schema Request on "
-                + topicName
-                + " denied by "
-                + approverUsername
-                + "because : "
-                + reasonToDecline;
-      }
-      case CONNECTOR_REQUEST_DENIED -> {
-        subject = "Connector Request Denied";
-        formattedStr =
-            "Connector Request on "
-                + topicName
-                + " denied by "
-                + approverUsername
-                + "because : "
-                + reasonToDecline;
-      }
-      case CONNECTOR_REQUEST_APPROVED -> {
-        subject = "Connector Request Approved";
-        formattedStr = "Connector Request on " + topicName + " approved by " + approverUsername;
-      }
-      case CONNECTOR_CLAIM_REQUESTED -> {
-        requiresApproval = true;
-        subject = "New Connector Claim Request";
-        formattedStr = "New Claim on Connector " + topicName;
-      }
-      case RESET_CONSUMER_OFFSET_REQUESTED -> {
-        requiresApproval = true;
-        subject = "Reset Consumer Offsets Request";
-        formattedStr = "Reset Consumer Offsets topic :" + topicName + "consumerGroup : " + acl;
-      }
-      case RESET_CONSUMER_OFFSET_APPROVED -> {
-        subject = "Reset Consumer Offsets Request Approved";
-        formattedStr =
-            "Reset Consumer Offsets Request on "
-                + topicName
-                + " \n OffsetDetails : "
-                + acl
-                + "\napproved by "
-                + approverUsername;
-      }
-      case RESET_CONSUMER_OFFSET_DENIED -> {
-        subject = "Reset Consumer Offsets Request Denied";
-        formattedStr =
-            "Reset Consumer Offsets Request on "
-                + topicName
-                + " \n Consumer group : "
-                + acl
-                + "\ndenied by "
-                + approverUsername;
-      }
-    }
+    MailInfo mailInfo = MailInfo.of(topicName, acl, reasonToDecline, username, approverUsername);
 
     sendRequestMail(
         approverUsername,
         username,
         ownerTeamId,
         dbHandle,
-        formattedStr,
-        subject,
-        requiresApproval,
+        mailType.apply(manageDatabase, tenantId, mailInfo),
+        mailType.getSubject(),
+        mailType.isRequiresApproval(),
         tenantId,
         loginUrl);
   }
@@ -294,29 +121,20 @@ public class MailUtils {
       String ccOwnerTeamMailId,
       int tenantId,
       String loginUrl) {
-    String subject, formattedStr;
     if (mailType == MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS) {
-      subject = "New schema on a topic";
-      formattedStr =
-          "A schema has been uploaded on Topic :"
-              + topicName
-              + " Environment : "
-              + envName
-              + " by team : "
-              + teamName;
-      String finalSubject = subject;
-      String finalFormattedStr = formattedStr;
       CompletableFuture.runAsync(
-          () -> {
-            emailService.sendSimpleMessage(
-                toMailIds,
-                Collections.singletonList(ccOwnerTeamMailId),
-                Collections.emptyList(),
-                finalSubject,
-                finalFormattedStr,
-                tenantId,
-                loginUrl);
-          });
+          () ->
+              emailService.sendSimpleMessage(
+                  toMailIds,
+                  Collections.singletonList(ccOwnerTeamMailId),
+                  Collections.emptyList(),
+                  mailType.subject,
+                  mailType.apply(
+                      manageDatabase,
+                      tenantId,
+                      MailInfo.of(topicName, envName, null, teamName, null)),
+                  tenantId,
+                  loginUrl));
     }
   }
 
@@ -332,7 +150,8 @@ public class MailUtils {
     formattedStr = String.format(newUserAdded, username, pwd);
     subject = "Access to Klaw";
 
-    sendMail(username, dbHandle, formattedStr, subject, false, false, null, tenantId, loginUrl);
+    sendMail(
+        username, dbHandle, formattedStr, subject, false, false, null, tenantId, loginUrl, false);
   }
 
   void sendMailResetPwd(
@@ -416,7 +235,8 @@ public class MailUtils {
         false,
         registerUserInfo.getMailid(),
         tenantId,
-        loginUrl);
+        loginUrl,
+        true);
   }
 
   void sendMailRegisteredUser(
@@ -459,7 +279,8 @@ public class MailUtils {
           false,
           registerUserInfo.getMailid(),
           tenantId,
-          loginUrl);
+          loginUrl,
+          true);
     } catch (Exception e) {
       log.error(registerUserInfo.toString(), e);
     }
@@ -505,7 +326,8 @@ public class MailUtils {
       boolean requiresApproval,
       String otherMailId,
       int tenantId,
-      String loginUrl) {
+      String loginUrl,
+      boolean copyTeam) {
 
     CompletableFuture.runAsync(
         () -> {
@@ -540,7 +362,9 @@ public class MailUtils {
               log.debug("emailId: {} Team: {}", emailId, emailIdTeam);
 
               CollectionUtils.addIgnoreNull(to, emailId);
-              CollectionUtils.addIgnoreNull(to, emailIdTeam);
+              if (copyTeam) {
+                CollectionUtils.addIgnoreNull(to, emailIdTeam);
+              }
               emailService.sendSimpleMessage(
                   to, cc, allApprovers, subject, formattedStr, tenantId, loginUrl);
             } else {
@@ -708,5 +532,262 @@ public class MailUtils {
     emailService.sendSimpleMessage(
         userName, kwAdminMailId, "Tenant Extension", mailtext, tenantId, loginUrl);
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  public enum MailType {
+    TOPIC_CREATE_REQUESTED(
+        "Create Topic Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_REQ_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        true),
+    TOPIC_PROMOTION_REQUESTED(
+        "Topic Promotion Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_PROMOTION_REQ_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        true),
+    CONNECTOR_CREATE_REQUESTED(
+        "New Connector Request", m -> "New Connector Request on " + m.topicName, true),
+    TOPIC_DELETE_REQUESTED(
+        "Delete Topic Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_REQ_DEL_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        true),
+    CONNECTOR_DELETE_REQUESTED(
+        "New Connector Request", m -> "New Connector Request on " + m.topicName, true),
+    TOPIC_CLAIM_REQUESTED(
+        "Claim Topic Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_REQ_CLAIM_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        true),
+    CONNECTOR_CLAIM_REQUESTED(
+        "New Connector Claim Request", m -> "New Claim on Connector " + m.topicName, true),
+    TOPIC_REQUEST_APPROVED(
+        "Topic Request Approved",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_REQ_APPRVL_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        false),
+    CONNECTOR_REQUEST_APPROVED(
+        "Connector Request Approved",
+        m -> "Connector Request on " + m.topicName + " approved by " + m.approverUsername),
+    TOPIC_REQUEST_DENIED(
+        "Topic Request Denied",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_REQ_DENY_KEY, tenantId),
+                "'" + mailInfo.topicName + "'",
+                "'" + mailInfo.reasonToDecline + "'"),
+        false),
+    CONNECTOR_REQUEST_DENIED(
+        "Connector Request Denied",
+        m ->
+            "Connector Request on "
+                + m.topicName
+                + " denied by "
+                + m.approverUsername
+                + "because : "
+                + m.reasonToDecline),
+    ACL_REQUESTED(
+        "New Acl Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(ACL_REQ_KEY, tenantId),
+                "'" + mailInfo.acl + "'",
+                "'" + mailInfo.topicName + "'"),
+        true),
+    ACL_DELETE_REQUESTED(
+        "Acl Delete Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(ACL_DELETE_REQ_KEY, tenantId),
+                "'" + mailInfo.acl + "'",
+                "'" + mailInfo.topicName + "'"),
+        true),
+    ACL_REQUEST_APPROVED(
+        "Acl Request Approved",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(ACL_REQ_APPRVL_KEY, tenantId),
+                "'" + mailInfo.acl + "'",
+                "'" + mailInfo.topicName + "'"),
+        false),
+    ACL_REQUEST_APPROVAL_ADDED(
+        "Acl Request Approval Addded",
+        m ->
+            String.format(
+                "Acl Request %s for topic %s has had an approval added to it.",
+                "'" + m.acl + "'", "'" + m.topicName + "'")),
+
+    ACL_REQUEST_DENIED(
+        "Acl Request Denied",
+        ((manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(ACL_REQ_DENY_KEY, tenantId),
+                "'" + mailInfo.acl + "'",
+                "'" + mailInfo.topicName + "'",
+                "'" + mailInfo.reasonToDecline + "'")),
+        false),
+    ACL_REQUEST_FAILURE(
+        "Request processing failed.",
+        m -> "Acl Request processing failed : " + m.acl + ", " + m.topicName),
+    SCHEMA_REQUESTED("New Schema Request", m -> "New Schema Request on " + m.topicName, true),
+    SCHEMA_REQUEST_APPROVED(
+        "Schema Request Approved",
+        m -> "Schema Request on " + m.topicName + " approved by " + m.approverUsername),
+    SCHEMA_REQUEST_DENIED(
+        "Schema Request Denied",
+        m ->
+            "Schema Request on "
+                + m.topicName
+                + " denied by "
+                + m.approverUsername
+                + "because : "
+                + m.reasonToDecline),
+    TOPIC_UPDATE_REQUESTED(
+        "Topic Update Request",
+        (manageDatabase, tenantId, mailInfo) ->
+            String.format(
+                manageDatabase.getKwPropertyValue(TOPIC_UPDATE_REQ_KEY, tenantId),
+                "'" + mailInfo.topicName + "'"),
+        false),
+    SCHEMA_PROMOTION_REQUESTED(
+        "New Schema Promotion Request",
+        m -> "New Schema Promotion Request on " + m.topicName,
+        true),
+    SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS(
+        "New schema on a topic",
+        m ->
+            "A schema has been uploaded on Topic :"
+                + m.topicName
+                + " Environment : "
+                + m.acl
+                + " by team : "
+                + m.username),
+    RESET_CONSUMER_OFFSET_REQUESTED(
+        "Reset Consumer Offsets Request",
+        m -> "Reset Consumer Offsets topic :" + m.topicName + "consumerGroup : " + m.acl,
+        true),
+    RESET_CONSUMER_OFFSET_APPROVED(
+        "Reset Consumer Offsets Request Approved",
+        m ->
+            "Reset Consumer Offsets Request on "
+                + m.topicName
+                + " \n OffsetDetails : "
+                + m.acl
+                + "\napproved by "
+                + m.approverUsername),
+    RESET_CONSUMER_OFFSET_DENIED(
+        "Reset Consumer Offsets Request Denied",
+        m ->
+            "Reset Consumer Offsets Request on "
+                + m.topicName
+                + " \n Consumer group : "
+                + m.acl
+                + "\ndenied by "
+                + m.approverUsername);
+
+    private final String subject;
+    private final Function<MailInfo, String> function;
+    private final TriFunction<ManageDatabase, Integer, MailInfo, String> triFunction;
+    private final boolean requiresApproval;
+
+    MailType(String subject, Function<MailInfo, String> function, boolean requiresApproval) {
+      this.requiresApproval = requiresApproval;
+      this.subject = subject;
+      this.function = function;
+      this.triFunction = null;
+    }
+
+    MailType(
+        String subject,
+        TriFunction<ManageDatabase, Integer, MailInfo, String> triFunction,
+        boolean requiresApproval) {
+      this.requiresApproval = requiresApproval;
+      this.subject = subject;
+      this.triFunction = triFunction;
+      this.function = null;
+    }
+
+    MailType(String subject, Function<MailInfo, String> function) {
+      this(subject, function, false);
+    }
+
+    MailType(String subject, TriFunction<ManageDatabase, Integer, MailInfo, String> triFunction) {
+      this(subject, triFunction, false);
+    }
+
+    public String apply(ManageDatabase manageDatabase, int tenantId, MailInfo mailInfo) {
+      if (triFunction != null) {
+        return triFunction.apply(manageDatabase, tenantId, mailInfo);
+      }
+      return function.apply(mailInfo);
+    }
+
+    public String getSubject() {
+      return subject;
+    }
+
+    public boolean isRequiresApproval() {
+      return requiresApproval;
+    }
+  }
+
+  public static class MailInfo {
+    private final String topicName;
+    private final String acl;
+    private final String reasonToDecline;
+    private final String username;
+    private final String approverUsername;
+
+    private MailInfo(
+        String topicName,
+        String acl,
+        String reasonToDecline,
+        String username,
+        String approverUsername) {
+      this.topicName = topicName;
+      this.acl = acl;
+      this.reasonToDecline = reasonToDecline;
+      this.username = username;
+      this.approverUsername = approverUsername;
+    }
+
+    public static MailInfo of(
+        String topicName,
+        String acl,
+        String reasonToDecline,
+        String username,
+        String approverUsername) {
+      return new MailInfo(topicName, acl, reasonToDecline, username, approverUsername);
+    }
+
+    public String getTopicName() {
+      return topicName;
+    }
+
+    public String getAcl() {
+      return acl;
+    }
+
+    public String getReasonToDecline() {
+      return reasonToDecline;
+    }
+
+    public String getUsername() {
+      return username;
+    }
+
+    public String getApproverUsername() {
+      return approverUsername;
+    }
   }
 }

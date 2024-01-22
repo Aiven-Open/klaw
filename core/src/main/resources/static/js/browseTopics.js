@@ -259,11 +259,11 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                         }
                         else if (sParameterName[0] === "producer")
                         {
-                            topicType = 'Producer';
+                            topicType = 'PRODUCER';
                         }
                         else if (sParameterName[0] === "consumer")
                         {
-                            topicType = 'Consumer';
+                            topicType = 'CONSUMER';
                         }
                     }
         }

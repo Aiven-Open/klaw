@@ -4,10 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.enums.AclPatternType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.TopicClaimRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
@@ -233,11 +230,17 @@ public class TopicController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamId", required = false) Integer teamId,
-      @RequestParam(value = "topicType", required = false) String topicType) {
+      @RequestParam(value = "topicType", required = false) AclType topicType)
+      throws KlawNotAuthorizedException {
 
     return new ResponseEntity<>(
         topicControllerService.getTopics(
-            envId, pageNo, currentPage, topicNameSearch, teamId, topicType),
+            envId,
+            pageNo,
+            currentPage,
+            topicNameSearch,
+            teamId,
+            topicType != null ? topicType.value : null),
         HttpStatus.OK);
   }
 

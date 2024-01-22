@@ -905,7 +905,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(35)
-  public void getTopics() {
+  public void getTopics() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -931,8 +931,8 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(36)
-  public void getTopicsWithProducerFilter() {
-    String envSel = "1", pageNo = "1", topicNameSearch = "top";
+  public void getTopicsWithProducerFilterAndEnvNoResults() throws KlawNotAuthorizedException {
+    String envSel = "2", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -946,8 +946,9 @@ public class TopicControllerServiceTest {
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM);
-    when(handleDbRequests.getAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
-        .thenReturn(getSyncTopics("topic", 4));
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
+        .thenReturn(getSyncTopics("topic", 0));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
 
@@ -960,8 +961,8 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(37)
-  public void getTopicsWithPatternFilter() {
-    String envSel = "1", pageNo = "1", topicNameSearch = "top";
+  public void getTopicsWithPatternFilter() throws KlawNotAuthorizedException {
+    String envSel = "1", pageNo = "1", topicNameSearch = "toppic";
 
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -978,7 +979,8 @@ public class TopicControllerServiceTest {
     List<Topic> syncTopics = getSyncTopics("topic", 4);
     syncTopics.get(0).setEnvironmentsSet(Set.of("1", "2"));
     syncTopics.get(0).setTopicname("testtopic");
-    when(handleDbRequests.getAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
         .thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
@@ -995,7 +997,7 @@ public class TopicControllerServiceTest {
   // topicSearch does not exist in topic names
   @Test
   @Order(38)
-  public void getTopicsSearchFailureNotExistingSearch() {
+  public void getTopicsSearchFailureNotExistingSearch() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "demo";
     stubUserInfo();
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
@@ -1576,6 +1578,101 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(59)
+  public void getTopicsWithProducerFilterAndEnv() throws KlawNotAuthorizedException {
+    String envSel = "1", pageNo = "1";
+
+    stubUserInfo();
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
+        .thenReturn(getSyncTopics("topic", 4));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
+        .thenReturn(
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM);
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
+        .thenReturn(getSyncTopics("topic", 4));
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
+
+    List<List<TopicInfo>> topicsList =
+        topicControllerService.getTopics(envSel, pageNo, "", null, 1001, AclType.PRODUCER.value);
+
+    assertThat(topicsList.get(0)).hasSize(3);
+    assertThat(topicsList.get(1)).hasSize(1);
+  }
+
+  @Test
+  @Order(60)
+  public void getTopicsWithConsumerFilterNoResults() throws KlawNotAuthorizedException {
+    String envSel = "1", pageNo = "1", topicNameSearch = "top";
+
+    stubUserInfo();
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
+        .thenReturn(getSyncTopics("topic", 4));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
+        .thenReturn(
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM);
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
+        .thenReturn(getSyncTopics("topic", 0));
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
+
+    List<List<TopicInfo>> topicsList =
+        topicControllerService.getTopics(
+            envSel, pageNo, "", topicNameSearch, 1001, AclType.CONSUMER.value);
+
+    assertThat(topicsList).isNull();
+  }
+
+  @Test
+  @Order(61)
+  public void getTopicsWithPatternFilterOneResult() throws KlawNotAuthorizedException {
+    String envSel = "1", pageNo = "1", topicNameSearch = "2";
+
+    stubUserInfo();
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
+        .thenReturn(getSyncTopics("topic", 4));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
+        .thenReturn(
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM,
+            KwConstants.INFRATEAM);
+    List<Topic> syncTopics = getSyncTopics("topic", 4);
+    syncTopics.get(0).setEnvironmentsSet(Set.of("1", "2"));
+    syncTopics.get(0).setTopicname("testtopic");
+    when(handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+            anyString(), anyInt(), anyInt(), any()))
+        .thenReturn(getSyncTopics("topic", 4));
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
+    List<Topic> topicList = utilMethods.getTopics();
+    topicList.get(0).setTopicname("testtopic" + "--" + AclPatternType.PREFIXED + "--");
+
+    List<List<TopicInfo>> topicsList =
+        topicControllerService.getTopics(
+            envSel, pageNo, "", topicNameSearch, 1001, AclType.PRODUCER.value);
+
+    assertThat(topicsList.get(0)).hasSize(1);
+  }
+
+  @Test
+  @Order(59)
   public void approvePromoteTopicRequests() throws KlawException {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(TOPIC_1);
@@ -1750,7 +1847,9 @@ public class TopicControllerServiceTest {
       t.setTopicid(i);
       t.setEnvironment("1");
       t.setTeamId(101);
-      t.setEnvironmentsSet(new HashSet<>());
+      Set<String> envSet = new HashSet<>();
+      envSet.add(t.getEnvironment());
+      t.setEnvironmentsSet(envSet);
 
       listTopics.add(t);
     }

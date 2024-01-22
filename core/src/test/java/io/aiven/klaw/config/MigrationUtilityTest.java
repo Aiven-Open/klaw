@@ -32,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.reflections.Reflections;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -45,6 +46,8 @@ class MigrationUtilityTest {
   MigrationUtility utility;
 
   @Mock private DataVersionRepo versionRepo;
+
+  @Mock BuildProperties buildProperties;
 
   @Mock private SpringLiquibase liquibase;
 
@@ -77,6 +80,8 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(utility, "packageToScan", PACKAGE_TO_SCAN);
     ReflectionTestUtils.setField(utility, "liquibase", liquibase);
     ReflectionTestUtils.setField(utility, "allowedTimeBetweenTableInstall", 1);
+    ReflectionTestUtils.setField(utility, "buildProperties", buildProperties);
+    when(buildProperties.getVersion()).thenReturn(KLAW_VERSION);
   }
 
   @Test

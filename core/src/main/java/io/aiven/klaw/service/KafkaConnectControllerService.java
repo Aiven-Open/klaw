@@ -2,11 +2,11 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
-import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CLAIM_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.CONNECTOR_DELETE_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_APPROVED;
-import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_DENIED;
+import static io.aiven.klaw.service.MailUtils.MailType.CONNECTOR_CLAIM_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.CONNECTOR_CREATE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.CONNECTOR_DELETE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.CONNECTOR_REQUEST_APPROVED;
+import static io.aiven.klaw.service.MailUtils.MailType.CONNECTOR_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

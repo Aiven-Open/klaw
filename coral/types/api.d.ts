@@ -3100,7 +3100,7 @@ export type operations = {
   showUsers: {
     parameters: {
       query?: {
-        teamName?: string;
+        teamId?: number;
         pageNo?: string;
         searchUserParam?: string;
       };
@@ -3272,7 +3272,7 @@ export type operations = {
         currentPage?: string;
         topicnamesearch?: string;
         teamId?: number;
-        topicType?: string;
+        topicType?: "PRODUCER" | "CONSUMER";
       };
     };
     responses: {

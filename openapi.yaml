@@ -2388,12 +2388,12 @@
         "tags" : [ "users-teams-controller" ],
         "operationId" : "showUsers",
         "parameters" : [ {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string",
-            "default" : ""
+            "type" : "integer",
+            "format" : "int32"
           }
         }, {
           "name" : "pageNo",
@@ -2822,7 +2822,8 @@
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "PRODUCER", "CONSUMER" ]
           }
         } ],
         "responses" : {

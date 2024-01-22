@@ -6,6 +6,7 @@ import type {
   Paginated,
   ResolveIntersectionTypes,
 } from "types/utils";
+import { KlawApiRequestQueryParameters } from "types/utils";
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 
@@ -19,6 +20,13 @@ type NoContent = {
   status: boolean;
 };
 
+type TopicType = NonNullable<
+  KlawApiRequestQueryParameters<"getTopics">["topicType"]
+>;
+
+type GetTopicsQueryParameter = KlawApiRequestQueryParameters<"getTopics"> & {
+  topicType?: TopicType;
+};
 type TopicAdvancedConfigurationOptions = {
   key: string;
   name?: string;
@@ -103,4 +111,6 @@ export type {
   TopicRequestStatus,
   TopicSchemaOverview,
   TopicTeam,
+  TopicType,
+  GetTopicsQueryParameter,
 };

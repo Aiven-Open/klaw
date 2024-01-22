@@ -43,6 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
@@ -66,8 +67,7 @@ public class UtilControllerService implements InitializingBean {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  @Value("${klaw.version}")
-  private String klawVersion;
+  @Autowired BuildProperties buildProperties;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -628,7 +628,7 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setTenantName(getTenantNameFromUser(userName, userInfo));
       authenticationInfo.setUserrole(authority);
       authenticationInfo.setCompanyinfo(companyInfo);
-      authenticationInfo.setKlawversion(klawVersion);
+      authenticationInfo.setKlawversion(buildProperties.getVersion());
       authenticationInfo.setNotifications(outstandingTopicReqs);
       authenticationInfo.setNotificationsAcls(outstandingAclReqs);
       authenticationInfo.setNotificationsSchemas(outstandingSchemasReqs);

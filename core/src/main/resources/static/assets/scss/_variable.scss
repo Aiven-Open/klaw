@@ -4,9 +4,6 @@ Author: Themedesigner
 Email:
 File: scss
 */
-// Variables
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap');
-
 
 // 
 // Theme Colors
@@ -151,7 +148,7 @@ $card-border-width: 0px !default;
 // 
 // Global font setting
 // 
-$font-family-sans-serif: 'Poppins',
+$font-family-sans-serif: 'Inter',
 sans-serif !default;
 $body-color: #67757c !default;
 

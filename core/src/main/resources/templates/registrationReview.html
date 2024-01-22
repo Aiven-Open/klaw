@@ -1,135 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/images/favicon.png"
+    />
     <title>Registration Review | Klaw</title>
-    <link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
-
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/custom.css" rel="stylesheet">
+    <link
+      rel="canonical"
+      href="https://www.wrappixel.com/templates/materialpro/"
+    />
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <link href="assets/css/custom.css" rel="stylesheet" />
     <!-- You can change the theme colors from here -->
-    <link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
-    <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
-
+    <link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet" />
+    <link
+      href="assets/plugins/sweetalert/sweetalert.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-</head>
-
-<body class="fix-header card-no-border logo-center" ng-init="checkStatus()">
-<!-- ============================================================== -->
-<!-- Preloader - style you can find in spinners.css -->
-<!-- ============================================================== -->
-<div class="preloader">
-    <svg class="circular" viewBox="25 25 50 50">
-        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
-</div>
-<!-- ============================================================== -->
-<!-- Main wrapper - style you can find in pages.scss -->
-<!-- ============================================================== -->
-<div id="main-wrapper">
-    <!-- ============================================================== -->
-    <!-- Topbar header - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <header class="topbar">
-        <nav class="navbar top-navbar navbar-expand-md navbar-light">
-            <!-- ============================================================== -->
-            <!-- Logo -->
-            <!-- ============================================================== -->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index">
-                    <h3 style="color:white;"></h3>
-                </a>
-            </div>
-            <!-- ============================================================== -->
-            <!-- End Logo -->
-            <!-- ============================================================== -->
-            <div class="navbar-collapse">
-                <!-- ============================================================== -->
-                <!-- toggle and nav items -->
-                <!-- ============================================================== -->
-                <ul class="navbar-nav mr-auto mt-md-0">
-                    <a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
-
-                </ul>
-                <!-- ============================================================== -->
-                <ul class="navbar-nav my-lg-0">
-
-                    <li class="nav-item">
-                        <table width="100%">
-                            <tr>
-                                <td><a class="nav-link" href="index">
-                                    <span style="color:white">Home</span></a></td>
-
-                                <td></td>
-
-                            </tr>
-                        </table>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-
-    <div class="page-wrapper">
-
-        <div class="container-fluid">
-            <div class="row page-titles">
-            </div>
-
-            <div class="row">
-                <div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-                    <div class="ribbon-wrapper card">
-                        <div class="ribbon ribbon-warning">Registration status : Success</div>
-                        <p class="ribbon-content">Thank you for registering in Klaw. An email is sent to Administrator for registration activation. You will be notified soon.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- footer -->
-        <!-- ============================================================== -->
-        <footer class="footer" style="border:0px;background-color:#016BA7;color:white;">
-            <a href="https://klaw-project.io" class="text-warning">klaw-project.io</a>
-        </footer>
-        <!-- ============================================================== -->
-        <!-- End footer -->
-        <!-- ============================================================== -->
+  </head>
+  <body class="fix-header card-no-border logo-center" ng-init="checkStatus()">
+    <div
+      style="
+        padding-right: 24px;
+        padding-left: 24px;
+        background-color: #0788d1;
+        height: 64px;
+      "
+    >
+      <header
+        style="
+          display: flex;
+          place-content: center space-between;
+          align-items: center;
+          height: 100%;
+          background-color: #0788d1;
+        "
+      >
+        <img
+          aria-hidden="true"
+          alt=""
+          src="/assets/coral/klaw_logo-8b4dc757.png"
+          height="47"
+          width="150"
+        />
+      </header>
     </div>
     <!-- ============================================================== -->
-    <!-- End Page wrapper  -->
+    <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-</div>
-<!-- All Jquery -->
-<!-- ============================================================== -->
-<script src="assets/plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap tether Core JavaScript -->
-<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
-<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-<!-- slimscrollbar scrollbar JavaScript -->
-<script src="assets/js/jquery.slimscroll.js"></script>
-<!--Wave Effects -->
-<script src="assets/js/waves.js"></script>
-<!--Menu sidebar -->
-<script src="assets/js/sidebarmenu.js"></script>
-<!--stickey kit -->
-<script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
-<script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
-<!--Custom JavaScript -->
-<script src="assets/js/custom.min.js"></script>
-<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
-</body>
-
+    <div class="preloader">
+      <svg class="circular" viewBox="25 25 50 50">
+        <circle
+          class="path"
+          cx="50"
+          cy="50"
+          r="20"
+          fill="none"
+          stroke-width="2"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <div
+      id="main-wrapper"
+      style="
+        overflow-y: auto;
+        display: flex;
+        height: 100vh;
+        flex-wrap: wrap;
+        align-content: center;
+        background-color: #f7f7fa;
+      "
+    >
+      <div
+        class="login-box"
+        style="
+          border-radius: 12px;
+          border: 1px solid var(--Grey-5, #ededf0);
+          background: #fff;
+          margin-bottom: 5rem;
+        "
+      >
+        <div class="card-body">
+          <h1
+            style="
+              color: #000;
+              font-size: 24px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: 36px;
+              margin-bottom: 2rem;
+            "
+          >
+            Registration successful
+          </h1>
+          <p>
+            Thank you for registering in Klaw. An email is sent to Administrator
+            for registration activation. You will be notified soon.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <!--<script src="assets/plugins/popper/popper.min.js"></script>-->
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="assets/js/jquery.slimscroll.js"></script>
+    <!--Wave Effects -->
+    <script src="assets/js/waves.js"></script>
+    <!--Menu sidebar -->
+    <script src="assets/js/sidebarmenu.js"></script>
+    <!--stickey kit -->
+    <script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
+    <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <!--Custom JavaScript -->
+    <script src="assets/js/custom.min.js"></script>
+    <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+  </body>
 </html>

@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS;
+import static io.aiven.klaw.service.MailUtils.MailType.SCHEMA_APPROVED_NOTIFY_SUBSCRIBERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;

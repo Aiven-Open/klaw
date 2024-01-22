@@ -15,6 +15,16 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByAclTypeAndTeamIdAndTenantId(String topicType, Integer teamId, int tenantId);
 
+  List<Acl> findAllByAclTypeAndTeamIdAndTenantIdAndEnvironment(
+      String topicType, Integer teamId, int tenantId, String env);
+
+  @Query(
+      value =
+          "SELECT count(DISTINCT topicname) FROM kwacls WHERE topictype = :topicType AND teamid = :teamId AND tenantid = :tenantId",
+      nativeQuery = true)
+  int countDistinctTopicNameByAclTypeAndTeamIdAndTenantId(
+      String topicType, Integer teamId, int tenantId);
+
   List<Acl> findAllByAclTypeAndTenantId(String topicType, int tenantId);
 
   List<Acl> findAllByEnvironmentAndTopicnameAndTenantId(

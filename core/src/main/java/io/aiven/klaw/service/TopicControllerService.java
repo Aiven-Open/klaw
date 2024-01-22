@@ -21,7 +21,13 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
-import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_CLAIM_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_CREATE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_DELETE_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_PROMOTION_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_REQUEST_APPROVED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_REQUEST_DENIED;
+import static io.aiven.klaw.service.MailUtils.MailType.TOPIC_UPDATE_REQUESTED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -175,7 +181,7 @@ public class TopicControllerService {
         : ApiResponse.notOk(result);
   }
 
-  private static MailType getMailType(TopicRequestModel topicRequestReq) {
+  private static MailUtils.MailType getMailType(TopicRequestModel topicRequestReq) {
     // default to Topic_CREATE which is the old hard coded
     return topicRequestReq.getRequestOperationType().equals(RequestOperationType.CREATE)
         ? TOPIC_CREATE_REQUESTED
@@ -1085,9 +1091,11 @@ public class TopicControllerService {
       String currentPage,
       String topicNameSearch,
       Integer teamId,
-      String topicType) {
+      String topicType)
+      throws KlawNotAuthorizedException {
     log.debug("getTopics {}", topicNameSearch);
     String userName = getUserName();
+    checkIsAuthorized(PermissionType.VIEW_TOPICS);
     List<TopicInfo> topicListUpdated =
         getTopicsPaginated(
             env,
@@ -1122,15 +1130,13 @@ public class TopicControllerService {
     HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
 
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
-    List<Topic> producerConsumerTopics = new ArrayList<>();
-    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
-        && teamId != 0) {
-      producerConsumerTopics =
-          handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+    List<Topic> producerConsumerTopics = null;
+    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))) {
+      UserInfo user = UtilMethods.getUserInfoFromAuthentication(manageDatabase, getUserName());
 
-      // select all topics and then filter
-      env = "ALL";
-      teamId = 1;
+      producerConsumerTopics =
+          handleDbRequests.getAllTopicsByTopictypeAndTeamnameAndEnv(
+              topicType, user.getTeamId(), tenantId, env);
     }
 
     // Get Sync topics
@@ -1143,10 +1149,12 @@ public class TopicControllerService {
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
 
-    topicsFromSOT =
-        getProducerConsumerFilterTopics(
-            producerConsumerTopics, topicsFromSOT, filterProducerConsumerList);
-
+    // only filter if there is any if it is empty that means no matches.
+    if (producerConsumerTopics != null) {
+      topicsFromSOT =
+          getProducerConsumerFilterTopics(
+              producerConsumerTopics, topicsFromSOT, filterProducerConsumerList);
+    }
     List<Topic> topicFilteredList = topicsFromSOT;
     topicFilteredList =
         getTopicsFromTopicSearchFilters(topicNameSearch, topicsFromSOT, topicFilteredList);
@@ -1250,10 +1258,15 @@ public class TopicControllerService {
               && topicInfo.getEnvironmentsSet().contains(producerConsumerTopic.getEnvironment())) {
             topicInfo.setEnvironmentsSet(producerConsumerTopic.getEnvironmentsSet());
             filterProducerConsumerList.add(topicInfo);
+            // we have matched the topic and env no need to continue the inner loop.
+            break;
           }
         }
       }
       topicsFromSOT = filterProducerConsumerList;
+    } else {
+      // no matching consumers or producers so return an empty list
+      return Collections.emptyList();
     }
     return topicsFromSOT;
   }
