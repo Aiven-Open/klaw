@@ -102,9 +102,6 @@ export type paths = {
   "/registerUser": {
     post: operations["registerUser"];
   };
-  "/registerUserSaas": {
-    post: operations["registerUserSaas"];
-  };
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
@@ -490,9 +487,6 @@ export type paths = {
   "/getActivityLogForTeamOverview": {
     get: operations["getActivityLogForTeamOverview"];
   };
-  "/getActivationInfo": {
-    get: operations["getActivationInfo"];
-  };
   "/getAclsCountPerEnv": {
     get: operations["getAclsCountPerEnv"];
   };
@@ -773,17 +767,6 @@ export type components = {
       registrationId?: string;
       /** Format: int32 */
       tenantId?: number;
-      tenantName?: string;
-    };
-    RegisterSaasUserInfoModel: {
-      fullname: string;
-      mailid?: string;
-      recaptchaStr?: string;
-      status?: string;
-      /** Format: date-time */
-      registeredTime?: string;
-      approver?: string;
-      registrationId?: string;
       tenantName?: string;
     };
     SchemaPromotion: {
@@ -1697,7 +1680,6 @@ export type components = {
       kafkaconnect_clusters_count: string;
       canSwitchTeams: string;
       broadcastText: string;
-      saasEnabled: string;
       tenantActiveStatus: string;
       username: string;
       authenticationType: string;
@@ -2350,21 +2332,6 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["RegisterUserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  registerUserSaas: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisterSaasUserInfoModel"];
       };
     };
     responses: {
@@ -4264,21 +4231,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["TeamOverview"];
-        };
-      };
-    };
-  };
-  getActivationInfo: {
-    parameters: {
-      query: {
-        userActivationId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
