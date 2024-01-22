@@ -69,12 +69,10 @@ const routes: Array<RouteObject> = [
     path: "/",
     element: <Layout />,
     children: [
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.DASHBOARD,
         element: <DashboardPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_DASHBOARD,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
+      },
       {
         path: Routes.TOPICS,
         element: <Topics />,

@@ -45,7 +45,7 @@ jest.mock("@aivenio/aquarium", () => ({
 const navLinks = [
   {
     name: "Dashboard",
-    linkTo: isFeatureFlagActiveMock() ? "/" : "/index",
+    linkTo: "/",
   },
   {
     name: "Topics",
@@ -320,39 +320,6 @@ describe("MainNavigation.tsx", () => {
 
           expect(link).toHaveFocus();
         });
-      });
-    });
-
-    describe("renders links to dashboard behind feature flag", () => {
-      afterEach(() => {
-        cleanup();
-        jest.resetAllMocks();
-      });
-
-      it("renders a link to the old UI when feature flag is false", async () => {
-        isFeatureFlagActiveMock.mockReturnValue(false);
-        customRender(<MainNavigation />, {
-          memoryRouter: true,
-          queryClient: true,
-          aquariumContext: true,
-        });
-
-        const link = screen.getByRole("link", { name: "Dashboard" });
-        expect(link).toBeVisible();
-        expect(link).toHaveAttribute("href", "/index");
-      });
-
-      it("renders a link to the dashboard page when feature flag is true", async () => {
-        isFeatureFlagActiveMock.mockReturnValue(true);
-        customRender(<MainNavigation />, {
-          memoryRouter: true,
-          queryClient: true,
-          aquariumContext: true,
-        });
-
-        const link = screen.getByRole("link", { name: "Dashboard" });
-        expect(link).toBeVisible();
-        expect(link).toHaveAttribute("href", "/");
       });
     });
   });
