@@ -59,7 +59,7 @@ const navLinks = [
   { name: "My team's requests", linkTo: "/requests" },
   {
     name: "Activity log",
-    linkTo: isFeatureFlagActiveMock() ? "/activity-log" : "/activityLog",
+    linkTo: "/activity-log",
   },
 ];
 
@@ -354,39 +354,6 @@ describe("MainNavigation.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute("href", "/");
       });
-    });
-  });
-
-  describe("renders links to activity log behind feature flag", () => {
-    afterEach(() => {
-      cleanup();
-      jest.resetAllMocks();
-    });
-
-    it("renders a link to the old UI when feature flag is false", async () => {
-      isFeatureFlagActiveMock.mockReturnValue(false);
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-        aquariumContext: true,
-      });
-
-      const link = screen.getByRole("link", { name: "Activity log" });
-      expect(link).toBeVisible();
-      expect(link).toHaveAttribute("href", "/activityLog");
-    });
-
-    it("renders a link to the activity log page when feature flag is true", async () => {
-      isFeatureFlagActiveMock.mockReturnValue(true);
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-        aquariumContext: true,
-      });
-
-      const link = screen.getByRole("link", { name: "Activity log" });
-      expect(link).toBeVisible();
-      expect(link).toHaveAttribute("href", "/activity-log");
     });
   });
 
