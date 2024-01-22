@@ -8,7 +8,7 @@ const superAdminUserName = "superadmin";
 // this test will fail, because it would need to use the local password.
 // We need to make sure that Klaw runs on clean DBs for E2E tests.
 // For this basic health check, this is sufficient.
-const superAdminPassword = "welcometoklaw";
+const superAdminPassword = "kwsuperadmin123$$";
 test("has title", async ({ page }) => {
   await page.goto("/");
 
@@ -50,7 +50,7 @@ test("coral is build", async ({ page }) => {
 
   await expect(profileForSuperAdmin).toBeVisible();
 
-  await page.goto("/coral/topics");
+  await page.goto("/coral/");
 
   const coralSuperAdminDialog = await page.getByRole("dialog", {
     name: /you're currently logged in as superadmin\./i,
