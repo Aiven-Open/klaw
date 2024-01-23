@@ -1191,18 +1191,18 @@ public class SelectDataJdbc {
     LocalDate lastEntryDate = lastDays.toLocalDateTime().toLocalDate();
     for (Object[] activity : activityCount) {
       LocalDate newActivityLofDate = ((java.sql.Date) activity[0]).toLocalDate();
-      ActivityListFill(newActivityLofDate, lastEntryDate, res);
+      activityListFill(newActivityLofDate, lastEntryDate, res);
       lastEntryDate = newActivityLofDate;
       res.add(
           new ImmutablePair<>(
               DATE_DDMMMYYYY_FORMATTER.format(newActivityLofDate),
               ((Long) activity[1]).intValue()));
     }
-    ActivityListFill(LocalDate.now(), lastEntryDate, res);
+    activityListFill(LocalDate.now(), lastEntryDate, res);
     return res;
   }
 
-  private static void ActivityListFill(
+  private static void activityListFill(
       LocalDate latestDate, LocalDate lastDate, List<Pair<String, Integer>> res) {
     while (latestDate.isAfter(lastDate)) {
       res.add(new ImmutablePair<>(DATE_DDMMMYYYY_FORMATTER.format(lastDate), 0));

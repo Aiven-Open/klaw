@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.response.AclsCountPerEnv;
 import io.aiven.klaw.model.response.KwReport;
@@ -43,8 +44,12 @@ public class AnalyticsController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TeamOverview> getActivityLogForTeamOverview(
       @RequestParam("activityLogForTeam") String activityLogForTeam,
-      @RequestParam(value = "numberOfDays", required = false, defaultValue = "30")
-          int numberOfDays) {
+      @RequestParam(value = "numberOfDays", required = false, defaultValue = "30") int numberOfDays)
+      throws KlawBadRequestException {
+    if (0 > numberOfDays || numberOfDays >= 90) {
+      throw new KlawBadRequestException(
+          "Only values between 1 and 90 are accepted for numberOfDays");
+    }
     return new ResponseEntity<>(
         chartsProcessor.getActivityLogForTeamOverview(activityLogForTeam, numberOfDays),
         HttpStatus.OK);
