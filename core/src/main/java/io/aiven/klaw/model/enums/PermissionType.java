@@ -13,6 +13,7 @@ public enum PermissionType {
 
   REQUEST_CREATE_OPERATIONAL_CHANGES("To request for Operational changes"),
   APPROVE_TOPICS("To approve topics requests"),
+  APPROVE_TOPICS_CREATE("To approve topic create requests"),
   APPROVE_SUBSCRIPTIONS("To approve producer or consumer subscriptions"),
   APPROVE_SCHEMAS("To approve schemas"),
   APPROVE_CONNECTORS("To approve kafka connectors"),

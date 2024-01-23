@@ -1,5 +1,8 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
+import static io.aiven.klaw.model.enums.PermissionType.APPROVE_TOPICS_CREATE;
+
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -302,6 +305,16 @@ public class DefaultDataService {
             KwConstants.MAIL_TOPICUPDATEREQUEST_CONTENT,
             "Email notification body for a new Topic Update Request");
     kwPropertiesList.add(kwProperties37);
+
+    KwProperties kwProperties38 =
+        new KwProperties(
+            KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY,
+            tenantId,
+            "false",
+            "Enforce extra permission  "
+                + APPROVE_TOPICS_CREATE
+                + " to allow users to create new topics");
+    kwPropertiesList.add(kwProperties38);
     return kwPropertiesList;
   }
 
