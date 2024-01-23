@@ -2,6 +2,7 @@ package io.aiven.klaw.repository;
 
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.ActivityLogID;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -44,4 +45,17 @@ public interface ActivityLogRepo extends CrudRepository<ActivityLog, ActivityLog
   Integer getNextActivityLogRequestId(@Param("tenantId") Integer tenantId);
 
   List<ActivityLog> findAllByTenantId(int tenantId);
+
+  @Query(
+      value =
+          "select date(activitytime), count(*) from kwactivitylog where"
+              + " teamid = :teamIdVar and tenantid = :tenantId and activityTime > :activityTimeAfter group by date(activitytime) order by date(activitytime) asc",
+      nativeQuery = true)
+  List<Object[]> findActivityLogForTeamIdAfter(
+      @Param("teamIdVar") Integer teamIdVar,
+      @Param("tenantId") Integer tenantId,
+      @Param("activityTimeAfter") Timestamp activityTime);
+
+  List<ActivityLog> findByTeamIdAndTenantIdAndActivityTimeAfter(
+      Integer teamId, int tenantId, Timestamp activityTime);
 }

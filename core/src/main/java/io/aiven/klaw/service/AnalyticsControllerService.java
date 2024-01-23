@@ -306,8 +306,9 @@ public class AnalyticsControllerService {
         aclsPerEnvList, title, MapConstants.CLUSTER_KEY, "Clusters", "Acls", tenantId);
   }
 
-  public ChartsJsOverview getActivityLogOverview(Integer teamId, Integer tenantId) {
-    int numberOfDays = 30;
+  public ChartsJsOverview getActivityLogOverview(
+      Integer teamId, Integer tenantId, int numberOfDays) {
+
     List<CommonUtilsService.ChartsOverviewItem<String, Integer>> activityCountList;
     String title = ANALYTICS_107;
 
@@ -335,7 +336,7 @@ public class AnalyticsControllerService {
         activityCountList, title, "dateofactivity", "Days", "Activities", tenantId);
   }
 
-  public List<TeamOverview> getTeamsOverview(String forTeam) {
+  public List<TeamOverview> getTeamsOverview(String forTeam, int numberOfDays) {
     List<TeamOverview> listTeamOverview = new ArrayList<>();
     TeamOverview teamOverview = new TeamOverview();
 
@@ -353,7 +354,8 @@ public class AnalyticsControllerService {
       teamOverview.setTopicsPerEnvOverview(getTopicsPerTeamEnvOverview(tenantId));
       teamOverview.setPartitionsPerEnvOverview(getPartitionsEnvOverview(userTeamId, tenantId));
 
-      teamOverview.setActivityLogOverview(getActivityLogOverview(userTeamId, tenantId));
+      teamOverview.setActivityLogOverview(
+          getActivityLogOverview(userTeamId, tenantId, numberOfDays));
       teamOverview.setAclsPerEnvOverview(getAclsEnvOverview(userTeamId, tenantId));
 
       teamOverview.setTopicsPerTeamsOverview(getTopicsTeamsOverview(userTeamId, tenantId));
@@ -371,7 +373,7 @@ public class AnalyticsControllerService {
       teamOverview.setProducerAclsPerTeamsOverview(getProducerAclsTeamsOverview(null, tenantId));
       teamOverview.setConsumerAclsPerTeamsOverview(getConsumerAclsTeamsOverview(null, tenantId));
 
-      teamOverview.setActivityLogOverview(getActivityLogOverview(null, tenantId));
+      teamOverview.setActivityLogOverview(getActivityLogOverview(null, tenantId, numberOfDays));
 
       listTeamOverview.add(teamOverview);
     }
@@ -379,7 +381,7 @@ public class AnalyticsControllerService {
     return listTeamOverview;
   }
 
-  public TeamOverview getActivityLogForTeamOverview(String forTeam) {
+  public TeamOverview getActivityLogForTeamOverview(String forTeam, int numberOfDays) {
     TeamOverview teamOverview = new TeamOverview();
     final String currentUserName = getCurrentUserName();
     Integer userTeamId = commonUtilsService.getTeamId(currentUserName);
@@ -387,18 +389,18 @@ public class AnalyticsControllerService {
     teamOverview.setTopicsPerTeamPerEnvOverview(
         getTopicsPerTeamEnvOverview(commonUtilsService.getTenantId(currentUserName)));
     if (forTeam != null && forTeam.equals("true")) {
-      teamOverview.setActivityLogOverview(getActivityLogOverview(userTeamId, 101));
+      teamOverview.setActivityLogOverview(getActivityLogOverview(userTeamId, 101, numberOfDays));
     }
 
     return teamOverview;
   }
 
-  public File generateReport() {
+  public File generateReport(int numberOfDays) {
     int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
     String kwReportsLocation =
         manageDatabase.getKwPropertyValue(KwConstants.KW_REPORTS_TMP_LOCATION_KEY, tenantId);
 
-    List<TeamOverview> totalOverviewList = getTeamsOverview(null);
+    List<TeamOverview> totalOverviewList = getTeamsOverview(null, numberOfDays);
     final Map<String, List<String>> topicNames = getTopicNames(tenantId);
     final Map<String, List<String>> consumerGroups = getConsumerGroups(tenantId);
     File zipFile =
