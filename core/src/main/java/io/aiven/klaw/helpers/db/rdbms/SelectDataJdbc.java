@@ -1264,7 +1264,8 @@ public class SelectDataJdbc {
 
       for (Object[] topic : topics) {
         totalAclsCount.add(
-            CommonUtilsService.ChartsOverviewItem.of((String) topic[0], (Integer) topic[1]));
+            CommonUtilsService.ChartsOverviewItem.of(
+                (String) topic[0], ((Long) topic[1]).intValue()));
       }
     } catch (Exception e) {
       log.error("Error selectAclsCountByEnv", e);

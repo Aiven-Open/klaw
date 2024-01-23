@@ -50,6 +50,7 @@ public class AnalyticsController {
       throw new KlawBadRequestException(
           "Only values between 1 and 90 are accepted for numberOfDays");
     }
+
     return new ResponseEntity<>(
         chartsProcessor.getActivityLogForTeamOverview(activityLogForTeam, numberOfDays),
         HttpStatus.OK);
