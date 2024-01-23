@@ -139,7 +139,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       cleanup();
     });
 
-    it("does not fetch data for Consumer offsets on load", async () => {
+    it("does not fetch data for Consumer offset lag on load", async () => {
       expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 
@@ -195,7 +195,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
         findDefinition(defaultPropsAiven.serviceAccountData.password)
       ).toBeVisible();
 
-      expect(screen.queryByText("Consumer offsets")).not.toBeInTheDocument();
+      expect(screen.queryByText("Consumer offset lag")).not.toBeInTheDocument();
     });
   });
 
@@ -215,7 +215,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       cleanup();
     });
 
-    it("does not fetch data for Consumer offsets on load", async () => {
+    it("does not fetch data for Consumer offset lag on load", async () => {
       expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 
@@ -261,17 +261,17 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
         findDefinition(defaultPropsNonAiven.selectedSubscription.acl_ip)
       ).toBeVisible();
 
-      expect(findTerm("Consumer offsets")).toBeVisible();
-      expect(findDefinition("Fetch offsets to display data.")).toBeVisible();
+      expect(findTerm("Consumer offset lag")).toBeVisible();
+      expect(findDefinition("Fetch offset lag to display data.")).toBeVisible();
 
       expect(
         screen.queryByText("Service account password")
       ).not.toBeInTheDocument();
     });
 
-    it("fetches Consumer offsets data when Fetch offset button is clicked", async () => {
+    it("fetches Consumer offset lag data when Fetch offset button is clicked", async () => {
       const fetchButton = screen.getByRole("button", {
-        name: "Fetch the consumer offsets of the current subscription",
+        name: "Fetch the consumer offset lag of the current subscription",
       });
 
       await userEvent.click(fetchButton);
@@ -310,7 +310,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
       jest.resetAllMocks();
     });
 
-    it("does not fetch data for Consumer offsets on load", async () => {
+    it("does not fetch data for Consumer offset lag on load", async () => {
       expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
     });
 

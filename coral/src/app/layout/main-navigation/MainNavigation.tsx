@@ -20,9 +20,6 @@ function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
   const dashBoardEnabled = useFeatureFlag(FeatureFlag.FEATURE_FLAG_DASHBOARD);
-  const activityLogEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_ACTIVITY_LOG
-  );
 
   return (
     <Box
@@ -90,7 +87,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={list}
-            to={activityLogEnabled ? Routes.ACTIVITY_LOG : "/activityLog"}
+            to={Routes.ACTIVITY_LOG}
             linkText={"Activity log"}
             active={pathname.startsWith(Routes.ACTIVITY_LOG)}
           />

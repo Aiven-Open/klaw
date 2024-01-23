@@ -61,13 +61,13 @@ const ConsumerOffsetsValues = ({
       <Grid.Item>
         {!shouldFetch && (
           <Typography.Default htmlTag="dd">
-            Fetch offsets to display data.
+            Fetch offset lag to display data.
           </Typography.Default>
         )}
         <Box.Flex flexDirection="column">
           {offsetsData.length === 0 && offsetsDataFetched && (
             <Typography.Default htmlTag="dd">
-              No offsets are currently retained.
+              No offset lag is currently retained.
             </Typography.Default>
           )}
           {isFetching ? (
@@ -80,7 +80,7 @@ const ConsumerOffsetsValues = ({
               Render as many skeletons as partitions for refetch */}
               {(offsetsData.length === 0 ? ["skeleton"] : offsetsData).map(
                 (_, index) => {
-                  return <Skeleton key={index} height={22} width={350} />;
+                  return <Skeleton key={index} height={22} width={200} />;
                 }
               )}
             </Box.Flex>
@@ -112,10 +112,10 @@ const ConsumerOffsetsValues = ({
           loading={isFetching}
           aria-label={`${
             shouldFetch ? "Refetch" : "Fetch"
-          } the consumer offsets of the current subscription`}
+          } the consumer offset lag of the current subscription`}
           icon={refreshIcon}
         >
-          {shouldFetch ? "Refetch" : "Fetch"} offsets
+          {shouldFetch ? "Refetch" : "Fetch"} offset lag
         </Button.Secondary>
       </Grid.Item>
     </Grid>
