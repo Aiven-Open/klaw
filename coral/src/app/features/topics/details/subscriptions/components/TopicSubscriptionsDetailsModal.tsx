@@ -193,7 +193,7 @@ const TopicSubscriptionsDetailsModal = ({
           <Grid.Item xs={2}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>
-                Consumer offsets
+                Consumer offset lag
               </Typography.SmallStrong>
               <ConsumerOffsetsValues
                 setError={(error: string) =>

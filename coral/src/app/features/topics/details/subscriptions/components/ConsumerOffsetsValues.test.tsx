@@ -58,20 +58,22 @@ describe("ConsumerOffsetValues.tsx", () => {
   it("does not call getConsumerOffsets on load", () => {
     expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
   });
+
   it("renders correct initial state", () => {
     const fetchButton = screen.getByRole("button", {
-      name: "Fetch the consumer offsets of the current subscription",
+      name: "Fetch the consumer offset lag of the current subscription",
     });
-    const offsetsText = screen.getByText("Fetch offsets to display data.");
+    const offsetLagText = screen.getByText("Fetch offset lag to display data.");
 
     expect(fetchButton).toBeEnabled();
-    expect(offsetsText).toBeVisible();
+    expect(offsetLagText).toBeVisible();
   });
-  it("renders Consumer offsets when clicking Fetch offsets button (one partition)", async () => {
+
+  it("renders Consumer offset lag when clicking Fetch offset lag button (one partition)", async () => {
     mockGetConsumerOffsets.mockResolvedValue(testOffsetsDataOnePartition);
 
     const fetchButton = screen.getByRole("button", {
-      name: "Fetch the consumer offsets of the current subscription",
+      name: "Fetch the consumer offset lag of the current subscription",
     });
 
     await userEvent.click(fetchButton);
@@ -82,16 +84,17 @@ describe("ConsumerOffsetValues.tsx", () => {
     expect(offsets).toBeVisible();
 
     const refetchButton = screen.getByRole("button", {
-      name: "Refetch the consumer offsets of the current subscription",
+      name: "Refetch the consumer offset lag of the current subscription",
     });
 
     expect(refetchButton).toBeEnabled();
   });
-  it("renders Consumer offsets when clicking Fetch offsets button (two partitions)", async () => {
+
+  it("renders Consumer offset lag when clicking Fetch offset lag button (two partitions)", async () => {
     mockGetConsumerOffsets.mockResolvedValue(testOffsetsDataTwoPartitions);
 
     const fetchButton = screen.getByRole("button", {
-      name: "Fetch the consumer offsets of the current subscription",
+      name: "Fetch the consumer offset lag of the current subscription",
     });
 
     await userEvent.click(fetchButton);
@@ -106,26 +109,27 @@ describe("ConsumerOffsetValues.tsx", () => {
     expect(offsetsPartitionTwo).toBeVisible();
 
     const refetchButton = screen.getByRole("button", {
-      name: "Refetch the consumer offsets of the current subscription",
+      name: "Refetch the consumer offset lag of the current subscription",
     });
 
     expect(refetchButton).toBeEnabled();
   });
-  it("renders no data message when clicking Fetch offsets button (no data)", async () => {
+
+  it("renders no data message when clicking Fetch offset lag button (no data)", async () => {
     mockGetConsumerOffsets.mockResolvedValue(testOffsetsNoData);
 
     const fetchButton = screen.getByRole("button", {
-      name: "Fetch the consumer offsets of the current subscription",
+      name: "Fetch the consumer offset lag of the current subscription",
     });
 
     await userEvent.click(fetchButton);
 
-    const noOffsets = screen.getByText("No offsets are currently retained.");
+    const noOffsets = screen.getByText("No offset lag is currently retained.");
 
     expect(noOffsets).toBeVisible();
 
     const refetchButton = screen.getByRole("button", {
-      name: "Refetch the consumer offsets of the current subscription",
+      name: "Refetch the consumer offset lag of the current subscription",
     });
 
     expect(refetchButton).toBeEnabled();
