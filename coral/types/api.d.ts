@@ -4257,6 +4257,7 @@ export type operations = {
     parameters: {
       query: {
         activityLogForTeam: string;
+        numberOfDays?: number;
       };
     };
     responses: {

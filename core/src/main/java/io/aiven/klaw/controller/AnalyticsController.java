@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.response.AclsCountPerEnv;
 import io.aiven.klaw.model.response.KwReport;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AnalyticsController {
 
+  public static final int DEFAULT_NUMBER_OF_DAYS = 30;
   @Autowired AnalyticsControllerService chartsProcessor;
 
   @RequestMapping(
@@ -32,7 +34,8 @@ public class AnalyticsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<TeamOverview>> getTeamsOverview() {
-    return new ResponseEntity<>(chartsProcessor.getTeamsOverview(null), HttpStatus.OK);
+    return new ResponseEntity<>(
+        chartsProcessor.getTeamsOverview(null, DEFAULT_NUMBER_OF_DAYS), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -40,9 +43,17 @@ public class AnalyticsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TeamOverview> getActivityLogForTeamOverview(
-      @RequestParam("activityLogForTeam") String activityLogForTeam) {
+      @RequestParam("activityLogForTeam") String activityLogForTeam,
+      @RequestParam(value = "numberOfDays", required = false, defaultValue = "30") int numberOfDays)
+      throws KlawBadRequestException {
+    if (0 > numberOfDays || numberOfDays >= 90) {
+      throw new KlawBadRequestException(
+          "Only values between 1 and 90 are accepted for numberOfDays");
+    }
+
     return new ResponseEntity<>(
-        chartsProcessor.getActivityLogForTeamOverview(activityLogForTeam), HttpStatus.OK);
+        chartsProcessor.getActivityLogForTeamOverview(activityLogForTeam, numberOfDays),
+        HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -70,7 +81,7 @@ public class AnalyticsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<KwReport> getKwReport() {
-    File file = chartsProcessor.generateReport();
+    File file = chartsProcessor.generateReport(DEFAULT_NUMBER_OF_DAYS);
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);

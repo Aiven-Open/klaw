@@ -5289,6 +5289,15 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "numberOfDays",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 30
+          }
         } ],
         "responses" : {
           "200" : {

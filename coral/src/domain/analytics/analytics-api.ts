@@ -4,14 +4,20 @@ import api, { API_PATHS } from "src/services/api";
 import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 
 const getActivityLogForTeamOverview = async (
-  activityLogForTeam: KlawApiRequestQueryParameters<"getActivityLogForTeamOverview"> = {
+  params: KlawApiRequestQueryParameters<"getActivityLogForTeamOverview"> = {
     activityLogForTeam: "true",
+    numberOfDays: 30,
   }
 ): Promise<DashboardsAnalyticsData> => {
+  const parsedParams = new URLSearchParams({
+    activityLogForTeam: "true",
+    numberOfDays: String(params.numberOfDays),
+  });
+
   const response = api
     .get<KlawApiResponse<"getActivityLogForTeamOverview">>(
       API_PATHS.getActivityLogForTeamOverview,
-      new URLSearchParams(activityLogForTeam)
+      parsedParams
     )
     .then(transformGetActivityLogForTeamOverviewResponse);
 

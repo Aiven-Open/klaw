@@ -16,6 +16,10 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import io.aiven.klaw.service.CommonUtilsService;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1126,11 +1130,15 @@ public class SelectDataJdbc {
 
   public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
+    // Instant.now() returns UTC time
+    Timestamp last30days = getTimestampFromLastNumberOfDays(numberOfDays);
+
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
       List<Pair<String, Integer>> fromDb =
           gatherActivityList(
-              activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
+              activityLogRepo.findActivityLogForTeamIdAfter(teamId, tenantId, last30days),
+              last30days);
       for (Pair<String, Integer> elem : fromDb) {
         res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
@@ -1141,13 +1149,18 @@ public class SelectDataJdbc {
     return Collections.emptyList();
   }
 
+  private static Timestamp getTimestampFromLastNumberOfDays(int numberOfDays) {
+    return Timestamp.from(Instant.now().minus(numberOfDays, ChronoUnit.DAYS));
+  }
+
   public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId) {
     try {
       List<CommonUtilsService.ChartsOverviewItem<String, Integer>> res = new ArrayList<>();
       List<Pair<String, Integer>> fromDb =
           gatherActivityList(
-              activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
+              activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays),
+              getTimestampFromLastNumberOfDays(numberOfDays));
       for (Pair<String, Integer> elem : fromDb) {
         res.add(CommonUtilsService.ChartsOverviewItem.of(elem.getKey(), elem.getValue()));
       }
@@ -1172,16 +1185,29 @@ public class SelectDataJdbc {
     }
   }
 
-  private List<Pair<String, Integer>> gatherActivityList(List<Object[]> activityCount) {
+  private List<Pair<String, Integer>> gatherActivityList(
+      List<Object[]> activityCount, Timestamp lastDays) {
     List<Pair<String, Integer>> res = new ArrayList<>(activityCount.size());
+    LocalDate lastEntryDate = lastDays.toLocalDateTime().toLocalDate();
     for (Object[] activity : activityCount) {
-
+      LocalDate newActivityLofDate = ((java.sql.Date) activity[0]).toLocalDate();
+      activityListFill(newActivityLofDate, lastEntryDate, res);
+      lastEntryDate = newActivityLofDate;
       res.add(
           new ImmutablePair<>(
-              DATE_DDMMMYYYY_FORMATTER.format(((java.sql.Date) activity[0]).toLocalDate()),
+              DATE_DDMMMYYYY_FORMATTER.format(newActivityLofDate),
               ((Long) activity[1]).intValue()));
     }
+    activityListFill(LocalDate.now(), lastEntryDate, res);
     return res;
+  }
+
+  private static void activityListFill(
+      LocalDate latestDate, LocalDate lastDate, List<Pair<String, Integer>> res) {
+    while (latestDate.isAfter(lastDate)) {
+      res.add(new ImmutablePair<>(DATE_DDMMMYYYY_FORMATTER.format(lastDate), 0));
+      lastDate = lastDate.plus(1, ChronoUnit.DAYS);
+    }
   }
 
   public List<CommonUtilsService.ChartsOverviewItem<String, Integer>> selectTopicsCountByEnv(
@@ -1238,7 +1264,8 @@ public class SelectDataJdbc {
 
       for (Object[] topic : topics) {
         totalAclsCount.add(
-            CommonUtilsService.ChartsOverviewItem.of((String) topic[0], (Integer) topic[1]));
+            CommonUtilsService.ChartsOverviewItem.of(
+                (String) topic[0], ((Long) topic[1]).intValue()));
       }
     } catch (Exception e) {
       log.error("Error selectAclsCountByEnv", e);

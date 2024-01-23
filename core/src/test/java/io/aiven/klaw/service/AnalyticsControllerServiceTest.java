@@ -44,6 +44,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @ExtendWith(MockitoExtension.class)
 class AnalyticsControllerServiceTest {
+  public static final int NUMBER_OF_DAYS = 30;
   @Mock private ManageDatabase manageDatabase;
   @Mock private CommonUtilsService commonUtilsService;
   @Spy @InjectMocks private AnalyticsControllerService analyticsControllerService;
@@ -398,7 +399,7 @@ class AnalyticsControllerServiceTest {
         .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
     Mockito.when(
             handleDbRequestsJdbc.getActivityLogForLastDays(
-                eq(30), any(), eq(TestConstants.TENANT_ID)))
+                eq(NUMBER_OF_DAYS), any(), eq(TestConstants.TENANT_ID)))
         .thenReturn(List.of());
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
@@ -411,7 +412,8 @@ class AnalyticsControllerServiceTest {
         .thenReturn(expected);
 
     ChartsJsOverview actual =
-        analyticsControllerService.getActivityLogOverview(null, TestConstants.TENANT_ID);
+        analyticsControllerService.getActivityLogOverview(
+            null, TestConstants.TENANT_ID, NUMBER_OF_DAYS);
 
     Assertions.assertEquals(expected, actual);
   }
@@ -423,7 +425,7 @@ class AnalyticsControllerServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(
             handleDbRequestsJdbc.getActivityLogByTeam(
-                TestConstants.TEAM_ID, 30, TestConstants.TENANT_ID))
+                TestConstants.TEAM_ID, NUMBER_OF_DAYS, TestConstants.TENANT_ID))
         .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID_INTEGERE);
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
@@ -440,7 +442,7 @@ class AnalyticsControllerServiceTest {
 
     ChartsJsOverview actual =
         analyticsControllerService.getActivityLogOverview(
-            TestConstants.TEAM_ID, TestConstants.TENANT_ID);
+            TestConstants.TEAM_ID, TestConstants.TENANT_ID, NUMBER_OF_DAYS);
 
     Assertions.assertEquals(expected, actual);
   }
@@ -481,7 +483,7 @@ class AnalyticsControllerServiceTest {
         .getPartitionsEnvOverview(TestConstants.TEAM_ID, TestConstants.TENANT_ID);
     Mockito.doReturn(chartsJsOverview)
         .when(analyticsControllerService)
-        .getActivityLogOverview(TestConstants.TEAM_ID, TestConstants.TENANT_ID);
+        .getActivityLogOverview(TestConstants.TEAM_ID, TestConstants.TENANT_ID, NUMBER_OF_DAYS);
     Mockito.doReturn(chartsJsOverview)
         .when(analyticsControllerService)
         .getAclsEnvOverview(TestConstants.TEAM_ID, TestConstants.TENANT_ID);
@@ -489,7 +491,7 @@ class AnalyticsControllerServiceTest {
         .when(analyticsControllerService)
         .getTopicsTeamsOverview(TestConstants.TEAM_ID, TestConstants.TENANT_ID);
 
-    List<TeamOverview> actual = analyticsControllerService.getTeamsOverview("");
+    List<TeamOverview> actual = analyticsControllerService.getTeamsOverview("", NUMBER_OF_DAYS);
 
     UtilMethods.assertEqualsList(actual, expected);
   }
@@ -530,7 +532,7 @@ class AnalyticsControllerServiceTest {
         .getPartitionsEnvOverview(null, TestConstants.TENANT_ID);
     Mockito.doReturn(chartsJsOverview)
         .when(analyticsControllerService)
-        .getActivityLogOverview(null, TestConstants.TENANT_ID);
+        .getActivityLogOverview(null, TestConstants.TENANT_ID, NUMBER_OF_DAYS);
     Mockito.doReturn(chartsJsOverview)
         .when(analyticsControllerService)
         .getAclsEnvOverview(null, TestConstants.TENANT_ID);
@@ -538,7 +540,7 @@ class AnalyticsControllerServiceTest {
         .when(analyticsControllerService)
         .getTopicsTeamsOverview(null, TestConstants.TENANT_ID);
 
-    List<TeamOverview> actual = analyticsControllerService.getTeamsOverview("");
+    List<TeamOverview> actual = analyticsControllerService.getTeamsOverview("", NUMBER_OF_DAYS);
 
     UtilMethods.assertEqualsList(actual, expected);
   }
@@ -560,9 +562,10 @@ class AnalyticsControllerServiceTest {
         .getTopicsPerTeamEnvOverview(TestConstants.TENANT_ID);
     Mockito.doReturn(chartsJsOverview)
         .when(analyticsControllerService)
-        .getActivityLogOverview(TestConstants.TEAM_ID, 101);
+        .getActivityLogOverview(TestConstants.TEAM_ID, 101, NUMBER_OF_DAYS);
 
-    TeamOverview actual = analyticsControllerService.getActivityLogForTeamOverview("true");
+    TeamOverview actual =
+        analyticsControllerService.getActivityLogForTeamOverview("true", NUMBER_OF_DAYS);
     Assertions.assertEquals(expected, actual);
   }
 
@@ -582,7 +585,9 @@ class AnalyticsControllerServiceTest {
             manageDatabase.getKwPropertyValue(
                 KwConstants.KW_REPORTS_TMP_LOCATION_KEY, TestConstants.TENANT_ID))
         .thenReturn(TestConstants.KW_REPORTS_LOCATION);
-    Mockito.doReturn(listTeamsOverview).when(analyticsControllerService).getTeamsOverview(null);
+    Mockito.doReturn(listTeamsOverview)
+        .when(analyticsControllerService)
+        .getTeamsOverview(null, NUMBER_OF_DAYS);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
         .thenReturn(Set.of(TestConstants.ENV_ID));
     Mockito.doReturn(TestConstants.ENV_NAME)
@@ -602,7 +607,7 @@ class AnalyticsControllerServiceTest {
                 TestConstants.TEAM_ID, TestConstants.TENANT_ID))
         .thenReturn(List.of(acl));
 
-    File actual = analyticsControllerService.generateReport();
+    File actual = analyticsControllerService.generateReport(NUMBER_OF_DAYS);
     Assertions.assertNotNull(actual);
     actual.deleteOnExit();
   }
@@ -623,7 +628,9 @@ class AnalyticsControllerServiceTest {
             manageDatabase.getKwPropertyValue(
                 KwConstants.KW_REPORTS_TMP_LOCATION_KEY, TestConstants.TENANT_ID))
         .thenReturn(TestConstants.KW_REPORTS_LOCATION);
-    Mockito.doReturn(listTeamsOverview).when(analyticsControllerService).getTeamsOverview(null);
+    Mockito.doReturn(listTeamsOverview)
+        .when(analyticsControllerService)
+        .getTeamsOverview(null, NUMBER_OF_DAYS);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
         .thenReturn(Set.of(TestConstants.ENV_ID));
     Mockito.doReturn(TestConstants.ENV_NAME)
@@ -638,7 +645,7 @@ class AnalyticsControllerServiceTest {
     Mockito.when(handleDbRequestsJdbc.getAllConsumerGroups(TestConstants.TENANT_ID))
         .thenReturn(List.of(acl));
 
-    File actual = analyticsControllerService.generateReport();
+    File actual = analyticsControllerService.generateReport(NUMBER_OF_DAYS);
     Assertions.assertNotNull(actual);
     actual.deleteOnExit();
   }
