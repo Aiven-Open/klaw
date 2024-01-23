@@ -46,7 +46,7 @@ public class AnalyticsController {
       @RequestParam("activityLogForTeam") String activityLogForTeam,
       @RequestParam(value = "numberOfDays", required = false, defaultValue = "30") int numberOfDays)
       throws KlawBadRequestException {
-    if (0 > numberOfDays || numberOfDays >= 90) {
+    if (numberOfDays > 0 && numberOfDays <= 90) {
       throw new KlawBadRequestException(
           "Only values between 1 and 90 are accepted for numberOfDays");
     }

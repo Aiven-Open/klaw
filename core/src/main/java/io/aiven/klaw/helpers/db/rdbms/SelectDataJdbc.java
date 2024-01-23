@@ -1192,11 +1192,11 @@ public class SelectDataJdbc {
     for (Object[] activity : activityCount) {
       LocalDate newActivityLofDate = ((java.sql.Date) activity[0]).toLocalDate();
       activityListFill(newActivityLofDate, lastEntryDate, res);
-      lastEntryDate = newActivityLofDate;
       res.add(
           new ImmutablePair<>(
               DATE_DDMMMYYYY_FORMATTER.format(newActivityLofDate),
               ((Long) activity[1]).intValue()));
+      lastEntryDate = newActivityLofDate.plus(1, ChronoUnit.DAYS);
     }
     activityListFill(LocalDate.now(), lastEntryDate, res);
     return res;
