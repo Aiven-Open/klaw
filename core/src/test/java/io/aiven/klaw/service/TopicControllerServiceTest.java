@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
+import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -1668,6 +1669,26 @@ public class TopicControllerServiceTest {
             envSel, pageNo, "", topicNameSearch, 1001, AclType.PRODUCER.value);
 
     assertThat(topicsList.get(0)).hasSize(1);
+  }
+
+  @Test
+  @Order(59)
+  public void approvePromoteTopicRequests() throws KlawException {
+    int topicId = 1001;
+    TopicRequest topicRequest = getTopicRequest(TOPIC_1);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
+
+    when(commonUtilsService.isNotAuthorizedUser("userDetails", PermissionType.APPROVE_TOPICS))
+        .thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(
+            "userDetails", PermissionType.APPROVE_TOPICS_CREATE))
+        .thenReturn(true);
+    when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
+    when(manageDatabase.getKwPropertyValue(KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY, 0))
+        .thenReturn("true");
+
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
+    assertThat(apiResponse1.getMessage()).contains(ApiResponse.NOT_AUTHORIZED.getMessage());
   }
 
   private List<MessageSchema> getSchemas(int number) {
