@@ -21,9 +21,17 @@ type DashboardData = {
   };
 };
 
-export const useDashboardData = (): {
+export const useDashboardData = ({
+  numberOfDays,
+}: {
+  numberOfDays: string;
+}): {
   data: DashboardData;
-  isLoading: boolean;
+  isLoading: {
+    chartsData: boolean;
+    statsData: boolean;
+    pendingRequestsData: boolean;
+  };
   isError: boolean;
   error: string;
 } => {
@@ -32,9 +40,13 @@ export const useDashboardData = (): {
     isLoading: isLoadingChartsData,
     isError: isErrorChartsData,
   } = useQuery<DashboardsAnalyticsData, Error>(
-    ["getActivityLogForTeamOverview"],
+    ["getActivityLogForTeamOverview", numberOfDays],
     {
-      queryFn: () => getActivityLogForTeamOverview(),
+      queryFn: () =>
+        getActivityLogForTeamOverview({
+          numberOfDays: Number(numberOfDays),
+        }),
+      // keepPreviousData: true,
     }
   );
 
@@ -73,11 +85,11 @@ export const useDashboardData = (): {
         pendingConnectorRequests: pendingRequestsData?.CONNECTOR,
       },
     },
-    isLoading:
-      isLoadingChartsData ||
-      isLoadingStatsData ||
-      isLoadingAuthUserData ||
-      isLoadingPendingRequestsData,
+    isLoading: {
+      chartsData: isLoadingChartsData,
+      statsData: isLoadingStatsData || isLoadingAuthUserData,
+      pendingRequestsData: isLoadingPendingRequestsData,
+    },
     isError:
       isErrorChartsData ||
       isErrorStatsData ||
