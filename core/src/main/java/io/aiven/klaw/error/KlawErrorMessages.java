@@ -75,7 +75,7 @@ public class KlawErrorMessages {
 
   public static final String ANALYTICS_106 = "Acls per cluster";
 
-  public static final String ANALYTICS_107 = "Requests per day";
+  public static final String ANALYTICS_107 = "Approved requests per day";
 
   // Base overview service
   public static final String BASE_OVERVIEW_101 = "Not Authorized to see this.";
