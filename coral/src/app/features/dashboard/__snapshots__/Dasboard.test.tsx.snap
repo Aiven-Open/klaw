@@ -240,11 +240,89 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
         <div
           class="typography-default-strong text-black"
         >
-          My team's requests per day
+          My team's approved requests
         </div>
         <div
           class="typography-caption text-grey-70"
         >
+          <div
+            class="Aquarium-NativeSelect"
+            style="display: flex; flex-direction: column;"
+          >
+            <label
+              class="w-full"
+              for="react-aria-:r0:"
+              id="react-aria-:r0:-label"
+            >
+              <span
+                class="block mb-2"
+              >
+                <span
+                  class="inline-flex items-center typography-small-strong text-grey-70"
+                >
+                  Timeframe
+                </span>
+              </span>
+              <span
+                class="Aquarium-NativeSelectBase relative block"
+              >
+                <span
+                  class="absolute right-0 inset-y-0 mr-4 text-grey-40 flex ml-3 pointer-events-none typography-default-strong mt-4"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Aquarium-Icon"
+                    data-testid="icon-dropdown"
+                    height="1em"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    viewBox="0 0 22 22"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                  >
+                    <path
+                      d="m5.5 8.25 5.5 5.5 5.5-5.5"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                </span>
+                <select
+                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-grey-70 placeholder:text-grey-40 focus:outline-none px-3 py-3 disabled:border-grey-20 disabled:bg-grey-5 disabled:text-grey-40 border border-grey-20 hover:border-grey-50 focus:border-info-70"
+                  id="react-aria-:r0:"
+                >
+                  <option
+                    value="7"
+                  >
+                    Last 7 days 
+                    <div
+                      data-icon="<g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="3" transform="translate(1 1)"><circle cx="18" cy="18" r="18" stroke-opacity=".5"/><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" dur="1s" from="0 18 18" repeatCount="indefinite" to="360 18 18" type="rotate"/></path></g>"
+                      data-testid="ds-icon"
+                    />
+                  </option>
+                  <option
+                    value="30"
+                  >
+                    Last 30 days
+                  </option>
+                  <option
+                    value="90"
+                  >
+                    Last 90 days
+                  </option>
+                </select>
+              </span>
+            </label>
+            <p
+              class="block mt-1 mb-3 typography-caption"
+            >
+               
+            </p>
+          </div>
           <div
             style="display: flex; justify-content: center; align-content: center; flex-wrap: wrap; min-height: 250px;"
           >

@@ -1,17 +1,28 @@
-import { Box, Card, Grid, Icon, Template, useToast } from "@aivenio/aquarium";
+import {
+  Box,
+  Card,
+  Grid,
+  Icon,
+  NativeSelect,
+  Option,
+  Template,
+  useToast,
+} from "@aivenio/aquarium";
 import { AreaChart, Axis, BarChart, Tooltip } from "@aivenio/aquarium/charts";
 import loading from "@aivenio/aquarium/icons/loading";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
 import { useDashboardData } from "src/app/features/dashboard/hooks/useDashboardData";
+import loadingIcon from "@aivenio/aquarium/dist/src/icons/loading";
 
 const Dashboard = () => {
+  const [numberOfDays, setNumberOfDays] = useState("30");
   const {
     data: { chartsData, statsData },
     isLoading,
     isError,
     error,
-  } = useDashboardData();
+  } = useDashboardData({ numberOfDays });
 
   const toast = useToast();
 
@@ -59,22 +70,22 @@ const Dashboard = () => {
       <Card title="Topics" fullWidth>
         <Grid cols={"4"}>
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.statsData}
             amount={statsData.totalTeamTopics}
             entity={"My team's topics"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.statsData}
             amount={statsData.totalOrgTopics}
             entity={"My organization's topics"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.statsData}
             amount={statsData.producerCount}
             entity={"My producer topics"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.statsData}
             amount={statsData.consumerCount}
             entity={"My consumer topics"}
           />
@@ -83,30 +94,46 @@ const Dashboard = () => {
       <Card title="My team's pending requests" fullWidth>
         <Grid cols={"4"}>
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.pendingRequestsData}
             amount={statsData.pendingTopicRequests}
             entity={"Topic requests"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.pendingRequestsData}
             amount={statsData.pendingAclRequests}
             entity={"ACL requests"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.pendingRequestsData}
             amount={statsData.pendingSchemaRequests}
             entity={"Schema requests"}
           />
           <StatsDisplay
-            isLoading={isLoading}
+            isLoading={isLoading.pendingRequestsData}
             amount={statsData.pendingConnectorRequests}
             entity={"Connector requests"}
           />
         </Grid>
       </Card>
 
-      <Card title="My team's requests per day" fullWidth>
-        {isLoading || forceLoading ? (
+      <Card title="My team's approved requests" fullWidth>
+        <NativeSelect
+          labelText={"Timeframe"}
+          defaultValue={"30"}
+          value={numberOfDays}
+          onChange={(e) => setNumberOfDays(e.target.value)}
+        >
+          <Option key={"7"} value={"7"}>
+            Last 7 days <Icon icon={loadingIcon} />
+          </Option>
+          <Option key={"30"} value={"30"}>
+            Last 30 days
+          </Option>
+          <Option key={"90"} value={"90"}>
+            Last 90 days
+          </Option>
+        </NativeSelect>
+        {isLoading.chartsData || forceLoading ? (
           <Box.Flex
             justifyContent={"center"}
             alignContent={"center"}
@@ -126,7 +153,7 @@ const Dashboard = () => {
       </Card>
 
       <Card title="My team's topics per environment" fullWidth>
-        {isLoading || forceLoading ? (
+        {isLoading.chartsData || forceLoading ? (
           <Box.Flex
             justifyContent={"center"}
             alignContent={"center"}
@@ -136,11 +163,7 @@ const Dashboard = () => {
             <Icon icon={loading} fontSize={"30px"} />
           </Box.Flex>
         ) : (
-          <BarChart
-            height={250}
-            layout={"vertical"}
-            data={chartsData?.topicsPerEnv}
-          >
+          <BarChart height={250} data={chartsData?.topicsPerEnv}>
             <Axis.XAxis dataKey="environment" />
             <Axis.YAxis width={10} />
             {/* fill is --aquarium-colors-primary-100 */}
