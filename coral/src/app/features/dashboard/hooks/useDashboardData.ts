@@ -46,7 +46,7 @@ export const useDashboardData = ({
         getActivityLogForTeamOverview({
           numberOfDays: Number(numberOfDays),
         }),
-      // keepPreviousData: true,
+      keepPreviousData: true,
     }
   );
 
