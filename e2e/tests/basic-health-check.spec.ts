@@ -50,7 +50,7 @@ test("coral is build", async ({ page }) => {
 
   await expect(profileForSuperAdmin).toBeVisible();
 
-  await page.goto("/coral/topics");
+  await page.goto("/coral/");
 
   const coralSuperAdminDialog = await page.getByRole("dialog", {
     name: /you're currently logged in as superadmin\./i,

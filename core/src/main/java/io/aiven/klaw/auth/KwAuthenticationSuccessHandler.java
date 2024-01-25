@@ -48,7 +48,7 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     String indexPage = "index";
     String rootPath = "/";
     String providerRoute = "{{ provider }}";
-    String coralTopicsUri = "/coral/topics";
+    String coralTopicsUri = "/coral/";
 
     if (quickStartEnabled
         && handleDbRequests

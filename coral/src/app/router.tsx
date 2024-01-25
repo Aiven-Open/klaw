@@ -61,20 +61,16 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   {
     path: "/",
     element: <Layout />,
     children: [
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.DASHBOARD,
         element: <DashboardPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_DASHBOARD,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
+      },
       {
         path: Routes.TOPICS,
         element: <Topics />,
