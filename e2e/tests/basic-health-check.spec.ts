@@ -8,7 +8,7 @@ const superAdminUserName = "superadmin";
 // this test will fail, because it would need to use the local password.
 // We need to make sure that Klaw runs on clean DBs for E2E tests.
 // For this basic health check, this is sufficient.
-const superAdminPassword = "kwsuperadmin123$$";
+const superAdminPassword = "welcometoklaw";
 test("has title", async ({ page }) => {
   await page.goto("/");
 
