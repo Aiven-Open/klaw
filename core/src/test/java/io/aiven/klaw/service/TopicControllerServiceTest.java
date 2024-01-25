@@ -139,7 +139,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -161,7 +162,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -185,7 +187,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -205,7 +208,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -223,7 +227,7 @@ public class TopicControllerServiceTest {
   public void createTopicDeleteRequestFailureNotAuthorized() throws KlawNotAuthorizedException {
     String topicName = "testtopic1";
     String envId = "1";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
 
     assertThrows(
         KlawNotAuthorizedException.class,
@@ -237,7 +241,8 @@ public class TopicControllerServiceTest {
   public void createTopicDeleteRequestFailureTopicAlreadyExists() {
     String topicName = "testtopic1";
     String envId = "1";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(getListTopicRequests());
@@ -259,7 +264,8 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -285,7 +291,8 @@ public class TopicControllerServiceTest {
     String envId = "1";
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -311,7 +318,8 @@ public class TopicControllerServiceTest {
     String envId = "2";
     stubUserInfo();
     when(userInfo.getTeamId()).thenReturn(1);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -337,7 +345,8 @@ public class TopicControllerServiceTest {
     String envId = "1";
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -636,7 +645,8 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.deleteTopicRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(mailService.getUserName(any())).thenReturn("uiuser1");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     ApiResponse resultResp = topicControllerService.deleteTopicRequests("1001");
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -1019,7 +1029,8 @@ public class TopicControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.declineTopicRequest(any(), anyString()))
@@ -1039,7 +1050,8 @@ public class TopicControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.declineTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
@@ -1100,7 +1112,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -1122,7 +1135,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -1146,7 +1160,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -1166,7 +1181,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -1301,7 +1317,8 @@ public class TopicControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     List<TopicRequest> topicRequests = generateRequests(9);
     topicRequests.addAll(generateRequests(1, 7, RequestOperationType.CLAIM));
     when(handleDbRequests.getAllTopicRequests(
@@ -1348,7 +1365,8 @@ public class TopicControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     List<TopicRequest> topicRequests = generateRequests(9);
     topicRequests.addAll(generateRequests(1, 7, RequestOperationType.CLAIM));
     when(handleDbRequests.getAllTopicRequests(
@@ -1484,7 +1502,8 @@ public class TopicControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));

@@ -83,7 +83,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private static Map<Integer, KwTenants> tenantFullMap;
 
   // key rolename, value list of permissions per tenant
-  private static Map<Integer, Map<String, List<String>>> rolesPermsMapPerTenant;
+  private static Map<Integer, Map<String, Set<String>>> rolesPermsMapPerTenant;
 
   // key tenantId, sub key clusterid Pertenant
   private static Map<Integer, Map<Integer, KwClusters>> kwAllClustersPertenant;
@@ -834,8 +834,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         tenantId, allEnvs.stream().collect(Collectors.toMap(Env::getId, Function.identity())));
   }
 
-  public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {
-    return rolesPermsMapPerTenant.get(tenantId);
+  public Map<String, Set<String>> getRolesPermissionsPerTenant(int tenantId) {
+    return rolesPermsMapPerTenant.getOrDefault(tenantId, Collections.emptyMap());
   }
 
   public void loadRolesForAllTenants() {
@@ -855,16 +855,16 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
     List<KwRolesPermissions> rolesPermsList =
         rolesPermissions.stream().filter(rolePerms -> rolePerms.getTenantId() == tenantId).toList();
-    List<String> tmpList;
-    Map<String, List<String>> rolesPermsMap = new HashMap<>();
+    Set<String> tmpSet;
+    Map<String, Set<String>> rolesPermsMap = new HashMap<>();
     for (KwRolesPermissions rolesPermission : rolesPermsList) {
       if (!rolesPermsMap.containsKey(rolesPermission.getRoleId())) {
-        tmpList = new ArrayList<>();
+        tmpSet = new HashSet<>();
       } else {
-        tmpList = rolesPermsMap.get(rolesPermission.getRoleId());
+        tmpSet = rolesPermsMap.get(rolesPermission.getRoleId());
       }
-      tmpList.add(rolesPermission.getPermission());
-      rolesPermsMap.put(rolesPermission.getRoleId(), tmpList);
+      tmpSet.add(rolesPermission.getPermission());
+      rolesPermsMap.put(rolesPermission.getRoleId(), tmpSet);
     }
     rolesPermsMapPerTenant.put(tenantId, rolesPermsMap);
   }

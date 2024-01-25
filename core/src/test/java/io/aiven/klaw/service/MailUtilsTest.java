@@ -13,9 +13,9 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.service.MailUtils.MailType;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -329,20 +329,15 @@ public class MailUtilsTest {
     return Stream.of(MailType.CONNECTOR_CLAIM_REQUESTED, MailType.TOPIC_CLAIM_REQUESTED);
   }
 
-  private Map<String, List<String>> getRolesToPermissionsMap() {
+  private Map<String, Set<String>> getRolesToPermissionsMap() {
 
-    List<String> user = List.of(PermissionType.APPROVE_TOPICS.name());
+    Set<String> user = Set.of(PermissionType.APPROVE_TOPICS.name());
 
-    List<String> admin =
-        List.of(
+    Set<String> admin =
+        Set.of(
             PermissionType.APPROVE_TOPICS.name(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS.name());
 
-    return new HashMap<>() {
-      {
-        put("USER", user);
-        put("ADMIN", admin);
-      }
-    };
+    return Map.of("USER", user, "ADMIN", admin);
   }
 
   private static UserInfo createUserInfo(String username, String role) {

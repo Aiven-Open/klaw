@@ -24,6 +24,7 @@ import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +78,7 @@ public class ServerConfigServiceTest {
   @Test
   @Order(1)
   public void getAllPropsNotAuthorized() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     serverConfigService.getAllProperties();
     Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
     assertThat(collection).isEmpty(); // filtering for spring. and klaw.
@@ -86,7 +87,8 @@ public class ServerConfigServiceTest {
   @Test
   @Order(2)
   public void getAllProps() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     serverConfigService.getAllProperties();
     Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
     assertThat(collection).isEmpty(); // filtering for spring. and klaw.

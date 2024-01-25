@@ -27,6 +27,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
@@ -123,7 +124,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -157,7 +159,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -217,7 +220,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     List<Topic> topics = utilMethods.generateTopics(14);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
@@ -248,7 +252,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     List<Topic> topics = utilMethods.generateTopics(14);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
 
@@ -282,7 +287,8 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
@@ -324,7 +330,8 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
@@ -381,7 +388,8 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.createSchemaList());
@@ -408,7 +416,8 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     MessageSchema schema = utilMethods.getMSchemas().get(0);
     schema.setTopicname(topicName);
     schema.setSchemafull("\"namespace : klaw.avro\"");
@@ -444,7 +453,8 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
@@ -482,7 +492,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -526,7 +537,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -577,7 +589,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     clusterResp.setSchemaInfoOfTopicList(new ArrayList<>());
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -629,7 +642,8 @@ public class SchemaRegistrySyncControllerServiceTest {
     SchemasInfoOfClusterResponse clusterResp = new SchemasInfoOfClusterResponse();
     clusterResp.setSchemaInfoOfTopicList(new ArrayList<>());
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     assertThatThrownBy(

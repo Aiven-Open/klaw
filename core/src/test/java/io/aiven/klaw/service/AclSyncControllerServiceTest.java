@@ -28,6 +28,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +96,8 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAcls() throws KlawException {
     stubUserInfo();
     when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -108,7 +110,8 @@ public class AclSyncControllerServiceTest {
   @Order(2)
   public void updateSyncAclsFailure1() throws KlawException {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
@@ -119,7 +122,8 @@ public class AclSyncControllerServiceTest {
   @Order(3)
   public void updateSyncAclsFailure2() {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -136,7 +140,8 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAclsFailure3() throws KlawException {
     List<SyncAclUpdates> updates = new ArrayList<>();
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     ApiResponse resultResp = aclSyncControllerService.updateSyncAcls(updates);
@@ -148,7 +153,8 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAclsFailure4() {
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
@@ -318,7 +324,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getKafkaFlavor()).thenReturn(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt()))
         .thenReturn(getAclsSOT0().get(0));
     when(clusterApiService.approveAclRequests(any(), anyInt()))

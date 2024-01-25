@@ -20,6 +20,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
@@ -275,7 +276,8 @@ class EnvsClustersTenantsControllerServiceTest {
                 put(101, "");
               }
             });
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     List<EnvModelResponse> response = service.getEnvsPaginated(type, "", pageNo, searchBy);
 

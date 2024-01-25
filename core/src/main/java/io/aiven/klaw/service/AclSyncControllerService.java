@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -697,12 +698,12 @@ public class AclSyncControllerService {
 
   private List<String> tenantFiltering(List<String> teamList) {
     if (!commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
+        getPrincipal(),
+        Set.of(
+            PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+            PermissionType.SYNC_TOPICS,
+            PermissionType.SYNC_SUBSCRIPTIONS,
+            PermissionType.SYNC_BACK_TOPICS))) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
       List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
