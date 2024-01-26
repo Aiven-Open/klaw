@@ -1746,6 +1746,8 @@ export type components = {
       myteamtopics: string;
       myOrgTopics: string;
       googleFeedbackFormLink: string;
+      klawOptionalPermissionNewTopicCreationEnabled: string;
+      klawOptionalPermissionNewTopicCreation: string;
     };
     KwPropertiesResponse: {
       result?: string;
