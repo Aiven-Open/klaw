@@ -9373,9 +9373,15 @@
           },
           "googleFeedbackFormLink" : {
             "type" : "string"
+          },
+          "klawOptionalPermissionNewTopicCreationEnabled" : {
+            "type" : "string"
+          },
+          "klawOptionalPermissionNewTopicCreation" : {
+            "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "googleFeedbackFormLink", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myOrgTopics", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "googleFeedbackFormLink", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawOptionalPermissionNewTopicCreation", "klawOptionalPermissionNewTopicCreationEnabled", "klawversion", "manageConnectors", "myOrgTopics", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {
