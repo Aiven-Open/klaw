@@ -234,11 +234,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         params: {'userId' : idval },
                         data: {'userId' : idval}
                     }).success(function(output) {
-                        $scope.alert = "Delete User Request : "+output.message;
+                        $scope.alert = "Delete User : "+output.message;
                         if(output.success){
                             swal({
                                  title: "",
-                                 text: "Delete User Request : "+output.message,
+                                 text: "Delete User : "+output.message,
                                  timer: 2000,
                                  showConfirmButton: false
                              });

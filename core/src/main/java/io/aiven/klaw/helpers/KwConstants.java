@@ -156,4 +156,8 @@ public class KwConstants {
 
   public static final DateTimeFormatter DATE_DDMMMYYYY_FORMATTER =
       DateTimeFormatter.ofPattern("dd-MMM-yyyy").withZone(ZoneId.systemDefault());
+
+  public static final String USER_DELETION_TEXT = "User deletion : %s by user : %s";
+
+  public static final String USER_DELETION_MAIL_TEXT = "Hello, user %s deleted by user %s.";
 }

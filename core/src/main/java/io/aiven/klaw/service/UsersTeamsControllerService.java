@@ -1,6 +1,8 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_MAIL_TEXT;
+import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_TEXT;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
@@ -520,13 +522,13 @@ public class UsersTeamsControllerService {
                 tenantId,
                 RequestOperationType.DELETE.value,
                 commonUtilsService.getTeamId(userName),
-                "User deletion : " + userIdToDelete + " by user : " + userName,
+                String.format(USER_DELETION_TEXT, userIdToDelete, userName),
                 "-NA-",
                 userName);
         mailService.sendMail(
             userName,
             manageDatabase.getHandleDbRequests(),
-            "Hello, user " + userIdToDelete + " deleted by user " + userName + ".",
+            String.format(USER_DELETION_MAIL_TEXT, userIdToDelete, userName),
             "USER DELETION",
             false,
             false,
