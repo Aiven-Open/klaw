@@ -307,7 +307,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void deleteUserSuccessNormalUser() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
@@ -320,7 +321,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void deleteUserFailureNoSuperUserPermission() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(false, true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false, true);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
