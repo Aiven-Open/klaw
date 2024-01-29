@@ -15,9 +15,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
   },
   "include": ["src", "test-setup/setup-files-after-env.ts"],
   "exclude": ["proxy", "../e2e"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
 }
