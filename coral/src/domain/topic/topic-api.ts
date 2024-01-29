@@ -51,10 +51,9 @@ const getTopics = async (
   });
 
   return api
-    .get<KlawApiResponse<"getTopics">>(
-      API_PATHS.getTopics,
-      new URLSearchParams(queryParams)
-    )
+    .get<
+      KlawApiResponse<"getTopics">
+    >(API_PATHS.getTopics, new URLSearchParams(queryParams))
     .then(transformTopicApiResponse);
 };
 
@@ -100,9 +99,9 @@ const getTopicAdvancedConfigOptions = (): Promise<
   TopicAdvancedConfigurationOptions[]
 > =>
   api
-    .get<KlawApiResponse<"getAdvancedTopicConfigs">>(
-      API_PATHS.getAdvancedTopicConfigs
-    )
+    .get<
+      KlawApiResponse<"getAdvancedTopicConfigs">
+    >(API_PATHS.getAdvancedTopicConfigs)
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopicCreation = (
@@ -194,10 +193,9 @@ const getTopicRequestsForApprover = (
   );
 
   return api
-    .get<KlawApiResponse<"getTopicRequestsForApprover">>(
-      API_PATHS.getTopicRequestsForApprover,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getTopicRequestsForApprover">
+    >(API_PATHS.getTopicRequestsForApprover, new URLSearchParams(filteredParams))
     .then(transformGetTopicRequestsResponse);
 };
 
@@ -222,10 +220,9 @@ const getTopicRequests = (
   );
 
   return api
-    .get<KlawApiResponse<"getTopicRequests">>(
-      API_PATHS.getTopicRequests,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getTopicRequests">
+    >(API_PATHS.getTopicRequests, new URLSearchParams(filteredParams))
     .then(transformGetTopicRequestsResponse);
 };
 
@@ -311,10 +308,9 @@ const getTopicOverview = ({
   });
 
   return api
-    .get<KlawApiResponse<"getTopicOverview">>(
-      API_PATHS.getTopicOverview,
-      new URLSearchParams(queryParams)
-    )
+    .get<
+      KlawApiResponse<"getTopicOverview">
+    >(API_PATHS.getTopicOverview, new URLSearchParams(queryParams))
     .then((topicOverview) => {
       if (!topicOverview.topicExists) {
         // Currently the API returns a reduced TopicOverview when

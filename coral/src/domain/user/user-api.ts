@@ -19,10 +19,9 @@ async function getUserList(
   });
 
   return api
-    .get<KlawApiResponse<"showUsers">>(
-      API_PATHS.showUsers,
-      new URLSearchParams(queryParams)
-    )
+    .get<
+      KlawApiResponse<"showUsers">
+    >(API_PATHS.showUsers, new URLSearchParams(queryParams))
     .then((response) =>
       transformUserListApiResponse({
         apiResponse: response,

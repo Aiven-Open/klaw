@@ -65,10 +65,9 @@ const getConnectors = (
   });
 
   return api
-    .get<KlawApiResponse<"getConnectors">>(
-      API_PATHS.getConnectors,
-      new URLSearchParams(queryParams)
-    )
+    .get<
+      KlawApiResponse<"getConnectors">
+    >(API_PATHS.getConnectors, new URLSearchParams(queryParams))
     .then(transformConnectorApiResponse);
 };
 
@@ -78,10 +77,9 @@ const getConnectorRequestsForApprover = (
   const filteredParams = filterGetConnectorRequestParams(params);
 
   return api
-    .get<KlawApiResponse<"getCreatedConnectorRequests">>(
-      API_PATHS.getCreatedConnectorRequests,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getCreatedConnectorRequests">
+    >(API_PATHS.getCreatedConnectorRequests, new URLSearchParams(filteredParams))
     .then(transformConnectorRequestApiResponse);
 };
 
@@ -91,10 +89,9 @@ const getConnectorRequests = (
   const filteredParams = filterGetConnectorRequestParams(params);
 
   return api
-    .get<KlawApiResponse<"getConnectorRequests">>(
-      API_PATHS.getConnectorRequests,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getConnectorRequests">
+    >(API_PATHS.getConnectorRequests, new URLSearchParams(filteredParams))
     .then(transformConnectorRequestApiResponse);
 };
 
@@ -178,10 +175,9 @@ const getConnectorOverview = ({
   });
 
   return api
-    .get<KlawApiResponse<"getConnectorOverview">>(
-      API_PATHS.getConnectorOverview,
-      new URLSearchParams(queryParams)
-    )
+    .get<
+      KlawApiResponse<"getConnectorOverview">
+    >(API_PATHS.getConnectorOverview, new URLSearchParams(queryParams))
     .then((connectorOverview) => {
       if (!connectorOverview.connectorExists) {
         // Currently the API returns a reduced TopicOverview when

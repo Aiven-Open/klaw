@@ -69,10 +69,9 @@ const getSchemaRequestsForApprover = (
   };
 
   return api
-    .get<KlawApiResponse<"getSchemaRequestsForApprover">>(
-      API_PATHS.getSchemaRequestsForApprover,
-      new URLSearchParams(queryObject)
-    )
+    .get<
+      KlawApiResponse<"getSchemaRequestsForApprover">
+    >(API_PATHS.getSchemaRequestsForApprover, new URLSearchParams(queryObject))
     .then(transformGetSchemaRequests);
 };
 
@@ -106,10 +105,9 @@ const getSchemaRequests = (
   };
 
   return api
-    .get<KlawApiResponse<"getSchemaRequests">>(
-      API_PATHS.getSchemaRequests,
-      new URLSearchParams(queryObject)
-    )
+    .get<
+      KlawApiResponse<"getSchemaRequests">
+    >(API_PATHS.getSchemaRequests, new URLSearchParams(queryObject))
     .then(transformGetSchemaRequests);
 };
 
