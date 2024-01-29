@@ -179,8 +179,8 @@ devDependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   rollup-plugin-visualizer:
-    specifier: ^5.11.0
-    version: 5.11.0
+    specifier: ^5.12.0
+    version: 5.12.0
   ts-jest:
     specifier: ^29.1.1
     version: 29.1.1(@babel/core@7.22.20)(esbuild@0.18.17)(jest@29.7.0)(typescript@5.3.3)
@@ -9597,8 +9597,8 @@ packages:
       glob: 7.2.3
     dev: true
 
-  /rollup-plugin-visualizer@5.11.0:
-    resolution: {integrity: sha512-exM0Ms2SN3AgTzMeW7y46neZQcyLY7eKwWAop1ZoRTCZwyrIRdMMJ6JjToAJbML77X/9N8ZEpmXG4Z/Clb9k8g==}
+  /rollup-plugin-visualizer@5.12.0:
+    resolution: {integrity: sha512-8/NU9jXcHRs7Nnj07PF2o4gjxmm9lXIrZ8r175bT9dK8qoLlvKTwRMArRCMgpMGlq8CTLugRvEmyMeMXIU2pNQ==}
     engines: {node: '>=14'}
     hasBin: true
     peerDependencies:
