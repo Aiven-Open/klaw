@@ -1007,12 +1007,19 @@ public class UtilMethods {
     return kwClusters;
   }
 
-  public Map<String, List<String>> getRolesPermsMap() {
+  public Map<String, List<String>> getRolesPermsMapForSuperuser() {
     Map<String, List<String>> rolesPermsMap = new HashMap<>();
     List<String> permsList =
         List.of(
             PermissionType.ADD_EDIT_DELETE_ENVS.name(),
             PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name());
+    rolesPermsMap.put("USER", permsList);
+    return rolesPermsMap;
+  }
+
+  public Map<String, List<String>> getRolesPermsMapForNormalUser() {
+    Map<String, List<String>> rolesPermsMap = new HashMap<>();
+    List<String> permsList = new ArrayList<>();
     rolesPermsMap.put("USER", permsList);
     return rolesPermsMap;
   }

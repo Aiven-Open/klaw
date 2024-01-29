@@ -317,7 +317,7 @@ public class MailUtils {
         });
   }
 
-  private void sendMail(
+  protected void sendMail(
       String username,
       HandleDbRequests dbHandle,
       String formattedStr,
