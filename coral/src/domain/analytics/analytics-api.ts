@@ -17,10 +17,9 @@ const getActivityLogForTeamOverview = async (
   });
 
   const response = api
-    .get<KlawApiResponse<"getActivityLogForTeamOverview">>(
-      API_PATHS.getActivityLogForTeamOverview,
-      parsedParams
-    )
+    .get<
+      KlawApiResponse<"getActivityLogForTeamOverview">
+    >(API_PATHS.getActivityLogForTeamOverview, parsedParams)
     .then(transformGetActivityLogForTeamOverviewResponse);
 
   return response;
