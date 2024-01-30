@@ -61,7 +61,6 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createPrivateRoute } from "src/services/feature-flags/route-utils";
 
 const routes: Array<RouteObject> = [
   {
@@ -125,15 +124,13 @@ const routes: Array<RouteObject> = [
           },
         ],
       },
-      createPrivateRoute({
+      {
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
-        permission: "manageConnectors",
-      }),
-      createPrivateRoute({
+      },
+      {
         path: Routes.CONNECTOR_OVERVIEW,
         element: <ConnectorDetailsPage />,
-        permission: "manageConnectors",
         children: [
           {
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
@@ -164,7 +161,7 @@ const routes: Array<RouteObject> = [
             id: ConnectorOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,

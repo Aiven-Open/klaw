@@ -8,7 +8,6 @@ import person from "@aivenio/aquarium/dist/src/icons/person";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
-import PermissionsCheck from "src/app/components/PermissionsCheck";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
@@ -54,19 +53,17 @@ function MainNavigation() {
             }
           />
         </li>
-        <PermissionsCheck permission="manageConnectors">
-          <li>
-            <MainNavigationLink
-              icon={dataflow02}
-              to={Routes.CONNECTORS}
-              linkText={"Connectors"}
-              active={
-                pathname.startsWith(Routes.CONNECTORS) ||
-                pathname.startsWith("/connector")
-              }
-            />
-          </li>
-        </PermissionsCheck>
+        <li>
+          <MainNavigationLink
+            icon={dataflow02}
+            to={Routes.CONNECTORS}
+            linkText={"Connectors"}
+            active={
+              pathname.startsWith(Routes.CONNECTORS) ||
+              pathname.startsWith("/connector")
+            }
+          />
+        </li>
         <li>
           <MainNavigationLink
             icon={tickCircle}

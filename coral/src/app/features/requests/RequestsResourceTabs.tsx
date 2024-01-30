@@ -1,6 +1,5 @@
-import { EmptyState, Tabs } from "@aivenio/aquarium";
+import { Tabs } from "@aivenio/aquarium";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
-import PermissionsCheck from "src/app/components/PermissionsCheck";
 import {
   RequestsTabEnum,
   isRequestsTabEnum,
@@ -45,17 +44,7 @@ function RequestsResourceTabs({ currentTab }: Props) {
         value={RequestsTabEnum.CONNECTORS}
         aria-label={"Connector requests"}
       >
-        {/* Because Tabs doesn't allow to pass anything else than Tabs.Tab as child :| */}
-        <PermissionsCheck
-          permission="manageConnectors"
-          placeholder={
-            <EmptyState title="Not authorized">
-              You are not authorized to manage connectors.
-            </EmptyState>
-          }
-        >
-          {currentTab === RequestsTabEnum.CONNECTORS && <Outlet />}
-        </PermissionsCheck>
+        {currentTab === RequestsTabEnum.CONNECTORS && <Outlet />}
       </Tabs.Tab>
     </Tabs>
   );

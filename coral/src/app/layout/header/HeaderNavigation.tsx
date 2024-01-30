@@ -9,8 +9,6 @@ import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { Routes } from "src/app/router_utils";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import PermissionsCheck from "src/app/components/PermissionsCheck";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
@@ -21,61 +19,41 @@ const requestNewEntityPaths: { [key: string]: string } = {
 
 function HeaderNavigation() {
   const navigate = useNavigate();
-  const {
-    permissions: { requestItems, manageConnectors, approveDeclineTopics },
-  } = useAuthContext();
 
   return (
     <Box display={"flex"} colGap={"l1"} alignItems="center">
-      <div
-        style={{
-          border: "1px solid white",
-          color: "white",
-          padding: "4px",
-          marginRight: "300px",
+      <DropdownMenu
+        onAction={(key) => {
+          if (requestNewEntityPaths[key.toString()] !== undefined) {
+            navigate(requestNewEntityPaths[key.toString()]);
+          }
         }}
       >
-        Permissions:{" "}
-        {JSON.stringify({
-          requestItems,
-          manageConnectors,
-          approveDeclineTopics,
-        })}
-      </div>
+        <DropdownMenu.Trigger>
+          <Button.PrimaryDropdown aria-label="Request a new">
+            Request a new
+          </Button.PrimaryDropdown>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenu.Item key="topic" icon={codeBlock}>
+            Topic
+          </DropdownMenu.Item>
+          <DropdownMenu.Item key="acl" icon={people}>
+            ACL
+          </DropdownMenu.Item>
+          <DropdownMenu.Item key="schema" icon={code}>
+            Schema
+          </DropdownMenu.Item>
+          <DropdownMenu.Item key="connector" icon={dataflow02}>
+            Kafka connector
+          </DropdownMenu.Item>
+        </DropdownMenu.Items>
+      </DropdownMenu>
 
-      <PermissionsCheck permission={"requestItems"}>
-        <DropdownMenu
-          onAction={(key) => {
-            if (requestNewEntityPaths[key.toString()] !== undefined) {
-              navigate(requestNewEntityPaths[key.toString()]);
-            }
-          }}
-        >
-          <DropdownMenu.Trigger>
-            <Button.PrimaryDropdown aria-label="Request a new">
-              Request a new
-            </Button.PrimaryDropdown>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Items>
-            <DropdownMenu.Item key="topic" icon={codeBlock}>
-              Topic
-            </DropdownMenu.Item>
-            <DropdownMenu.Item key="acl" icon={people}>
-              ACL
-            </DropdownMenu.Item>
-            <DropdownMenu.Item key="schema" icon={code}>
-              Schema
-            </DropdownMenu.Item>
-            <DropdownMenu.Item key="connector" icon={dataflow02}>
-              Kafka connector
-            </DropdownMenu.Item>
-          </DropdownMenu.Items>
-        </DropdownMenu>
+      <Box height={"l3"} paddingRight={"4"}>
+        <Divider direction="vertical" size={1} />
+      </Box>
 
-        <Box height={"l3"} paddingRight={"4"}>
-          <Divider direction="vertical" size={1} />
-        </Box>
-      </PermissionsCheck>
       <nav aria-label={"Quick links"}>
         <Box
           component={"ul"}
