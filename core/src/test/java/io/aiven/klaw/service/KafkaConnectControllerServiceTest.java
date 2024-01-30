@@ -26,6 +26,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -126,7 +127,8 @@ public class KafkaConnectControllerServiceTest {
     resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TENANT_ID);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncKafkaConnectCluster()).thenReturn("1");
@@ -153,7 +155,8 @@ public class KafkaConnectControllerServiceTest {
     KafkaConnectorRequestModel kafkaConnectorRequestModel = getConnectRequestModel();
     kafkaConnectorRequestModel.setConnectorConfig("plain string"); // Invalid json
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.requestForConnector(any()))
         .thenThrow(new RuntimeException("Unrecognized token"));
 
@@ -170,7 +173,8 @@ public class KafkaConnectControllerServiceTest {
     KafkaConnectorRequestModel kafkaConnectorRequestModel = getConnectRequestModel();
     kafkaConnectorRequestModel.setConnectorConfig(getInvalidValidConnConfig());
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
@@ -185,7 +189,8 @@ public class KafkaConnectControllerServiceTest {
     KafkaConnectorRequestModel kafkaConnectorRequestModel = getConnectRequestModel();
     kafkaConnectorRequestModel.setConnectorConfig(getInvalidValidConnConfigTopicsTopicsRegex());
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
@@ -199,7 +204,8 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("1");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(TENANT_ID)))
         .thenReturn(List.of(getKwKafkaConnector()));
@@ -221,7 +227,8 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.existsConnectorRequest(
             "ConnectorOne", "1", RequestStatus.CREATED.value, TENANT_ID))
@@ -240,7 +247,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
             anyString(),
@@ -283,7 +291,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
             anyString(),
@@ -326,7 +335,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
             anyString(),
@@ -370,7 +380,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
             anyString(),
@@ -414,7 +425,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
     connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
     when(handleDbRequests.getAllConnectorRequests(
@@ -461,7 +473,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
     connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
     when(handleDbRequests.getAllConnectorRequests(
@@ -511,7 +524,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(3));
@@ -528,7 +542,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(3));
@@ -573,7 +588,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(3));
@@ -605,7 +621,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(3));
@@ -638,7 +655,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -672,7 +690,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -756,7 +775,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -790,7 +810,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -834,7 +855,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -875,7 +897,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -900,7 +923,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -930,7 +954,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
@@ -980,7 +1005,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
     when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));

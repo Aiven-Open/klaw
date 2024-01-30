@@ -39,6 +39,7 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -171,8 +172,10 @@ public class UsersTeamsControllerService {
     UserInfo existingUserInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(newUser.getUsername());
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<String> permissions =
-        manageDatabase.getRolesPermissionsPerTenant(tenantId).get(existingUserInfo.getRole());
+    Set<String> permissions =
+        manageDatabase
+            .getRolesPermissionsPerTenant(tenantId)
+            .getOrDefault(existingUserInfo.getRole(), Collections.emptySet());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
@@ -485,10 +488,10 @@ public class UsersTeamsControllerService {
 
     // check permissions of user to be deleted
     UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToDelete);
-    List<String> permissions =
+    Set<String> permissions =
         manageDatabase
             .getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()))
-            .get(existingUserInfo.getRole());
+            .getOrDefault(existingUserInfo.getRole(), Collections.emptySet());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       // user to be deleted has superuser permissions.

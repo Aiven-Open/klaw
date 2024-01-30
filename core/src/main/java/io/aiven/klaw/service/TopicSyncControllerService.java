@@ -586,12 +586,12 @@ public class TopicSyncControllerService {
   private List<String> tenantFilterTeams(Integer tenantId, boolean scheduledThread) {
     if (!scheduledThread
         && (!commonUtilsService.isNotAuthorizedUser(
-                getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)
-            || !commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)
-            || !commonUtilsService.isNotAuthorizedUser(
-                getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)
-            || !commonUtilsService.isNotAuthorizedUser(
-                getPrincipal(), PermissionType.SYNC_BACK_TOPICS))) {
+            getPrincipal(),
+            Set.of(
+                PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+                PermissionType.SYNC_TOPICS,
+                PermissionType.SYNC_SUBSCRIPTIONS,
+                PermissionType.SYNC_BACK_TOPICS)))) {
       // tenant filtering
       if (tenantId == null) {
         tenantId = commonUtilsService.getTenantId(getUserName());

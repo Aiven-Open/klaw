@@ -12,6 +12,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import java.util.ArrayList;
@@ -98,7 +99,8 @@ public class UiConfigControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(getAllEnvs());
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
     when(tenantMap.get(anyInt())).thenReturn("1");
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
@@ -115,7 +117,8 @@ public class UiConfigControllerServiceTest {
   @Order(4)
   public void getSchemaRegEnvs() {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     List<EnvModelResponse> envsList = envsClustersTenantsControllerService.getSchemaRegEnvs();

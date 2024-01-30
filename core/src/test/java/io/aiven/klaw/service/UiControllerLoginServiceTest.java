@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.catalina.connector.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -256,7 +257,7 @@ class UiControllerLoginServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
-        .thenReturn(Map.of(TestConstants.ROLE, List.of(TestConstants.PERMISSION)));
+        .thenReturn(Map.of(TestConstants.ROLE, Set.of(TestConstants.PERMISSION)));
     Mockito.when(handleDbRequestsJdbc.getRegistrationId(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(
             manageDatabase.getTeamIdFromTeamName(
@@ -293,7 +294,7 @@ class UiControllerLoginServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
-        .thenReturn(Map.of(TestConstants.ROLE, List.of(TestConstants.PERMISSION)));
+        .thenReturn(Map.of(TestConstants.ROLE, Set.of(TestConstants.PERMISSION)));
 
     String actual =
         uiControllerLoginService.checkAnonymousLogin(
@@ -317,7 +318,7 @@ class UiControllerLoginServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
-        .thenReturn(Map.of(TestConstants.ROLE, List.of(TestConstants.PERMISSION)));
+        .thenReturn(Map.of(TestConstants.ROLE, Set.of(TestConstants.PERMISSION)));
 
     String actual =
         uiControllerLoginService.checkAnonymousLogin(

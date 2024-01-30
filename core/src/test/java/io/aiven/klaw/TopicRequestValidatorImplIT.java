@@ -76,7 +76,7 @@ public class TopicRequestValidatorImplIT {
   @Order(1)
   public void isValidTestNotAuthorizedUser() {
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =
         validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -87,7 +87,8 @@ public class TopicRequestValidatorImplIT {
   @Order(2)
   public void isValidTestTenantFiltering() {
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("2"));
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =
@@ -101,7 +102,8 @@ public class TopicRequestValidatorImplIT {
   @Order(3)
   public void isValidTestTopicName() {
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
 
@@ -126,7 +128,8 @@ public class TopicRequestValidatorImplIT {
   public void isValidTestVerifyTenantConfigExists() {
     Integer tenantId = 1;
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -147,7 +150,8 @@ public class TopicRequestValidatorImplIT {
     Topic topic = utilMethods.getTopic("testtopic");
 
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -174,7 +178,8 @@ public class TopicRequestValidatorImplIT {
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     addTopicRequest.setRequestOperationType(RequestOperationType.PROMOTE);
     addTopicRequest.setEnvironment("2");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1", "2"));
@@ -215,7 +220,8 @@ public class TopicRequestValidatorImplIT {
     env.setParams(new EnvParams());
     env.getParams().setTopicPrefix(List.of(topicPrefixSuffix));
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -247,7 +253,8 @@ public class TopicRequestValidatorImplIT {
 
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -274,7 +281,8 @@ public class TopicRequestValidatorImplIT {
     TopicCreateRequestModel editTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     editTopicRequest.setRequestId(1010);
     TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -305,7 +313,8 @@ public class TopicRequestValidatorImplIT {
     editTopicRequest.setRequestId(1010);
     editTopicRequest.setRequestOperationType(RequestOperationType.DELETE);
     TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
@@ -331,7 +340,8 @@ public class TopicRequestValidatorImplIT {
     topic.setEnvironment("1");
 
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(teamId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
