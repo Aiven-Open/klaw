@@ -24,6 +24,8 @@ import {
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { table } from "console";
 
 function TopicApprovals() {
   const queryClient = useQueryClient();
@@ -36,6 +38,10 @@ function TopicApprovals() {
 
   const { environment, status, search, teamId, requestType } =
     useFiltersContext();
+
+  const {
+    permissions: { approveDeclineTopics },
+  } = useAuthContext();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -253,6 +259,9 @@ function TopicApprovals() {
           }}
           isLoading={approveIsLoading || declineIsLoading}
           disabledActions={
+            // Because `primaryAction` is required on Modal, can't *not* render it
+            // So we need to disabled
+            !approveDeclineTopics ||
             selectedTopicRequest?.requestStatus !== "CREATED" ||
             approveIsLoading ||
             declineIsLoading

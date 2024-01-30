@@ -8,6 +8,7 @@ type AuthUser = {
   canSwitchTeams: KlawApiModel<"AuthenticationInfo">["canSwitchTeams"];
   totalTeamTopics: number;
   totalOrgTopics: number;
+  permissions: Record<string, boolean>;
 };
 
 export type { AuthUser };
