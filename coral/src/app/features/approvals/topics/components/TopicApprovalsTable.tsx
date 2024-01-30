@@ -13,6 +13,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -45,7 +46,11 @@ function TopicApprovalsTable({
   isBeingApproved,
   isBeingDeclined,
 }: TopicApprovalsTableProp) {
-  const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
+  const {
+    permissions: { approveDeclineTopics },
+  } = useAuthContext();
+
+  let columns: Array<DataTableColumn<TopicRequestTableRow>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
     {
       type: "status",
@@ -109,51 +114,57 @@ function TopicApprovalsTable({
         "aria-label": `View topic request for ${request.topicname}`,
       }),
     },
-    {
-      type: "action",
-      headerName: "Approve",
-      headerInvisible: true,
-      width: 30,
-      action: (request) => {
-        const approveInProgress = isBeingApproved(request.id);
-        const declineInProgress = isBeingDeclined(request.id);
-        return {
-          onClick: () => onApprove(request.id),
-          text: "Approve",
-          "aria-label": `Approve topic request for ${request.topicname}`,
-          disabled:
-            approveInProgress ||
-            declineInProgress ||
-            actionsDisabled ||
-            request.requestStatus !== "CREATED",
-          icon: approveInProgress ? loadingIcon : tickCircle,
-          loading: approveInProgress,
-        };
-      },
-    },
-    {
-      type: "action",
-      headerName: "Decline",
-      headerInvisible: true,
-      width: 30,
-      action: (request) => {
-        const approveInProgress = isBeingApproved(request.id);
-        const declineInProgress = isBeingDeclined(request.id);
-        return {
-          onClick: () => onDecline(request.id),
-          "aria-label": `Decline topic request for ${request.topicname}`,
-          text: "Decline",
-          disabled:
-            declineInProgress ||
-            approveInProgress ||
-            actionsDisabled ||
-            request.requestStatus !== "CREATED",
-          icon: isBeingDeclined(request.id) ? loadingIcon : deleteIcon,
-          loading: isBeingDeclined(request.id),
-        };
-      },
-    },
   ];
+
+  if (approveDeclineTopics) {
+    columns = [
+      ...columns,
+      {
+        type: "action",
+        headerName: "Approve",
+        headerInvisible: true,
+        width: 30,
+        action: (request) => {
+          const approveInProgress = isBeingApproved(request.id);
+          const declineInProgress = isBeingDeclined(request.id);
+          return {
+            onClick: () => onApprove(request.id),
+            text: "Approve",
+            "aria-label": `Approve topic request for ${request.topicname}`,
+            disabled:
+              approveInProgress ||
+              declineInProgress ||
+              actionsDisabled ||
+              request.requestStatus !== "CREATED",
+            icon: approveInProgress ? loadingIcon : tickCircle,
+            loading: approveInProgress,
+          };
+        },
+      },
+      {
+        type: "action",
+        headerName: "Decline",
+        headerInvisible: true,
+        width: 30,
+        action: (request) => {
+          const approveInProgress = isBeingApproved(request.id);
+          const declineInProgress = isBeingDeclined(request.id);
+          return {
+            onClick: () => onDecline(request.id),
+            "aria-label": `Decline topic request for ${request.topicname}`,
+            text: "Decline",
+            disabled:
+              declineInProgress ||
+              approveInProgress ||
+              actionsDisabled ||
+              request.requestStatus !== "CREATED",
+            icon: isBeingDeclined(request.id) ? loadingIcon : deleteIcon,
+            loading: isBeingDeclined(request.id),
+          };
+        },
+      },
+    ];
+  }
 
   const rows: TopicRequestTableRow[] = requests.map((request: TopicRequest) => {
     return {
