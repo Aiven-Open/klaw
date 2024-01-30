@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.constants.TestConstants;
 import io.aiven.klaw.constants.UriConstants;
-import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -81,24 +80,6 @@ class UiControllerLoginServiceTest {
         "", uiControllerLoginService.getReturningPage("", TestConstants.USERNAME));
   }
 
-  @Test
-  public void getReturningPage_UserNameNotNull_UserInfoNotNull_SAAS() {
-    ReflectionTestUtils.setField(uiControllerLoginService, "kwInstallationType", "saas");
-    UserInfo userInfo = new UserInfo();
-    KwTenants kwTenants = new KwTenants();
-    kwTenants.setIsActive("false");
-
-    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
-    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(userInfo);
-    Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
-        .thenReturn(TestConstants.TENANT_ID);
-    Mockito.when(manageDatabase.getTenantFullConfig(TestConstants.TENANT_ID)).thenReturn(kwTenants);
-
-    Assertions.assertEquals(
-        UriConstants.TENANT_INFO_PAGE,
-        uiControllerLoginService.getReturningPage("", TestConstants.USERNAME));
-  }
-
   @ParameterizedTest
   @ValueSource(
       strings = {
@@ -107,8 +88,7 @@ class UiControllerLoginServiceTest {
         UriConstants.REGISTER_PAGE,
         UriConstants.FORGOT_PASSWORD_PAGE,
         UriConstants.NEW_AD_USER_PAGE,
-        UriConstants.REGISTRATION_REVIEW,
-        UriConstants.USER_ACTIVATION
+        UriConstants.REGISTRATION_REVIEW
       })
   public void getReturningPage_UserNameNotNull_UserInfoNotNull_IndexPage(String uri) {
     UserInfo userInfo = new UserInfo();
@@ -153,8 +133,7 @@ class UiControllerLoginServiceTest {
         UriConstants.NEW_AD_USER_PAGE,
         UriConstants.TERMS_PAGE,
         UriConstants.FEEDBACK_PAGE,
-        UriConstants.REGISTRATION_REVIEW,
-        UriConstants.USER_ACTIVATION
+        UriConstants.REGISTRATION_REVIEW
       })
   public void getReturningPage_Failure(String uri) {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
@@ -166,7 +145,7 @@ class UiControllerLoginServiceTest {
   }
 
   @Test
-  public void getReturningPage_Failure_NotSAAS() {
+  public void getReturningPage_Failure() {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME))
         .thenThrow(new RuntimeException("Error Occurred"));

@@ -62,14 +62,8 @@ public class KwConstants {
       "Dear User, \\nYour ACL request for %s for the topic %s has been declined.\\nReason: %s";
   public static final String MAIL_REGISTERUSER_CONTENT =
       "Dear Super User,\\nA new user registration request is pending:\\n\\nUser name: %s\\nName: %s\\nTeam: %s\\nRole: %s";
-  public static final String MAIL_REGISTERUSER_SAAS_CONTENT =
-      "Dear Super User, \\nA request for new user registration has been received from:\\n\\nUser name: %s \\nName: %s ";
   public static final String MAIL_REGISTERUSERTOUSER_CONTENT =
       "Dear User, \\nThank you for registering in Klaw. Below are your details. \\n\\nUser name: %s \\nName: %s \\nTeam: %s \\nRole: %s \\n\\n Your account is pending activation.";
-  public static final String MAIL_REGISTERUSERTOUSER_SAAS_CONTENT =
-      "Dear User, \\nThank you for registering in Klaw. Below are your registration details. \\n\\nUser name: %s \\nPassword: %s \\nName: %s \\nTenant: %s \\nTeam: %s \\nRole: %s \\n\\n Your account is pending activation.";
-  public static final String MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT =
-      "Dear User, \\nThank you for registering in Klaw. Below are your registration details. \\n\\nUser name: %s \\nPassword: %s \\nName: %s \\nTeam: %s \\nRole: %s \\n\\n ACTIVATE: Click this link %s to activate your account.";
   public static final String MAIL_RECONTOPICS_CONTENT =
       "Dear User, \\n These are the topics that require reconciliation:\\n\\nTenant: %s\\nTopics: %s";
   public static final String MAIL_NEWUSERADDED_CONTENT =

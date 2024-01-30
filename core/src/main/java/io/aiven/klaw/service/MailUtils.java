@@ -5,9 +5,7 @@ import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,12 +60,7 @@ public class MailUtils {
 
   private static final String PWD_CHANGED_KEY = "klaw.mail.passwordchanged.content";
   private static final String REGISTER_USER_KEY = "klaw.mail.registeruser.content";
-  private static final String REGISTER_USER_SAAS_KEY = "klaw.mail.registeruser.saas.content";
   private static final String REGISTER_USER_TOUSER_KEY = "klaw.mail.registerusertouser.content";
-  private static final String REGISTER_USER_SAAS_TOUSER_KEY =
-      "klaw.mail.registerusertouser.saas.content";
-  private static final String REGISTER_USER_SAASADMIN_TOUSER_KEY =
-      "klaw.mail.registerusertouser.saasadmin.content";
   private static final String RECONCILIATION_TOPICS_KEY = "klaw.mail.recontopics.content";
 
   @Autowired ManageDatabase manageDatabase;
@@ -176,67 +169,6 @@ public class MailUtils {
     subject = KLAW_ACCESS_PASSWORD_CHANGED;
 
     sendPwdResetMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
-  }
-
-  void sendMailRegisteredUserSaas(
-      RegisterUserInfo registerUserInfo,
-      HandleDbRequests dbHandle,
-      String tenantName,
-      int tenantId,
-      String teamName,
-      String activationUrl,
-      String loginUrl) {
-    String formattedStr, subject;
-    // sending to super admin
-    String registrationRequest =
-        manageDatabase.getKwPropertyValue(REGISTER_USER_SAAS_KEY, tenantId);
-    formattedStr =
-        String.format(
-            registrationRequest, registerUserInfo.getUsername(), registerUserInfo.getFullname());
-
-    subject = NEW_USER_REGISTRATION_REQUEST;
-    if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId)) {
-      sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
-    }
-    // Sending to user
-    if (KwConstants.INFRATEAM.equals(registerUserInfo.getTeam())) {
-      registrationRequest =
-          manageDatabase.getKwPropertyValue(REGISTER_USER_SAASADMIN_TOUSER_KEY, tenantId);
-      formattedStr =
-          String.format(
-              registrationRequest,
-              registerUserInfo.getUsername(),
-              registerUserInfo.getPwd(),
-              registerUserInfo.getFullname(),
-              teamName,
-              registerUserInfo.getRole(),
-              activationUrl);
-    } else {
-      registrationRequest =
-          manageDatabase.getKwPropertyValue(REGISTER_USER_SAAS_TOUSER_KEY, tenantId);
-      formattedStr =
-          String.format(
-              registrationRequest,
-              registerUserInfo.getUsername(),
-              registerUserInfo.getPwd(),
-              registerUserInfo.getFullname(),
-              tenantName,
-              teamName,
-              registerUserInfo.getRole());
-    }
-
-    subject = KLAW_USER_REGISTRATION_REQUEST;
-    sendMail(
-        registerUserInfo.getUsername(),
-        dbHandle,
-        formattedStr,
-        subject,
-        true,
-        false,
-        registerUserInfo.getMailid(),
-        tenantId,
-        loginUrl,
-        true);
   }
 
   void sendMailRegisteredUser(
@@ -524,14 +456,6 @@ public class MailUtils {
                     && (teamId == null || !user.getTeamId().equals(teamId)))
         .map(u -> u.getMailid())
         .toList();
-  }
-
-  public String sendMailToSaasAdmin(int tenantId, String userName, String period, String loginUrl) {
-    String mailtext =
-        "Tenant extension : Tenant " + tenantId + " username " + userName + " period " + period;
-    emailService.sendSimpleMessage(
-        userName, kwAdminMailId, "Tenant Extension", mailtext, tenantId, loginUrl);
-    return ApiResultStatus.SUCCESS.value;
   }
 
   public enum MailType {

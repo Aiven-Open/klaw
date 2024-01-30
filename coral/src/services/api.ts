@@ -153,7 +153,6 @@ const API_PATHS = {
   getMyTenantInfo: "/getMyTenantInfo",
   getMyProfileInfo: "/getMyProfileInfo",
   getKwReport: "/getKwReport",
-  getKwPubkey: "/getKwPubkey",
   getSupportedKafkaProtocols: "/getKafkaProtocols",
   getKafkaConnectEnvs: "/getKafkaConnectEnvs",
   getEnvs: "/getEnvs",
@@ -195,7 +194,6 @@ const API_PATHS = {
   getAclsCountPerEnv: "/getAclsCountPerEnv",
   getAclRequests: "/getAclRequests",
   getAclRequestsForApprover: "/getAclRequestsForApprover",
-  getAclCommand: "/getAclCommands",
 } satisfies {
   [key in keyof Omit<
     ApiOperations,

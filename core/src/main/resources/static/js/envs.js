@@ -30,10 +30,6 @@ app.directive('onReadFile', function ($parse) {
 
 app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
-
-	$scope.aclCommandSsl = "";
-	$scope.aclCommandPlaintext = "";
-
 	$scope.kafkaClusters = [ { label: 'Non-Aiven', value: 'nonaiven' }, { label: 'Aiven', value: 'aiven' }	];
 
 	// Set http service defaults
@@ -168,55 +164,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     data: {'clusterId' : clusterId}
                 }).success(function(output) {
                     $scope.clusterDetails = output;
-                }).error(
-                    function(error)
-                    {
-                        $scope.alert = error;
-                    }
-                );
-        }
-
-        $scope.downloadPubKey = function(){
-                    $http({
-                        method: "GET",
-                        url: "getKwPubkey",
-                        headers : { 'Content-Type' : 'application/json' }
-                    }).success(function(output, status, headers) {
-                        var binary_string = window.atob(output.data);
-                        var len = binary_string.length;
-                        var bytes = new Uint8Array(len);
-                        for (var i = 0; i < len; i++) {
-                            bytes[i] = binary_string.charCodeAt(i);
-                        }
-
-                        var a = window.document.createElement('a');
-                        a.href = window.URL.createObjectURL(new Blob([bytes.buffer], { type:'application/octet-stream' }));
-                        a.download = output.filename;
-                        document.body.appendChild(a)
-                        a.click();
-
-                        swal({
-                             title: "",
-                             text: "PublicKey is being downloaded.",
-                             timer: 2000,
-                             showConfirmButton: false
-                         });
-                    }).error(
-                        function(error)
-                        {
-                            $scope.alert = error;
-                        }
-                    );
-          }
-
-        $scope.getAclCommand = function(){
-            $http({
-                    method: "GET",
-                    url: "getAclCommands",
-                    headers : { 'Content-Type' : 'application/json' }
-                }).success(function(output) {
-                    $scope.aclCommandSsl = output.aclCommandSsl;
-                    $scope.aclCommandPlaintext = output.aclCommandPlaintext;
                 }).error(
                     function(error)
                     {
@@ -678,15 +625,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             $scope.alertnote = "Please select a protocol.";
                             $scope.showAlertToast();
                             return;
-                        }
-
-                        if($scope.addNewCluster.protocol === 'SSL' && $scope.dashboardDetails.saasEnabled === 'saas'){
-                            if(!$scope.addNewCluster.pubkeyUploadedFromUI)
-                            {
-                                $scope.alertnote = "Please select a valid Public key file";
-                                $scope.showAlertToast();
-                                return;
-                            }
                         }
 
                         if($scope.kafkaFlavor === 'Aiven for Apache Kafka' && $scope.addNewCluster.clusterType === 'kafka')

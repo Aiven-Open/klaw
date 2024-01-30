@@ -379,9 +379,6 @@ export type paths = {
   "/getKwReport": {
     get: operations["getKwReport"];
   };
-  "/getKwPubkey": {
-    get: operations["getKwPubkey"];
-  };
   "/getKafkaProtocols": {
     get: operations["getSupportedKafkaProtocols"];
   };
@@ -495,9 +492,6 @@ export type paths = {
   };
   "/getAclRequestsForApprover": {
     get: operations["getAclRequestsForApprover"];
-  };
-  "/getAclCommands": {
-    get: operations["getAclCommand"];
   };
   "/environments/schemaRegistry": {
     get: operations["getSchemaRegEnvsPaginated"];
@@ -1728,6 +1722,8 @@ export type components = {
       myteamtopics: string;
       myOrgTopics: string;
       googleFeedbackFormLink: string;
+      klawOptionalPermissionNewTopicCreationEnabled: string;
+      klawOptionalPermissionNewTopicCreation: string;
     };
     KwPropertiesResponse: {
       result?: string;
@@ -1813,11 +1809,6 @@ export type components = {
       aclResourceType?: string;
       deletable?: boolean;
       editable?: boolean;
-    };
-    AclCommands: {
-      result?: string;
-      aclCommandSsl?: string;
-      aclCommandPlaintext?: string;
     };
   };
   responses: never;
@@ -3739,16 +3730,6 @@ export type operations = {
       };
     };
   };
-  getKwPubkey: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwReport"];
-        };
-      };
-    };
-  };
   getSupportedKafkaProtocols: {
     responses: {
       /** @description OK */
@@ -4294,16 +4275,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getAclCommand: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclCommands"];
         };
       };
     };

@@ -8,14 +8,12 @@ import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
-import io.aiven.klaw.model.response.AclCommands;
 import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
-import io.aiven.klaw.model.response.KwReport;
 import io.aiven.klaw.model.response.SupportedProtocolInfo;
 import io.aiven.klaw.model.response.TenantInfo;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
@@ -334,23 +332,6 @@ public class EnvsClustersTenantsController {
   public ResponseEntity<KwTenantModel> getMyTenantInfo() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getMyTenantInfo(), HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/getAclCommands",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AclCommands> getAclCommand() {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getAclCommands(), HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/getKwPubkey",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<KwReport> getKwPubkey() {
-    return new ResponseEntity<>(envsClustersTenantsControllerService.getPublicKey(), HttpStatus.OK);
   }
 
   @RequestMapping(

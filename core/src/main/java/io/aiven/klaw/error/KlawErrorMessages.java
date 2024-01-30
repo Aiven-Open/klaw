@@ -254,17 +254,6 @@ public class KlawErrorMessages {
   // Roles permissions service
   public static final String ROLE_PRM_ERR_101 = "Not Allowed";
 
-  // Saas service
-  public static final String SAAS_ERR_101 = "User already exists. You may login.";
-
-  public static final String SAAS_ERR_102 = "Something went wrong. Please try again.";
-
-  public static final String SAAS_ERR_103 = "Tenant does not exist.";
-
-  public static final String SAAS_ERR_104 = "Registration already exists. You may login.";
-
-  public static final String SAAS_ERR_105 = "You cannot request users for default tenant.";
-
   // Schema service
   public static final String SCHEMA_ERR_101 =
       "You are not allowed to approve your own schema requests.";

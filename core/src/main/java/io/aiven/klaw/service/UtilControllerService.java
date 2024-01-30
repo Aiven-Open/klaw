@@ -75,12 +75,6 @@ public class UtilControllerService implements InitializingBean {
   @Value("${klaw.enable.authorization.ad:false}")
   private String adAuthRoleEnabled;
 
-  @Value("${klaw.admin.mailid:info@klaw-project.io}")
-  private String saasKwAdminMailId;
-
-  @Value("${klaw.installation.type:onpremise}")
-  private String kwInstallationType;
-
   @Value("${server.servlet.context-path:}")
   private String kwContextPath;
 

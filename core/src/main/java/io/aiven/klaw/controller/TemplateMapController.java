@@ -171,15 +171,6 @@ public class TemplateMapController {
     return checkAuth("envs.html", request, response, abstractAuthenticationToken);
   }
 
-  @RequestMapping(value = "/userActivation", method = RequestMethod.GET)
-  public String userActivation(
-      ModelMap model,
-      HttpServletRequest request,
-      HttpServletResponse response,
-      AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth(UriConstants.USER_ACTIVATION, request, response, abstractAuthenticationToken);
-  }
-
   @RequestMapping(value = "/helpwizard", method = RequestMethod.GET)
   public String helpWizard(
       ModelMap model,

@@ -22,7 +22,6 @@ public class UriConstants {
   public static final String REGISTRATION_REVIEW = "registrationReview";
   public static final String REGISTER = "register";
   public static final String FORGOT_PASSWORD = "forgotPassword";
-  public static final String USER_ACTIVATION = "userActivation";
   public static final String INDEX = "index";
   public static final String OAUTH_LOGIN = "oauthLogin";
   public static final String REDIRECT = "redirect:";

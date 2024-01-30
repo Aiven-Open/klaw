@@ -41,8 +41,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UiControllerLoginService {
 
-  private static final String SAAS = "saas";
-
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
@@ -80,19 +78,11 @@ public class UiControllerLoginService {
           return UriConstants.REGISTER_PAGE;
         }
 
-        if (SAAS.equals(kwInstallationType)) {
-          int tenantId = commonUtilsService.getTenantId(userName);
-          if (!"true".equals(manageDatabase.getTenantFullConfig(tenantId).getIsActive())) {
-            return UriConstants.TENANT_INFO_PAGE;
-          }
-        }
-
         log.debug("Authenticated user : {}", userName);
         if (UriConstants.LOGIN_PAGE.equals(uri)
             || UriConstants.HOME_PAGE.equals(uri)
             || UriConstants.REGISTER_PAGE.equals(uri)
             || uri.contains(UriConstants.REGISTRATION_REVIEW)
-            || uri.contains(UriConstants.USER_ACTIVATION)
             || UriConstants.FORGOT_PASSWORD_PAGE.equals(uri)
             || UriConstants.NEW_AD_USER_PAGE.equals(uri)) {
           return UriConstants.INDEX_PAGE;
@@ -108,7 +98,6 @@ public class UiControllerLoginService {
           || UriConstants.REGISTER_PAGE.equals(uri)
           || UriConstants.REGISTER_LDAP_PAGE.equals(uri)
           || uri.contains(UriConstants.REGISTRATION_REVIEW)
-          || uri.contains(UriConstants.USER_ACTIVATION)
           || UriConstants.FORGOT_PASSWORD_PAGE.equals(uri)
           || UriConstants.NEW_AD_USER_PAGE.equals(uri)
           || UriConstants.TERMS_PAGE.equals(uri)

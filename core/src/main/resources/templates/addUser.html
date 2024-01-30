@@ -484,13 +484,9 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group" ng-show="dashboardDetails.saasEnabled != 'saas'">
+											<div class="form-group">
 												<label class="control-label">User Name</label>
 												<input type="text" class="form-control" required ng-model="addNewUser.username" minlength="5" maxlength="250" placeholder="alexanderw">
-											</div>
-											<div class="form-group" ng-show="dashboardDetails.saasEnabled == 'saas'">
-												<label>Email Id</label>
-												<input type="email" class="form-control" required ng-model="addNewUser.username">
 											</div>
 										</div>
 										<!--/span-->
@@ -522,7 +518,7 @@
 									</div>
 
 									<!--/row-->
-									<div class="row"  ng-show="dashboardDetails.saasEnabled != 'saas'">
+									<div class="row">
 
 										<div class="col-md-6">
 											<div class="form-group">
@@ -582,9 +578,7 @@
 								<div id="alertbar">{{ alertnote }}</div>
 
 								<div class="form-actions">
-									<button ng-show="dashboardDetails.saasEnabled != 'saas'" ng-click="addNewUser();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
-										Save</button>
-									<button ng-show="dashboardDetails.saasEnabled == 'saas'" ng-click="addNewSaasUser();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+									<button ng-click="addNewUser();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
 									<button type="button" ng-click="cancelUserRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
