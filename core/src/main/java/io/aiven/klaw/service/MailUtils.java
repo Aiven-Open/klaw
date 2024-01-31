@@ -249,7 +249,7 @@ public class MailUtils {
         });
   }
 
-  private void sendMail(
+  protected void sendMail(
       String username,
       HandleDbRequests dbHandle,
       String formattedStr,
@@ -433,7 +433,7 @@ public class MailUtils {
   private List<String> getAllUsersWithPermissionToApproveRequest(
       int tenantId, String username, Integer teamId) {
 
-    Map<String, List<String>> rolesToPermissions =
+    Map<String, Set<String>> rolesToPermissions =
         manageDatabase.getRolesPermissionsPerTenant(tenantId);
 
     Set<String> roles = new HashSet<>();

@@ -80,7 +80,7 @@ public class RolesPermissionsControllerService {
 
     Collections.sort(permsList);
 
-    Map<String, List<String>> existingPerms =
+    Map<String, Set<String>> existingPerms =
         manageDatabase.getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()));
     Map<String, List<Map<String, Boolean>>> finalMap = new HashMap<>();
     List<Map<String, Boolean>> mapList;

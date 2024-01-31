@@ -23,6 +23,7 @@ import io.aiven.klaw.model.cluster.ConnectorsStatus;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -133,7 +134,8 @@ public class KafkaConnectSyncControllerServiceTest {
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKafkaConnectEnvList(anyInt())).thenReturn(List.of(env));

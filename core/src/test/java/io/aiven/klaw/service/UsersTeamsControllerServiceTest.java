@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -17,6 +18,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
@@ -115,7 +117,7 @@ public class UsersTeamsControllerServiceTest {
   @Test
   void updateUserNotAuthorized() throws KlawException {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -123,12 +125,13 @@ public class UsersTeamsControllerServiceTest {
   @Test
   void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
-        .thenReturn(utilMethods.getRolesPermsMap());
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
     assertThat(apiResponse.getMessage())
         .isEqualTo("Not Authorized to update another SUPERADMIN user.");
@@ -244,7 +247,8 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
     when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeams());
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(false);
     when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(false);
     List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
@@ -259,12 +263,13 @@ public class UsersTeamsControllerServiceTest {
   void deleteTeamFailure() throws KlawException {
     int teamId = 101;
     int tenantId = 101;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
-        .thenReturn(utilMethods.getRolesPermsMap());
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
     when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
     assertThat(apiResponse.getMessage())
@@ -273,7 +278,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void deleteUserFailureHasRequests() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
@@ -287,16 +293,55 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void deleteUserFailureisAdmin() throws KlawException {
-    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
-        .thenReturn(utilMethods.getRolesPermsMap());
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
+    when(handleDbRequests.deleteUserRequest(anyString())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
-    assertThat(apiResponse.getMessage())
-        .isEqualTo("Not Authorized. Cannot delete a user with SUPERADMIN access.");
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  void deleteUserSuccessNormalUser() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMapForNormalUser());
+    when(handleDbRequests.deleteUserRequest(anyString())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  void deleteUserFailureNoSuperUserPermission() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false, true);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
+    ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_106);
+  }
+
+  @Test
+  void deleteUserFailureNoDeletionPermission() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
+    ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.NOT_AUTHORIZED.getMessage());
   }
 
   @Test

@@ -223,7 +223,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
     assertThat(resultResp.isSuccess()).isTrue();
@@ -251,7 +252,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getMessage()).contains("Schema not registered");
@@ -284,7 +286,8 @@ public class SchemaRegistryControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     try {
       schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
@@ -307,7 +310,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
@@ -327,7 +331,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.requestForSchema(any()))
         .thenThrow(new RuntimeException("Error from schema upload"));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -509,7 +514,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
 
@@ -613,7 +619,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
@@ -643,7 +650,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
 

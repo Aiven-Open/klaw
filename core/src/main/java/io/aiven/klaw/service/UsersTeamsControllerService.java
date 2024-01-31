@@ -1,6 +1,8 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_MAIL_TEXT;
+import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_TEXT;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
@@ -23,6 +25,8 @@ import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
@@ -35,6 +39,7 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,8 +170,10 @@ public class UsersTeamsControllerService {
     UserInfo existingUserInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(newUser.getUsername());
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<String> permissions =
-        manageDatabase.getRolesPermissionsPerTenant(tenantId).get(existingUserInfo.getRole());
+    Set<String> permissions =
+        manageDatabase
+            .getRolesPermissionsPerTenant(tenantId)
+            .getOrDefault(existingUserInfo.getRole(), Collections.emptySet());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
@@ -477,14 +484,20 @@ public class UsersTeamsControllerService {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
+    // check permissions of user to be deleted
     UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToDelete);
-    List<String> permissions =
+    Set<String> permissions =
         manageDatabase
             .getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()))
-            .get(existingUserInfo.getRole());
+            .getOrDefault(existingUserInfo.getRole(), Collections.emptySet());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
-      return ApiResponse.notOk(TEAMS_ERR_106);
+      // user to be deleted has superuser permissions.
+      // check if you (logged in user who is deleting) have superuser permissions to delete user
+      if (commonUtilsService.isNotAuthorizedUser(
+          getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES)) {
+        return ApiResponse.notOk(TEAMS_ERR_106);
+      }
     }
 
     if (manageDatabase
@@ -503,6 +516,27 @@ public class UsersTeamsControllerService {
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.USERS, MetadataOperationType.DELETE, userIdToDelete);
+        manageDatabase
+            .getHandleDbRequests()
+            .insertIntoActivityLog(
+                RequestEntityType.USER.value,
+                tenantId,
+                RequestOperationType.DELETE.value,
+                commonUtilsService.getTeamId(userName),
+                String.format(USER_DELETION_TEXT, userIdToDelete, userName),
+                "-NA-",
+                userName);
+        mailService.sendMail(
+            userName,
+            manageDatabase.getHandleDbRequests(),
+            String.format(USER_DELETION_MAIL_TEXT, userIdToDelete, userName),
+            "USER DELETION",
+            false,
+            false,
+            mailService.getEmailAddressFromUsername(userIdToDelete),
+            tenantId,
+            commonUtilsService.getLoginUrl(),
+            false);
       }
       return ApiResultStatus.SUCCESS.value.equals(result)
           ? ApiResponse.ok(result)

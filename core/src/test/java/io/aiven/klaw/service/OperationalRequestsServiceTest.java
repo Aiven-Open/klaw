@@ -24,6 +24,7 @@ import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.OperationalRequestType;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import java.util.ArrayList;
@@ -109,7 +110,8 @@ public class OperationalRequestsServiceTest {
   public void createConsumerOffsetsResetRequestDoesNotOwnGroup() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
 
     ApiResponse apiResponse =
         operationalRequestsService.createConsumerOffsetsResetRequest(
@@ -123,7 +125,8 @@ public class OperationalRequestsServiceTest {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
     consumerOffsetResetRequestModel.setOffsetResetType(OffsetResetType.TO_DATE_TIME);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
@@ -138,7 +141,8 @@ public class OperationalRequestsServiceTest {
   public void createRequestWhichAlreadyExists() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
@@ -165,7 +169,8 @@ public class OperationalRequestsServiceTest {
   public void createRequestSuccess() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
@@ -198,7 +203,8 @@ public class OperationalRequestsServiceTest {
         UtilMethods.getOffsetsTimingMapMap();
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getCurrentUserName()).thenReturn("testuser");
     when(handleDbRequests.getOperationalRequest(anyInt(), anyInt())).thenReturn(getReqs().get(0));
@@ -214,7 +220,8 @@ public class OperationalRequestsServiceTest {
   @Order(6)
   public void approveOperationalRequestsFailure() throws KlawException {
     ApiResponse apiResponse = ApiResponse.builder().success(false).build();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getCurrentUserName()).thenReturn("testuser");
     when(handleDbRequests.getOperationalRequest(anyInt(), anyInt())).thenReturn(getReqs().get(0));

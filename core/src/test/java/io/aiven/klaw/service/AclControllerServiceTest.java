@@ -33,6 +33,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -200,7 +201,7 @@ public class AclControllerServiceTest {
     AclRequests aclRequestsDao = new AclRequests();
     AclRequestsModel aclRequests = getAclRequestProducer();
     copyProperties(aclRequests, aclRequestsDao);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
@@ -419,7 +420,7 @@ public class AclControllerServiceTest {
             any(),
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
@@ -454,7 +455,7 @@ public class AclControllerServiceTest {
   @Order(14)
   public void deleteAclRequestsNotAuthorized() throws KlawException {
     String req_no = "1001";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -463,7 +464,7 @@ public class AclControllerServiceTest {
   @Order(14)
   public void deleteAclRequestsNotRequestOwner() throws KlawException {
     String req_no = "1001";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -542,7 +543,7 @@ public class AclControllerServiceTest {
   @Order(18)
   public void approveAclRequestsNotAuthorized() throws KlawException, KlawBadRequestException {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }

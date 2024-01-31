@@ -318,99 +318,26 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setKafkaconnect_clusters_count(
           "" + manageDatabase.getKafkaConnectEnvList(tenantId).size());
 
-      String canUpdatePermissions, addEditRoles;
+      final Set<String> permissions = commonUtilsService.getPermissions(getPrincipal());
+      final String canUpdatePermissions =
+          getPermission(permissions, PermissionType.UPDATE_PERMISSIONS);
+      final String addEditRoles = getPermission(permissions, PermissionType.ADD_EDIT_DELETE_ROLES);
+      final String canShutdownKw = getPermission(permissions, PermissionType.SHUTDOWN_KLAW);
+      final String syncBackTopics = getPermission(permissions, PermissionType.SYNC_BACK_TOPICS);
+      final String syncBackAcls =
+          getPermission(permissions, PermissionType.SYNC_BACK_SUBSCRIPTIONS);
+      final String addUser = getPermission(permissions, PermissionType.ADD_EDIT_DELETE_USERS);
+      final String addTeams = getPermission(permissions, PermissionType.ADD_EDIT_DELETE_TEAMS);
+      final String viewKafkaConnect = getPermission(permissions, PermissionType.VIEW_CONNECTORS);
+      final String requestTopics = getPermission(permissions, PermissionType.REQUEST_CREATE_TOPICS);
+      final String requestAcls =
+          getPermission(permissions, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS);
+      final String requestSchemas =
+          getPermission(permissions, PermissionType.REQUEST_CREATE_SCHEMAS);
+      final String requestConnector =
+          getPermission(permissions, PermissionType.REQUEST_CREATE_CONNECTORS);
 
-      if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
-        canUpdatePermissions = "NotAuthorized";
-      } else {
-        canUpdatePermissions = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-        addEditRoles = "NotAuthorized";
-      } else {
-        addEditRoles = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      String canShutdownKw;
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SHUTDOWN_KLAW)) {
-        canShutdownKw = "NotAuthorized";
-      } else {
-        canShutdownKw = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      String syncBackTopics, syncBackAcls, syncBackSchemas;
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_TOPICS)) {
-        syncBackTopics = "NotAuthorized";
-      } else {
-        syncBackTopics = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-        syncBackAcls = "NotAuthorized";
-      } else {
-        syncBackAcls = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      String addUser, addTeams;
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS)) {
-        addUser = "NotAuthorized";
-      } else {
-        addUser = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-        addTeams = "NotAuthorized";
-      } else {
-        addTeams = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      String viewKafkaConnect;
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_CONNECTORS)) {
-        viewKafkaConnect = "NotAuthorized";
-      } else {
-        viewKafkaConnect = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      String requestTopics;
-      String requestAcls;
-      String requestSchemas;
-      String requestConnector;
       String requestItems;
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_TOPICS)) {
-        requestTopics = "NotAuthorized";
-      } else {
-        requestTopics = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-        requestAcls = "NotAuthorized";
-      } else {
-        requestAcls = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_SCHEMAS)) {
-        requestSchemas = "NotAuthorized";
-      } else {
-        requestSchemas = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.REQUEST_CREATE_CONNECTORS)) {
-        requestConnector = "NotAuthorized";
-      } else {
-        requestConnector = ApiResultStatus.AUTHORIZED.value;
-      }
-
       if (ApiResultStatus.AUTHORIZED.value.equals(requestTopics)
           || ApiResultStatus.AUTHORIZED.value.equals(requestAcls)
           || ApiResultStatus.AUTHORIZED.value.equals(requestSchemas)
@@ -420,44 +347,17 @@ public class UtilControllerService implements InitializingBean {
         requestItems = "NotAuthorized";
       }
 
-      String approveDeclineTopics;
-      String approveDeclineSubscriptions;
-      String approveDeclineSchemas;
-      String approveDeclineConnectors;
-      String approveDeclineOperationalReqs;
+      final String approveDeclineTopics = getPermission(permissions, PermissionType.APPROVE_TOPICS);
+      final String approveDeclineSubscriptions =
+          getPermission(permissions, PermissionType.APPROVE_SUBSCRIPTIONS);
+      final String approveDeclineSchemas =
+          getPermission(permissions, PermissionType.APPROVE_SCHEMAS);
+      final String approveDeclineConnectors =
+          getPermission(permissions, PermissionType.APPROVE_CONNECTORS);
+      final String approveDeclineOperationalReqs =
+          getPermission(permissions, PermissionType.APPROVE_OPERATIONAL_CHANGES);
 
       String approveAtleastOneRequest = "NotAuthorized";
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_TOPICS)) {
-        approveDeclineTopics = "NotAuthorized";
-      } else {
-        approveDeclineTopics = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SUBSCRIPTIONS)) {
-        approveDeclineSubscriptions = "NotAuthorized";
-      } else {
-        approveDeclineSubscriptions = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SCHEMAS)) {
-        approveDeclineSchemas = "NotAuthorized";
-      } else {
-        approveDeclineSchemas = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_CONNECTORS)) {
-        approveDeclineConnectors = "NotAuthorized";
-      } else {
-        approveDeclineConnectors = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
-        approveDeclineOperationalReqs = "NotAuthorized";
-      } else {
-        approveDeclineOperationalReqs = ApiResultStatus.AUTHORIZED.value;
-      }
 
       if (ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics)
           || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSubscriptions)
@@ -486,7 +386,7 @@ public class UtilControllerService implements InitializingBean {
         }
       }
 
-      String syncTopicsAcls, syncConnectors, syncSchemas, manageConnectors;
+      String syncTopicsAcls;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS)
           || commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)) {
@@ -495,41 +395,16 @@ public class UtilControllerService implements InitializingBean {
         syncTopicsAcls = ApiResultStatus.AUTHORIZED.value;
       }
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_CONNECTORS)) {
-        syncConnectors = "NotAuthorized";
-      } else {
-        syncConnectors = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.MANAGE_CONNECTORS)) {
-        manageConnectors = "NotAuthorized";
-      } else {
-        manageConnectors = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SCHEMAS)) {
-        syncSchemas = "NotAuthorized";
-      } else {
-        syncSchemas = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_SCHEMAS)) {
-        syncBackSchemas = "NotAuthorized";
-      } else {
-        syncBackSchemas = ApiResultStatus.AUTHORIZED.value;
-      }
+      final String syncConnectors = getPermission(permissions, PermissionType.SYNC_CONNECTORS);
+      final String manageConnectors = getPermission(permissions, PermissionType.MANAGE_CONNECTORS);
+      final String syncSchemas = getPermission(permissions, PermissionType.SYNC_SCHEMAS);
+      final String syncBackSchemas = getPermission(permissions, PermissionType.SYNC_BACK_SCHEMAS);
 
       String addDeleteEditTenants;
-      String addDeleteEditEnvs;
-      String addDeleteEditClusters;
-      String updateServerConfig, showServerConfigEnvProperties;
-      String viewTopics;
+      String showServerConfigEnvProperties;
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG)) {
-        updateServerConfig = "NotAuthorized";
-      } else {
-        updateServerConfig = ApiResultStatus.AUTHORIZED.value;
-      }
+      final String updateServerConfig =
+          getPermission(permissions, PermissionType.UPDATE_SERVERCONFIG);
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
           && !commonUtilsService.isNotAuthorizedUser(
@@ -546,32 +421,19 @@ public class UtilControllerService implements InitializingBean {
         addDeleteEditTenants = "NotAuthorized";
       }
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_ENVS)) {
-        addDeleteEditEnvs = "NotAuthorized";
-      } else {
-        addDeleteEditEnvs = ApiResultStatus.AUTHORIZED.value;
-      }
-
-      if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-        addDeleteEditClusters = "NotAuthorized";
-      } else {
-        addDeleteEditClusters = ApiResultStatus.AUTHORIZED.value;
-      }
+      final String addDeleteEditEnvs =
+          getPermission(permissions, PermissionType.ADD_EDIT_DELETE_ENVS);
+      final String addDeleteEditClusters =
+          getPermission(permissions, PermissionType.ADD_EDIT_DELETE_CLUSTERS);
+      final String viewTopics = getPermission(permissions, PermissionType.VIEW_TOPICS);
 
       authenticationInfo.setAdAuthRoleEnabled(
           ""
               + (ACTIVE_DIRECTORY.value.equals(authenticationType)
                   && "true".equals(adAuthRoleEnabled)));
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS)) {
-        viewTopics = "NotAuthorized";
-      } else {
-        viewTopics = ApiResultStatus.AUTHORIZED.value;
-      }
-
       String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
-      if (companyInfo == null || companyInfo.equals("")) {
+      if (companyInfo == null || companyInfo.isEmpty()) {
         companyInfo = ENV_CLUSTER_TNT_109;
       }
 
@@ -585,11 +447,11 @@ public class UtilControllerService implements InitializingBean {
           manageDatabase.getKwPropertyValue(
               KwConstants.broadCastTextProperty, KwConstants.DEFAULT_TENANT_ID);
 
-      if (broadCastTextLocal != null && !broadCastTextLocal.equals("")) {
+      if (broadCastTextLocal != null && !broadCastTextLocal.isEmpty()) {
         broadCastText = "Announcement : " + broadCastTextLocal;
       }
       if (broadCastTextGlobal != null
-          && !broadCastTextGlobal.equals("")
+          && !broadCastTextGlobal.isEmpty()
           && tenantId != KwConstants.DEFAULT_TENANT_ID) {
         broadCastText += " Announcement : " + broadCastTextGlobal;
       }
@@ -664,6 +526,16 @@ public class UtilControllerService implements InitializingBean {
 
       return authenticationInfo;
     } else return null;
+  }
+
+  private static String getPermission(Set<String> permissions, PermissionType permissionType) {
+    String canUpdatePermissions;
+    if (permissions.contains(permissionType.name())) {
+      canUpdatePermissions = ApiResultStatus.AUTHORIZED.value;
+    } else {
+      canUpdatePermissions = "NotAuthorized";
+    }
+    return canUpdatePermissions;
   }
 
   public void getLogoutPage(HttpServletRequest request, HttpServletResponse response) {

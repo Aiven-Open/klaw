@@ -64,10 +64,9 @@ const getAclRequestsForApprover = (
   const filteredParams = filterGetAclRequestParams(params);
 
   return api
-    .get<KlawApiResponse<"getAclRequestsForApprover">>(
-      API_PATHS.getAclRequestsForApprover,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getAclRequestsForApprover">
+    >(API_PATHS.getAclRequestsForApprover, new URLSearchParams(filteredParams))
     .then(transformAclRequestApiResponse);
 };
 
@@ -75,10 +74,9 @@ const getAclRequests = (params: GetCreatedAclRequestParameters) => {
   const filteredParams = filterGetAclRequestParams(params);
 
   return api
-    .get<KlawApiResponse<"getAclRequests">>(
-      API_PATHS.getAclRequests,
-      new URLSearchParams(filteredParams)
-    )
+    .get<
+      KlawApiResponse<"getAclRequests">
+    >(API_PATHS.getAclRequests, new URLSearchParams(filteredParams))
     .then(transformAclRequestApiResponse);
 };
 

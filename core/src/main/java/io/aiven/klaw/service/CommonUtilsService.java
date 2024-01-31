@@ -160,20 +160,31 @@ public class CommonUtilsService {
   }
 
   public boolean isNotAuthorizedUser(Object principal, PermissionType permissionType) {
+    return isNotAuthorizedUser(principal, Set.of(permissionType));
+  }
+
+  public boolean isNotAuthorizedUser(Object principal, Set<PermissionType> permissionTypes) {
     try {
-      return !manageDatabase
-          .getRolesPermissionsPerTenant(getTenantId(getUserName(principal)))
-          .get(getAuthority(principal))
-          .contains(permissionType.name());
+      Set<String> existingPermissions = getPermissions(principal);
+      existingPermissions.retainAll(
+          permissionTypes.stream().map(Enum::name).collect(Collectors.toList()));
+      return existingPermissions.isEmpty();
     } catch (Exception e) {
       log.debug(
           "Error isNotAuthorizedUser / Check if role exists. {} {} {}",
           getUserName(principal),
-          permissionType.name(),
+          permissionTypes.stream().map(Enum::name).collect(Collectors.toList()),
           getAuthority(getUserName(principal)),
           e);
       return true;
     }
+  }
+
+  public Set<String> getPermissions(Object principal) {
+    return new HashSet<>(
+        manageDatabase
+            .getRolesPermissionsPerTenant(getTenantId(getUserName(principal)))
+            .get(getAuthority(principal)));
   }
 
   public static class ChartsOverviewItem<X, Y> {
