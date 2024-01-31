@@ -1,4 +1,3 @@
-// FILEPATH: /Users/mathieu.anderson/Documents/klaw/coral/src/app/components/PermissionsCheck.test.tsx
 import { cleanup, render, screen } from "@testing-library/react";
 import PermissionCheck from "src/app/components/PermissionCheck";
 
