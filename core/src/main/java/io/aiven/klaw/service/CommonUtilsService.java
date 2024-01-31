@@ -25,12 +25,6 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -87,15 +81,6 @@ public class CommonUtilsService {
 
   @Value("${klaw.ad.email.attribute:email}")
   private String emailAttribute;
-
-  @Value("${klaw.saas.ssl.clientcerts.location:./tmp/}")
-  private String clientCertsLocation;
-
-  @Value("${klaw.saas.ssl.clusterapi.truststore:./tmp}")
-  private String trustStore;
-
-  @Value("${klaw.saas.ssl.clusterapi.truststore.pwd:./tmp}")
-  private String trustStorePwd;
 
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
@@ -282,41 +267,6 @@ public class CommonUtilsService {
     chartsJsOverview.setYAxisLabel(yAxisLabelConstant);
 
     return chartsJsOverview;
-  }
-
-  public boolean addPublicKeyToTrustStore(String fileName, Integer tenantId) {
-    KeyStore ks;
-    fileName = fileName + tenantId + ".pem";
-    try {
-      ks = KeyStore.getInstance("JKS");
-      FileInputStream trustStoreStream = new FileInputStream(trustStore);
-
-      ks.load(trustStoreStream, trustStorePwd.toCharArray());
-
-      FileInputStream fis = new FileInputStream(clientCertsLocation + "/" + fileName);
-      BufferedInputStream bis = new BufferedInputStream(fis);
-      // I USE x.509 BECAUSE THAT'S WHAT keytool CREATES
-
-      CertificateFactory cf = CertificateFactory.getInstance("X.509");
-      Certificate cert;
-      while (bis.available() > 0) {
-        cert = cf.generateCertificate(bis);
-        ks.setCertificateEntry(fileName, cert);
-      }
-
-      ks.store(new FileOutputStream(trustStore), trustStorePwd.toCharArray());
-      return true;
-
-    } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
-      log.error(
-          "Unable to load public key to trust store clusterName: "
-              + fileName
-              + " Tenant "
-              + tenantId
-              + "-",
-          e);
-      return false;
-    }
   }
 
   public void updateMetadata(

@@ -88,7 +88,7 @@ public class SsoActiveDirectoryAuthenticationIT {
           .doesNotContain(
               "dashboardApp"); // after invalid login, user returned to login.html and not dashboard
       assertThat(response.getContentAsString())
-          .contains("loginSaasApp"); // after invalid login, user returned to login.html
+          .contains("oauthLoginApp"); // after invalid login, user returned to login.html
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

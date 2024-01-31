@@ -102,9 +102,6 @@ export type paths = {
   "/registerUser": {
     post: operations["registerUser"];
   };
-  "/registerUserSaas": {
-    post: operations["registerUserSaas"];
-  };
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
@@ -382,9 +379,6 @@ export type paths = {
   "/getKwReport": {
     get: operations["getKwReport"];
   };
-  "/getKwPubkey": {
-    get: operations["getKwPubkey"];
-  };
   "/getKafkaProtocols": {
     get: operations["getSupportedKafkaProtocols"];
   };
@@ -490,9 +484,6 @@ export type paths = {
   "/getActivityLogForTeamOverview": {
     get: operations["getActivityLogForTeamOverview"];
   };
-  "/getActivationInfo": {
-    get: operations["getActivationInfo"];
-  };
   "/getAclsCountPerEnv": {
     get: operations["getAclsCountPerEnv"];
   };
@@ -501,9 +492,6 @@ export type paths = {
   };
   "/getAclRequestsForApprover": {
     get: operations["getAclRequestsForApprover"];
-  };
-  "/getAclCommands": {
-    get: operations["getAclCommand"];
   };
   "/environments/schemaRegistry": {
     get: operations["getSchemaRegEnvsPaginated"];
@@ -773,17 +761,6 @@ export type components = {
       registrationId?: string;
       /** Format: int32 */
       tenantId?: number;
-      tenantName?: string;
-    };
-    RegisterSaasUserInfoModel: {
-      fullname: string;
-      mailid?: string;
-      recaptchaStr?: string;
-      status?: string;
-      /** Format: date-time */
-      registeredTime?: string;
-      approver?: string;
-      registrationId?: string;
       tenantName?: string;
     };
     SchemaPromotion: {
@@ -1697,7 +1674,6 @@ export type components = {
       kafkaconnect_clusters_count: string;
       canSwitchTeams: string;
       broadcastText: string;
-      saasEnabled: string;
       tenantActiveStatus: string;
       username: string;
       authenticationType: string;
@@ -1833,11 +1809,6 @@ export type components = {
       aclResourceType?: string;
       deletable?: boolean;
       editable?: boolean;
-    };
-    AclCommands: {
-      result?: string;
-      aclCommandSsl?: string;
-      aclCommandPlaintext?: string;
     };
   };
   responses: never;
@@ -2352,21 +2323,6 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["RegisterUserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  registerUserSaas: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisterSaasUserInfoModel"];
       };
     };
     responses: {
@@ -3774,16 +3730,6 @@ export type operations = {
       };
     };
   };
-  getKwPubkey: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwReport"];
-        };
-      };
-    };
-  };
   getSupportedKafkaProtocols: {
     responses: {
       /** @description OK */
@@ -4271,21 +4217,6 @@ export type operations = {
       };
     };
   };
-  getActivationInfo: {
-    parameters: {
-      query: {
-        userActivationId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
   getAclsCountPerEnv: {
     parameters: {
       query: {
@@ -4344,16 +4275,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getAclCommand: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclCommands"];
         };
       };
     };

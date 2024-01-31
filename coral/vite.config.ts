@@ -85,7 +85,6 @@ function getServerProxyConfig(
     "/login",
     "/lib/angular.min.js",
     "/lib/angular-route.min.js",
-    "/js/loginSaas.js",
     "/assets/css/",
     "/assets/js/",
     "/assets/plugins/",

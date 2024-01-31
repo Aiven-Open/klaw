@@ -91,12 +91,8 @@ public class RolesPermissionsControllerService {
       mapList = new ArrayList<>();
       for (String perm : permsList) {
         Map<String, Boolean> perMap = new HashMap<>();
-        if ("saas".equals(kwInstallationType) && "ADD_TENANT".equals(perm)) {
-          // do nothing
-        } else {
-          perMap.put(perm, existingPerms.get(role).contains(perm));
-          mapList.add(perMap);
-        }
+        perMap.put(perm, existingPerms.get(role).contains(perm));
+        mapList.add(perMap);
       }
       finalMap.put(role, mapList);
     }

@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_110;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_102;
-import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
@@ -44,19 +43,14 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
-import io.aiven.klaw.model.response.AclCommands;
 import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
-import io.aiven.klaw.model.response.KwReport;
 import io.aiven.klaw.model.response.SupportedProtocolInfo;
 import io.aiven.klaw.model.response.TenantInfo;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -64,7 +58,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -87,18 +80,6 @@ public class EnvsClustersTenantsControllerService {
 
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
-
-  @Value("${klaw.saas.ssl.aclcommand:acl}")
-  private String aclCommandSsl;
-
-  @Value("${klaw.saas.plaintext.aclcommand:acl}")
-  private String aclCommandPlaintext;
-
-  @Value("${klaw.saas.ssl.pubkey:pubkey.zip}")
-  private String kwPublicKey;
-
-  @Value("${klaw.saas.ssl.clientcerts.location:./tmp/}")
-  private String clientCertsLocation;
 
   @Value("${klaw.max.tenants:1000}")
   private int maxNumberOfTenantsCanBeCreated;
@@ -651,15 +632,7 @@ public class EnvsClustersTenantsControllerService {
     kwCluster.setTenantId(tenantId);
     kwCluster.setClusterName(kwCluster.getClusterName().toUpperCase());
 
-    // only for new cluster requests on saas
-    if (KafkaSupportedProtocol.SSL == kwCluster.getProtocol()
-        && kwCluster.getClusterId() == null
-        && "saas".equals(kwInstallationType)) {
-      if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
-        return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_103);
-      }
-    }
-
+    // only for new cluster requests
     String result = manageDatabase.getHandleDbRequests().addNewCluster(kwCluster);
     if (result.equals(ApiResultStatus.SUCCESS.value)) {
       commonUtilsService.updateMetadata(
@@ -667,62 +640,6 @@ public class EnvsClustersTenantsControllerService {
       return ApiResponse.SUCCESS;
     }
     return ApiResponse.FAILURE;
-  }
-
-  private boolean savePublicKey(
-      KwClustersModel kwClustersModel,
-      Map<String, String> resultMap,
-      int tenantId,
-      KwClusters kwCluster) {
-    try {
-      kwCluster.setPublicKey(kwClustersModel.getPublicKey());
-      boolean pubKeyFileCreated =
-          createPublicKeyFile(
-              kwCluster.getClusterName().toUpperCase(), tenantId, kwClustersModel.getPublicKey());
-      if (pubKeyFileCreated) {
-        return commonUtilsService.addPublicKeyToTrustStore(
-            kwCluster.getClusterName().toUpperCase(), tenantId);
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      log.error(
-          tenantId + " tenantId. Error in adding cluster --" + kwClustersModel.getClusterName(), e);
-      return false;
-    }
-  }
-
-  private boolean createPublicKeyFile(String clusterName, int tenantId, String publicKey) {
-    File clientCertFile;
-    String fileName = clusterName + tenantId + ".pem";
-    FileOutputStream outputStream = null;
-    try {
-      clientCertFile = new File(clientCertsLocation + "/" + fileName);
-
-      if (clientCertFile.exists()) {
-        clientCertFile.delete();
-      }
-
-      outputStream = new FileOutputStream(clientCertFile);
-      outputStream.write(Base64.getDecoder().decode(publicKey));
-    } catch (Exception e) {
-      log.error(
-          "Unable to create public key file "
-              + clusterName
-              + " tenant id "
-              + commonUtilsService.getTenantId(getUserName()),
-          e);
-      return false;
-    } finally {
-      try {
-        if (outputStream != null) {
-          outputStream.close();
-        }
-      } catch (Exception ex) {
-        log.error("Error in closing the BufferedWriter ", ex);
-      }
-    }
-    return true;
   }
 
   public ApiResponse deleteCluster(String clusterId) throws KlawException {
@@ -1106,34 +1023,6 @@ public class EnvsClustersTenantsControllerService {
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
-  }
-
-  public AclCommands getAclCommands() {
-    AclCommands aclCommands = new AclCommands();
-    aclCommands.setResult(ApiResultStatus.SUCCESS.value);
-    aclCommands.setAclCommandSsl(aclCommandSsl);
-    aclCommands.setAclCommandPlaintext(aclCommandPlaintext);
-    return aclCommands;
-  }
-
-  public KwReport getPublicKey() {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    log.info("getPublicKey download " + tenantId);
-
-    KwReport kwPublicKey = new KwReport();
-    File file = new File(this.kwPublicKey);
-    try {
-      byte[] arr = FileUtils.readFileToByteArray(file);
-      String str = Base64.getEncoder().encodeToString(arr);
-
-      kwPublicKey.setData(str);
-      kwPublicKey.setFilename(file.getName());
-
-      return kwPublicKey;
-    } catch (IOException e) {
-      log.error("Exception:", e);
-    }
-    return kwPublicKey;
   }
 
   public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawBadRequestException {

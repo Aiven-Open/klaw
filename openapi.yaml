@@ -1035,34 +1035,6 @@
         }
       }
     },
-    "/registerUserSaas" : {
-      "post" : {
-        "tags" : [ "users-teams-controller" ],
-        "operationId" : "registerUserSaas",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/RegisterSaasUserInfoModel"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/promote/schema" : {
       "post" : {
         "tags" : [ "schema-registry-controller" ],
@@ -4153,24 +4125,6 @@
         }
       }
     },
-    "/getKwPubkey" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getKwPubkey",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/KwReport"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/getKafkaProtocols" : {
       "get" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
@@ -5313,32 +5267,6 @@
         }
       }
     },
-    "/getActivationInfo" : {
-      "get" : {
-        "tags" : [ "users-teams-controller" ],
-        "operationId" : "getActivationInfo",
-        "parameters" : [ {
-          "name" : "userActivationId",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/getAclsCountPerEnv" : {
       "get" : {
         "tags" : [ "analytics-controller" ],
@@ -5550,24 +5478,6 @@
                   "items" : {
                     "$ref" : "#/components/schemas/AclRequestsResponseModel"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getAclCommands" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getAclCommand",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/AclCommands"
                 }
               }
             }
@@ -6594,39 +6504,6 @@
           }
         },
         "required" : [ "fullname", "username" ]
-      },
-      "RegisterSaasUserInfoModel" : {
-        "properties" : {
-          "fullname" : {
-            "type" : "string",
-            "maxLength" : 300,
-            "minLength" : 4,
-            "pattern" : "^[a-zA-z ]*$"
-          },
-          "mailid" : {
-            "type" : "string"
-          },
-          "recaptchaStr" : {
-            "type" : "string"
-          },
-          "status" : {
-            "type" : "string"
-          },
-          "registeredTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "approver" : {
-            "type" : "string"
-          },
-          "registrationId" : {
-            "type" : "string"
-          },
-          "tenantName" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "fullname" ]
       },
       "SchemaPromotion" : {
         "properties" : {
@@ -9227,9 +9104,6 @@
           "broadcastText" : {
             "type" : "string"
           },
-          "saasEnabled" : {
-            "type" : "string"
-          },
           "tenantActiveStatus" : {
             "type" : "string"
           },
@@ -9381,7 +9255,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "googleFeedbackFormLink", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawOptionalPermissionNewTopicCreation", "klawOptionalPermissionNewTopicCreationEnabled", "klawversion", "manageConnectors", "myOrgTopics", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralAvailableForUser", "coralEnabled", "googleFeedbackFormLink", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawOptionalPermissionNewTopicCreation", "klawOptionalPermissionNewTopicCreationEnabled", "klawversion", "manageConnectors", "myOrgTopics", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {
@@ -9616,19 +9490,6 @@
           }
         },
         "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "acl_ip", "acl_ssl", "allPageNos", "approvingTeamDetails", "consumergroup", "currentPage", "environment", "environmentName", "req_no", "requestOperationType", "requestStatus", "requestingTeamName", "requestingteam", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
-      },
-      "AclCommands" : {
-        "properties" : {
-          "result" : {
-            "type" : "string"
-          },
-          "aclCommandSsl" : {
-            "type" : "string"
-          },
-          "aclCommandPlaintext" : {
-            "type" : "string"
-          }
-        }
       }
     }
   }
