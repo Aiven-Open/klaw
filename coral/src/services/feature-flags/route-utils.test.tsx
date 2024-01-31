@@ -1,10 +1,25 @@
-import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
-import { Routes } from "src/app/router_utils";
+import { screen } from "@testing-library/react";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Navigate, RouteObject } from "react-router-dom";
+import { Routes } from "src/app/router_utils";
+import {
+  createPrivateRoute,
+  createRouteBehindFeatureFlag,
+} from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const isFeatureFlagActiveMock = jest.fn();
+const mockAuthUser = jest.fn();
+const mockUseToast = jest.fn();
 
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockUseToast,
+}));
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUser(),
+}));
 jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
@@ -74,6 +89,72 @@ describe("route-utils", () => {
 
       it("sets the given element as element in the object", () => {
         expect(routeObject.element).toEqual(TestElement);
+      });
+    });
+  });
+
+  describe("createPrivateRoute", () => {
+    const TestElement = <div data-testid="test-element">test element</div>;
+    const privateRoute = "/private-route" as Routes;
+
+    describe("returns a route object with redirection when permission is false", () => {
+      let routeObject: RouteObject;
+
+      beforeAll(() => {
+        mockAuthUser.mockReturnValue({
+          permissions: { approveDeclineTopics: false },
+        });
+        routeObject = createPrivateRoute({
+          path: privateRoute,
+          element: TestElement,
+          permission: "approveDeclineTopics",
+        });
+      });
+
+      afterAll(() => {
+        jest.restoreAllMocks();
+      });
+
+      it("Does not render the element and redirects when permission is false", () => {
+        customRender(routeObject.element as ReactElement, {
+          queryClient: true,
+          memoryRouter: true,
+        });
+
+        expect(screen.queryByTestId("test-element")).not.toBeInTheDocument();
+        expect(mockUseToast).toHaveBeenCalledWith({
+          message: `Not authorized: approveDeclineTopics`,
+          position: "bottom-left",
+          variant: "danger",
+        });
+      });
+    });
+
+    describe("returns a route object with no redirection when permission is true", () => {
+      let routeObject: RouteObject;
+
+      beforeAll(() => {
+        mockAuthUser.mockReturnValue({
+          permissions: { approveDeclineTopics: true },
+        });
+        routeObject = createPrivateRoute({
+          path: privateRoute,
+          element: TestElement,
+          permission: "approveDeclineTopics",
+        });
+      });
+
+      afterAll(() => {
+        jest.restoreAllMocks();
+      });
+
+      it("Renders the element when permission is true", () => {
+        customRender(routeObject.element as ReactElement, {
+          queryClient: true,
+          memoryRouter: true,
+        });
+
+        expect(screen.queryByTestId("test-element")).toBeInTheDocument();
       });
     });
   });
