@@ -5,7 +5,6 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ProfileModel;
-import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -13,7 +12,6 @@ import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
-import io.aiven.klaw.service.SaasService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -34,8 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsersTeamsController {
 
   @Autowired private UsersTeamsControllerService usersTeamsControllerService;
-
-  @Autowired private SaasService saasService;
 
   @RequestMapping(
       value = "/getAllTeamsSU",
@@ -113,23 +109,6 @@ public class UsersTeamsController {
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
-  }
-
-  @PostMapping(
-      value = "/registerUserSaas",
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> registerUserSaas(
-      @Valid @RequestBody RegisterSaasUserInfoModel newUser) throws Exception {
-    return new ResponseEntity<>(saasService.registerUserSaas(newUser), HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/getActivationInfo",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> getActivationInfo(
-      @RequestParam("userActivationId") String userActivationId) {
-    return new ResponseEntity<>(saasService.getActivationInfo(userActivationId), HttpStatus.OK);
   }
 
   @RequestMapping(

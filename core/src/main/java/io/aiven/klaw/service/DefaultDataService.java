@@ -180,14 +180,6 @@ public class DefaultDataService {
             "Email notification body for new user request to be approved.");
     kwPropertiesList.add(kwProperties10);
 
-    KwProperties kwProperties11 =
-        new KwProperties(
-            "klaw.mail.registeruser.saas.content",
-            tenantId,
-            KwConstants.MAIL_REGISTERUSER_SAAS_CONTENT,
-            "Email notification body for new user request");
-    kwPropertiesList.add(kwProperties11);
-
     KwProperties kwProperties12 =
         new KwProperties(
             "klaw.mail.registerusertouser.content",
@@ -195,14 +187,6 @@ public class DefaultDataService {
             KwConstants.MAIL_REGISTERUSERTOUSER_CONTENT,
             "Email notification body for new user request to actual user.");
     kwPropertiesList.add(kwProperties12);
-
-    KwProperties kwProperties13 =
-        new KwProperties(
-            "klaw.mail.registerusertouser.saas.content",
-            tenantId,
-            KwConstants.MAIL_REGISTERUSERTOUSER_SAAS_CONTENT,
-            "Email notification body for new SaaS user request to actual user.");
-    kwPropertiesList.add(kwProperties13);
 
     KwProperties kwProperties14 =
         new KwProperties(
@@ -275,13 +259,6 @@ public class DefaultDataService {
             "klaw.broadcast.text", tenantId, "", "Broadcast text to all your tenant users");
     kwPropertiesList.add(kwProperties33);
 
-    KwProperties kwProperties34 =
-        new KwProperties(
-            "klaw.mail.registerusertouser.saasadmin.content",
-            tenantId,
-            KwConstants.MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT,
-            "Email notification body for new SaaS user request to actual user.");
-    kwPropertiesList.add(kwProperties34);
     KwProperties kwProperties35 =
         new KwProperties(
             "klaw.mail.passwordchanged.content",
@@ -351,10 +328,7 @@ public class DefaultDataService {
     Map<String, String> defaultAdminPermissionsList = getDefaultAdminPermissionsList();
     Map<String, String> superAdminPermissionsList = getDefaultSuperAdminPermissionsList();
 
-    if (!"saas".equals(kwInstallationType)) // on premise
-    {
-      defaultAdminPermissionsList.put("ADD_TENANT", PermissionType.ADD_TENANT.getDescription());
-    }
+    defaultAdminPermissionsList.put("ADD_TENANT", PermissionType.ADD_TENANT.getDescription());
 
     List<KwRolesPermissions> kwRolesPermissionsList = new ArrayList<>();
     for (Map.Entry<String, String> rolePermEntry : defaultUserPermissionsList.entrySet()) {

@@ -431,7 +431,7 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getAclCommand();getKafkaSupportedProtocols();">
+		<div class="container-fluid" ng-init="getKafkaSupportedProtocols();">
 			<div class="row page-titles">
 			</div>
 
@@ -559,7 +559,7 @@
 													<option value="SSL">SSL</option>
 												</select>
 											</div>
-											<div ng-show="sslparams=='true' && dashboardDetails.saasEnabled != 'saas'">
+											<div ng-show="sslparams=='true'">
 												Make sure SSL/SASL Parameters are configured in Cluster Api.
 											</div>
 										</div>
@@ -568,7 +568,7 @@
 									</div>
 
 									<div class="row" ng-show="addNewCluster.clusterType == 'kafka'">
-										<div class="col-md-6" ng-show="dashboardDetails.saasEnabled != 'saas'">
+										<div class="col-md-6">
 											<div class="form-group">
 												<label>Protocol</label>
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)"
@@ -580,50 +580,9 @@
 												Make sure ClusterApi certs/keystore can access this cluster. Signed by same CA for example.
 											</div>
 										</div>
-										<div class="col-md-6"  ng-show="dashboardDetails.saasEnabled == 'saas'">
-											<div class="form-group">
-												<label>Protocol</label>
-												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)"
-														ng-model="addNewCluster.protocol"
-														ng-options="kafkaProtocol.name as kafkaProtocol.value for kafkaProtocol in kafkaProtocols">
-												</select>
-											</div>
-
-										</div>
-										<div class="col-md-6" ng-show="kafkaFlavor != 'Aiven for Apache Kafka'">
-											<div ng-show="sslparams=='true'">
-												<label>Copy this command and execute on your kafka broker. This gives the authorization for Klaw to create topics on your Kafka brokers.</label>
-												<br>
-												<blockquote>
-													{{ aclCommandSsl }}
-												</blockquote>
-											</div>
-											<div ng-show="plaintextparams=='true'">
-												<label>Copy this command and execute on your kafka broker. This gives the authorization for Klaw to create topics on your Kafka brokers.</label>
-												<br>
-												<blockquote>
-													{{ aclCommandPlaintext }}
-												</blockquote>
-											</div>
-										</div>
 									</div>
 
-									<div class="row" ng-show="addNewCluster.clusterType == 'kafka'">
-										<div class="col-md-6" ng-show="sslparams=='true' && dashboardDetails.saasEnabled == 'saas'">
-											<div class="form-group">
-												<label>Upload Public key</label>
-												<input type="file" id="pubKeyFile" on-read-file="saveContent($fileContent)" ng-model="addNewCluster.pubKeyFile">
-												<br><small class="form-control-feedback">Public key exported from your Kafka Broker keystore</small>
-											</div>
-										</div>
-										<div class="col-md-6" ng-show="sslparams=='true' && dashboardDetails.saasEnabled == 'saas'">
-											<div class="form-group">
-												<label>Download Klaw public key</label>
-												<button type="button" ng-click="downloadPubKey()"
-														class="btn waves-effect waves-light btn-block btn-success" style="float:right">Download PublicKey</button>
-											</div>
-										</div>
-									</div>
+
 
 									<div class="row">
 										<div class="col-md-6">

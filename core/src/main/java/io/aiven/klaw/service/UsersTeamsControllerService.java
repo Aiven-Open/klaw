@@ -71,7 +71,6 @@ public class UsersTeamsControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String MASKED_PWD = "********";
-  private static final String SAAS = "saas";
   public static final String UNUSED_PASSWD = "unusedpasswd";
 
   @Value("${klaw.login.authentication.type}")
@@ -96,7 +95,6 @@ public class UsersTeamsControllerService {
   private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   // pattern for simple username/mailid
-  private static final Pattern saasPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
   // pattern for simple username
   private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
@@ -921,7 +919,7 @@ public class UsersTeamsControllerService {
       newUser.setStatus(NewUserStatus.PENDING.value);
       newUser.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
 
-      if (isExternal) { // not saas
+      if (isExternal) {
         newUser.setTeam(Objects.requireNonNullElse(newUser.getTeam(), KwConstants.STAGINGTEAM));
         newUser.setRole(Objects.requireNonNullElse(newUser.getRole(), KwConstants.USER_ROLE));
       }
@@ -930,43 +928,35 @@ public class UsersTeamsControllerService {
       copyProperties(newUser, registerUserInfo);
       registerUserInfo.setPwd(encodePwd(registerUserInfo.getPwd()));
 
-      if (!isExternal) { // from saas
-        if (registerUserInfo.getTenantId() != 0) {
+      if (newUser.getTenantName() == null
+          || newUser.getTenantName().equals("")) { // join default tenant
+        if (null == registerUserInfo.getTeamId()) {
           registerUserInfo.setTeamId(
               manageDatabase.getTeamIdFromTeamName(
-                  registerUserInfo.getTenantId(), registerUserInfo.getTeam()));
-        } else registerUserInfo.setTeamId(0);
-      } else {
-        if (newUser.getTenantName() == null
-            || newUser.getTenantName().equals("")) { // join default tenant
-          if (null == registerUserInfo.getTeamId()) {
-            registerUserInfo.setTeamId(
-                manageDatabase.getTeamIdFromTeamName(
-                    KwConstants.DEFAULT_TENANT_ID, newUser.getTeam()));
-          }
-          if (registerUserInfo.getTenantId() == 0) { // check for tenantId if 0
-            registerUserInfo.setTenantId(KwConstants.DEFAULT_TENANT_ID);
-          }
-        } else { // join existing tenant
-          try {
-            int tenantId = getTenantId(newUser.getTenantName());
-            registerUserInfo.setTenantId(tenantId);
+                  KwConstants.DEFAULT_TENANT_ID, newUser.getTeam()));
+        }
+        if (registerUserInfo.getTenantId() == 0) { // check for tenantId if 0
+          registerUserInfo.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+        }
+      } else { // join existing tenant
+        try {
+          int tenantId = getTenantId(newUser.getTenantName());
+          registerUserInfo.setTenantId(tenantId);
 
-            // new tenant, no users exist
-            if (userList.stream().noneMatch(userInfo -> userInfo.getTenantId() == tenantId)) {
-              addTwoDefaultTeams(newUser.getFullname(), newUser.getTenantName(), tenantId);
-              registerUserInfo.setTeam(KwConstants.INFRATEAM);
-              registerUserInfo.setRole(KwConstants.SUPERADMIN_ROLE);
-              registerUserInfo.setTeamId(
-                  manageDatabase.getTeamIdFromTeamName(tenantId, registerUserInfo.getTeam()));
-            } else {
-              registerUserInfo.setTeamId(
-                  manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
-            }
-          } catch (Exception e) {
-            log.error("Exception:", e);
-            return ApiResponse.notOk(TEAMS_ERR_116);
+          // new tenant, no users exist
+          if (userList.stream().noneMatch(userInfo -> userInfo.getTenantId() == tenantId)) {
+            addTwoDefaultTeams(newUser.getFullname(), newUser.getTenantName(), tenantId);
+            registerUserInfo.setTeam(KwConstants.INFRATEAM);
+            registerUserInfo.setRole(KwConstants.SUPERADMIN_ROLE);
+            registerUserInfo.setTeamId(
+                manageDatabase.getTeamIdFromTeamName(tenantId, registerUserInfo.getTeam()));
+          } else {
+            registerUserInfo.setTeamId(
+                manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
           }
+        } catch (Exception e) {
+          log.error("Exception:", e);
+          return ApiResponse.notOk(TEAMS_ERR_116);
         }
       }
 
@@ -998,12 +988,7 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
-    if (SAAS.equals(kwInstallationType)) {
-      registerUserInfoList =
-          manageDatabase.getHandleDbRequests().getAllRegisterUsersInfoForTenant(tenantId);
-    } else {
-      registerUserInfoList = manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
-    }
+    registerUserInfoList = manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
 
     List<RegisterUserInfoModelResponse> registerUserInfoModels = new ArrayList<>();
     RegisterUserInfoModelResponse registerUserInfoModel;
@@ -1035,10 +1020,6 @@ public class UsersTeamsControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
       RegisterUserInfo registerUserInfo = dbHandle.getRegisterUsersInfo(username);
-      if (!isExternal) { // from saas new user requests for tenant owners
-        registerUserInfo.setTenantId(tenantId);
-        registerUserInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, teamName));
-      }
 
       tenantId = registerUserInfo.getTenantId();
 
@@ -1115,9 +1096,8 @@ public class UsersTeamsControllerService {
   }
 
   private boolean userNamePatternValidation(String userName) {
-    Matcher m1 = saasPattern.matcher(userName);
-    Matcher m2 = defaultPattern.matcher(userName);
-    return m1.matches() || m2.matches();
+    Matcher m1 = defaultPattern.matcher(userName);
+    return m1.matches();
   }
 
   public List<TeamModelResponse> getSwitchTeams(String userId) {

@@ -41,7 +41,6 @@ public class ConfigUtils {
                 "/getAllTeamsSUFromRegisterUsers",
                 "/registerUser",
                 "/resetMemoryCache/**",
-                "/userActivation**",
                 "/getActivationInfo**",
                 "/v3/**",
                 "/cache/**"));

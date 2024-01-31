@@ -74,7 +74,6 @@ const API_PATHS = {
   declineRequest: "/request/decline",
   approveRequest: "/request/approve",
   registerUser: "/registerUser",
-  registerUserSaas: "/registerUserSaas",
   promoteSchema: "/promote/schema",
   logout: "/logout",
   approveTopicRequests: "/execTopicRequests",
@@ -154,7 +153,6 @@ const API_PATHS = {
   getMyTenantInfo: "/getMyTenantInfo",
   getMyProfileInfo: "/getMyProfileInfo",
   getKwReport: "/getKwReport",
-  getKwPubkey: "/getKwPubkey",
   getSupportedKafkaProtocols: "/getKafkaProtocols",
   getKafkaConnectEnvs: "/getKafkaConnectEnvs",
   getEnvs: "/getEnvs",
@@ -192,12 +190,10 @@ const API_PATHS = {
   getAdvancedTopicConfigs: "/getAdvancedTopicConfigs",
   showActivityLog: "/getActivityLogPerEnv",
   getActivityLogForTeamOverview: "/getActivityLogForTeamOverview",
-  getActivationInfo: "/getActivationInfo",
   getTopicOverview: "/getTopicOverview",
   getAclsCountPerEnv: "/getAclsCountPerEnv",
   getAclRequests: "/getAclRequests",
   getAclRequestsForApprover: "/getAclRequestsForApprover",
-  getAclCommand: "/getAclCommands",
 } satisfies {
   [key in keyof Omit<
     ApiOperations,
