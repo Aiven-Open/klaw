@@ -1,13 +1,24 @@
+import { useToast } from "@aivenio/aquarium";
+import { useEffect } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
-import { isFeatureFlagActive } from "src/services/feature-flags/utils";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { Routes } from "src/app/router_utils";
+import { Permission } from "src/domain/auth-user/auth-user-types";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { isFeatureFlagActive } from "src/services/feature-flags/utils";
 
-type Args = {
+type FeatureFlagRouteArgs = {
   path: Routes;
   element: JSX.Element;
   featureFlag: FeatureFlag;
   redirectRouteWithoutFeatureFlag: Routes;
+  children?: RouteObject[];
+};
+
+type PrivateRouteArgs = {
+  path: Routes;
+  element: JSX.Element;
+  permission: Permission;
   children?: RouteObject[];
 };
 
@@ -17,7 +28,7 @@ function createRouteBehindFeatureFlag({
   featureFlag,
   redirectRouteWithoutFeatureFlag,
   children,
-}: Args): RouteObject {
+}: FeatureFlagRouteArgs): RouteObject {
   return {
     path: path,
     // if FEATURE_FLAG_<name> is not set to
@@ -32,4 +43,43 @@ function createRouteBehindFeatureFlag({
   };
 }
 
-export { createRouteBehindFeatureFlag };
+const PrivateRoute = ({
+  children,
+  permission,
+}: {
+  children: React.ReactNode;
+  permission: Permission;
+}) => {
+  const { permissions } = useAuthContext();
+  const toast = useToast();
+  const isAuthorized = permissions[permission];
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      toast({
+        message: `Not authorized: ${permission}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+
+      return;
+    }
+  }, []);
+
+  return isAuthorized ? children : <Navigate to="/" replace />;
+};
+
+function createPrivateRoute({
+  path,
+  element,
+  permission,
+  children,
+}: PrivateRouteArgs): RouteObject {
+  return {
+    path: path,
+    element: <PrivateRoute permission={permission}>{element}</PrivateRoute>,
+    ...(children && { children }),
+  };
+}
+
+export { createPrivateRoute, createRouteBehindFeatureFlag };
