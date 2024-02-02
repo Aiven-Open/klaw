@@ -13,7 +13,6 @@ import loading from "@aivenio/aquarium/icons/loading";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
 import { useDashboardData } from "src/app/features/dashboard/hooks/useDashboardData";
-import loadingIcon from "@aivenio/aquarium/dist/src/icons/loading";
 
 const Dashboard = () => {
   const [numberOfDays, setNumberOfDays] = useState("30");
@@ -120,11 +119,10 @@ const Dashboard = () => {
         <NativeSelect
           labelText={"Timeframe"}
           defaultValue={"30"}
-          value={numberOfDays}
           onChange={(e) => setNumberOfDays(e.target.value)}
         >
           <Option key={"7"} value={"7"}>
-            Last 7 days <Icon icon={loadingIcon} />
+            Last 7 days
           </Option>
           <Option key={"30"} value={"30"}>
             Last 30 days
@@ -163,9 +161,13 @@ const Dashboard = () => {
             <Icon icon={loading} fontSize={"30px"} />
           </Box.Flex>
         ) : (
-          <BarChart height={250} data={chartsData?.topicsPerEnv}>
-            <Axis.XAxis dataKey="environment" />
-            <Axis.YAxis width={10} />
+          <BarChart
+            height={250}
+            data={chartsData?.topicsPerEnv}
+            layout={"vertical"}
+          >
+            <Axis.XAxis type="number" />
+            <Axis.YAxis width={20} type="category" dataKey="environment" />
             {/* fill is --aquarium-colors-primary-100 */}
             <BarChart.Bar dataKey="Topics" fill="#0788d1" />
             <Tooltip />
