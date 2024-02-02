@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@aivenio/aquarium':
-    specifier: ^1.52.2
-    version: 1.52.2(@types/react-dom@18.2.18)(@types/react@18.2.35)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(webpack@5.89.0)
+    specifier: ^1.53.0
+    version: 1.53.0(@types/react-dom@18.2.18)(@types/react@18.2.35)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(webpack@5.89.0)
   '@hookform/resolvers':
     specifier: ^2.9.10
     version: 2.9.10(react-hook-form@7.49.3)
@@ -211,8 +211,8 @@ packages:
     resolution: {integrity: sha512-DA5a1C0gD/pLOvhv33YMrbf2FK3oUzwNl9oOJqE4XVjuEtt6XIakRcsd7eLiOSPkp1kTRQGICTA8cKra/vFbjw==}
     dev: true
 
-  /@aivenio/aquarium@1.52.2(@types/react-dom@18.2.18)(@types/react@18.2.35)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(webpack@5.89.0):
-    resolution: {integrity: sha512-W25NZsED27LYCmQ2lMbymVmA2KyjSEeACrB9LuFwKVze3Vy5voI3v1DVH0VqXVd75B4s/l9ylJwdlu7MWVFiRg==}
+  /@aivenio/aquarium@1.53.0(@types/react-dom@18.2.18)(@types/react@18.2.35)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(webpack@5.89.0):
+    resolution: {integrity: sha512-tK9artwyK9zDdnVSpa5UovaHdv6WUXaTeAGO5jq0LLWXVl4JQfiqQAFOa5QA+1mP4eZCPtpwLGCRsKjS35xRog==}
     peerDependencies:
       lodash: 4.x
       react: 16.x || 17.x || 18.x
