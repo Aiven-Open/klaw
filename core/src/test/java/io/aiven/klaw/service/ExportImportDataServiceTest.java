@@ -34,7 +34,7 @@ public class ExportImportDataServiceTest {
 
   @Mock BuildProperties buildProperties;
 
-  private static final String KLAW_VERSION = "2.7.0";
+  private static final String KLAW_VERSION = "2.8.0";
 
   @BeforeEach
   public void setUp() throws Exception {
