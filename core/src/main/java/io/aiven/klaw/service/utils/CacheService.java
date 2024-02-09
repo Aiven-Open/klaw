@@ -16,7 +16,7 @@ import org.springframework.http.*;
 @Slf4j
 public class CacheService<T> {
 
-  Map<Integer, Map<Integer, T>> cache;
+  private final Map<Integer, Map<Integer, T>> cache;
 
   private final String urlEndpoint;
   private final String entityType;
@@ -74,17 +74,11 @@ public class CacheService<T> {
   }
 
   public Map<Integer, T> getCache(Integer tenantId) {
-    if (!cache.containsKey(tenantId)) {
-      cache.put(tenantId, new HashMap<>());
-    }
-    return cache.get(tenantId);
+    return cache.computeIfAbsent(tenantId, k -> new HashMap<>());
   }
 
   public List<T> getCacheAsList(Integer tenantId) {
-    if (!cache.containsKey(tenantId)) {
-      cache.put(tenantId, new HashMap<>());
-    }
-    return new ArrayList<>(cache.get(tenantId).values());
+    return new ArrayList<>(getCache(tenantId).values());
   }
 
   private void sendHighAvailabilityUpdate(int tenantId, T entry) {
