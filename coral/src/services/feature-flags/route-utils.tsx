@@ -57,7 +57,7 @@ const PrivateRoute = ({
   useEffect(() => {
     if (!isAuthorized) {
       toast({
-        message: `Not authorized: ${permission}`,
+        message: `Not authorized`,
         position: "bottom-left",
         variant: "danger",
       });
