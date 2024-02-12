@@ -152,7 +152,7 @@ function ConnectorRequest() {
                         renderLineHighlight: "none",
                         cursorBlinking: "solid",
                         overviewRulerLanes: 0,
-                        wordBasedSuggestions: false,
+                        wordBasedSuggestions: "off",
                         lineNumbersMinChars: 3,
                         glyphMargin: false,
                         cursorStyle: "line-thin",
