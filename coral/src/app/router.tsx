@@ -62,7 +62,11 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { createPrivateRoute } from "src/services/feature-flags/route-utils";
+import {
+  createPrivateRoute,
+  createRouteBehindFeatureFlag,
+} from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   {
@@ -326,10 +330,15 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
       },
-      createPrivateRoute({
-        path: Routes.ADD_CLUSTER,
-        element: <AddClusterPage />,
-        permission: "addDeleteEditClusters",
+      createRouteBehindFeatureFlag({
+        ...createPrivateRoute({
+          path: Routes.ADD_CLUSTER,
+          element: <AddClusterPage />,
+          permission: "addDeleteEditClusters",
+          redirectUnauthorized: Routes.CLUSTERS,
+        }),
+        featureFlag: FeatureFlag.FEATURE_FLAG_ADD_CLUSTER,
+        redirectRouteWithoutFeatureFlag: Routes.CLUSTERS,
       }),
     ],
   },
