@@ -8,9 +8,7 @@ import { Routes } from "src/app/router_utils";
 
 const ClustersPage = () => {
   const navigate = useNavigate();
-  const {
-    permissions: { addDeleteEditClusters },
-  } = useAuthContext();
+  const { permissions } = useAuthContext();
 
   return (
     <>
@@ -18,7 +16,7 @@ const ClustersPage = () => {
       <PageHeader
         title={"Clusters"}
         primaryAction={
-          addDeleteEditClusters
+          permissions.addDeleteEditClusters
             ? {
                 text: "Add new cluster",
                 onClick: () => navigate(Routes.ADD_CLUSTER),
