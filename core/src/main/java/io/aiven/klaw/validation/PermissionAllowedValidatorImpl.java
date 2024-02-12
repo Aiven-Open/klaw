@@ -12,12 +12,16 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 public class PermissionAllowedValidatorImpl
     implements ConstraintValidator<PermissionAllowed, Object> {
   private PermissionType[] permissions;
   @Autowired private CommonUtilsService commonUtilsService;
+
+  @Value("${klaw.api.permissions.guard.enabled:true}")
+  private boolean checkEnabled;
 
   @Override
   public void initialize(PermissionAllowed constraintAnnotation) {
@@ -28,7 +32,8 @@ public class PermissionAllowedValidatorImpl
   public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
     log.debug("Checking for permission(s) {}", permissions);
     Set<PermissionType> allowedPermissions = new HashSet<>(Arrays.asList(permissions));
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), allowedPermissions)) {
+    if (checkEnabled
+        && commonUtilsService.isNotAuthorizedUser(getPrincipal(), allowedPermissions)) {
       throw new PermissionConstraintException("Not Authorized");
     }
     return true;
