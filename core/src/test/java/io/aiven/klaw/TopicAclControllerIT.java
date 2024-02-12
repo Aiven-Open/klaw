@@ -1707,4 +1707,27 @@ public class TopicAclControllerIT {
 
     return OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
   }
+
+  @Order(50)
+  @Test
+  public void deleteTopicRequestNotAuthoirized() throws Exception {
+    when(clusterApiService.getAllTopics(
+            anyString(),
+            eq(KafkaSupportedProtocol.PLAINTEXT),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyBoolean()))
+        .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
+
+    // It shouldn't matter what request is being asked for by default the superadmin does not have
+    // access to this API.
+    mvc.perform(
+            MockMvcRequestBuilders.post("/deleteTopicRequests")
+                .with(user(superAdmin).password(superAdminPwd))
+                .param("topicId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
 }

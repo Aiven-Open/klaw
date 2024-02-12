@@ -37,11 +37,7 @@ public class TopicController {
 
   @Autowired private TopicControllerService topicControllerService;
 
-  @PermissionAllowed(
-      permissionAllowed = {
-        PermissionType.APPROVE_TOPICS_CREATE,
-        PermissionType.REQUEST_CREATE_TOPICS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   @PostMapping(
       value = "/createTopics",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -217,7 +213,7 @@ public class TopicController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_TOPICS})
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   @RequestMapping(
       value = "/deleteTopicRequests",
       method = RequestMethod.POST,

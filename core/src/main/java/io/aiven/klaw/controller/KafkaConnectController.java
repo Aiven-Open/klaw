@@ -83,7 +83,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_CONNECTORS})
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   @RequestMapping(
       value = "/deleteConnectorRequests",
       method = RequestMethod.POST,
