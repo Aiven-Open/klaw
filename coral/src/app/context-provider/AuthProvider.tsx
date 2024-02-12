@@ -58,11 +58,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // SUPERADMIN does not have access to coral, so we show a reduced page with
   // information about that and nothing else.
-  // if (!isLoading && authUser && isSuperAdmin(authUser)) {
-  //   return (
-  //     <BasePage headerContent={<></>} content={<NoCoralAccessSuperadmin />} />
-  //   );
-  // }
+  if (!isLoading && authUser && isSuperAdmin(authUser)) {
+    return (
+      <BasePage headerContent={<></>} content={<NoCoralAccessSuperadmin />} />
+    );
+  }
 
   if (!isLoading && authUser) {
     return (
