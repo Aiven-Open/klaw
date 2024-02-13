@@ -24,6 +24,7 @@ enum Routes {
   TEAMS = "/configuration/teams",
   USERS = "/configuration/users",
   CLUSTERS = "/configuration/clusters",
+  ADD_CLUSTER = "/configuration/clusters/add",
   USER_INFORMATION = "/user",
   USER_PROFILE = "/user/profile",
   USER_CHANGE_PASSWORD = "/user/change-password",
