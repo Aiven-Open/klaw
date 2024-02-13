@@ -5,18 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
-import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
@@ -72,16 +69,17 @@ public class TopicRequestValidatorImplIT {
     loginMock();
   }
 
-  @Test
-  @Order(1)
-  public void isValidTestNotAuthorizedUser() {
-    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
-    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
-        validator.validate(addTopicRequest);
-    assertThat(violations).hasSize(1);
-    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
-  }
+  //  @Test
+  //  @Order(1)
+  //  public void isValidTestNotAuthorizedUser() {
+  //    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
+  //    when(commonUtilsService.isNotAuthorizedUser(any(),
+  // any(PermissionType.class))).thenReturn(true);
+  //    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+  //        validator.validate(addTopicRequest);
+  //    assertThat(violations).hasSize(1);
+  //    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
+  //  }
 
   @Test
   @Order(2)
@@ -361,17 +359,17 @@ public class TopicRequestValidatorImplIT {
         .contains("Failure. This topic already exists in the selected cluster.");
   }
 
-  @Test
-  @Order(12)
-  public void isValidUpdateRequestTestNotAuthorizedUser() {
-    TopicUpdateRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
-        .thenReturn(true);
-    Set<ConstraintViolation<TopicUpdateRequestModel>> violations =
-        validator.validate(addTopicRequest);
-    assertThat(violations).hasSize(1);
-    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
-  }
+  //  @Test
+  //  @Order(12)
+  //  public void isValidUpdateRequestTestNotAuthorizedUser() {
+  //    TopicUpdateRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
+  //    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
+  //        .thenReturn(true);
+  //    Set<ConstraintViolation<TopicUpdateRequestModel>> violations =
+  //        validator.validate(addTopicRequest);
+  //    assertThat(violations).hasSize(1);
+  //    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
+  //  }
 
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);

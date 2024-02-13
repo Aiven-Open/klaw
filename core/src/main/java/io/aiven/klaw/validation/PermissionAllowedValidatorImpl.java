@@ -30,7 +30,7 @@ public class PermissionAllowedValidatorImpl
 
   @Override
   public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
-    log.debug("Checking for permission(s) {}", permissions);
+
     Set<PermissionType> allowedPermissions = new HashSet<>(Arrays.asList(permissions));
     if (checkEnabled
         && commonUtilsService.isNotAuthorizedUser(getPrincipal(), allowedPermissions)) {
