@@ -69,18 +69,6 @@ public class TopicRequestValidatorImplIT {
     loginMock();
   }
 
-  //  @Test
-  //  @Order(1)
-  //  public void isValidTestNotAuthorizedUser() {
-  //    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-  //    when(commonUtilsService.isNotAuthorizedUser(any(),
-  // any(PermissionType.class))).thenReturn(true);
-  //    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
-  //        validator.validate(addTopicRequest);
-  //    assertThat(violations).hasSize(1);
-  //    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
-  //  }
-
   @Test
   @Order(2)
   public void isValidTestTenantFiltering() {
@@ -358,18 +346,6 @@ public class TopicRequestValidatorImplIT {
     assertThat(violations.toString())
         .contains("Failure. This topic already exists in the selected cluster.");
   }
-
-  //  @Test
-  //  @Order(12)
-  //  public void isValidUpdateRequestTestNotAuthorizedUser() {
-  //    TopicUpdateRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
-  //    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
-  //        .thenReturn(true);
-  //    Set<ConstraintViolation<TopicUpdateRequestModel>> violations =
-  //        validator.validate(addTopicRequest);
-  //    assertThat(violations).hasSize(1);
-  //    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
-  //  }
 
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);
