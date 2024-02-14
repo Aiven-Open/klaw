@@ -87,7 +87,6 @@ public class TopicRequestValidatorImpl
 
     // verify tenant config exists
     int tenantId = commonUtilsService.getTenantId(userName);
-    log.info("tenantId {} here PLEASE", tenantId);
     String syncCluster;
     try {
       syncCluster = topicControllerService.getSyncCluster(tenantId);
