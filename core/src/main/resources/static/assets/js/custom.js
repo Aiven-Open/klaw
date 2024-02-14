@@ -240,14 +240,4 @@ $(function () {
         barSpacing: '4',
         barColor: '#7460ee'
     });
-    var sparkResize;
-
-    // For Custom File Input
-    $('.custom-file-input').on('change', function () {
-        //get the file name
-        var fileName = $(this).val();
-        //replace the "Choose a file" label
-        $(this).next('.custom-file-label').html(fileName);
-    })
-
 });
