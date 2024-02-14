@@ -2,7 +2,6 @@ package io.aiven.klaw.validation;
 
 import static io.aiven.klaw.helpers.UtilMethods.getPrincipal;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.error.PermissionConstraintException;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.service.CommonUtilsService;
@@ -19,16 +18,11 @@ import org.springframework.stereotype.Component;
 public class PermissionAllowedAspectInterceptor {
 
   @Autowired private CommonUtilsService commonUtilsService;
-  @Autowired ObjectMapper mapper;
-
-  private static String UNAUTHORIZED_RESPONSE;
 
   @Before("@annotation(permissionAllowed)")
-  public void checkPermissions(PermissionAllowed permissionAllowed) throws Exception {
-
+  public void checkPermissions(PermissionAllowed permissionAllowed) {
     // Check if you have PermissionAllowed validation annotations
     if (null != permissionAllowed) {
-
       Set<PermissionType> allowedPermissions =
           new HashSet<>(Arrays.asList(permissionAllowed.permissionAllowed()));
       if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), allowedPermissions)) {
