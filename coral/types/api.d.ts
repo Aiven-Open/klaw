@@ -992,8 +992,10 @@ export type components = {
       bootstrapServers: string;
       /** @enum {string} */
       protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
-      clusterType: string;
-      kafkaFlavor: string;
+      /** @enum {string} */
+      clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+      /** @enum {string} */
+      kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
@@ -1646,8 +1648,10 @@ export type components = {
       bootstrapServers: string;
       /** @enum {string} */
       protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
-      clusterType: string;
-      kafkaFlavor: string;
+      /** @enum {string} */
+      clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+      /** @enum {string} */
+      kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
       showDeleteCluster: boolean;
       totalNoPages: string;
       allPageNos: string[];
@@ -1657,7 +1661,6 @@ export type components = {
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
-      publicKey?: string;
     };
     ClusterInfo: {
       aivenCluster: boolean;
