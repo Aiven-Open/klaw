@@ -292,7 +292,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
         $scope.editClusterDetails = function() {
 
-                    $scope.clusterDetails.type = 'kafka';
+                    $scope.clusterDetails.type = 'KAFKA';
 
                     if($scope.clusterDetails.bootstrapServers === undefined)
                         {
@@ -356,7 +356,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
        $scope.editSchemaCluster = function() {
 
-                $scope.clusterDetails.type = 'schemaregistry';
+                $scope.clusterDetails.type = 'SCHEMA_REGISTRY';
 
                 if($scope.clusterDetails.bootstrapServers === undefined)
                     {
@@ -419,7 +419,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
        $scope.editKafkaConnectCluster = function() {
 
-               $scope.clusterDetails.type = 'kafkaconnect';
+               $scope.clusterDetails.type = 'KAFKA_CONNECT';
 
                if($scope.clusterDetails.bootstrapServers == undefined)
                    {

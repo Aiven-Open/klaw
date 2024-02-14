@@ -591,18 +591,18 @@
 											<div class="form-group">
 												<label>Kafka Flavor</label>
 												<select required class="form-control custom-select" ng-change="onChangeKafkaFlavor(kafkaFlavor)" ng-model="kafkaFlavor">
-													<option value="Apache Kafka">Apache Kafka</option>
-													<option value="Aiven for Apache Kafka">Aiven for Apache Kafka</option>
-													<option value="Confluent">Confluent</option>
-													<option value="Confluent Cloud">Confluent Cloud</option>
-													<option value="Others">Others</option>
+													<option value="APACHE_KAFKA">Apache Kafka</option>
+													<option value="AIVEN_FOR_APACHE_KAFKA">Aiven for Apache Kafka</option>
+													<option value="CONFLUENT">Confluent</option>
+													<option value="CONFLUENT_CLOUD">Confluent Cloud</option>
+													<option value="OTHERS">Others</option>
 												</select>
 											</div>
 
 										</div>
 									</div>
 
-									<div class="row" ng-show="kafkaFlavor == 'Aiven for Apache Kafka' && addNewCluster.clusterType == 'kafka'">
+									<div class="row" ng-show="kafkaFlavor == 'AIVEN_FOR_APACHE_KAFKA' && addNewCluster.clusterType == 'kafka'">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Project Name</label>

@@ -517,13 +517,13 @@
 
 										<td> {{ allenv.protocol}} </td>
 
-										<td ng-show="allenv.clusterType == 'kafka'" >
+										<td ng-show="allenv.clusterType == 'KAFKA'" >
 											<span class="badge badge-success">{{ allenv.clusterType }}</span></td>
 
-										<td ng-show="allenv.clusterType == 'schemaregistry'" >
+										<td ng-show="allenv.clusterType == 'SCHEMA_REGISTRY'" >
 											<span class="badge badge-info">{{ allenv.clusterType }}</span></td>
 
-										<td ng-show="allenv.clusterType == 'kafkaconnect'" >
+										<td ng-show="allenv.clusterType == 'KAFKA_CONNECT'" >
 											<span class="badge badge-warning">{{ allenv.clusterType }}</span></td>
 
 
@@ -534,7 +534,7 @@
 										<td ng-show="allenv.projectName!='' && allenv.projectName!=null">project = {{ allenv.projectName }} , serviceName = {{ allenv.serviceName }}</td>
 										<td ng-show="allenv.projectName==null">-NA-</td>
 
-										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'kafka'">
+										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'KAFKA'">
 
 											<a href="modifyCluster?clusterId={{ allenv.clusterId}}&clusterType=kafka">
 												<button type="button"
@@ -555,7 +555,7 @@
 												<i class="fas fa-times"></i>
 											</button>
 										</td>
-										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'schemaregistry'">
+										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'SCHEMA_REGISTRY'">
 
 											<a href="modifyCluster?clusterId={{ allenv.clusterId}}&clusterType=schemaregistry">
 												<button type="button"
@@ -576,7 +576,7 @@
 												<i class="fas fa-times"></i>
 											</button>
 										</td>
-										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'kafkaconnect'">
+										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'KAFKA_CONNECT'">
 
 											<a href="modifyCluster?clusterId={{ allenv.clusterId}}&clusterType=kafkaconnect">
 												<button type="button"

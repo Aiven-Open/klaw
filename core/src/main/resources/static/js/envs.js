@@ -627,7 +627,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             return;
                         }
 
-                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka' && $scope.addNewCluster.clusterType === 'kafka')
+                        if($scope.kafkaFlavor === 'AIVEN_FOR_APACHE_KAFKA' && $scope.addNewCluster.clusterType === 'kafka')
                         {
                             if($scope.addNewCluster.projectName === undefined || !$scope.addNewCluster.projectName)
                             {
@@ -644,14 +644,21 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             }
                         }
 
+                        let clusterType = '';
+
+                        if($scope.addNewCluster.type === 'kafka')
+                            clusterType = 'KAFKA';
+                        else if($scope.addNewCluster.type === 'schemaregistry')
+                            clusterType = 'SCHEMA_REGISTRY';
+                        else if($scope.addNewCluster.type === 'kafkaconnect')
+                            clusterType = 'KAFKA_CONNECT';
+
                         var serviceInput = {};
 
                         serviceInput['clusterName'] = $scope.addNewCluster.envname;
                         serviceInput['bootstrapServers'] = $scope.addNewCluster.host;
                         serviceInput['protocol'] = $scope.addNewCluster.protocol;
-                        serviceInput['clusterType'] = $scope.addNewCluster.type;
-                        var pubkeyStr = window.btoa(String.fromCharCode.apply(null, new Uint8Array($scope.addNewCluster.pubkeyUploadedFromUI)));
-                        serviceInput['publicKey'] = pubkeyStr;
+                        serviceInput['clusterType'] = clusterType;
                         serviceInput['projectName'] = $scope.addNewCluster.projectName;
                         serviceInput['serviceName'] = $scope.addNewCluster.serviceName;
                         serviceInput['kafkaFlavor'] = $scope.kafkaFlavor;
