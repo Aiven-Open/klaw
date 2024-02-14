@@ -64,10 +64,4 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(
         ApiResponse.notOk(ex.getAllErrors().get(0).getDefaultMessage()), HttpStatus.BAD_REQUEST);
   }
-
-  @ExceptionHandler({PermissionConstraintException.class})
-  protected ResponseEntity<ApiResponse> handlePermissionNotAuthoirzedExceptionInternal(
-      HttpServletRequest request, PermissionConstraintException ex) {
-    return new ResponseEntity<>(ApiResponse.NOT_AUTHORIZED, HttpStatus.UNAUTHORIZED);
-  }
 }
