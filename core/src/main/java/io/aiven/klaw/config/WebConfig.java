@@ -1,14 +1,11 @@
 package io.aiven.klaw.config;
 
-import io.aiven.klaw.validation.PermissionInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -31,13 +28,5 @@ public class WebConfig implements WebMvcConfigurer {
         .addResourceHandler("/static/assets/images/**")
         .addResourceLocations("classpath:/static/assets/images/")
         .setCachePeriod(604800); // 1 week in seconds
-  }
-
-  @Autowired private PermissionInterceptor permissionInterceptor;
-
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    // Custom interceptor, add intercept path and exclude intercept path
-    registry.addInterceptor(permissionInterceptor).addPathPatterns("/**");
   }
 }
