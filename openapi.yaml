@@ -7165,9 +7165,6 @@
           },
           "serviceName" : {
             "type" : "string"
-          },
-          "publicKey" : {
-            "type" : "string"
           }
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]

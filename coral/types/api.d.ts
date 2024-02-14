@@ -997,7 +997,6 @@ export type components = {
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
-      publicKey?: string;
     };
     ServiceAccounts: {
       /** Format: int32 */

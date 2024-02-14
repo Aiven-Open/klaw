@@ -39,6 +39,4 @@ public class KwClustersModel implements Serializable {
   private String projectName;
 
   private String serviceName;
-
-  private String publicKey;
 }
