@@ -19,6 +19,7 @@ type PrivateRouteArgs = {
   path: Routes;
   element: JSX.Element;
   permission: Permission;
+  redirectUnauthorized: Routes;
   children?: RouteObject[];
 };
 
@@ -28,7 +29,7 @@ function createRouteBehindFeatureFlag({
   featureFlag,
   redirectRouteWithoutFeatureFlag,
   children,
-}: FeatureFlagRouteArgs): RouteObject {
+}: FeatureFlagRouteArgs) {
   return {
     path: path,
     // if FEATURE_FLAG_<name> is not set to
@@ -46,9 +47,11 @@ function createRouteBehindFeatureFlag({
 const PrivateRoute = ({
   children,
   permission,
+  redirectUnauthorized,
 }: {
   children: React.ReactNode;
   permission: Permission;
+  redirectUnauthorized: Routes;
 }) => {
   const { permissions } = useAuthContext();
   const toast = useToast();
@@ -57,7 +60,7 @@ const PrivateRoute = ({
   useEffect(() => {
     if (!isAuthorized) {
       toast({
-        message: `Not authorized: ${permission}`,
+        message: `Not authorized`,
         position: "bottom-left",
         variant: "danger",
       });
@@ -66,18 +69,30 @@ const PrivateRoute = ({
     }
   }, []);
 
-  return isAuthorized ? children : <Navigate to="/" replace />;
+  return isAuthorized ? (
+    children
+  ) : (
+    <Navigate to={redirectUnauthorized} replace />
+  );
 };
 
 function createPrivateRoute({
   path,
   element,
   permission,
+  redirectUnauthorized,
   children,
-}: PrivateRouteArgs): RouteObject {
+}: PrivateRouteArgs) {
   return {
     path: path,
-    element: <PrivateRoute permission={permission}>{element}</PrivateRoute>,
+    element: (
+      <PrivateRoute
+        permission={permission}
+        redirectUnauthorized={redirectUnauthorized}
+      >
+        {element}
+      </PrivateRoute>
+    ),
     ...(children && { children }),
   };
 }

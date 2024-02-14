@@ -12,6 +12,7 @@ import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
 import { ClustersPage } from "src/app/pages/configuration/clusters";
+import { AddClusterPage } from "src/app/pages/configuration/clusters/add";
 import EnvironmentsPage from "src/app/pages/configuration/environments";
 import KafkaEnvironmentsPage from "src/app/pages/configuration/environments/kafka";
 import KafkaConnectEnvironmentsPage from "src/app/pages/configuration/environments/kafka-connect";
@@ -61,6 +62,11 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
+import {
+  createPrivateRoute,
+  createRouteBehindFeatureFlag,
+} from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   {
@@ -324,6 +330,16 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
       },
+      createRouteBehindFeatureFlag({
+        ...createPrivateRoute({
+          path: Routes.ADD_CLUSTER,
+          element: <AddClusterPage />,
+          permission: "addDeleteEditClusters",
+          redirectUnauthorized: Routes.CLUSTERS,
+        }),
+        featureFlag: FeatureFlag.FEATURE_FLAG_ADD_CLUSTER,
+        redirectRouteWithoutFeatureFlag: Routes.CLUSTERS,
+      }),
     ],
   },
   {

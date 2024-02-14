@@ -8,8 +8,11 @@ type ClustersPaginatedApiResponse = ResolveIntersectionTypes<
   Paginated<ClusterDetails[]>
 >;
 
+type AddNewClusterPayload = KlawApiModel<"KwClustersModel">;
+
 export type {
   ClusterInfoFromEnvironment,
   ClusterDetails,
   ClustersPaginatedApiResponse,
+  AddNewClusterPayload,
 };

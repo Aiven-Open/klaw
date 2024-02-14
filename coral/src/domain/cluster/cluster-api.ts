@@ -1,8 +1,11 @@
-import { Environment } from "src/domain/environment";
-import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
-import api, { API_PATHS } from "src/services/api";
-import { ClustersPaginatedApiResponse } from "src/domain/cluster/cluster-types";
 import { transformPaginatedClustersApiResponse } from "src/domain/cluster/cluster-api-transformer";
+import {
+  ClustersPaginatedApiResponse,
+  AddNewClusterPayload,
+} from "src/domain/cluster/cluster-types";
+import { Environment } from "src/domain/environment";
+import api, { API_PATHS } from "src/services/api";
+import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 
 const getClusterInfoFromEnvironment = async ({
   envSelected,
@@ -46,8 +49,20 @@ async function getClustersPaginated({
   return transformPaginatedClustersApiResponse(response);
 }
 
+async function addNewCluster(
+  payload: AddNewClusterPayload
+): Promise<KlawApiResponse<"addNewCluster">> {
+  const response = await api.post<
+    KlawApiResponse<"addNewCluster">,
+    AddNewClusterPayload
+  >(API_PATHS.getClustersPaginated, payload);
+
+  return response;
+}
+
 export {
-  getClusterInfoFromEnvironment,
+  addNewCluster,
   getClusterDetails,
+  getClusterInfoFromEnvironment,
   getClustersPaginated,
 };

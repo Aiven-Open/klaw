@@ -108,6 +108,7 @@ describe("route-utils", () => {
           path: privateRoute,
           element: TestElement,
           permission: "approveDeclineTopics",
+          redirectUnauthorized: Routes.DASHBOARD,
         });
       });
 
@@ -123,7 +124,7 @@ describe("route-utils", () => {
 
         expect(screen.queryByTestId("test-element")).not.toBeInTheDocument();
         expect(mockUseToast).toHaveBeenCalledWith({
-          message: `Not authorized: approveDeclineTopics`,
+          message: `Not authorized`,
           position: "bottom-left",
           variant: "danger",
         });
@@ -141,6 +142,7 @@ describe("route-utils", () => {
           path: privateRoute,
           element: TestElement,
           permission: "approveDeclineTopics",
+          redirectUnauthorized: Routes.DASHBOARD,
         });
       });
 
