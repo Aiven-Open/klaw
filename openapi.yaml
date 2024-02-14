@@ -7152,10 +7152,12 @@
             "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512" ]
           },
           "clusterType" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ]
           },
           "kafkaFlavor" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "CONFLUENT_CLOUD", "OTHERS" ]
           },
           "associatedServers" : {
             "type" : "string"
@@ -9024,10 +9026,12 @@
             "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512" ]
           },
           "clusterType" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ]
           },
           "kafkaFlavor" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "CONFLUENT_CLOUD", "OTHERS" ]
           },
           "showDeleteCluster" : {
             "type" : "boolean"
@@ -9055,9 +9059,6 @@
             "type" : "string"
           },
           "serviceName" : {
-            "type" : "string"
-          },
-          "publicKey" : {
             "type" : "string"
           }
         },
