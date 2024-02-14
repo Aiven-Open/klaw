@@ -485,10 +485,6 @@ public class KafkaConnectControllerService {
   public ApiResponse deleteConnectorRequests(String topicId) throws KlawException {
     log.info("deleteConnectorRequests {}", topicId);
 
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      return ApiResponse.NOT_AUTHORIZED;
-    }
     try {
       String deleteTopicReqStatus =
           manageDatabase

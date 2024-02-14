@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -220,20 +219,6 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
-  }
-
-  @Test
-  @Order(5)
-  public void createTopicDeleteRequestFailureNotAuthorized() throws KlawNotAuthorizedException {
-    String topicName = "testtopic1";
-    String envId = "1";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
-
-    assertThrows(
-        KlawNotAuthorizedException.class,
-        () -> {
-          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-        });
   }
 
   @Test
@@ -1193,20 +1178,6 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
-  }
-
-  @Test
-  @Order(48)
-  public void updateTopicsFailureNotAuthorized() {
-
-    stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
-        .thenReturn(true);
-    assertThrows(
-        KlawNotAuthorizedException.class,
-        () -> {
-          topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
-        });
   }
 
   @Test

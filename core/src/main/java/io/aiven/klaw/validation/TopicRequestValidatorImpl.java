@@ -4,7 +4,6 @@ import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -48,12 +47,6 @@ public class TopicRequestValidatorImpl
       TopicRequestModel topicRequestModel, ConstraintValidatorContext constraintValidatorContext) {
 
     String userName = topicControllerService.getUserName();
-    // Verify if user has access to request for topics
-    if (commonUtilsService.isNotAuthorizedUser(
-        topicControllerService.getPrincipal(), this.permissionType)) {
-      updateConstraint(constraintValidatorContext, ApiResultStatus.NOT_AUTHORIZED.value);
-      return false;
-    }
 
     if (permissionType.equals(PermissionType.REQUEST_CREATE_TOPICS)) {
       // Verify if topic request type is Create/Promote

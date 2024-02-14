@@ -5,6 +5,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.Order;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.*;
@@ -13,6 +14,7 @@ import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ public class KafkaConnectController {
 
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   @PostMapping(
       value = "/createConnector",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -55,6 +58,11 @@ public class KafkaConnectController {
    *     OLDEST_FIRST/NEWEST_FIRST
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.APPROVE_CONNECTORS
+      })
   @RequestMapping(
       value = "/getConnectorRequestsForApprover",
       method = RequestMethod.GET,
@@ -75,6 +83,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   @RequestMapping(
       value = "/deleteConnectorRequests",
       method = RequestMethod.POST,
@@ -85,6 +94,11 @@ public class KafkaConnectController {
         kafkaConnectControllerService.deleteConnectorRequests(connectorId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.APPROVE_CONNECTORS
+      })
   @PostMapping(
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -94,6 +108,11 @@ public class KafkaConnectController {
         kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.APPROVE_CONNECTORS
+      })
   @PostMapping(
       value = "/execConnectorRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -106,6 +125,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_CONNECTORS})
   @PostMapping(
       value = "/createConnectorDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -134,6 +154,11 @@ public class KafkaConnectController {
    * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_CONNECTORS,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @RequestMapping(
       value = "/getConnectorRequests",
       method = RequestMethod.GET,
@@ -163,6 +188,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_CONNECTORS})
   @RequestMapping(
       value = "/getConnectors",
       method = RequestMethod.GET,
@@ -180,6 +206,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_CONNECTORS})
   @RequestMapping(
       value = "/getConnectorOverview",
       method = RequestMethod.GET,
@@ -192,6 +219,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   @PostMapping(
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -203,6 +231,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_CONNECTORS})
   @PostMapping(
       value = "/saveConnectorDocumentation",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -212,6 +241,7 @@ public class KafkaConnectController {
         kafkaConnectControllerService.saveConnectorDocumentation(topicInfo), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_CONNECTORS})
   @RequestMapping(
       value = "/getConnectorDetailsPerEnv",
       method = RequestMethod.GET,
@@ -225,6 +255,7 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.MANAGE_CONNECTORS})
   @PostMapping(
       value = "/connector/restart",
       produces = {MediaType.APPLICATION_JSON_VALUE})
