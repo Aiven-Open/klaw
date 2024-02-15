@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.Order;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
@@ -11,7 +12,10 @@ import io.aiven.klaw.model.response.SchemaOverview;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegistryControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
+
+import java.security.Permission;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +100,11 @@ public class SchemaRegistryController {
    *     OLDEST_FIRST/NEWEST_FIRST
    * @return A list of filtered Schema Requests for approval
    */
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.APPROVE_SCHEMAS,
+          PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @RequestMapping(
       value = "/getSchemaRequestsForApprover",
       method = RequestMethod.GET,
@@ -126,6 +135,10 @@ public class SchemaRegistryController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.REQUEST_CREATE_SCHEMAS
+      })
   @PostMapping(
       value = "/deleteSchemaRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -135,6 +148,11 @@ public class SchemaRegistryController {
         schemaRegistryControllerService.deleteSchemaRequests(avroSchemaReqId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.APPROVE_SCHEMAS,
+          PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @PostMapping(
       value = "/execSchemaRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -144,6 +162,11 @@ public class SchemaRegistryController {
         schemaRegistryControllerService.execSchemaRequests(avroSchemaReqId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.APPROVE_SCHEMAS,
+          PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @PostMapping(
       value = "/execSchemaRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -157,6 +180,10 @@ public class SchemaRegistryController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.REQUEST_CREATE_SCHEMAS
+      })
   @PostMapping(
       value = "/uploadSchema",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -167,6 +194,10 @@ public class SchemaRegistryController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.REQUEST_CREATE_SCHEMAS
+      })
   @PostMapping(
       value = "/promote/schema",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -196,6 +227,10 @@ public class SchemaRegistryController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.REQUEST_CREATE_SCHEMAS
+      })
   @PostMapping(
       value = "/validate/schema",
       produces = {MediaType.APPLICATION_JSON_VALUE})
