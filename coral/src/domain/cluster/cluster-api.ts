@@ -55,7 +55,7 @@ async function addNewCluster(
   const response = await api.post<
     KlawApiResponse<"addNewCluster">,
     AddNewClusterPayload
-  >(API_PATHS.getClustersPaginated, payload);
+  >(API_PATHS.addNewCluster, payload);
 
   return response;
 }
