@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.response.AuthenticationInfo;
@@ -7,6 +8,7 @@ import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -78,6 +80,10 @@ public class UtilController {
     return new ResponseEntity<>(utilControllerService.resetCache(resetEntityCache), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+          PermissionType.SHUTDOWN_KLAW
+      })
   @GetMapping("/shutdownContext")
   public void shutdownApp() {
     utilControllerService.shutdownContext();
