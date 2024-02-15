@@ -65,6 +65,7 @@ import { getRouterBasename } from "src/config";
 import {
   createPrivateRoute,
   createRouteBehindFeatureFlag,
+  SuperadminRoute,
 } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 
@@ -349,7 +350,166 @@ const routes: Array<RouteObject> = [
   },
 ];
 
-const router = createBrowserRouter(routes, {
+type SuperadminRouteMap = {
+  [Route in Routes]?: {
+    route: Routes;
+    redirect: string;
+    showNotFound?: boolean;
+    removeChildren?: boolean;
+  };
+};
+
+/** `superadminRouteMap` is used as in-between-solution
+ * to be able to filter "routes" and decide which ones
+ * are accessible for role SUPERADMIN. It will be replaced
+ * by a proper routing etc. based on fine-grained permissions.
+ * The `redirect` placeholder (:placeHolder)
+ * has to follow the same pattern as in our
+ * `routes` list to be able to replace it correctly
+ */
+const superadminRouteMap: SuperadminRouteMap = {
+  [Routes.TOPIC_OVERVIEW]: {
+    route: Routes.TOPIC_OVERVIEW,
+    redirect: "/topicOverview?topicname=:topicName",
+  },
+  [Routes.CONNECTOR_OVERVIEW]: {
+    route: Routes.CONNECTOR_OVERVIEW,
+    redirect: "/connectorOverview?connectorName=:connectorName",
+  },
+  [Routes.ENVIRONMENTS]: {
+    route: Routes.ENVIRONMENTS,
+    redirect: "/envs",
+  },
+  [Routes.TEAMS]: {
+    route: Routes.TEAMS,
+    redirect: "/teams",
+  },
+  [Routes.USERS]: {
+    route: Routes.USERS,
+    redirect: "/users",
+  },
+  [Routes.CLUSTERS]: {
+    route: Routes.CLUSTERS,
+    redirect: "/clusters",
+  },
+
+  // These are all routes that don't have an
+  // equivalent in Klaw for SUPERADMIN
+  // and are also unlikely for a superadmin
+  // to click, so redirect goes to not found
+  // could also be dashboard, but not found
+  // gives additional information
+  [Routes.CONNECTOR_REQUEST]: {
+    route: Routes.CONNECTOR_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.CONNECTOR_EDIT_REQUEST]: {
+    route: Routes.CONNECTOR_EDIT_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.CONNECTOR_PROMOTION_REQUEST]: {
+    route: Routes.CONNECTOR_PROMOTION_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.TOPIC_REQUEST]: {
+    route: Routes.TOPIC_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.ACL_REQUEST]: {
+    route: Routes.ACL_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.TOPIC_ACL_REQUEST]: {
+    route: Routes.TOPIC_ACL_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.TOPIC_SCHEMA_REQUEST]: {
+    route: Routes.TOPIC_SCHEMA_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.TOPIC_PROMOTION_REQUEST]: {
+    route: Routes.TOPIC_PROMOTION_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.TOPIC_EDIT_REQUEST]: {
+    route: Routes.TOPIC_EDIT_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.SCHEMA_REQUEST]: {
+    route: Routes.SCHEMA_REQUEST,
+    redirect: "",
+    showNotFound: true,
+  },
+  [Routes.REQUESTS]: {
+    route: Routes.REQUESTS,
+    redirect: "",
+    showNotFound: true,
+    removeChildren: true,
+  },
+  [Routes.APPROVALS]: {
+    route: Routes.APPROVALS,
+    redirect: "",
+    showNotFound: true,
+    removeChildren: true,
+  },
+};
+function filteredRoutes(
+  routes: Array<RouteObject>,
+  redirectMap: SuperadminRouteMap
+): Array<RouteObject> {
+  return routes.map((route) => {
+    const routePath = route.path as Routes;
+    const redirect = redirectMap[routePath]?.redirect;
+
+    if (route.children) {
+      return {
+        ...route,
+        children: filteredRoutes(route.children, redirectMap),
+        element: redirect ? (
+          <SuperadminRoute
+            redirect={redirect}
+            showNotFound={redirectMap[routePath]?.showNotFound}
+            removeChildren={redirectMap[routePath]?.removeChildren}
+          >
+            {route.element}
+          </SuperadminRoute>
+        ) : (
+          route.element
+        ),
+      };
+    } else {
+      if (routePath !== undefined && redirect !== undefined) {
+        return {
+          ...route,
+          element: (
+            <SuperadminRoute
+              redirect={redirect}
+              showNotFound={redirectMap[routePath]?.showNotFound}
+            >
+              {route.element}
+            </SuperadminRoute>
+          ),
+        };
+      } else {
+        return route;
+      }
+    }
+  });
+}
+
+// until we have permission in place like planned,
+// we are filtering the `routes` object and handling
+// routing based on role
+const router = createBrowserRouter(filteredRoutes(routes, superadminRouteMap), {
   basename: getRouterBasename(),
 });
 

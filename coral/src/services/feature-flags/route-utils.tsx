@@ -1,11 +1,12 @@
 import { useToast } from "@aivenio/aquarium";
 import { useEffect } from "react";
-import { Navigate, RouteObject } from "react-router-dom";
+import { Navigate, RouteObject, useParams } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { Routes } from "src/app/router_utils";
 import { Permission } from "src/domain/auth-user/auth-user-types";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { isFeatureFlagActive } from "src/services/feature-flags/utils";
+import NotFound from "src/app/pages/not-found";
 
 type FeatureFlagRouteArgs = {
   path: Routes;
@@ -20,6 +21,13 @@ type PrivateRouteArgs = {
   element: JSX.Element;
   permission: Permission;
   redirectUnauthorized: Routes;
+  children?: RouteObject[];
+};
+
+type SuperadminRoute = {
+  path: Routes;
+  element: JSX.Element;
+  redirect: string;
   children?: RouteObject[];
 };
 
@@ -97,4 +105,46 @@ function createPrivateRoute({
   };
 }
 
-export { createPrivateRoute, createRouteBehindFeatureFlag };
+const SuperadminRoute = ({
+  children,
+  redirect,
+  showNotFound,
+  removeChildren,
+}: {
+  children: React.ReactNode;
+  redirect: string;
+  showNotFound?: boolean;
+  removeChildren?: boolean;
+}) => {
+  const { userrole } = useAuthContext();
+  const routeParams = useParams();
+
+  const redirectStaticPart = redirect.split(":")[0];
+  const param = redirect.split(":")[1];
+  const redirectParam = routeParams[param] ? routeParams[param] : "";
+  const redirectPath = `${redirectStaticPart}${redirectParam}`;
+
+  const isSuperadmin = userrole === "SUPERADMIN";
+
+  useEffect(() => {
+    if (isSuperadmin && !showNotFound) {
+      window.location.replace(`${window.location.origin}${redirectPath}`);
+    }
+  });
+
+  if (!isSuperadmin) {
+    return children;
+  }
+
+  if (isSuperadmin && showNotFound) {
+    return <NotFound />;
+  }
+
+  if (isSuperadmin && removeChildren) {
+    return [];
+  }
+
+  return null;
+};
+
+export { createPrivateRoute, createRouteBehindFeatureFlag, SuperadminRoute };
