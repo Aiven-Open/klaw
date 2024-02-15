@@ -80,10 +80,7 @@ public class UtilController {
     return new ResponseEntity<>(utilControllerService.resetCache(resetEntityCache), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.SHUTDOWN_KLAW
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.SHUTDOWN_KLAW})
   @GetMapping("/shutdownContext")
   public void shutdownApp() {
     utilControllerService.shutdownContext();

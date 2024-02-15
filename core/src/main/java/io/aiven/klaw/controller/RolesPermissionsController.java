@@ -5,10 +5,9 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import io.aiven.klaw.service.RolesPermissionsControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.List;
 import java.util.Map;
-
-import io.aiven.klaw.validation.PermissionAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,7 +50,7 @@ public class RolesPermissionsController {
         rolesPermissionsControllerService.getPermissionDescriptions(), HttpStatus.OK);
   }
 
-  @PermissionAllowed( permissionAllowed = { PermissionType.UPDATE_PERMISSIONS})
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_PERMISSIONS})
   @RequestMapping(
       value = "/getPermissions",
       method = RequestMethod.GET,
@@ -61,7 +60,11 @@ public class RolesPermissionsController {
         rolesPermissionsControllerService.getPermissions(true), HttpStatus.OK);
   }
 
-  @PermissionAllowed( permissionAllowed = { PermissionType.ADD_EDIT_DELETE_ROLES, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_ROLES,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/deleteRole",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -71,7 +74,11 @@ public class RolesPermissionsController {
         rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
   }
 
-  @PermissionAllowed( permissionAllowed = { PermissionType.ADD_EDIT_DELETE_ROLES, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_ROLES,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/addRoleId",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -80,7 +87,7 @@ public class RolesPermissionsController {
     return new ResponseEntity<>(rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
   }
 
-  @PermissionAllowed( permissionAllowed = { PermissionType.UPDATE_PERMISSIONS})
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_PERMISSIONS})
   @PostMapping(
       value = "/updatePermissions",
       produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -5,9 +5,8 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import io.aiven.klaw.service.UiConfigControllerService;
-import java.util.List;
-
 import io.aiven.klaw.validation.PermissionAllowed;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,7 +48,7 @@ public class UiConfigController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed( permissionAllowed = { PermissionType.ALL_TEAMS_REPORTS})
+  @PermissionAllowed(permissionAllowed = {PermissionType.ALL_TEAMS_REPORTS})
   @RequestMapping(
       value = "/getActivityLogPerEnv",
       method = RequestMethod.GET,

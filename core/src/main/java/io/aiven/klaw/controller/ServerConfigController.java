@@ -8,11 +8,10 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import io.aiven.klaw.service.ServerConfigService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import io.aiven.klaw.validation.PermissionAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,10 +29,7 @@ public class ServerConfigController {
 
   @Autowired private ServerConfigService serverConfigService;
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.UPDATE_SERVERCONFIG
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_SERVERCONFIG})
   @RequestMapping(
       value = "/getAllServerConfig",
       method = RequestMethod.GET,
@@ -42,10 +38,7 @@ public class ServerConfigController {
     return new ResponseEntity<>(serverConfigService.getAllProps(), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.UPDATE_SERVERCONFIG
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_SERVERCONFIG})
   @RequestMapping(
       value = "/getAllServerEditableConfig",
       method = RequestMethod.GET,
@@ -62,10 +55,7 @@ public class ServerConfigController {
     return new ResponseEntity<>(serverConfigService.resetCache(), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.UPDATE_SERVERCONFIG
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_SERVERCONFIG})
   @PostMapping(
       value = "/updateKwCustomProperty",
       produces = {MediaType.APPLICATION_JSON_VALUE})
