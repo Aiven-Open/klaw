@@ -15,13 +15,20 @@ import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLin
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
   const { userrole } = useAuthContext();
 
-  const isSuperAdmin = userrole === "SUPERADMIN";
+  const superadminAccessCoralEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
+  );
+
+  const showNavigationForSuperAdmin =
+    superadminAccessCoralEnabled && userrole === "SUPERADMIN";
 
   return (
     <Box
@@ -69,7 +76,7 @@ function MainNavigation() {
             }
           />
         </li>
-        {isSuperAdmin ? null : (
+        {showNavigationForSuperAdmin ? null : (
           <li>
             <MainNavigationLink
               icon={tickCircle}
@@ -80,7 +87,7 @@ function MainNavigation() {
             />
           </li>
         )}
-        {isSuperAdmin ? null : (
+        {showNavigationForSuperAdmin ? null : (
           <li>
             <MainNavigationLink
               icon={add}
@@ -98,7 +105,7 @@ function MainNavigation() {
             active={pathname.startsWith(Routes.ACTIVITY_LOG)}
           />
         </li>
-        {isSuperAdmin && (
+        {showNavigationForSuperAdmin && (
           <li>
             <MainNavigationSubmenuList
               icon={swapHorizontal}
@@ -159,16 +166,16 @@ function MainNavigation() {
               linkText={"Teams"}
               active={pathname.startsWith(Routes.TEAMS)}
             />
-            {isSuperAdmin && (
+            {showNavigationForSuperAdmin && (
               <MainNavigationLink
                 linkText={"Approve user request"}
                 to={"/execUsers"}
               />
             )}
-            {isSuperAdmin && (
+            {showNavigationForSuperAdmin && (
               <MainNavigationLink linkText={"Roles"} to={"/roles"} />
             )}
-            {isSuperAdmin && (
+            {showNavigationForSuperAdmin && (
               <MainNavigationLink
                 linkText={"Permissions"}
                 to={"/permissions"}

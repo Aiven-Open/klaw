@@ -65,9 +65,15 @@ import { getRouterBasename } from "src/config";
 import {
   createPrivateRoute,
   createRouteBehindFeatureFlag,
-  SuperadminRoute,
+  filteredRoutesForSuperAdmin,
+  SuperadminRouteMap,
 } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+
+const superAdminAccessCoralEnabled = useFeatureFlag(
+  FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
+);
 
 const routes: Array<RouteObject> = [
   {
@@ -350,15 +356,6 @@ const routes: Array<RouteObject> = [
   },
 ];
 
-type SuperadminRouteMap = {
-  [Route in Routes]?: {
-    route: Routes;
-    redirect: string;
-    showNotFound?: boolean;
-    removeChildren?: boolean;
-  };
-};
-
 /** `superadminRouteMap` is used as in-between-solution
  * to be able to filter "routes" and decide which ones
  * are accessible for role SUPERADMIN. It will be replaced
@@ -462,54 +459,15 @@ const superadminRouteMap: SuperadminRouteMap = {
     removeChildren: true,
   },
 };
-function filteredRoutes(
-  routes: Array<RouteObject>,
-  redirectMap: SuperadminRouteMap
-): Array<RouteObject> {
-  return routes.map((route) => {
-    const routePath = route.path as Routes;
-    const redirect = redirectMap[routePath]?.redirect;
-
-    if (route.children) {
-      return {
-        ...route,
-        children: filteredRoutes(route.children, redirectMap),
-        element: redirect ? (
-          <SuperadminRoute
-            redirect={redirect}
-            showNotFound={redirectMap[routePath]?.showNotFound}
-            removeChildren={redirectMap[routePath]?.removeChildren}
-          >
-            {route.element}
-          </SuperadminRoute>
-        ) : (
-          route.element
-        ),
-      };
-    } else {
-      if (routePath !== undefined && redirect !== undefined) {
-        return {
-          ...route,
-          element: (
-            <SuperadminRoute
-              redirect={redirect}
-              showNotFound={redirectMap[routePath]?.showNotFound}
-            >
-              {route.element}
-            </SuperadminRoute>
-          ),
-        };
-      } else {
-        return route;
-      }
-    }
-  });
-}
 
 // until we have permission in place like planned,
 // we are filtering the `routes` object and handling
 // routing based on role
-const router = createBrowserRouter(filteredRoutes(routes, superadminRouteMap), {
+const routeToUse = superAdminAccessCoralEnabled
+  ? filteredRoutesForSuperAdmin(routes, superadminRouteMap)
+  : routes;
+
+const router = createBrowserRouter(routeToUse, {
   basename: getRouterBasename(),
 });
 

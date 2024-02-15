@@ -147,4 +147,62 @@ const SuperadminRoute = ({
   return null;
 };
 
-export { createPrivateRoute, createRouteBehindFeatureFlag, SuperadminRoute };
+type SuperadminRouteMap = {
+  [Route in Routes]?: {
+    route: Routes;
+    redirect: string;
+    showNotFound?: boolean;
+    removeChildren?: boolean;
+  };
+};
+function filteredRoutesForSuperAdmin(
+  routes: Array<RouteObject>,
+  redirectMap: SuperadminRouteMap
+): Array<RouteObject> {
+  return routes.map((route) => {
+    const routePath = route.path as Routes;
+    const redirect = redirectMap[routePath]?.redirect;
+
+    if (route.children) {
+      return {
+        ...route,
+        children: filteredRoutesForSuperAdmin(route.children, redirectMap),
+        element: redirect ? (
+          <SuperadminRoute
+            redirect={redirect}
+            showNotFound={redirectMap[routePath]?.showNotFound}
+            removeChildren={redirectMap[routePath]?.removeChildren}
+          >
+            {route.element}
+          </SuperadminRoute>
+        ) : (
+          route.element
+        ),
+      };
+    } else {
+      if (routePath !== undefined && redirect !== undefined) {
+        return {
+          ...route,
+          element: (
+            <SuperadminRoute
+              redirect={redirect}
+              showNotFound={redirectMap[routePath]?.showNotFound}
+            >
+              {route.element}
+            </SuperadminRoute>
+          ),
+        };
+      } else {
+        return route;
+      }
+    }
+  });
+}
+
+export {
+  createPrivateRoute,
+  createRouteBehindFeatureFlag,
+  SuperadminRoute,
+  filteredRoutesForSuperAdmin,
+};
+export type { SuperadminRouteMap };
