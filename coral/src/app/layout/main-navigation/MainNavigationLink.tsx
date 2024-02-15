@@ -23,10 +23,12 @@ function LinkContent({
   );
 }
 
+/** Only use a `string` in `to` if the link
+ * should go into the Klaw Angular app
+ * or an external site.
+ */
 type MainNavigationLinkProps = {
   icon?: typeof data;
-  // only use a string if the link
-  // should go into the Klaw Angular app!
   to: Routes | string;
   linkText: string;
   active?: boolean;
