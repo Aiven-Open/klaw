@@ -60,7 +60,11 @@ public class UsersTeamsController {
     return new ResponseEntity<>(usersTeamsControllerService.getAllTeamsSUOnly(), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/deleteTeamRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -69,7 +73,11 @@ public class UsersTeamsController {
     return new ResponseEntity<>(usersTeamsControllerService.deleteTeam(teamId), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/deleteUserRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -79,7 +87,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.deleteUser(userId, true), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/updateUser",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -98,7 +110,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/addNewUser",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -117,7 +133,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @RequestMapping(
       value = "/getNewUserRequests",
       method = RequestMethod.GET,
@@ -138,7 +158,11 @@ public class UsersTeamsController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/execNewUserRequestApprove",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -148,7 +172,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.approveNewUserRequests(username, true, 0, ""), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/execNewUserRequestDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -158,7 +186,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.declineNewUserRequests(username), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/addNewTeam",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -168,7 +200,11 @@ public class UsersTeamsController {
         usersTeamsControllerService.addNewTeam(newTeam, true), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.ADD_EDIT_DELETE_TEAMS,
+        PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES
+      })
   @PostMapping(
       value = "/updateTeam",
       produces = {MediaType.APPLICATION_JSON_VALUE})
