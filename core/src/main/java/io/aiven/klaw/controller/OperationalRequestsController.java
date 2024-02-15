@@ -5,11 +5,13 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.Order;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import io.aiven.klaw.service.OperationalRequestsService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class OperationalRequestsController {
 
   @Autowired OperationalRequestsService operationalRequestsService;
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES})
   @PostMapping(
       value = "/operationalRequest/consumerOffsetsReset/create",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -44,6 +47,7 @@ public class OperationalRequestsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_OPERATIONAL_CHANGES})
   @PostMapping(
       value = "/operationalRequest/reqId/{reqId}/approve",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -53,6 +57,7 @@ public class OperationalRequestsController {
         operationalRequestsService.approveOperationalRequests(reqId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_OPERATIONAL_CHANGES})
   @PostMapping(
       value = "/operationalRequest/reqId/{reqId}/decline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -65,6 +70,7 @@ public class OperationalRequestsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES})
   @PostMapping(
       value = "/operationalRequest/reqId/{reqId}/delete",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -74,6 +80,7 @@ public class OperationalRequestsController {
         operationalRequestsService.deleteOperationalRequest(operationalRequestId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES})
   @RequestMapping(
       value = "/operationalRequest/consumerOffsetsReset/validate",
       method = RequestMethod.GET,
@@ -87,6 +94,7 @@ public class OperationalRequestsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_OPERATIONAL_CHANGES})
   @RequestMapping(
       value = "/operationalRequests/requestsFor/{requestsFor}",
       method = RequestMethod.GET,

@@ -50,6 +50,7 @@ import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -482,6 +483,7 @@ public class KafkaConnectControllerService {
     return tmpTopicList;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   public ApiResponse deleteConnectorRequests(String topicId) throws KlawException {
     log.info("deleteConnectorRequests {}", topicId);
 
@@ -628,6 +630,7 @@ public class KafkaConnectControllerService {
     }
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_CONNECTORS})
   public ApiResponse approveConnectorRequests(String connectorId)
       throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {}", connectorId);
@@ -780,6 +783,7 @@ public class KafkaConnectControllerService {
     }
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_CONNECTORS})
   public ApiResponse declineConnectorRequests(String connectorId, String reasonForDecline)
       throws KlawException {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);

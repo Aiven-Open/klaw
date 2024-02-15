@@ -4,9 +4,11 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaResetCache;
 import io.aiven.klaw.model.SyncSchemaUpdates;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import io.aiven.klaw.service.SchemaRegistrySyncControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,8 @@ public class SchemaRegistrySyncController {
    * @return
    * @throws Exception
    */
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_SCHEMAS, PermissionType.SYNC_BACK_SCHEMAS})
   @RequestMapping(
       value = "/schemas",
       method = RequestMethod.GET,
@@ -61,6 +65,8 @@ public class SchemaRegistrySyncController {
    * @return
    * @throws Exception
    */
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_SCHEMAS, PermissionType.SYNC_BACK_SCHEMAS})
   @PostMapping(
       value = "/schemas",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -80,6 +86,8 @@ public class SchemaRegistrySyncController {
    * @return
    * @throws Exception
    */
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_SCHEMAS, PermissionType.SYNC_BACK_SCHEMAS})
   @RequestMapping(
       value =
           "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
@@ -97,6 +105,8 @@ public class SchemaRegistrySyncController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_SCHEMAS, PermissionType.SYNC_BACK_SCHEMAS})
   @RequestMapping(
       value = "/schemas/resetCache",
       method = RequestMethod.POST,

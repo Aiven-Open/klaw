@@ -37,6 +37,7 @@ import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.response.BaseRequestsResponseModel;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -197,6 +198,7 @@ public class SchemaRegistryControllerService {
     return req;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SCHEMAS})
   public ApiResponse deleteSchemaRequests(String avroSchemaId) throws KlawException {
     log.info("deleteSchemaRequests {}", avroSchemaId);
 
@@ -222,6 +224,7 @@ public class SchemaRegistryControllerService {
     }
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SCHEMAS})
   public ApiResponse execSchemaRequests(String avroSchemaId) throws KlawException {
     log.info("execSchemaRequests {}", avroSchemaId);
     String userDetails = getUserName();
@@ -405,6 +408,7 @@ public class SchemaRegistryControllerService {
                         + schemaRequest.getSchemaversion()));
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SCHEMAS})
   public ApiResponse execSchemaRequestsDecline(String avroSchemaId, String reasonForDecline)
       throws KlawException {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);

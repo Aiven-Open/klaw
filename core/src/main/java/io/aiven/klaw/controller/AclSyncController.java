@@ -5,7 +5,9 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.SyncBackAcls;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.service.AclSyncControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,11 @@ public class AclSyncController {
 
   @Autowired AclSyncControllerService aclSyncControllerService;
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+        PermissionType.SYNC_SUBSCRIPTIONS
+      })
   @PostMapping(
       value = "/updateSyncAcls",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -35,6 +42,11 @@ public class AclSyncController {
         aclSyncControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+        PermissionType.SYNC_SUBSCRIPTIONS
+      })
   @RequestMapping(
       value = "/getSyncBackAcls",
       method = RequestMethod.GET,
@@ -51,6 +63,11 @@ public class AclSyncController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+        PermissionType.SYNC_SUBSCRIPTIONS
+      })
   @PostMapping(
       value = "/updateSyncBackAcls",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -61,6 +78,11 @@ public class AclSyncController {
   }
 
   // get acls from kafka cluster
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.SYNC_BACK_SUBSCRIPTIONS,
+        PermissionType.SYNC_SUBSCRIPTIONS
+      })
   @RequestMapping(
       value = "/getSyncAcls",
       method = RequestMethod.GET,
