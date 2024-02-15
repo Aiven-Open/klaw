@@ -1,16 +1,23 @@
 import {
+  addNewCluster,
   getClusterDetails,
   getClusterInfoFromEnvironment,
   getClustersPaginated,
 } from "src/domain/cluster/cluster-api";
 import {
+  AddNewClusterPayload,
   ClusterInfoFromEnvironment,
   ClusterDetails,
 } from "src/domain/cluster/cluster-types";
 
 export {
+  addNewCluster,
   getClusterInfoFromEnvironment,
   getClusterDetails,
   getClustersPaginated,
 };
-export type { ClusterInfoFromEnvironment, ClusterDetails };
+export type {
+  AddNewClusterPayload,
+  ClusterInfoFromEnvironment,
+  ClusterDetails,
+};
