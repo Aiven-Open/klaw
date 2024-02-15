@@ -38,10 +38,7 @@ public class AclController {
 
   @Autowired TopicOverviewService topicOverviewService;
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.REQUEST_CREATE_SUBSCRIPTIONS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/createAcl",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -119,8 +116,8 @@ public class AclController {
   */
   @PermissionAllowed(
       permissionAllowed = {
-          PermissionType.APPROVE_SUBSCRIPTIONS,
-          PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+        PermissionType.APPROVE_SUBSCRIPTIONS,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
       })
   @RequestMapping(
       value = "/getAclRequestsForApprover",
@@ -152,10 +149,7 @@ public class AclController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.REQUEST_CREATE_SUBSCRIPTIONS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SUBSCRIPTIONS})
   @RequestMapping(
       value = "/deleteAclRequests",
       method = RequestMethod.POST,
@@ -165,10 +159,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.APPROVE_SUBSCRIPTIONS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/execAclRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -177,10 +168,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.REQUEST_DELETE_SUBSCRIPTIONS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/createDeleteAclSubscriptionRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -199,10 +187,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.claimAcl(aclId), HttpStatus.OK);
   }
 
-  @PermissionAllowed(
-      permissionAllowed = {
-          PermissionType.APPROVE_SUBSCRIPTIONS
-      })
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/execAclRequestDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
