@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
@@ -13,6 +14,7 @@ import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.UsersTeamsControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,7 @@ public class UsersTeamsController {
     return new ResponseEntity<>(usersTeamsControllerService.getAllTeamsSUOnly(), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/deleteTeamRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -66,6 +69,7 @@ public class UsersTeamsController {
     return new ResponseEntity<>(usersTeamsControllerService.deleteTeam(teamId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/deleteUserRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -75,6 +79,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.deleteUser(userId, true), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/updateUser",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -93,6 +98,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/addNewUser",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -111,6 +117,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS})
   @RequestMapping(
       value = "/getNewUserRequests",
       method = RequestMethod.GET,
@@ -131,6 +138,7 @@ public class UsersTeamsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS})
   @PostMapping(
       value = "/execNewUserRequestApprove",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -140,6 +148,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.approveNewUserRequests(username, true, 0, ""), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_ALL_REQUESTS_TEAMS})
   @PostMapping(
       value = "/execNewUserRequestDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -149,6 +158,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.declineNewUserRequests(username), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/addNewTeam",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -158,6 +168,7 @@ public class UsersTeamsController {
         usersTeamsControllerService.addNewTeam(newTeam, true), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_TEAMS})
   @PostMapping(
       value = "/updateTeam",
       produces = {MediaType.APPLICATION_JSON_VALUE})

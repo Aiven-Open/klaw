@@ -6,6 +6,7 @@ import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.ClusterInfo;
@@ -17,6 +18,7 @@ import io.aiven.klaw.model.response.KwClustersModelResponse;
 import io.aiven.klaw.model.response.SupportedProtocolInfo;
 import io.aiven.klaw.model.response.TenantInfo;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,7 @@ public class EnvsClustersTenantsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_CLUSTERS})
   @PostMapping(
       value = "/deleteCluster",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -94,6 +97,7 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_CLUSTERS})
   @PostMapping(
       value = "/addNewCluster",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -262,6 +266,7 @@ public class EnvsClustersTenantsController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_ENVS})
   @PostMapping(
       value = "/addNewEnv",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -271,6 +276,7 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_EDIT_DELETE_ENVS})
   @PostMapping(
       value = "/deleteEnvironmentRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -290,6 +296,7 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getStandardEnvNames(), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.ADD_TENANT})
   @PostMapping(
       value = "/addTenantId",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -299,6 +306,7 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_DELETE_MY_TENANT})
   @PostMapping(
       value = "/deleteTenant",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -307,6 +315,7 @@ public class EnvsClustersTenantsController {
   }
 
   // Pattern a-zA-z and/or spaces.
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_DELETE_MY_TENANT})
   @PostMapping(
       value = "/updateTenant",
       produces = {MediaType.APPLICATION_JSON_VALUE})

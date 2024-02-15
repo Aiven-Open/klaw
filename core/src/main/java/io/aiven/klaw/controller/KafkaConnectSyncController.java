@@ -3,8 +3,10 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncConnectorUpdates;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.service.KafkaConnectSyncControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ public class KafkaConnectSyncController {
 
   @Autowired KafkaConnectSyncControllerService kafkaConnectControllerService;
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.SYNC_CONNECTORS})
   @PostMapping(
       value = "/updateSyncConnectors",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -32,6 +35,7 @@ public class KafkaConnectSyncController {
         kafkaConnectControllerService.updateSyncConnectors(syncConnectorUpdates), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.SYNC_CONNECTORS})
   @RequestMapping(
       value = "/getConnectorDetails",
       method = RequestMethod.GET,
@@ -43,6 +47,7 @@ public class KafkaConnectSyncController {
         kafkaConnectControllerService.getConnectorDetails(connectorName, envId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.SYNC_CONNECTORS})
   @RequestMapping(
       value = "/getSyncConnectors",
       method = RequestMethod.GET,
@@ -61,6 +66,7 @@ public class KafkaConnectSyncController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.SYNC_CONNECTORS})
   @RequestMapping(
       value = "/getConnectorsToManage",
       method = RequestMethod.GET,
