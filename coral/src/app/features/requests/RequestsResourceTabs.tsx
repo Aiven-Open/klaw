@@ -1,10 +1,10 @@
 import { Tabs } from "@aivenio/aquarium";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
 import {
-  RequestsTabEnum,
-  isRequestsTabEnum,
   REQUESTS_TAB_ID_INTO_PATH,
-} from "src/app/router_utils";
+  RequestsTabEnum,
+} from "src/services/router-utils/types";
+import { isRequestsTabEnum } from "src/services/router-utils/route-utils";
 
 type Props = {
   currentTab: RequestsTabEnum;

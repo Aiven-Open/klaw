@@ -1,12 +1,13 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { useMatches, Navigate } from "react-router-dom";
 import EnvironmentsTabs from "src/app/features/configuration/environments/components/EnvironmentsTabs";
+
+import PreviewBanner from "src/app/components/PreviewBanner";
 import {
   ENVIRONMENT_TAB_ID_INTO_PATH,
   EnvironmentsTabEnum,
-  isEnvironmentsTabEnum,
-} from "src/app/router_utils";
-import PreviewBanner from "src/app/components/PreviewBanner";
+} from "src/services/router-utils/types";
+import { isEnvironmentsTabEnum } from "src/services/router-utils/route-utils";
 
 function findMatchingTab(
   matches: ReturnType<typeof useMatches>

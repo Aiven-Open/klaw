@@ -3,7 +3,7 @@ import data from "@aivenio/aquarium/dist/src/icons/console";
 import { TabBadge } from "@aivenio/aquarium/dist/src/molecules/Badge/Badge";
 import { Link as RouterLink } from "react-router-dom";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 
 function LinkContent({
   linkText,

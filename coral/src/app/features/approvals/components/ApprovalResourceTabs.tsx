@@ -5,8 +5,8 @@ import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
   Routes,
-  isApprovalsTabEnum,
-} from "src/app/router_utils";
+} from "src/services/router-utils/types";
+import { isApprovalsTabEnum } from "src/services/router-utils/route-utils";
 
 type Props = {
   currentTab: ApprovalsTabEnum;

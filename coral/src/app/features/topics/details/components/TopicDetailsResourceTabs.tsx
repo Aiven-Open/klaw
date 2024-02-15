@@ -1,14 +1,14 @@
 import { Alert, Box, Icon, Tabs } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
-import {
-  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
-  TopicOverviewTabEnum,
-  isTopicsOverviewTabEnum,
-} from "src/app/router_utils";
 import { TopicOverview } from "src/domain/topic";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {
+  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  TopicOverviewTabEnum,
+} from "src/services/router-utils/types";
+import { isTopicsOverviewTabEnum } from "src/services/router-utils/route-utils";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;

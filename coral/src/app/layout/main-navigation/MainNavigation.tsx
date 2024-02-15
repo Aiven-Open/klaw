@@ -13,7 +13,7 @@ import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { FeatureFlag } from "src/services/feature-flags/types";

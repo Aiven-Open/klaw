@@ -1,9 +1,9 @@
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
-import { ConnectorOverviewTabEnum } from "src/app/router_utils";
 import { ConnectorOverview } from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { ConnectorOverviewTabEnum } from "src/services/router-utils/types";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

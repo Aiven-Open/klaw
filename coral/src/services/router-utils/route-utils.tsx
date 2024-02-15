@@ -2,11 +2,24 @@ import { useToast } from "@aivenio/aquarium";
 import { useEffect } from "react";
 import { Navigate, RouteObject, useParams } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { Routes } from "src/app/router_utils";
+import {
+  Routes,
+  APPROVALS_TAB_ID_INTO_PATH,
+  ApprovalsTabEnum,
+  CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  ConnectorOverviewTabEnum,
+  ENVIRONMENT_TAB_ID_INTO_PATH,
+  EnvironmentsTabEnum,
+  REQUESTS_TAB_ID_INTO_PATH,
+  RequestsTabEnum,
+  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  TopicOverviewTabEnum,
+} from "src/services/router-utils/types";
 import { Permission } from "src/domain/auth-user/auth-user-types";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { isFeatureFlagActive } from "src/services/feature-flags/utils";
 import NotFound from "src/app/pages/not-found";
+import isString from "lodash/isString";
 
 type FeatureFlagRouteArgs = {
   path: Routes;
@@ -31,6 +44,58 @@ type SuperadminRoute = {
   children?: RouteObject[];
 };
 
+function isEnvironmentsTabEnum(value: unknown): value is EnvironmentsTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      ENVIRONMENT_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
+function isTopicsOverviewTabEnum(
+  value: unknown
+): value is TopicOverviewTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
+
+function isConnectorsOverviewTabEnum(
+  value: unknown
+): value is ConnectorOverviewTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
+
+function isRequestsTabEnum(value: unknown): value is RequestsTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      REQUESTS_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
+
+function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      APPROVALS_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
 function createRouteBehindFeatureFlag({
   path,
   element,
@@ -204,5 +269,10 @@ export {
   createRouteBehindFeatureFlag,
   SuperadminRoute,
   filteredRoutesForSuperAdmin,
+  isEnvironmentsTabEnum,
+  isTopicsOverviewTabEnum,
+  isConnectorsOverviewTabEnum,
+  isRequestsTabEnum,
+  isApprovalsTabEnum,
 };
 export type { SuperadminRouteMap };

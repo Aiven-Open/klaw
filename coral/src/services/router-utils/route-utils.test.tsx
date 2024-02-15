@@ -1,11 +1,11 @@
 import { screen } from "@testing-library/react";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Navigate, RouteObject } from "react-router-dom";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 import {
   createPrivateRoute,
   createRouteBehindFeatureFlag,
-} from "src/services/feature-flags/route-utils";
+} from "src/services/router-utils/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 

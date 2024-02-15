@@ -1,11 +1,7 @@
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import EnvironmentsTabs from "src/app/features/configuration/environments/components/EnvironmentsTabs";
-import {
-  ENVIRONMENT_TAB_ID_INTO_PATH,
-  EnvironmentsTabEnum,
-  Routes,
-} from "src/app/router_utils";
+
 import {
   getPaginatedEnvironmentsForConnector,
   getPaginatedEnvironmentsForSchema,
@@ -15,6 +11,11 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 
 import { EnvironmentPaginatedApiResponse } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import {
+  ENVIRONMENT_TAB_ID_INTO_PATH,
+  EnvironmentsTabEnum,
+  Routes,
+} from "src/services/router-utils/types";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

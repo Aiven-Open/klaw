@@ -25,7 +25,7 @@ import SelectOrNumberInput from "src/app/features/topics/request/components/Sele
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import formSchema from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {

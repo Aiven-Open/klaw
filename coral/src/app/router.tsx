@@ -48,6 +48,8 @@ import SchemaRequest from "src/app/pages/topics/schema-request";
 import { ChangePassword } from "src/app/pages/user-information/change-password";
 import { UserProfile } from "src/app/pages/user-information/profile";
 import { TenantInfo } from "src/app/pages/user-information/tenant-info";
+import { getRouterBasename } from "src/config";
+import { FeatureFlag } from "src/services/feature-flags/types";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -60,18 +62,16 @@ import {
   Routes,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   TopicOverviewTabEnum,
-} from "src/app/router_utils";
-import { getRouterBasename } from "src/config";
+} from "src/services/router-utils/types";
 import {
   createPrivateRoute,
   createRouteBehindFeatureFlag,
   filteredRoutesForSuperAdmin,
   SuperadminRouteMap,
-} from "src/services/feature-flags/route-utils";
-import { FeatureFlag } from "src/services/feature-flags/types";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+} from "src/services/router-utils/route-utils";
+import { isFeatureFlagActive } from "src/services/feature-flags/utils";
 
-const superAdminAccessCoralEnabled = useFeatureFlag(
+const superAdminAccessCoralEnabled = isFeatureFlagActive(
   FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
 );
 
