@@ -1,5 +1,13 @@
+import { PageHeader } from "@aivenio/aquarium";
+import AddNewClusterForm from "src/app/features/configuration/clusters/AddNewClusterForm";
+
 const AddClusterPage = () => {
-  return <div>Add cluster form</div>;
+  return (
+    <>
+      <PageHeader title={"Add new cluster"} />
+      <AddNewClusterForm />
+    </>
+  );
 };
 
 export { AddClusterPage };
