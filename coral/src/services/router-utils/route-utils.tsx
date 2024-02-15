@@ -232,17 +232,18 @@ function filteredRoutesForSuperAdmin(
       return {
         ...route,
         children: filteredRoutesForSuperAdmin(route.children, redirectMap),
-        element: redirect ? (
-          <SuperadminRoute
-            redirect={redirect}
-            showNotFound={redirectMap[routePath]?.showNotFound}
-            removeChildren={redirectMap[routePath]?.removeChildren}
-          >
-            {route.element}
-          </SuperadminRoute>
-        ) : (
-          route.element
-        ),
+        element:
+          redirect !== undefined ? (
+            <SuperadminRoute
+              redirect={redirect}
+              showNotFound={redirectMap[routePath]?.showNotFound}
+              removeChildren={redirectMap[routePath]?.removeChildren}
+            >
+              {route.element}
+            </SuperadminRoute>
+          ) : (
+            route.element
+          ),
       };
     } else {
       if (routePath !== undefined && redirect !== undefined) {
