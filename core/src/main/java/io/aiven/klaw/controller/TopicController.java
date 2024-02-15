@@ -99,12 +99,6 @@ public class TopicController {
    * @param isMyRequest Only return requests created by the user calling the API
    * @return A List of Topic Requests filtered by the provided parameters.
    */
-  @PermissionAllowed(
-      permissionAllowed = {
-        PermissionType.APPROVE_ALL_REQUESTS_TEAMS,
-        PermissionType.APPROVE_TOPICS,
-        PermissionType.APPROVE_TOPICS_CREATE
-      })
   @RequestMapping(
       value = "/getTopicRequests",
       method = RequestMethod.GET,

@@ -40,6 +40,7 @@ import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.service.MailUtils.MailType;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -497,6 +498,7 @@ public class AclControllerService {
     return aclRequestsModels;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SUBSCRIPTIONS})
   public ApiResponse deleteAclRequests(String req_no) throws KlawException {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
@@ -636,6 +638,7 @@ public class AclControllerService {
     return executeAclRequestModel(userName, aclRequestsDao, ACL_DELETE_REQUESTED);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   public ApiResponse approveAclRequests(String req_no)
       throws KlawException, KlawBadRequestException {
     log.info("approveAclRequests {}", req_no);
@@ -899,6 +902,7 @@ public class AclControllerService {
     return response;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   public ApiResponse declineAclRequests(String req_no, String reasonToDecline)
       throws KlawException {
     log.info("declineAclRequests {}", req_no);

@@ -29,6 +29,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -393,6 +394,7 @@ public class OperationalRequestsService {
     return Comparator.comparing(OperationalRequest::getRequesttime);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_OPERATIONAL_CHANGES})
   public ApiResponse approveOperationalRequests(String reqId) {
     log.info("approveConsumerOffsetRequests {}", reqId);
     final String userName = getUserName();

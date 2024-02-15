@@ -59,6 +59,7 @@ import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -663,6 +664,7 @@ public class TopicControllerService {
     return String.valueOf(approvingInfo);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   public ApiResponse deleteTopicRequests(String topicId) throws KlawException {
     log.info("deleteTopicRequests {}", topicId);
 
@@ -689,6 +691,8 @@ public class TopicControllerService {
   - On approval, create,delete,update the topics on kafka cluster with api call
   - For claim topics, there are no kafka cluster operations
    */
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.APPROVE_TOPICS, PermissionType.APPROVE_TOPICS_CREATE})
   public ApiResponse approveTopicRequests(String topicId) throws KlawException {
     log.info("approveTopicRequests {}", topicId);
     String userName = getUserName();
@@ -862,6 +866,7 @@ public class TopicControllerService {
     return ApiResponse.SUCCESS;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_TOPICS})
   public ApiResponse declineTopicRequests(String topicId, String reasonForDecline)
       throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);

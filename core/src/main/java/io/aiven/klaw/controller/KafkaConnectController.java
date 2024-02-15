@@ -154,11 +154,6 @@ public class KafkaConnectController {
    * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
-  @PermissionAllowed(
-      permissionAllowed = {
-        PermissionType.APPROVE_CONNECTORS,
-        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
-      })
   @RequestMapping(
       value = "/getConnectorRequests",
       method = RequestMethod.GET,
@@ -219,7 +214,6 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_CONNECTORS})
   @PostMapping(
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
