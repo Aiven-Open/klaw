@@ -5,6 +5,8 @@ import { Routes } from "src/services/router-utils/types";
 import {
   createPrivateRoute,
   createRouteBehindFeatureFlag,
+  filteredRoutesForSuperAdmin,
+  SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -16,6 +18,10 @@ const mockUseToast = jest.fn();
 jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToast: () => mockUseToast,
+}));
+
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUser,
 }));
 jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => mockAuthUser(),
@@ -157,6 +163,160 @@ describe("route-utils", () => {
         });
 
         expect(screen.queryByTestId("test-element")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("filteredRoutesForSuperAdmin", () => {
+    const testRoutes: Array<RouteObject> = [
+      {
+        path: "/",
+        element: <div></div>,
+        children: [
+          {
+            path: Routes.TOPICS,
+            element: <div data-test-id={"topics"}></div>,
+          },
+          {
+            path: Routes.TOPIC_OVERVIEW,
+            element: <div data-test-id={"overview"}></div>,
+          },
+          {
+            path: Routes.CONNECTOR_OVERVIEW,
+            element: <div data-test-id={"connector-overview"}></div>,
+          },
+          {
+            path: Routes.CONNECTORS,
+            element: <div data-test-id={"connectors"}></div>,
+            children: [
+              {
+                path: "/one",
+                element: <div data-test-id={"child-one"}></div>,
+              },
+              {
+                path: "/two",
+                element: <div data-test-id={"child-two"}></div>,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const testAdminRoutes: SuperadminRouteMap = {
+      [Routes.TOPIC_OVERVIEW]: {
+        route: Routes.TOPIC_OVERVIEW,
+        redirect: "/topicOverview",
+      },
+      [Routes.CONNECTOR_OVERVIEW]: {
+        route: Routes.CONNECTORS,
+        redirect: "",
+        showNotFound: true,
+      },
+      [Routes.CONNECTORS]: {
+        route: Routes.CONNECTORS,
+        redirect: "/connectorOverview",
+        removeChildren: true,
+      },
+    };
+
+    describe("returns a updated route object based on a given map for superadmin routes", () => {
+      const filteredRoutes = filteredRoutesForSuperAdmin(
+        testRoutes,
+        testAdminRoutes
+      );
+
+      it(`does not remove ${Routes.TOPICS} as it's not part of the map`, () => {
+        const childOnRoutes = testRoutes[0].children
+          ? testRoutes[0].children[0]
+          : {};
+
+        const childOnSuperAdminRoutes = filteredRoutes[0].children
+          ? filteredRoutes[0].children[0]
+          : {};
+
+        expect(childOnRoutes).toStrictEqual(childOnSuperAdminRoutes);
+      });
+
+      it(`renders a component that handles a redirect for ${Routes.TOPIC_OVERVIEW}`, () => {
+        const childOnRoutes = testRoutes[0].children
+          ? testRoutes[0].children[1]
+          : {};
+
+        const childOnSuperAdminRoutes = filteredRoutes[0].children
+          ? filteredRoutes[0].children[1]
+          : {};
+
+        expect(childOnRoutes).not.toEqual(childOnSuperAdminRoutes);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element?.type.name).toEqual(
+          "SuperadminRoute"
+        );
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element.props).toEqual({
+          children: <div data-test-id="overview" />,
+          redirect: "/topicOverview",
+          showNotFound: undefined,
+          removeChildren: undefined,
+        });
+      });
+
+      it(`renders a component shows a NotFoundElement ${Routes.CONNECTOR_OVERVIEW}`, () => {
+        const childOnRoutes = testRoutes[0].children
+          ? testRoutes[0].children[2]
+          : {};
+
+        const childOnSuperAdminRoutes = filteredRoutes[0].children
+          ? filteredRoutes[0].children[2]
+          : {};
+
+        expect(childOnRoutes).not.toEqual(childOnSuperAdminRoutes);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element?.type.name).toEqual(
+          "SuperadminRoute"
+        );
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element.props).toEqual({
+          children: <div data-test-id="connector-overview" />,
+          redirect: "",
+          showNotFound: true,
+          removeChildren: undefined,
+        });
+      });
+
+      it(`renders a component that handles a redirect for ${Routes.CONNECTORS} and removes its children`, () => {
+        const childOnRoutes = testRoutes[0].children
+          ? testRoutes[0].children[3]
+          : {};
+
+        const childOnSuperAdminRoutes = filteredRoutes[0].children
+          ? filteredRoutes[0].children[3]
+          : {};
+
+        expect(childOnRoutes).not.toEqual(childOnSuperAdminRoutes);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element?.type.name).toEqual(
+          "SuperadminRoute"
+        );
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(childOnSuperAdminRoutes.element.props).toEqual({
+          children: <div data-test-id="connectors" />,
+          redirect: "/connectorOverview",
+          showNotFound: undefined,
+          removeChildren: true,
+        });
       });
     });
   });
