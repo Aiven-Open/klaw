@@ -1,13 +1,18 @@
-import { Option, useToast } from "@aivenio/aquarium";
+import {
+  RadioButton as BaseRadioButton,
+  Option,
+  useToast,
+} from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
-  useForm,
   Form,
+  MultiInput,
   NativeSelect,
+  RadioButtonGroup,
   SubmitButton,
   TextInput,
-  MultiInput,
+  useForm,
 } from "src/app/components/Form";
 import {
   AddNewClusterFormSchema,
@@ -61,15 +66,21 @@ const AddNewClusterForm = () => {
 
   return (
     <Form {...form} ariaLabel={"Add new cluster"} onSubmit={onSubmitForm}>
-      <NativeSelect<AddNewClusterFormSchema>
+      <RadioButtonGroup<AddNewClusterFormSchema>
         name="clusterType"
         labelText="Cluster type"
         required
       >
-        <Option value="KAFKA">Kafka</Option>
-        <Option value="KAFKA_CONNECT">Kafka Connect</Option>
-        <Option value="SCHEMA_REGISTRY">Schema registry</Option>
-      </NativeSelect>
+        <BaseRadioButton name="KAFKA" value="KAFKA">
+          Kafka
+        </BaseRadioButton>
+        <BaseRadioButton name="KAFKA_CONNECT" value="KAFKA_CONNECT">
+          Kafka Connect
+        </BaseRadioButton>
+        <BaseRadioButton name="SCHEMA_REGISTRY" value="SCHEMA_REGISTRY">
+          Schema registry
+        </BaseRadioButton>
+      </RadioButtonGroup>
       <TextInput<AddNewClusterFormSchema>
         name="clusterName"
         labelText="Cluster name"

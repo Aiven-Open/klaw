@@ -41,10 +41,10 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("renders all necessary elements by default", async () => {
-    const clusterTypeSelect = screen.getByRole("combobox", {
+    const clusterTypeSelect = screen.getByRole("group", {
       name: "Cluster type *",
     });
-    const clusterTypeOptions = within(clusterTypeSelect).getAllByRole("option");
+    const clusterTypeOptions = within(clusterTypeSelect).getAllByRole("radio");
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
     });
@@ -92,14 +92,10 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("shows project name and service name fields when Kafka flavor 'Aiven for Apache Kafka' and cluster type 'kafka' are selected", async () => {
-    const clusterTypeSelect = await screen.findByRole("combobox", {
-      name: "Cluster type *",
-    });
     const kafkaFlavorSelect = await screen.findByRole("combobox", {
       name: "Kafka flavor *",
     });
 
-    await userEvent.selectOptions(clusterTypeSelect, "KAFKA");
     await userEvent.selectOptions(kafkaFlavorSelect, "AIVEN_FOR_APACHE_KAFKA");
 
     const projectNameInput = screen.getByRole("textbox", {
@@ -144,20 +140,23 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("updates Protocol options when Kafka connect or Schema registry cluster type is selected", async () => {
-    const clusterTypeSelect = await screen.findByRole("combobox", {
-      name: "Cluster type *",
+    const kafkaConnectOption = screen.getByRole("radio", {
+      name: "Kafka Connect",
+    });
+    const schemaRegistryOption = screen.getByRole("radio", {
+      name: "Schema registry",
     });
     const protocolSelect = screen.getByRole("combobox", {
       name: "Protocol *",
     });
 
-    await userEvent.selectOptions(clusterTypeSelect, "KAFKA_CONNECT");
+    await userEvent.click(kafkaConnectOption);
 
     const kafkaConnectProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
     expect(kafkaConnectProtocolSelectOptions).toHaveLength(2);
 
-    await userEvent.selectOptions(clusterTypeSelect, "SCHEMA_REGISTRY");
+    await userEvent.click(schemaRegistryOption);
 
     const schemaRegistryProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
@@ -191,9 +190,6 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("submits the form with the correct data", async () => {
-    const clusterTypeSelect = screen.getByRole("combobox", {
-      name: "Cluster type *",
-    });
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
     });
@@ -204,7 +200,6 @@ describe("<AddNewClusterForm />", () => {
       name: "Add new cluster",
     });
 
-    await userEvent.selectOptions(clusterTypeSelect, "KAFKA");
     await userEvent.type(clusterNameInput, "MyCluster");
     await userEvent.type(bootstrapServersInput, "server:9092");
     await userEvent.click(submitButton);
@@ -229,9 +224,6 @@ describe("<AddNewClusterForm />", () => {
   it("renders error message when submitting fails", async () => {
     mockAddNewClusterRequest.mockRejectedValue(new Error("Request failed"));
 
-    const clusterTypeSelect = screen.getByRole("combobox", {
-      name: "Cluster type *",
-    });
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
     });
@@ -242,7 +234,6 @@ describe("<AddNewClusterForm />", () => {
       name: "Add new cluster",
     });
 
-    await userEvent.selectOptions(clusterTypeSelect, "KAFKA");
     await userEvent.type(clusterNameInput, "MyCluster");
     await userEvent.type(bootstrapServersInput, "server:9092");
     await userEvent.click(submitButton);
