@@ -22,7 +22,7 @@ const kafkaFlavor = z.enum([
 
 const bootstrapServers = z
   .array(z.string(), {
-    errorMap: () => ({ message: "Enter at least one server." }),
+    errorMap: () => ({ message: "Enter at least one server" }),
   })
   .refine(
     (values) => {
@@ -41,7 +41,7 @@ const bootstrapServers = z
 
 const clusterName = z
   .string()
-  .min(1, "Cluster name is required")
+  .min(1, "Required")
   .refine((value) => !value.includes(" "), {
     message: "Must not contain any space",
   });
@@ -52,10 +52,12 @@ const addNewClusterFormSchema = z
   .object({
     clusterName,
     bootstrapServers,
+    // REST API URL is optional
     associatedServers: z.array(associatedServers).optional(),
     clusterType,
     protocol,
     kafkaFlavor,
+    // projectName and serviceName are only required in the case handled in superRefine
     projectName: z.string().optional(),
     serviceName: z.string().optional(),
   })
@@ -68,14 +70,14 @@ const addNewClusterFormSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["projectName"],
-          message: "Project name is required",
+          message: "Required",
         });
       }
       if (data.serviceName === undefined || data.serviceName === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["serviceName"],
-          message: "Service name is required",
+          message: "Required",
         });
       }
       return data.projectName && data.serviceName;

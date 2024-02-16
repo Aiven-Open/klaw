@@ -72,9 +72,9 @@ describe("<AddNewClusterForm />", () => {
     expect(clusterTypeOptions).toHaveLength(3);
     expect(clusterNameInput).toBeEnabled();
     expect(protocolSelect).toBeEnabled();
-    expect(protocolSelectOptions).toHaveLength(7);
+    expect(protocolSelectOptions).toHaveLength(8);
     expect(kafkaFlavorSelect).toBeEnabled();
-    expect(kafkaFlavorSelectOptions).toHaveLength(5);
+    expect(kafkaFlavorSelectOptions).toHaveLength(6);
     expect(bootstrapServersInput).toBeEnabled();
     expect(restServersInput).toBeEnabled();
     expect(submitButton).toBeEnabled();
@@ -84,10 +84,19 @@ describe("<AddNewClusterForm />", () => {
     const submitButton = await screen.findByRole("button", {
       name: "Add new cluster",
     });
+    const kafkaFlavorSelect = await screen.findByRole("combobox", {
+      name: "Kafka flavor *",
+    });
+    const protocolSelect = screen.getByRole("combobox", {
+      name: "Protocol *",
+    });
+
+    await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
+    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
 
     await userEvent.click(submitButton);
 
-    const errorMessage = await screen.findByText("Cluster name is required");
+    const errorMessage = await screen.findByText("Required");
     expect(errorMessage).toBeVisible();
   });
 
@@ -95,8 +104,12 @@ describe("<AddNewClusterForm />", () => {
     const kafkaFlavorSelect = await screen.findByRole("combobox", {
       name: "Kafka flavor *",
     });
+    const protocolSelect = screen.getByRole("combobox", {
+      name: "Protocol *",
+    });
 
     await userEvent.selectOptions(kafkaFlavorSelect, "AIVEN_FOR_APACHE_KAFKA");
+    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
 
     const projectNameInput = screen.getByRole("textbox", {
       name: "Project name *",
@@ -128,12 +141,8 @@ describe("<AddNewClusterForm />", () => {
     await userEvent.selectOptions(kafkaFlavorSelect, "AIVEN_FOR_APACHE_KAFKA");
     await userEvent.click(submitButton);
 
-    const projectNameErrorMessage = await screen.findByText(
-      "Project name is required"
-    );
-    const serviceNameErrorMessage = await screen.findByText(
-      "Service name is required"
-    );
+    const projectNameErrorMessage = await screen.findByText("Required");
+    const serviceNameErrorMessage = await screen.findByText("Required");
 
     expect(projectNameErrorMessage).toBeVisible();
     expect(serviceNameErrorMessage).toBeVisible();
@@ -154,13 +163,13 @@ describe("<AddNewClusterForm />", () => {
 
     const kafkaConnectProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
-    expect(kafkaConnectProtocolSelectOptions).toHaveLength(2);
+    expect(kafkaConnectProtocolSelectOptions).toHaveLength(3);
 
     await userEvent.click(schemaRegistryOption);
 
     const schemaRegistryProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
-    expect(schemaRegistryProtocolSelectOptions).toHaveLength(2);
+    expect(schemaRegistryProtocolSelectOptions).toHaveLength(3);
   });
 
   it("shows an error when boostrap server is incorrect", async () => {
@@ -193,14 +202,21 @@ describe("<AddNewClusterForm />", () => {
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
     });
+    const protocolSelect = screen.getByRole("combobox", {
+      name: "Protocol *",
+    });
+    const kafkaFlavorSelect = screen.getByRole("combobox", {
+      name: "Kafka flavor *",
+    });
     const bootstrapServersInput = screen.getByRole("textbox", {
       name: "Bootstrap servers *",
     });
     const submitButton = screen.getByRole("button", {
       name: "Add new cluster",
     });
-
     await userEvent.type(clusterNameInput, "MyCluster");
+    await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
+    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
     await userEvent.type(bootstrapServersInput, "server:9092");
     await userEvent.click(submitButton);
 
@@ -227,14 +243,22 @@ describe("<AddNewClusterForm />", () => {
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
     });
+    const protocolSelect = screen.getByRole("combobox", {
+      name: "Protocol *",
+    });
+    const kafkaFlavorSelect = screen.getByRole("combobox", {
+      name: "Kafka flavor *",
+    });
     const bootstrapServersInput = screen.getByRole("textbox", {
       name: "Bootstrap servers *",
     });
     const submitButton = screen.getByRole("button", {
       name: "Add new cluster",
     });
-
+    await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
+    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
     await userEvent.type(clusterNameInput, "MyCluster");
+
     await userEvent.type(bootstrapServersInput, "server:9092");
     await userEvent.click(submitButton);
 

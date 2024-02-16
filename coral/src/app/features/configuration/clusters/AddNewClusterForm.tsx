@@ -33,8 +33,6 @@ const AddNewClusterForm = () => {
     schema: addNewClusterFormSchema,
     defaultValues: {
       clusterType: "KAFKA",
-      protocol: "PLAINTEXT",
-      kafkaFlavor: "APACHE_KAFKA",
     },
   });
   const { clusterType, kafkaFlavor, clusterName } = form.watch();
@@ -98,6 +96,7 @@ const AddNewClusterForm = () => {
       <NativeSelect<AddNewClusterFormSchema>
         name="protocol"
         labelText="Protocol"
+        placeholder="Select protocol"
         required
       >
         <Option value="PLAINTEXT">PLAINTEXT</Option>
@@ -126,6 +125,7 @@ const AddNewClusterForm = () => {
       <NativeSelect<AddNewClusterFormSchema>
         name="kafkaFlavor"
         labelText="Kafka flavor"
+        placeholder="Select Kafka flavor"
         required
       >
         <Option value="APACHE_KAFKA">Apache Kafka</Option>
