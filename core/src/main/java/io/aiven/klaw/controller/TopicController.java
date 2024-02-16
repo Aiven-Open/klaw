@@ -13,6 +13,7 @@ import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
 import io.aiven.klaw.service.TopicControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class TopicController {
 
   @Autowired private TopicControllerService topicControllerService;
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   @PostMapping(
       value = "/createTopics",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -46,6 +48,7 @@ public class TopicController {
         topicControllerService.createTopicsCreateRequest(addTopicRequest), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_EDIT_TOPICS})
   @PostMapping(
       value = "/updateTopics",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -56,6 +59,7 @@ public class TopicController {
         topicControllerService.createTopicsUpdateRequest(addTopicRequest), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_TOPICS})
   @PostMapping(
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -128,6 +132,12 @@ public class TopicController {
    * @param topicReqId requestId of topic
    * @return Topic Request details
    */
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_TOPICS,
+        PermissionType.APPROVE_TOPICS_CREATE,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @RequestMapping(
       value = "/topic/request/{topicReqId}",
       method = RequestMethod.GET,
@@ -163,6 +173,12 @@ public class TopicController {
    *     OLDEST_FIRST/NEWEST_FIRST
    * @return A List of Topic Requests filtered by the provided parameters.
    */
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_TOPICS,
+        PermissionType.APPROVE_TOPICS_CREATE,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @RequestMapping(
       value = "/getTopicRequestsForApprover",
       method = RequestMethod.GET,
@@ -191,6 +207,7 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   @RequestMapping(
       value = "/deleteTopicRequests",
       method = RequestMethod.POST,
@@ -200,6 +217,12 @@ public class TopicController {
     return new ResponseEntity<>(topicControllerService.deleteTopicRequests(topicId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_TOPICS,
+        PermissionType.APPROVE_TOPICS_CREATE,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @PostMapping(
       value = "/execTopicRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -209,6 +232,12 @@ public class TopicController {
         topicControllerService.approveTopicRequests(topicId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_TOPICS,
+        PermissionType.APPROVE_TOPICS_CREATE,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @PostMapping(
       value = "/execTopicRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -220,6 +249,7 @@ public class TopicController {
         topicControllerService.declineTopicRequests(topicId, reasonForDecline), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   @RequestMapping(
       value = "/getTopics",
       method = RequestMethod.GET,
@@ -244,6 +274,7 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   @RequestMapping(
       value = "/getTopicsOnly",
       method = RequestMethod.GET,
@@ -256,6 +287,7 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   @RequestMapping(
       value = "/getTopicDetailsPerEnv",
       method = RequestMethod.GET,
@@ -266,6 +298,7 @@ public class TopicController {
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   @PostMapping(
       value = "/saveTopicDocumentation",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -275,6 +308,7 @@ public class TopicController {
         topicControllerService.saveTopicDocumentation(topicInfo), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   // getTopic Events from kafka cluster
   // <offsetId, content>
   @RequestMapping(
@@ -300,6 +334,7 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
   @RequestMapping(
       value = "/getAdvancedTopicConfigs",
       method = RequestMethod.GET,

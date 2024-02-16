@@ -3,11 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.AclGroupBy;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.Order;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.DeleteAclRequestModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
@@ -16,6 +12,7 @@ import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +38,7 @@ public class AclController {
 
   @Autowired TopicOverviewService topicOverviewService;
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/createAcl",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -116,6 +114,11 @@ public class AclController {
   /*
      For executing acl requests
   */
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_SUBSCRIPTIONS,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @RequestMapping(
       value = "/getAclRequestsForApprover",
       method = RequestMethod.GET,
@@ -146,6 +149,7 @@ public class AclController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_SUBSCRIPTIONS})
   @RequestMapping(
       value = "/deleteAclRequests",
       method = RequestMethod.POST,
@@ -155,6 +159,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/execAclRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -163,6 +168,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_DELETE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/createDeleteAclSubscriptionRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -181,6 +187,7 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.claimAcl(aclId), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
   @PostMapping(
       value = "/execAclRequestDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})

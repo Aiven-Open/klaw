@@ -6,8 +6,10 @@ import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.SyncTopicsList;
 import io.aiven.klaw.service.TopicSyncControllerService;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ public class TopicSyncController {
 
   @Autowired private TopicSyncControllerService topicSyncControllerService;
 
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_TOPICS, PermissionType.SYNC_BACK_TOPICS})
   @PostMapping(
       value = "/updateSyncTopics",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -35,6 +39,8 @@ public class TopicSyncController {
         topicSyncControllerService.updateSyncTopics(syncTopicUpdates), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_TOPICS, PermissionType.SYNC_BACK_TOPICS})
   @PostMapping(
       value = "/updateSyncTopicsBulk",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -45,6 +51,8 @@ public class TopicSyncController {
   }
 
   // sync back topics
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_TOPICS, PermissionType.SYNC_BACK_TOPICS})
   @RequestMapping(
       value = "/getTopicsRowView",
       method = RequestMethod.GET,
@@ -62,6 +70,8 @@ public class TopicSyncController {
         HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_TOPICS, PermissionType.SYNC_BACK_TOPICS})
   @PostMapping(
       value = "/updateSyncBackTopics",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -71,6 +81,8 @@ public class TopicSyncController {
         topicSyncControllerService.updateSyncBackTopics(syncBackTopics), HttpStatus.OK);
   }
 
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.SYNC_TOPICS, PermissionType.SYNC_BACK_TOPICS})
   @RequestMapping(
       value = "/getSyncTopics",
       method = RequestMethod.GET,

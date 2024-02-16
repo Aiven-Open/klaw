@@ -2,7 +2,6 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_108;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_104;
@@ -60,6 +59,7 @@ import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
+import io.aiven.klaw.validation.PermissionAllowed;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -107,21 +107,12 @@ public class TopicControllerService {
   public ApiResponse createTopicsCreateRequest(TopicRequestModel topicRequestReq)
       throws KlawException, KlawNotAuthorizedException {
     log.info("createTopicsCreateRequest {}", topicRequestReq);
-    checkIsAuthorized(PermissionType.REQUEST_CREATE_TOPICS);
     return createTopicRequest(topicRequestReq);
-  }
-
-  private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), permission)) {
-      throw new KlawNotAuthorizedException(TOPICS_ERR_101);
-    }
   }
 
   public ApiResponse createTopicsUpdateRequest(TopicRequestModel topicRequestReq)
       throws KlawException, KlawNotAuthorizedException {
     log.info("createTopicsUpdateRequest {}", topicRequestReq);
-    // check if authorized user to edit topic request
-    checkIsAuthorized(PermissionType.REQUEST_EDIT_TOPICS);
     return createTopicRequest(topicRequestReq);
   }
 
@@ -223,9 +214,6 @@ public class TopicControllerService {
         envId,
         deleteAssociatedSchema);
     String userName = getUserName();
-
-    // check if authorized user to delete topic request
-    checkIsAuthorized(PermissionType.REQUEST_DELETE_TOPICS);
 
     int tenantId = commonUtilsService.getTenantId(userName);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -676,13 +664,10 @@ public class TopicControllerService {
     return String.valueOf(approvingInfo);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.REQUEST_CREATE_TOPICS})
   public ApiResponse deleteTopicRequests(String topicId) throws KlawException {
     log.info("deleteTopicRequests {}", topicId);
 
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      return ApiResponse.NOT_AUTHORIZED;
-    }
     String userName = getUserName();
     try {
       String deleteTopicReqStatus =
@@ -706,6 +691,8 @@ public class TopicControllerService {
   - On approval, create,delete,update the topics on kafka cluster with api call
   - For claim topics, there are no kafka cluster operations
    */
+  @PermissionAllowed(
+      permissionAllowed = {PermissionType.APPROVE_TOPICS, PermissionType.APPROVE_TOPICS_CREATE})
   public ApiResponse approveTopicRequests(String topicId) throws KlawException {
     log.info("approveTopicRequests {}", topicId);
     String userName = getUserName();
@@ -879,6 +866,7 @@ public class TopicControllerService {
     return ApiResponse.SUCCESS;
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_TOPICS})
   public ApiResponse declineTopicRequests(String topicId, String reasonForDecline)
       throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);
@@ -1095,7 +1083,7 @@ public class TopicControllerService {
       throws KlawNotAuthorizedException {
     log.debug("getTopics {}", topicNameSearch);
     String userName = getUserName();
-    checkIsAuthorized(PermissionType.VIEW_TOPICS);
+
     List<TopicInfo> topicListUpdated =
         getTopicsPaginated(
             env,

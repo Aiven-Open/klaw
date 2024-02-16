@@ -33,14 +33,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.requests.AclRequestsModel;
-import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
-import io.aiven.klaw.model.requests.EnvModel;
-import io.aiven.klaw.model.requests.KwClustersModel;
-import io.aiven.klaw.model.requests.SchemaRequestModel;
-import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
-import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.requests.*;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
@@ -50,16 +43,14 @@ import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.ClusterApiService;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -91,6 +82,7 @@ public class TopicAclControllerIT {
 
   @MockBean private static ClusterApiService clusterApiService;
 
+  @Autowired BuildProperties buildProperties;
   private static final String superAdmin = "superadmin";
   private static final String superAdminPwd = "welcometoklaw";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
@@ -1626,6 +1618,97 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
     assertThat(str).contains(TOPICS_VLD_ERR_124);
+  }
+
+  @Order(50)
+  @Test
+  public void deleteTopicRequestNotAuthorized() throws Exception {
+    when(clusterApiService.getAllTopics(
+            anyString(),
+            eq(KafkaSupportedProtocol.PLAINTEXT),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyBoolean()))
+        .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
+
+    // It shouldn't matter what request is being asked for by default the superadmin does not have
+    // access to this API.
+    mvc.perform(
+            MockMvcRequestBuilders.post("/deleteTopicRequests")
+                .with(user(superAdmin).password(superAdminPwd))
+                .param("topicId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Order(51)
+  @Test
+  public void createTopicRequestNotAuthorized() throws Exception {
+
+    KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
+    kwPropertiesModel.setKwKey(TENANT_CONFIG_PROPERTY);
+    kwPropertiesModel.setKwValue(
+        """
+                        {
+                          "tenantModel":
+                            {
+                              "tenantName": "default",
+                              "baseSyncEnvironment": "DEV",
+                              "orderOfTopicPromotionEnvsList": ["DEV"],
+                              "requestTopicsEnvironmentsList": ["DEV"],
+                              "requestSchemaEnvironmentsList": ["DEVSCH"]
+                            }
+                        }""");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwPropertiesModel);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/updateKwCustomProperty")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+    TopicRequestModel createTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId1);
+    createTopicRequest.setRequestOperationType(RequestOperationType.CREATE);
+    createTopicRequest.setTopicname("nonexistingtopic");
+    createTopicRequest.setTopicpartitions(2);
+    String topicReq = OBJECT_MAPPER.writer().writeValueAsString(createTopicRequest);
+    // It shouldn't matter what request is being asked for by default the superadmin does not have
+    // access to this API.
+    mvc.perform(
+            MockMvcRequestBuilders.post("/createTopics")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(topicReq)
+                .param("topicId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Order(52)
+  @Test
+  public void editTopicRequestNotAuthorized() throws Exception {
+
+    TopicUpdateRequestModel updateTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId3);
+    updateTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
+    // testtopic1001 is a topic created earlier in the flow
+    updateTopicRequest.setTopicname("testtopic1001");
+    updateTopicRequest.setTopicpartitions(2);
+    String topicReq = OBJECT_MAPPER.writer().writeValueAsString(updateTopicRequest);
+    // It shouldn't matter what request is being asked for by default the superadmin does not have
+    // access to this API.
+    mvc.perform(
+            MockMvcRequestBuilders.post("/updateTopics")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(topicReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
   }
 
   private String getSchemaRequest(Integer schemaRequestId) throws Exception {
