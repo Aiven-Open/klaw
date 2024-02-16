@@ -189,9 +189,8 @@ const SuperadminRoute = ({
   const redirectParam = routeParams[param] ? routeParams[param] : "";
   const redirectPath = `${redirectStaticPart}${redirectParam}`;
 
-  const isSuperadmin = userrole !== "SUPERADMIN";
+  const isSuperadmin = userrole === "SUPERADMIN";
 
-  console.log("userrole", userrole);
   useEffect(() => {
     if (isSuperadmin && !showNotFound) {
       window.location.replace(`${window.location.origin}${redirectPath}`);
@@ -203,7 +202,6 @@ const SuperadminRoute = ({
   }
 
   if (isSuperadmin && showNotFound) {
-    console.log("here");
     return <NotFound />;
   }
 
