@@ -393,7 +393,8 @@ const superadminRouteMap: SuperadminRouteMap = {
   // These are all routes that don't have an
   // equivalent in Klaw for SUPERADMIN
   // and are also unlikely for a superadmin
-  // to click, so redirect goes to not found
+  // to go to, as they are not visibly linked
+  // in UI (mostly), so redirect goes to not found
   // could also be dashboard, but not found
   // gives additional information
   [Routes.CONNECTOR_REQUEST]: {
