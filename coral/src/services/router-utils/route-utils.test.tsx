@@ -259,7 +259,7 @@ describe("route-utils", () => {
         // @ts-ignore
         expect(childOnSuperAdminRoutes.element.props).toEqual({
           children: <div data-test-id="overview" />,
-          redirect: "/topicOverview",
+          redirectSuperAdmin: "/topicOverview",
           showNotFound: undefined,
           removeChildren: undefined,
         });
@@ -286,7 +286,7 @@ describe("route-utils", () => {
         // @ts-ignore
         expect(childOnSuperAdminRoutes.element.props).toEqual({
           children: <div data-test-id="connector-overview" />,
-          redirect: "",
+          redirectSuperAdmin: "",
           showNotFound: true,
           removeChildren: undefined,
         });
@@ -313,7 +313,7 @@ describe("route-utils", () => {
         // @ts-ignore
         expect(childOnSuperAdminRoutes.element.props).toEqual({
           children: <div data-test-id="connectors" />,
-          redirect: "/connectorOverview",
+          redirectSuperAdmin: "/connectorOverview",
           showNotFound: undefined,
           removeChildren: true,
         });

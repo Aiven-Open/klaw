@@ -172,20 +172,20 @@ function createPrivateRoute({
 
 const SuperadminRoute = ({
   children,
-  redirect,
+  redirectSuperAdmin,
   showNotFound,
   removeChildren,
 }: {
   children: React.ReactNode;
-  redirect: string;
+  redirectSuperAdmin: string;
   showNotFound?: boolean;
   removeChildren?: boolean;
 }) => {
   const { userrole } = useAuthContext();
   const routeParams = useParams();
 
-  const redirectStaticPart = redirect.split(":")[0];
-  const param = redirect.split(":")[1];
+  const redirectStaticPart = redirectSuperAdmin.split(":")[0];
+  const param = redirectSuperAdmin.split(":")[1];
   const redirectParam = routeParams[param] ? routeParams[param] : "";
   const redirectPath = `${redirectStaticPart}${redirectParam}`;
 
@@ -235,7 +235,7 @@ function filteredRoutesForSuperAdmin(
         element:
           redirect !== undefined ? (
             <SuperadminRoute
-              redirect={redirect}
+              redirectSuperAdmin={redirect}
               showNotFound={redirectMap[routePath]?.showNotFound}
               removeChildren={redirectMap[routePath]?.removeChildren}
             >
@@ -251,7 +251,7 @@ function filteredRoutesForSuperAdmin(
           ...route,
           element: (
             <SuperadminRoute
-              redirect={redirect}
+              redirectSuperAdmin={redirect}
               showNotFound={redirectMap[routePath]?.showNotFound}
             >
               {route.element}
