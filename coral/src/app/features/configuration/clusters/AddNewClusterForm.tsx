@@ -8,6 +8,7 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -36,6 +37,21 @@ const AddNewClusterForm = () => {
     },
   });
   const { clusterType, kafkaFlavor, clusterName } = form.watch();
+
+  // Because the protocol fields for the 'kafka' clusterType has more options than the other clusterTypes
+  // We need to reset the protocol field when the clusterType changes
+  useEffect(() => {
+    form.resetField("protocol");
+    return;
+  }, [clusterType]);
+
+  // Similarly, we need to reset the projectName and serviceName fields when the clusterType or kafkaFlavor changes
+  // As those fields should be undefined when the clusterType is not 'KAFKA' and the kafkaFlavor is not 'AIVEN_FOR_APACHE_KAFKA'
+  useEffect(() => {
+    form.resetField("projectName");
+    form.resetField("serviceName");
+    return;
+  }, [clusterType, kafkaFlavor]);
 
   const addNewClusterMutation = useMutation(addNewCluster, {
     onSuccess: () => {
