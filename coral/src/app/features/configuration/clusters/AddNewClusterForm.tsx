@@ -1,5 +1,9 @@
 import {
   RadioButton as BaseRadioButton,
+  Box,
+  Button,
+  Divider,
+  Grid,
   Option,
   useToast,
 } from "@aivenio/aquarium";
@@ -81,12 +85,16 @@ const AddNewClusterForm = () => {
           Schema registry
         </BaseRadioButton>
       </RadioButtonGroup>
+      <Box marginBottom={"l2"}>
+        <Divider />
+      </Box>
       <TextInput<AddNewClusterFormSchema>
         name="clusterName"
         labelText="Cluster name"
         placeholder="DEV"
         required
       />
+
       <NativeSelect<AddNewClusterFormSchema>
         name="protocol"
         labelText="Protocol"
@@ -112,6 +120,9 @@ const AddNewClusterForm = () => {
           </>
         )}
       </NativeSelect>
+      <Box marginBottom={"l2"} marginTop={"2"}>
+        <Divider />
+      </Box>
       <NativeSelect<AddNewClusterFormSchema>
         name="kafkaFlavor"
         labelText="Kafka flavor"
@@ -123,21 +134,28 @@ const AddNewClusterForm = () => {
         <Option value="CONFLUENT_CLOUD">Confluent Cloud</Option>
         <Option value="OTHERS">Others</Option>
       </NativeSelect>
+
       {kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA" && clusterType === "KAFKA" && (
-        <>
-          <TextInput<AddNewClusterFormSchema>
-            name="projectName"
-            labelText="Project name"
-            placeholder="project-name"
-            required
-          />
-          <TextInput<AddNewClusterFormSchema>
-            name="serviceName"
-            labelText="Service name"
-            placeholder="kafka-service-name"
-            required
-          />
-        </>
+        <Grid gap={"l3"}>
+          <Grid.Item xs={6}>
+            <TextInput<AddNewClusterFormSchema>
+              name="projectName"
+              labelText="Project name"
+              placeholder="project-name"
+              width="full"
+              required
+            />
+          </Grid.Item>
+          <Grid.Item xs={6}>
+            <TextInput<AddNewClusterFormSchema>
+              name="serviceName"
+              labelText="Service name"
+              placeholder="kafka-service-name"
+              width="full"
+              required
+            />
+          </Grid.Item>
+        </Grid>
       )}
       <MultiInput<AddNewClusterFormSchema>
         name="bootstrapServers"
@@ -145,14 +163,31 @@ const AddNewClusterForm = () => {
         placeholder="server:9092"
         required
       />
+      <Box marginBottom={"l2"} marginTop={"2"}>
+        <Divider />
+      </Box>
       <MultiInput<AddNewClusterFormSchema>
         name="associatedServers"
         labelText="REST API servers (optional)"
         placeholder="https://server:8082"
       />
-      <SubmitButton loading={addNewClusterMutation.isLoading}>
-        Add new cluster
-      </SubmitButton>
+
+      <Grid cols={"2"} colGap={"5"} width={"fit"} marginTop={"l1"}>
+        <Grid.Item>
+          <SubmitButton loading={addNewClusterMutation.isLoading}>
+            Add new cluster
+          </SubmitButton>
+        </Grid.Item>
+        <Grid.Item>
+          <Button.Secondary
+            disabled={addNewClusterMutation.isLoading}
+            type="button"
+            onClick={() => navigate(Routes.CLUSTERS)}
+          >
+            Cancel
+          </Button.Secondary>
+        </Grid.Item>
+      </Grid>
     </Form>
   );
 };
