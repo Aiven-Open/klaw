@@ -72,7 +72,7 @@ describe("<AddNewClusterForm />", () => {
     expect(clusterTypeOptions).toHaveLength(3);
     expect(clusterNameInput).toBeEnabled();
     expect(protocolSelect).toBeEnabled();
-    expect(protocolSelectOptions).toHaveLength(8);
+    expect(protocolSelectOptions).toHaveLength(7);
     expect(kafkaFlavorSelect).toBeEnabled();
     expect(kafkaFlavorSelectOptions).toHaveLength(6);
     expect(bootstrapServersInput).toBeEnabled();
@@ -139,13 +139,25 @@ describe("<AddNewClusterForm />", () => {
     await userEvent.type(clusterNameInput, "MyCluster");
     await userEvent.type(bootstrapServersInput, "sever:9090");
     await userEvent.selectOptions(kafkaFlavorSelect, "AIVEN_FOR_APACHE_KAFKA");
-    await userEvent.click(submitButton);
 
-    const projectNameErrorMessage = await screen.findByText("Required");
-    const serviceNameErrorMessage = await screen.findByText("Required");
+    const projectNameInput = screen.getByRole("textbox", {
+      name: "Project name *",
+    });
+    const serviceNameInput = screen.getByRole("textbox", {
+      name: "Service name *",
+    });
+
+    await userEvent.type(projectNameInput, "MyProject");
+    await userEvent.click(submitButton);
+    const serviceNameErrorMessage = screen.getByText("Required");
+
+    expect(serviceNameErrorMessage).toBeVisible();
+
+    await userEvent.clear(projectNameInput);
+    await userEvent.type(serviceNameInput, "MyService");
+    const projectNameErrorMessage = screen.getByText("Required");
 
     expect(projectNameErrorMessage).toBeVisible();
-    expect(serviceNameErrorMessage).toBeVisible();
   });
 
   it("updates Protocol options when Kafka connect or Schema registry cluster type is selected", async () => {
@@ -163,13 +175,13 @@ describe("<AddNewClusterForm />", () => {
 
     const kafkaConnectProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
-    expect(kafkaConnectProtocolSelectOptions).toHaveLength(3);
+    expect(kafkaConnectProtocolSelectOptions).toHaveLength(2);
 
     await userEvent.click(schemaRegistryOption);
 
     const schemaRegistryProtocolSelectOptions =
       within(protocolSelect).getAllByRole("option");
-    expect(schemaRegistryProtocolSelectOptions).toHaveLength(3);
+    expect(schemaRegistryProtocolSelectOptions).toHaveLength(2);
   });
 
   it("shows an error when boostrap server is incorrect", async () => {
