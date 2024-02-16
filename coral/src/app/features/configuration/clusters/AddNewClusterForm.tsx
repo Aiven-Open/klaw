@@ -1,8 +1,6 @@
 import {
   RadioButton as BaseRadioButton,
-  Box,
   Button,
-  Divider,
   Grid,
   Option,
   useToast,
@@ -99,9 +97,6 @@ const AddNewClusterForm = () => {
           Schema registry
         </BaseRadioButton>
       </RadioButtonGroup>
-      <Box marginBottom={"l2"}>
-        <Divider />
-      </Box>
       <TextInput<AddNewClusterFormSchema>
         name="clusterName"
         labelText="Cluster name"
@@ -135,9 +130,6 @@ const AddNewClusterForm = () => {
           </>
         )}
       </NativeSelect>
-      <Box marginBottom={"l2"} marginTop={"2"}>
-        <Divider />
-      </Box>
       <NativeSelect<AddNewClusterFormSchema>
         name="kafkaFlavor"
         labelText="Kafka flavor"
@@ -179,9 +171,6 @@ const AddNewClusterForm = () => {
         placeholder="server:9092"
         required
       />
-      <Box marginBottom={"l2"} marginTop={"2"}>
-        <Divider />
-      </Box>
       <MultiInput<AddNewClusterFormSchema>
         name="associatedServers"
         labelText="REST API servers (optional)"
