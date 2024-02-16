@@ -26,58 +26,93 @@ describe("<AddNewClusterForm />", () => {
   const originalConsoleError = console.error;
 
   beforeEach(() => {
-    console.error = jest.fn();
-
     customRender(<AddNewClusterForm />, {
       queryClient: true,
       aquariumContext: true,
     });
   });
-  afterEach(() => {
-    console.error = originalConsoleError;
 
+  afterEach(() => {
     cleanup();
     jest.clearAllMocks();
   });
 
-  it("renders all necessary elements by default", async () => {
-    const clusterTypeSelect = screen.getByRole("group", {
-      name: "Cluster type *",
-    });
-    const clusterTypeOptions = within(clusterTypeSelect).getAllByRole("radio");
-    const clusterNameInput = screen.getByRole("textbox", {
-      name: "Cluster name *",
-    });
-    const protocolSelect = screen.getByRole("combobox", {
-      name: "Protocol *",
-    });
-    const protocolSelectOptions = within(protocolSelect).getAllByRole("option");
-    const kafkaFlavorSelect = screen.getByRole("combobox", {
-      name: "Kafka flavor *",
-    });
-    const kafkaFlavorSelectOptions =
-      within(kafkaFlavorSelect).getAllByRole("option");
-    const bootstrapServersInput = screen.getByRole("textbox", {
-      name: "Bootstrap servers *",
-    });
-    const restServersInput = screen.getByRole("textbox", {
-      name: "REST API servers (optional)",
+  describe("renders all necessary elements by default", () => {
+    it("renders Cluster type field", () => {
+      const clusterTypeSelect = screen.getByRole("group", {
+        name: "Cluster type *",
+      });
+      const clusterTypeOptions =
+        within(clusterTypeSelect).getAllByRole("radio");
+
+      expect(clusterTypeSelect).toBeEnabled();
+      expect(clusterTypeOptions).toHaveLength(3);
     });
 
-    const submitButton = screen.getByRole("button", {
-      name: "Add new cluster",
+    it("renders Cluster name field", () => {
+      const clusterNameInput = screen.getByRole("textbox", {
+        name: "Cluster name *",
+      });
+
+      expect(clusterNameInput).toBeEnabled();
     });
 
-    expect(clusterTypeSelect).toBeEnabled();
-    expect(clusterTypeOptions).toHaveLength(3);
-    expect(clusterNameInput).toBeEnabled();
-    expect(protocolSelect).toBeEnabled();
-    expect(protocolSelectOptions).toHaveLength(7);
-    expect(kafkaFlavorSelect).toBeEnabled();
-    expect(kafkaFlavorSelectOptions).toHaveLength(6);
-    expect(bootstrapServersInput).toBeEnabled();
-    expect(restServersInput).toBeEnabled();
-    expect(submitButton).toBeEnabled();
+    it("renders Protocol field", () => {
+      const protocolSelect = screen.getByRole("combobox", {
+        name: "Protocol *",
+      });
+      const protocolSelectOptions =
+        within(protocolSelect).getAllByRole("option");
+
+      expect(protocolSelect).toBeEnabled();
+      expect(protocolSelectOptions).toHaveLength(7);
+    });
+
+    it("renders cluster type field", () => {
+      const clusterTypeSelect = screen.getByRole("group", {
+        name: "Cluster type *",
+      });
+      const clusterTypeOptions =
+        within(clusterTypeSelect).getAllByRole("radio");
+
+      expect(clusterTypeSelect).toBeEnabled();
+      expect(clusterTypeOptions).toHaveLength(3);
+    });
+
+    it("renders Kafka flavor field", () => {
+      const kafkaFlavorSelect = screen.getByRole("combobox", {
+        name: "Kafka flavor *",
+      });
+      const kafkaFlavorSelectOptions =
+        within(kafkaFlavorSelect).getAllByRole("option");
+
+      expect(kafkaFlavorSelect).toBeEnabled();
+      expect(kafkaFlavorSelectOptions).toHaveLength(6);
+    });
+
+    it("renders Bootstrap servers field", () => {
+      const bootstrapServersInput = screen.getByRole("textbox", {
+        name: "Bootstrap servers *",
+      });
+
+      expect(bootstrapServersInput).toBeEnabled();
+    });
+
+    it("renders REST API servers field", () => {
+      const restServersInput = screen.getByRole("textbox", {
+        name: "REST API servers (optional)",
+      });
+
+      expect(restServersInput).toBeEnabled();
+    });
+
+    it("renders Add new server button", () => {
+      const submitButton = screen.getByRole("button", {
+        name: "Add new cluster",
+      });
+
+      expect(submitButton).toBeEnabled();
+    });
   });
 
   it("shows an error message when the cluster name is empty", async () => {
@@ -250,6 +285,8 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("renders error message when submitting fails", async () => {
+    console.error = jest.fn();
+
     mockAddNewClusterRequest.mockRejectedValue(new Error("Request failed"));
 
     const clusterNameInput = screen.getByRole("textbox", {
@@ -287,5 +324,7 @@ describe("<AddNewClusterForm />", () => {
       position: "bottom-left",
     });
     expect(mockedUsedNavigate).not.toHaveBeenCalled();
+
+    console.error = originalConsoleError;
   });
 });
