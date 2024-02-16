@@ -133,7 +133,7 @@ const AddNewClusterForm = () => {
       <NativeSelect<AddNewClusterFormSchema>
         name="kafkaFlavor"
         labelText="Kafka flavor"
-        placeholder="Select Kafka flavor"
+        placeholder="-- Please select --"
         required
       >
         <Option value="APACHE_KAFKA">Apache Kafka</Option>
