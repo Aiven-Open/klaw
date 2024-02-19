@@ -2,13 +2,14 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { afterEach } from "node:test";
 import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
-import { ApprovalsTabEnum } from "src/app/router_utils";
+
 import {
   RequestsWaitingForApprovalWithTotal,
   getRequestsWaitingForApproval,
 } from "src/domain/requests";
 import { KlawApiError } from "src/services/api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { ApprovalsTabEnum } from "src/services/router-utils/types";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

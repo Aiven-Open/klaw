@@ -10,7 +10,7 @@ import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
   Routes,
-} from "src/app/router_utils";
+} from "src/services/router-utils/types";
 
 const approveRequestsPaths: { [key: string]: string } = {
   topic: `${Routes.APPROVALS}/${

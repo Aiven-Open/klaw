@@ -1,8 +1,8 @@
 import { cleanup, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs";
-import { RequestsTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { RequestsTabEnum } from "src/services/router-utils/types";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

@@ -28,7 +28,7 @@ import {
   ConnectorRequestFormSchema,
   connectorRequestFormSchema,
 } from "src/app/features/connectors/request/schemas/connector-request-form";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 import {
   ConnectorDetailsForEnv,
   requestConnectorEdit,

@@ -140,6 +140,9 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_ADD_CLUSTER: ["development", "remote-api"]
           .includes(mode)
           .toString(),
+        FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {

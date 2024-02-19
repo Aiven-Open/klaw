@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,

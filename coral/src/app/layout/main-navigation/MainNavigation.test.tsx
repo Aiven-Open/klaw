@@ -8,6 +8,8 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
+import { setupFeatureFlagMock } from "src/services/feature-flags/test-helper";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 jest.mock("src/domain/team/team-api.ts");
 
@@ -18,15 +20,9 @@ jest.mock("src/domain/requests/requests-api.ts", () => ({
   getRequestsWaitingForApproval: () => mockGetRequestsWaitingForApproval(),
 }));
 
+let mockAuthUser = testAuthUser;
 jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => {
-    return testAuthUser;
-  },
-}));
-
-const isFeatureFlagActiveMock = jest.fn();
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+  useAuthContext: () => mockAuthUser,
 }));
 
 const mockedUseToast = jest.fn();
@@ -113,21 +109,18 @@ const navOrderFirstLevel = [
 ];
 
 describe("MainNavigation.tsx", () => {
-  const originalConsoleError = console.error;
-
   beforeEach(() => {
-    console.error = jest.fn();
-
     mockGetRequestsStatistics.mockResolvedValue([]);
     mockGetRequestsWaitingForApproval.mockResolvedValue([]);
   });
-
-  afterAll(() => {
-    console.error = originalConsoleError;
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe("renders the main navigation in default state", () => {
-    beforeEach(() => {
+    beforeAll(() => {
+      mockGetRequestsStatistics.mockResolvedValue([]);
+      mockGetRequestsWaitingForApproval.mockResolvedValue([]);
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
@@ -135,7 +128,9 @@ describe("MainNavigation.tsx", () => {
       });
     });
 
-    afterEach(cleanup);
+    afterAll(() => {
+      cleanup();
+    });
 
     it("renders the main navigation", () => {
       const nav = screen.getByRole("navigation", { name: "Main navigation" });
@@ -200,6 +195,173 @@ describe("MainNavigation.tsx", () => {
     });
   });
 
+  describe("renders a specific navigation for superadmin when feature flag is enabled and user is superadmin", () => {
+    const navLinksSuperAdmin = [
+      {
+        name: "Dashboard",
+        linkTo: "/",
+      },
+      {
+        name: "Topics",
+        linkTo: "/topics",
+      },
+      {
+        name: "Connectors",
+        linkTo: "/connectors",
+      },
+      {
+        name: "Activity log",
+        linkTo: "/activity-log",
+      },
+    ];
+
+    const submenuItemsSuperAdmin = [
+      {
+        name: "Synchronize",
+        links: [
+          {
+            name: "Topics from cluster",
+            linkTo: "/synchronizeTopics",
+          },
+          {
+            name: "Acls from cluster",
+            linkTo: "/synchronizeAcls",
+          },
+          {
+            name: "Topics to cluster",
+            linkTo: "/syncBackTopics",
+          },
+          {
+            name: "Schemas from cluster",
+            linkTo: "/syncBackAcls",
+          },
+          {
+            name: "Schemas to cluster",
+            linkTo: "/syncBackSchemas",
+          },
+          {
+            name: "Connectors from cluster",
+            linkTo: "/syncConnectors",
+          },
+          {
+            name: "Manage Connectors",
+            linkTo: "/manageConnectors",
+          },
+        ],
+      },
+      {
+        name: "Configuration overview",
+        links: [
+          { name: "Users", linkTo: "/configuration/users" },
+          {
+            name: "Teams",
+            linkTo: `/configuration/teams`,
+          },
+          {
+            name: "Environments",
+            linkTo: "/configuration/environments",
+          },
+          {
+            name: "Clusters",
+            linkTo: "/configuration/clusters",
+          },
+          {
+            name: "Approve user request",
+            linkTo: "/execUsers",
+          },
+          {
+            name: "Roles",
+            linkTo: "/roles",
+          },
+          {
+            name: "Permissions",
+            linkTo: "/permissions",
+          },
+        ],
+      },
+      {
+        name: "User information",
+        links: [
+          {
+            name: "User profile",
+            linkTo: "/user/profile",
+          },
+          {
+            name: "Change password",
+            linkTo: "/user/change-password",
+          },
+          {
+            name: "Tenant information",
+            linkTo: "/user/tenant-info",
+          },
+        ],
+      },
+    ];
+
+    beforeAll(() => {
+      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      setupFeatureFlagMock(
+        FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL,
+        true
+      );
+      mockGetRequestsStatistics.mockResolvedValue([]);
+      mockGetRequestsWaitingForApproval.mockResolvedValue([]);
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+    });
+
+    afterAll(() => {
+      cleanup();
+      mockAuthUser = testAuthUser;
+    });
+
+    it("renders the main navigation", () => {
+      const nav = screen.getByRole("navigation", { name: "Main navigation" });
+      expect(nav).toBeVisible();
+    });
+
+    navLinksSuperAdmin.forEach((link) => {
+      it(`renders a link for ${link.name}`, () => {
+        const nav = screen.getByRole("navigation", {
+          name: "Main navigation",
+        });
+
+        const navLink = within(nav).getByRole("link", { name: link.name });
+        expect(navLink).toBeVisible();
+        expect(navLink).toHaveAttribute("href", link.linkTo);
+      });
+    });
+
+    it(`renders all navigation items`, () => {
+      const navLinks = screen.getAllByRole("link");
+
+      expect(navLinks).toHaveLength(navLinks.length);
+    });
+
+    submenuItemsSuperAdmin.forEach((submenu) => {
+      it(`renders a button to open submenu for ${submenu.name}`, () => {
+        const nav = screen.getByRole("navigation", {
+          name: "Main navigation",
+        });
+
+        const button = within(nav).getByRole("button", {
+          name: `${submenu.name} submenu, closed. Click to open.`,
+        });
+
+        expect(button).toBeEnabled();
+      });
+    });
+
+    it(`renders all submenu buttons`, () => {
+      const submenuItems = screen.getAllByRole("button");
+
+      expect(submenuItems).toHaveLength(submenuItemsSuperAdmin.length);
+    });
+  });
+
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {
@@ -209,10 +371,7 @@ describe("MainNavigation.tsx", () => {
       });
     });
 
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
+    afterEach(cleanup);
 
     submenuItems.forEach((submenu) => {
       describe(`shows all submenu items for ${submenu.name} when user opens menu`, () => {
@@ -325,13 +484,19 @@ describe("MainNavigation.tsx", () => {
   });
 
   describe("shows an toast error notification when fetching pending requests fails", () => {
+    const originalConsoleError = console.error;
     const testError: KlawApiError = {
       message: "Oh no, this did not work",
       success: false,
     };
 
+    beforeEach(() => {
+      console.error = jest.fn();
+    });
+
     afterEach(() => {
       cleanup();
+      console.error = originalConsoleError;
       jest.resetAllMocks();
     });
 
@@ -351,6 +516,8 @@ describe("MainNavigation.tsx", () => {
           })
         )
       );
+
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 });

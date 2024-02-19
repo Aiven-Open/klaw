@@ -9,7 +9,7 @@ import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLin
 type MainNavigationSubmenuItemProps = {
   icon: typeof data;
   text: string;
-  children: ReactElement<typeof MainNavigationLink>[];
+  children: Array<ReactElement<typeof MainNavigationLink> | boolean>;
   defaultExpanded: boolean;
 };
 
