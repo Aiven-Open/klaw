@@ -1,6 +1,8 @@
 package io.aiven.klaw.model.response;
 
 import io.aiven.klaw.model.enums.ClusterStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -22,9 +24,9 @@ public class KwClustersModelResponse implements Serializable {
 
   @NotNull private KafkaSupportedProtocol protocol;
 
-  @NotNull private String clusterType;
+  @NotNull private KafkaClustersType clusterType;
 
-  @NotNull private String kafkaFlavor;
+  @NotNull private KafkaFlavors kafkaFlavor;
 
   @NotNull private boolean showDeleteCluster;
 
@@ -41,6 +43,4 @@ public class KwClustersModelResponse implements Serializable {
   private String projectName;
 
   private String serviceName;
-
-  private String publicKey;
 }

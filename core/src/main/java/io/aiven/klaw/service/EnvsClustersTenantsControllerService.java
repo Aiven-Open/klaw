@@ -148,6 +148,9 @@ public class EnvsClustersTenantsControllerService {
     for (KwClusters cluster : clusters) {
       tmpClusterModel = new KwClustersModelResponse();
       copyProperties(cluster, tmpClusterModel);
+      tmpClusterModel.setKafkaFlavor(KafkaFlavors.of(cluster.getKafkaFlavor()));
+      tmpClusterModel.setClusterType(KafkaClustersType.of(cluster.getClusterType()));
+
       KwClustersModelResponse finalTmpClusterModel = tmpClusterModel;
       tmpClusterModel.setShowDeleteCluster(true);
       // set only for authorized users
@@ -211,7 +214,6 @@ public class EnvsClustersTenantsControllerService {
           }
           mp.setAllPageNos(numList);
           mp.setCurrentPage(pageContext.getPageNo());
-          mp.setPublicKey(""); // remove public key from here
           return mp;
         });
   }
@@ -618,7 +620,7 @@ public class EnvsClustersTenantsControllerService {
           .forEach(
               (k, v) -> {
                 if (Objects.equals(v.getClusterName(), kwClustersModel.getClusterName())
-                    && Objects.equals(v.getClusterType(), kwClustersModel.getClusterType())) {
+                    && Objects.equals(v.getClusterType(), kwClustersModel.getClusterType().value)) {
                   clusterNameAlreadyExists.set(true);
                 }
               });
@@ -631,6 +633,8 @@ public class EnvsClustersTenantsControllerService {
     copyProperties(kwClustersModel, kwCluster);
     kwCluster.setTenantId(tenantId);
     kwCluster.setClusterName(kwCluster.getClusterName().toUpperCase());
+    kwCluster.setKafkaFlavor(kwClustersModel.getKafkaFlavor().value);
+    kwCluster.setClusterType(kwClustersModel.getClusterType().value);
 
     // only for new cluster requests
     String result = manageDatabase.getHandleDbRequests().addNewCluster(kwCluster);
@@ -849,6 +853,8 @@ public class EnvsClustersTenantsControllerService {
       if (kwClusters != null) {
         KwClustersModelResponse kwClustersModel = new KwClustersModelResponse();
         copyProperties(kwClusters, kwClustersModel);
+        kwClustersModel.setKafkaFlavor(KafkaFlavors.of(kwClusters.getKafkaFlavor()));
+        kwClustersModel.setClusterType(KafkaClustersType.of(kwClusters.getClusterType()));
 
         return kwClustersModel;
       }

@@ -1,5 +1,7 @@
 package io.aiven.klaw.model.requests;
 
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.validation.KafkaClusterValidator;
 import jakarta.validation.constraints.NotNull;
@@ -30,15 +32,13 @@ public class KwClustersModel implements Serializable {
   @NotNull(message = "Protocol cannot be null")
   private KafkaSupportedProtocol protocol;
 
-  @NotNull private String clusterType;
+  @NotNull private KafkaClustersType clusterType;
 
-  @NotNull private String kafkaFlavor;
+  @NotNull private KafkaFlavors kafkaFlavor;
 
   private String associatedServers;
 
   private String projectName;
 
   private String serviceName;
-
-  private String publicKey;
 }

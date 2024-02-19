@@ -86,10 +86,10 @@ public class MockMethods {
     kwClustersModel.setClusterName(dev_cluster);
     kwClustersModel.setBootstrapServers("localhost:9092");
     kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
-    kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
-    kwClustersModel.setKafkaFlavor("Apache Kafka");
+    kwClustersModel.setClusterType(KafkaClustersType.KAFKA);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
     kwClustersModel.setAssociatedServers("https://localhost:12695");
-    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
 
     return kwClustersModel;
   }
@@ -99,9 +99,9 @@ public class MockMethods {
     kwClustersModel.setClusterName(dev_cluster);
     kwClustersModel.setBootstrapServers("localhost:8081");
     kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
-    kwClustersModel.setClusterType(KafkaClustersType.SCHEMA_REGISTRY.value);
-    kwClustersModel.setKafkaFlavor("Apache Kafka");
-    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClustersModel.setClusterType(KafkaClustersType.SCHEMA_REGISTRY);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
 
     return kwClustersModel;
   }
@@ -111,8 +111,8 @@ public class MockMethods {
     kwClustersModel.setClusterName(dev_cluster);
     kwClustersModel.setBootstrapServers("localhost:9092");
     kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
-    kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
-    kwClustersModel.setKafkaFlavor(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
+    kwClustersModel.setClusterType(KafkaClustersType.KAFKA);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA);
 
     return kwClustersModel;
   }
