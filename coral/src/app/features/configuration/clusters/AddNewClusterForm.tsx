@@ -21,9 +21,9 @@ import {
   AddNewClusterFormSchema,
   addNewClusterFormSchema,
 } from "src/app/features/configuration/clusters/schemas/add-new-cluster-form";
-import { Routes } from "src/app/router_utils";
 import { addNewCluster } from "src/domain/cluster";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { Routes } from "src/services/router-utils/types";
 
 const AddNewClusterForm = () => {
   const navigate = useNavigate();
