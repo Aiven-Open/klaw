@@ -8,7 +8,7 @@ import {
 } from "@aivenio/aquarium";
 import uniqueId from "lodash/uniqueId";
 import { Link } from "react-router-dom";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 
 type TeamsOverviewProps = {
   teams: string[];

@@ -1,13 +1,13 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
 import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs";
+import PreviewBanner from "src/app/components/PreviewBanner";
 import {
   REQUESTS_TAB_ID_INTO_PATH,
   REQUESTS_TAB_PATH_LINK_MAP,
   RequestsTabEnum,
-  isRequestsTabEnum,
-} from "src/app/router_utils";
-import PreviewBanner from "src/app/components/PreviewBanner";
+} from "src/services/router-utils/types";
+import { isRequestsTabEnum } from "src/services/router-utils/route-utils";
 
 const RequestsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

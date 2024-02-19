@@ -12,15 +12,15 @@ import { ClaimBanner } from "src/app/features/components/ClaimBanner";
 import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
-import {
-  CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
-  ConnectorOverviewTabEnum,
-  isConnectorsOverviewTabEnum,
-} from "src/app/router_utils";
 import { ConnectorOverview, requestConnectorClaim } from "src/domain/connector";
 import { getConnectorOverview } from "src/domain/connector/connector-api";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {
+  CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  ConnectorOverviewTabEnum,
+} from "src/services/router-utils/types";
+import { isConnectorsOverviewTabEnum } from "src/services/router-utils/route-utils";
 
 type ConnectorOverviewProps = {
   connectorName: string;

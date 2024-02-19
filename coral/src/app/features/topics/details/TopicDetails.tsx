@@ -12,11 +12,7 @@ import { ClaimBanner } from "src/app/features/components/ClaimBanner";
 import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
-import {
-  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
-  TopicOverviewTabEnum,
-  isTopicsOverviewTabEnum,
-} from "src/app/router_utils";
+
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import {
   getSchemaOfTopic,
@@ -25,6 +21,11 @@ import {
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {
+  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  TopicOverviewTabEnum,
+} from "src/services/router-utils/types";
+import { isTopicsOverviewTabEnum } from "src/services/router-utils/route-utils";
 
 type TopicOverviewProps = {
   topicName: string;

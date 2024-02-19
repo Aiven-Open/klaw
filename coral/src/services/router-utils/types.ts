@@ -1,5 +1,3 @@
-import isString from "lodash/isString";
-
 enum Routes {
   DASHBOARD = "/",
   TOPICS = "/topics",
@@ -119,59 +117,6 @@ const APPROVALS_TAB_PATH_LINK_MAP = {
   [ApprovalsTabEnum.CONNECTORS]: "/execConnectors",
 } as const;
 
-function isEnvironmentsTabEnum(value: unknown): value is EnvironmentsTabEnum {
-  if (isString(value)) {
-    return Object.prototype.hasOwnProperty.call(
-      ENVIRONMENT_TAB_ID_INTO_PATH,
-      value
-    );
-  }
-  return false;
-}
-function isTopicsOverviewTabEnum(
-  value: unknown
-): value is TopicOverviewTabEnum {
-  if (isString(value)) {
-    return Object.prototype.hasOwnProperty.call(
-      TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
-      value
-    );
-  }
-  return false;
-}
-
-function isConnectorsOverviewTabEnum(
-  value: unknown
-): value is ConnectorOverviewTabEnum {
-  if (isString(value)) {
-    return Object.prototype.hasOwnProperty.call(
-      CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
-      value
-    );
-  }
-  return false;
-}
-
-function isRequestsTabEnum(value: unknown): value is RequestsTabEnum {
-  if (isString(value)) {
-    return Object.prototype.hasOwnProperty.call(
-      REQUESTS_TAB_ID_INTO_PATH,
-      value
-    );
-  }
-  return false;
-}
-
-function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
-  if (isString(value)) {
-    return Object.prototype.hasOwnProperty.call(
-      APPROVALS_TAB_ID_INTO_PATH,
-      value
-    );
-  }
-  return false;
-}
-
 export {
   EnvironmentsTabEnum,
   RequestsTabEnum,
@@ -186,9 +131,4 @@ export {
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
   APPROVALS_TAB_PATH_LINK_MAP,
   REQUESTS_TAB_PATH_LINK_MAP,
-  isEnvironmentsTabEnum,
-  isRequestsTabEnum,
-  isApprovalsTabEnum,
-  isTopicsOverviewTabEnum,
-  isConnectorsOverviewTabEnum,
 };

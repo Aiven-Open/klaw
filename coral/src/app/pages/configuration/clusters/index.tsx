@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PreviewBanner from "src/app/components/PreviewBanner";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import Clusters from "src/app/features/configuration/clusters/Clusters";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 
 const ClustersPage = () => {
   const navigate = useNavigate();

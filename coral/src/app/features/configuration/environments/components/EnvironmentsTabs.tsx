@@ -5,8 +5,8 @@ import {
   ENVIRONMENT_TAB_ID_INTO_PATH,
   EnvironmentsTabEnum,
   Routes,
-  isEnvironmentsTabEnum,
-} from "src/app/router_utils";
+} from "src/services/router-utils/types";
+import { isEnvironmentsTabEnum } from "src/services/router-utils/route-utils";
 
 type Props = {
   currentTab: EnvironmentsTabEnum;

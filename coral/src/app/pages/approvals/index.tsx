@@ -1,13 +1,13 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
 import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
+import PreviewBanner from "src/app/components/PreviewBanner";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
-  ApprovalsTabEnum,
-  isApprovalsTabEnum,
   APPROVALS_TAB_PATH_LINK_MAP,
-} from "src/app/router_utils";
-import PreviewBanner from "src/app/components/PreviewBanner";
+  ApprovalsTabEnum,
+} from "src/services/router-utils/types";
+import { isApprovalsTabEnum } from "src/services/router-utils/route-utils";
 
 const ApprovalsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

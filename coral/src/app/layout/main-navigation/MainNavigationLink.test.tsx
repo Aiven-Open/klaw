@@ -2,7 +2,7 @@ import data from "@aivenio/aquarium/dist/src/icons/console";
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
 
 describe("MainNavigationLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)

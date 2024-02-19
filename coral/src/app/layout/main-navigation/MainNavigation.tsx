@@ -7,16 +7,28 @@ import list from "@aivenio/aquarium/dist/src/icons/list";
 import person from "@aivenio/aquarium/dist/src/icons/person";
 import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
+import swapHorizontal from "@aivenio/aquarium/dist/src/icons/swapHorizontal";
 import { useLocation } from "react-router-dom";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
-import { Routes } from "src/app/router_utils";
+import { Routes } from "src/services/router-utils/types";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
+  const { userrole } = useAuthContext();
+
+  const superadminAccessCoralEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
+  );
+
+  const showNavigationForSuperAdmin =
+    superadminAccessCoralEnabled && userrole === "SUPERADMIN";
 
   return (
     <Box
@@ -64,23 +76,27 @@ function MainNavigation() {
             }
           />
         </li>
-        <li>
-          <MainNavigationLink
-            icon={tickCircle}
-            to={Routes.APPROVALS}
-            linkText={"Approve requests"}
-            active={pathname.startsWith(Routes.APPROVALS)}
-            notifications={TOTAL_NOTIFICATIONS}
-          />
-        </li>
-        <li>
-          <MainNavigationLink
-            icon={add}
-            linkText={"My team's requests"}
-            to={Routes.REQUESTS}
-            active={pathname.startsWith(Routes.REQUESTS)}
-          />
-        </li>
+        {showNavigationForSuperAdmin ? null : (
+          <li>
+            <MainNavigationLink
+              icon={tickCircle}
+              to={Routes.APPROVALS}
+              linkText={"Approve requests"}
+              active={pathname.startsWith(Routes.APPROVALS)}
+              notifications={TOTAL_NOTIFICATIONS}
+            />
+          </li>
+        )}
+        {showNavigationForSuperAdmin ? null : (
+          <li>
+            <MainNavigationLink
+              icon={add}
+              linkText={"My team's requests"}
+              to={Routes.REQUESTS}
+              active={pathname.startsWith(Routes.REQUESTS)}
+            />
+          </li>
+        )}
         <li>
           <MainNavigationLink
             icon={list}
@@ -89,6 +105,48 @@ function MainNavigation() {
             active={pathname.startsWith(Routes.ACTIVITY_LOG)}
           />
         </li>
+        {showNavigationForSuperAdmin && (
+          <li>
+            <MainNavigationSubmenuList
+              icon={swapHorizontal}
+              text={"Synchronize"}
+              defaultExpanded={false}
+            >
+              <MainNavigationLink
+                to={"/synchronizeTopics"}
+                linkText={"Topics from cluster"}
+              />
+              <MainNavigationLink
+                to={"/synchronizeAcls"}
+                linkText={"Acls from cluster"}
+              />
+              <MainNavigationLink
+                to={"/syncBackTopics"}
+                linkText={"Topics to cluster"}
+              />
+              <MainNavigationLink
+                to={"/syncBackAcls"}
+                linkText={"Acls to cluster"}
+              />
+              <MainNavigationLink
+                to={"/synchronizeSchemas"}
+                linkText={"Schemas from cluster"}
+              />
+              <MainNavigationLink
+                to={"/syncBackSchemas"}
+                linkText={"Schemas to cluster"}
+              />
+              <MainNavigationLink
+                to={"/syncConnectors"}
+                linkText={"Connectors from cluster"}
+              />
+              <MainNavigationLink
+                to={"/manageConnectors"}
+                linkText={"Manage Connectors"}
+              />
+            </MainNavigationSubmenuList>
+          </li>
+        )}
         <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
           <Divider direction="horizontal" size={2} />
         </Box>
@@ -108,6 +166,21 @@ function MainNavigation() {
               linkText={"Teams"}
               active={pathname.startsWith(Routes.TEAMS)}
             />
+            {showNavigationForSuperAdmin && (
+              <MainNavigationLink
+                linkText={"Approve user request"}
+                to={"/execUsers"}
+              />
+            )}
+            {showNavigationForSuperAdmin && (
+              <MainNavigationLink linkText={"Roles"} to={"/roles"} />
+            )}
+            {showNavigationForSuperAdmin && (
+              <MainNavigationLink
+                linkText={"Permissions"}
+                to={"/permissions"}
+              />
+            )}
             <MainNavigationLink
               to={Routes.ENVIRONMENTS}
               linkText={"Environments"}
