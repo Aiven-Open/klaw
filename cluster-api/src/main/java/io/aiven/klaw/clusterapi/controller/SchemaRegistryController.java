@@ -6,6 +6,7 @@ import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.SchemaCacheUpdateType;
+import io.aiven.klaw.clusterapi.models.enums.SchemaType;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class SchemaRegistryController {
               clusterSchemaRequest.getTopicName(),
               clusterSchemaRequest.getProtocol(),
               clusterSchemaRequest.getEnv(),
-              clusterSchemaRequest.getClusterIdentification()),
+              clusterSchemaRequest.getClusterIdentification(), clusterSchemaRequest.getSchemaType()),
           HttpStatus.OK);
     } catch (Exception e) {
       return handleException(e);

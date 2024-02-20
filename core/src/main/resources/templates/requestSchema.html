@@ -487,11 +487,28 @@
 										<!--/span-->
 									</div>
 
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label class="control-label">Schema Type</label>
+												<div class="demo-radio-button" ng-init="schemaType='AVRO'">
+													<input class="radio-col-orange" ng-change="onSelectSchema('AVRO')" ng-model="schemaType" name="schemaSelGroup"
+														   type="radio" id="radio_11" value="AVRO" checked/>
+													<label for="radio_11">AVRO</label>
+													<input class="radio-col-orange" ng-change="onSelectSchema('JSON')" ng-model="schemaType"
+														   name="schemaSelGroup" type="radio" id="radio_31" value="JSON" />
+													<label for="radio_31">JSON</label>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label class="control-label">Upload Avro Schema File</label>
+												<label class="control-label">Upload Schema File</label>
 												<input type="file" id="schemaFile" on-read-file="showContent($fileContent)" ng-model="addSchema.schemaFile">
 											</div>
 										</div>
@@ -502,7 +519,7 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="form-group">
-												<label class="control-label">Avro Schema</label>
+												<label class="control-label">Schema</label>
 												<textarea disabled class="form-control" placeholder="{&quot;type&quot; : &quot;string&quot;}" title=""
 														  ng-model="addSchema.schemafull" rows="3"></textarea>
 											</div>

@@ -1,7 +1,10 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -40,6 +43,10 @@ public class MessageSchema implements Serializable {
 
   @Column(name = "schemafull")
   private String schemafull;
+
+  @Column(name = "schematype")
+  @Enumerated(EnumType.STRING)
+  private SchemaType schemaType;
 
   @Column(name = "schemaid")
   private Integer schemaId;

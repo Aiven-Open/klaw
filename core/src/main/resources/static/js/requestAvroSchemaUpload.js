@@ -113,6 +113,11 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 $scope.addSchema.schemafull = $fileContent;
             };
 
+        $scope.schemaType="AVRO";
+        $scope.onSelectSchema = function(schemaType){
+            $scope.schemaType = schemaType;
+        }
+
         $scope.addSchema = function() {
 
                     if(!$scope.addSchema.envId)
@@ -168,6 +173,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     serviceInput['schemaversion'] = "1.0";
                     serviceInput['requestOperationType'] = 'CREATE';
                     serviceInput['forceRegister'] = $scope.addSchema.forceRegister;
+                    serviceInput['schemaType'] = $scope.schemaType;
 
                     $http({
                         method: "POST",

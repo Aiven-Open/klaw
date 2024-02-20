@@ -1267,4 +1267,21 @@ databaseChangeLog:
                     name: associatedaclid
                     type: INT
               tableName: kwaclrequests
-
+    - changeSet:
+        id: 20-02-2024 Add schema type json,avro column to schema requests, schemas table.
+        author: muralibasani
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: schematype
+                    type: VARCHAR2(10)
+                    defaultValue: 'AVRO'
+              tableName: kwschemarequests
+          - addColumn:
+              columns:
+                - column:
+                    name: schematype
+                    type: VARCHAR2(10)
+                    defaultValue: 'AVRO'
+              tableName: kwavroschemas

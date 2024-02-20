@@ -301,7 +301,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaSuccess() throws KlawException {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -337,7 +337,7 @@ public class SchemaRegistryControllerServiceTest {
         .thenThrow(new RuntimeException("Error from schema upload"));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(topic));
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
 
     try {
@@ -380,7 +380,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
@@ -398,7 +398,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
@@ -421,7 +421,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
@@ -443,7 +443,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
@@ -466,7 +466,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
@@ -488,7 +488,7 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(false));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
@@ -499,7 +499,7 @@ public class SchemaRegistryControllerServiceTest {
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -507,7 +507,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaIncompatibleSchemaError() throws KlawException {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(false));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -523,7 +523,7 @@ public class SchemaRegistryControllerServiceTest {
         schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
     assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -531,7 +531,7 @@ public class SchemaRegistryControllerServiceTest {
   public void validateSchemaReturnSchemaError() throws KlawException {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(false));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -540,7 +540,7 @@ public class SchemaRegistryControllerServiceTest {
     ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
     assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -548,7 +548,7 @@ public class SchemaRegistryControllerServiceTest {
   public void validateSchemaReturnSchemaCompatible() throws KlawException {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -557,7 +557,7 @@ public class SchemaRegistryControllerServiceTest {
     ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
     assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_SUCCESS_MSG);
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -566,7 +566,7 @@ public class SchemaRegistryControllerServiceTest {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
     String exceptionMsg = "Unable to contact the schema registry";
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenThrow(new KlawException(exceptionMsg));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -578,7 +578,7 @@ public class SchemaRegistryControllerServiceTest {
             () -> schemaRegistryControllerService.validateSchema(schemaRequest));
     assertThat(ex.getMessage()).isEqualTo(exceptionMsg);
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -590,7 +590,7 @@ public class SchemaRegistryControllerServiceTest {
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
     String exceptionMsg = "Unable to contact the schema registry";
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
 
     stubUserInfo();
@@ -601,7 +601,7 @@ public class SchemaRegistryControllerServiceTest {
     assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_SUCCESS_MSG);
 
     verify(clusterApiService, times(1))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -612,7 +612,7 @@ public class SchemaRegistryControllerServiceTest {
         schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -632,7 +632,7 @@ public class SchemaRegistryControllerServiceTest {
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     verify(clusterApiService, times(0))
-        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+        .validateSchema(anyString(), anyString(), anyString(), anyInt(), any());
   }
 
   @Test
@@ -643,7 +643,7 @@ public class SchemaRegistryControllerServiceTest {
         schemaRegistryControllerService, "validateCompatiblityOnSave", null);
     SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(buildValidationResponse(true));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
