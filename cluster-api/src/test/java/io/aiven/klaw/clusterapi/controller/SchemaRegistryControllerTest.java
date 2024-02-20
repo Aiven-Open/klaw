@@ -78,7 +78,7 @@ public class SchemaRegistryControllerTest {
     String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
 
     when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
+            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), any()))
         .thenReturn(
             ApiResponse.builder()
                 .message(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
@@ -99,7 +99,7 @@ public class SchemaRegistryControllerTest {
     String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
 
     when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
+            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), any()))
         .thenReturn(
             ApiResponse.builder()
                 .message(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
@@ -119,7 +119,7 @@ public class SchemaRegistryControllerTest {
     String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
 
     when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
+            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), any()))
         .thenThrow(RestClientException.class);
 
     mvc.perform(

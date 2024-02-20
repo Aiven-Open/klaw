@@ -525,6 +525,7 @@ public class SchemaRegistryControllerService {
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
     schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
     schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
+    schemaRequest.setSchemaType(schemaPromotion.getSchemaType());
     return schemaRequest;
   }
 
@@ -666,7 +667,7 @@ public class SchemaRegistryControllerService {
               schemaRequest.getSchemafull(),
               schemaRequest.getEnvironment(),
               schemaRequest.getTopicname(),
-              tenantId)
+              tenantId, schemaRequest.getSchemaType())
           .getBody();
     } catch (Exception e) {
       log.error("Exception:", e);

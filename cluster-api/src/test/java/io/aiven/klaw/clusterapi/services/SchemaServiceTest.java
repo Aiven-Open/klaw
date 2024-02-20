@@ -218,7 +218,7 @@ class SchemaServiceTest {
 
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
-            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18", SchemaType.AVRO);
     assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.SUCCESS.value);
 
     mockRestServiceServer.verify();
@@ -247,7 +247,7 @@ class SchemaServiceTest {
 
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
-            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18", SchemaType.AVRO);
     assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.FAILURE.value);
 
     mockRestServiceServer.verify();
@@ -266,7 +266,7 @@ class SchemaServiceTest {
 
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
-            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18", SchemaType.AVRO);
     assertThat(apiResponse.isSuccess()).isTrue();
 
     mockRestServiceServer.verify();
@@ -311,7 +311,7 @@ class SchemaServiceTest {
 
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
-            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18", SchemaType.AVRO);
     assertThat(apiResponse.getMessage())
         .isEqualTo(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.");
   }
@@ -337,7 +337,7 @@ class SchemaServiceTest {
 
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
-            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18", SchemaType.AVRO);
     assertThat(apiResponse.getMessage())
         .isEqualTo(
             ApiResultStatus.FAILURE.value

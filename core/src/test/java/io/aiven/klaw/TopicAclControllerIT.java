@@ -1320,7 +1320,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -1356,7 +1356,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -1392,7 +1392,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")

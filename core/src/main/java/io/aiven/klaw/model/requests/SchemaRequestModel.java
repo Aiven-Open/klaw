@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.requests;
 
+import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,6 +19,9 @@ public class SchemaRequestModel extends BaseRequestModel implements Serializable
   @NotNull
   @Size(min = 8, message = "Please fill in a valid schema.")
   private String schemafull;
+
+  @NotNull(message = "Please fill in a valid schema type.")
+  private SchemaType schemaType;
 
   private String schemaversion;
 
