@@ -280,7 +280,7 @@ describe("<AddNewClusterForm />", () => {
       position: "bottom-left",
     });
     expect(mockedUsedNavigate).toHaveBeenCalledWith(
-      "/configuration/clusters?search=MyCluster"
+      "/configuration/clusters?search=MyCluster&showConnectHelp=true"
     );
   });
 
