@@ -15,7 +15,7 @@ type ModalProps = {
   title: string;
   subtitle?: string;
   close?: () => void;
-  primaryAction: ModalAction;
+  primaryAction?: ModalAction;
   secondaryAction?: ModalAction;
   children: ReactElement;
   isDialog?: boolean;
@@ -125,7 +125,7 @@ function Modal(props: ModalProps) {
             flexDirection={"column"}
             borderRadius={"4px"}
             backgroundColor={"white"}
-            width={"6/12"}
+            width={"7/12"}
             // value is arbitrary, it should prevent buttons overflowing
             // the modal in a very small screen
             //eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -163,7 +163,7 @@ function Modal(props: ModalProps) {
                   icon={cross}
                   onClick={close}
                   data-focusable
-                  disabled={secondaryAction?.loading || primaryAction.loading}
+                  disabled={secondaryAction?.loading || primaryAction?.loading}
                 />
               )}
             </Box>
@@ -186,15 +186,17 @@ function Modal(props: ModalProps) {
                   {secondaryAction.text}
                 </Button>
               )}
-              <Button
-                kind={isDialog ? "secondary" : "primary"}
-                onClick={primaryAction.onClick}
-                data-focusable
-                disabled={primaryAction.disabled}
-                loading={primaryAction.loading}
-              >
-                {primaryAction.text}
-              </Button>
+              {primaryAction && (
+                <Button
+                  kind={isDialog ? "secondary" : "primary"}
+                  onClick={primaryAction.onClick}
+                  data-focusable
+                  disabled={primaryAction.disabled}
+                  loading={primaryAction.loading}
+                >
+                  {primaryAction.text}
+                </Button>
+              )}
             </Box>
           </Box>
         </Box>,
