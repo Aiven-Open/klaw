@@ -61,7 +61,11 @@ function Clusters() {
       ? clusters?.entries[0]
       : undefined;
     const isShowingOnlyLatestAddedCluster =
-      latestAddedCluster !== undefined && search.length !== 0;
+      // If there is more than one cluster resulting from the searchClusterParam filter, we should not show the modal
+      // As we currently can't know which one was the latest added
+      clusters?.entries.length === 1 &&
+      latestAddedCluster !== undefined &&
+      search.length !== 0;
 
     if (showConnectHelp && isShowingOnlyLatestAddedCluster) {
       const { kafkaFlavor, protocol, clusterType, clusterName, clusterId } =
