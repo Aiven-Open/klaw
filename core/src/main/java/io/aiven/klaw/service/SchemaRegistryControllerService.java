@@ -667,7 +667,8 @@ public class SchemaRegistryControllerService {
               schemaRequest.getSchemafull(),
               schemaRequest.getEnvironment(),
               schemaRequest.getTopicname(),
-              tenantId, schemaRequest.getSchemaType())
+              tenantId,
+              schemaRequest.getSchemaType())
           .getBody();
     } catch (Exception e) {
       log.error("Exception:", e);

@@ -514,6 +514,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             promoteSchemaReq['forceRegister'] = $scope.schema.forceRegister;
             promoteSchemaReq['appName'] = "App";
             promoteSchemaReq['remarks'] = remarks;
+            promoteSchemaReq['schemaType'] = $scope.schemaDetails.schemaType;
 
             $http({
                                 method: "POST",

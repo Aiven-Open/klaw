@@ -11,6 +11,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.SchemaDetailsPerEnv;
 import io.aiven.klaw.model.response.SchemaOverview;
@@ -32,6 +33,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   public static final String SCHEMA_ID = "id";
   public static final String SCHEMA_COMPATIBILITY = "compatibility";
   public static final String SCHEMA = "schema";
+  private static final String SCHEMA_TYPE = "schemaType";
 
   public SchemaOverviewService(MailUtils mailService) {
     super(mailService);
@@ -146,6 +148,12 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(true);
+            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)) {
+              schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
+            } else {
+              schemaDetailsPerEnv.setSchemaType(
+                  SchemaType.of((String) hashMapSchemaObj.get(SCHEMA_TYPE)));
+            }
             setSchemaDetailsPerEnvVersionAndCompatibility(
                 tenantId, schemaDetailsPerEnv, hashMapSchemaObj, latestSchemaVersion, schemaEnv);
             if (schemaObjects.size() > 1) {
@@ -158,6 +166,12 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(false);
+            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)) {
+              schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
+            } else {
+              schemaDetailsPerEnv.setSchemaType(
+                  SchemaType.of((String) hashMapSchemaObj.get(SCHEMA_TYPE)));
+            }
             setSchemaDetailsPerEnvVersionAndCompatibility(
                 tenantId, schemaDetailsPerEnv, hashMapSchemaObj, schemaVersionSearch, schemaEnv);
             if (schemaObjects.size() > 1) {
@@ -247,6 +261,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         schemaObj.put(SCHEMA, messageSchema.getSchemafull());
         schemaObj.put(SCHEMA_ID, messageSchema.getSchemaId());
         schemaObj.put(SCHEMA_COMPATIBILITY, messageSchema.getCompatibility());
+        schemaObj.put(SCHEMA_TYPE, messageSchema.getSchemaType());
         schemaObjects.put(Integer.parseInt(messageSchema.getSchemaversion()), schemaObj);
       }
     } else {
@@ -267,6 +282,14 @@ public class SchemaOverviewService extends BaseOverviewService {
             if (messageSchema.getCompatibility() == null) {
               saveChanges = true;
               messageSchema.setCompatibility((String) schemaObj.get(SCHEMA_COMPATIBILITY));
+            }
+            if (messageSchema.getSchemaType() == null) {
+              saveChanges = true;
+              if (schemaObj.containsKey(SCHEMA_TYPE)) {
+                messageSchema.setSchemaType(SchemaType.of((String) schemaObj.get(SCHEMA_TYPE)));
+              } else {
+                messageSchema.setSchemaType(SchemaType.AVRO);
+              }
             }
             if (messageSchema.getSchemafull() == null) {
               saveChanges = true;

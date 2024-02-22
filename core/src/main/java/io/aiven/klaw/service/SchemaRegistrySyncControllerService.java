@@ -492,6 +492,7 @@ public class SchemaRegistrySyncControllerService {
           SchemaRequest schemaRequest = new SchemaRequest();
           schemaRequest.setForceRegister(syncSchemaUpdates.isForceRegisterSchema());
           schemaRequest.setSchemafull(messageSchema.getSchemafull());
+          schemaRequest.setSchemaType(messageSchema.getSchemaType());
 
           ResponseEntity<ApiResponse> apiResponseCreateEntity =
               clusterApiService.postSchema(

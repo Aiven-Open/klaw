@@ -200,7 +200,9 @@ public class SchemaService {
 
     HttpEntity<Map<String, String>> request =
         buildSchemaEntity(
-            clusterSchemaRequest.getFullSchema(), clusterSchemaRequest.getClusterIdentification(), clusterSchemaRequest.getSchemaType());
+            clusterSchemaRequest.getFullSchema(),
+            clusterSchemaRequest.getClusterIdentification(),
+            clusterSchemaRequest.getSchemaType());
 
     ResponseEntity<RegisterSchemaResponse> schemaResponseResponseEntity =
         reqDetails
@@ -530,7 +532,8 @@ public class SchemaService {
       String topicName,
       KafkaSupportedProtocol schemaProtocol,
       String schemaEnv,
-      String clusterIdentification, SchemaType schemaType) {
+      String clusterIdentification,
+      SchemaType schemaType) {
     try {
       log.info("Check Schema Compatibility for TopicName: {}", topicName);
       if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
@@ -542,7 +545,8 @@ public class SchemaService {
               schemaEnv + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName),
               schemaProtocol);
 
-      HttpEntity<Map<String, String>> request = buildSchemaEntity(schema, clusterIdentification, schemaType);
+      HttpEntity<Map<String, String>> request =
+          buildSchemaEntity(schema, clusterIdentification, schemaType);
       ResponseEntity<SchemaCompatibilityCheckResponse> compatibility =
           reqDetails
               .getRight()
