@@ -5831,6 +5831,10 @@
             "maxLength" : 2147483647,
             "minLength" : 8
           },
+          "schemaType" : {
+            "type" : "string",
+            "enum" : [ "AVRO", "JSON" ]
+          },
           "schemaversion" : {
             "type" : "string"
           },
@@ -5842,7 +5846,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "environment", "requestOperationType", "schemafull", "topicname" ]
+        "required" : [ "environment", "requestOperationType", "schemaType", "schemafull", "topicname" ]
       },
       "ApiResponse" : {
         "properties" : {
@@ -6523,6 +6527,10 @@
             "type" : "string",
             "pattern" : "^[0-9]*$"
           },
+          "schemaType" : {
+            "type" : "string",
+            "enum" : [ "AVRO", "JSON" ]
+          },
           "forceRegister" : {
             "type" : "boolean"
           },
@@ -6535,7 +6543,7 @@
             "pattern" : "^[a-zA-z 0-9]*$"
           }
         },
-        "required" : [ "appName", "remarks", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
+        "required" : [ "appName", "remarks", "schemaType", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
       },
       "ConsumerOffsetResetRequestModel" : {
         "properties" : {
@@ -7562,6 +7570,10 @@
           "forceRegister" : {
             "type" : "boolean"
           },
+          "schemaType" : {
+            "type" : "string",
+            "enum" : [ "AVRO", "JSON" ]
+          },
           "schemaversion" : {
             "type" : "string"
           },
@@ -7572,7 +7584,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
+        "required" : [ "allPageNos", "approvingTeamDetails", "currentPage", "environment", "environmentName", "forceRegister", "req_no", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "schemaType", "schemafull", "teamId", "teamname", "topicname", "totalNoPages" ]
       },
       "RequestEntityStatusCount" : {
         "properties" : {
@@ -8718,6 +8730,10 @@
           "compatibility" : {
             "type" : "string"
           },
+          "schemaType" : {
+            "type" : "string",
+            "enum" : [ "AVRO", "JSON" ]
+          },
           "content" : {
             "type" : "string"
           },
@@ -8734,7 +8750,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "compatibility", "content", "env", "id", "latest", "nextVersion", "prevVersion", "showNext", "showPrev", "version" ]
+        "required" : [ "compatibility", "content", "env", "id", "latest", "nextVersion", "prevVersion", "schemaType", "showNext", "showPrev", "version" ]
       },
       "SchemaOverview" : {
         "properties" : {

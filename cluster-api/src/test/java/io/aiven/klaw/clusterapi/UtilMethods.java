@@ -21,6 +21,7 @@ import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
+import io.aiven.klaw.clusterapi.models.enums.SchemaType;
 import java.util.*;
 import org.apache.kafka.common.acl.AccessControlEntry;
 import org.apache.kafka.common.acl.AclBinding;
@@ -149,6 +150,7 @@ public class UtilMethods {
         .protocol(KafkaSupportedProtocol.PLAINTEXT)
         .topicName("testtopic")
         .clusterIdentification("CLID1")
+        .schemaType(SchemaType.AVRO)
         .build();
   }
 

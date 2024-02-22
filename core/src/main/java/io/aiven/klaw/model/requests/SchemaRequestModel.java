@@ -21,7 +21,9 @@ public class SchemaRequestModel extends BaseRequestModel implements Serializable
   private String schemafull;
 
   @NotNull(message = "Please fill in a valid schema type.")
-  private SchemaType schemaType;
+  private SchemaType schemaType = SchemaType.AVRO;
+
+  ;
 
   private String schemaversion;
 
