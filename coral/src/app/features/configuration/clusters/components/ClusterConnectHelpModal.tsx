@@ -99,7 +99,7 @@ const getApplicationPropertiesString = ({
   clusterType: ClusterDetails["clusterType"];
   protocol: ClusterDetails["protocol"];
 }) => {
-  if (kafkaFlavor === "APACHE_KAFKA" && clusterType === "KAFKA") {
+  if (clusterType === "KAFKA" && kafkaFlavor === "APACHE_KAFKA") {
     if (protocol === "SSL") {
       return `${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.location=path/to/client.keystore.p12\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.pwd=keystorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.key.pwd=keyPw\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.location=path/to/client.truststore.jks\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.pwd=truststorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.type=pkcs12\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.type=JKS`;
     }
@@ -116,7 +116,7 @@ const getApplicationPropertiesString = ({
       return `${clusterName.toLowerCase() + clusterId}.kafkasasl.jaasconfig.gssapi=com.sun.security.auth.module.Krb5LoginModule\nrequired useKeyTab=true storeKey=true keyTab="/path/to/kafka_client.keytab"\n<principal=%22kafkaclient1@EXAMPLE.COM>"`;
     }
   }
-  if (kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA" && clusterType === "KAFKA") {
+  if (clusterType === "KAFKA" && kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA") {
     if (protocol === "SSL") {
       return `${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.location=path/to/client.keystore.p12\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.pwd=keystorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.key.pwd=keyPw\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.location=path/to/client.truststore.jks\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.pwd=truststorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.type=pkcs12\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.type=JKS\nklaw.clusters.accesstoken=yourAivenAccessToken`;
     }
@@ -135,10 +135,13 @@ const getApplicationPropertiesString = ({
   }
 
   if (clusterType === "SCHEMA_REGISTRY" && protocol === "SSL") {
-    return `${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.location=path/to/client.keystore.p12\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.pwd=keystorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.key.pwd=keyPw\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.location=path/to/client.truststore.jks\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.pwd=truststorePw\n${clusterName.toLowerCase() + clusterId}.kafkassl.keystore.type=pkcs12\n${clusterName.toLowerCase() + clusterId}.kafkassl.truststore.type=JKS\n`;
+    return `${clusterName.toLowerCase() + clusterId}.klaw.schemaregistry.credentials=username:password`;
   }
 
   if (clusterType === "KAFKA_CONNECT") {
+    if (kafkaFlavor === "APACHE_KAFKA" && protocol === "SSL") {
+      return `${clusterName.toLowerCase() + clusterId}.klaw.kafkaconnect.credentials=username:password`;
+    }
     if (kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA") {
       return `${clusterName.toLowerCase() + clusterId}.klaw.kafkaconnect.credentials=aivenUsername:aivenPassword`;
     }
@@ -147,7 +150,7 @@ const getApplicationPropertiesString = ({
     }
   }
 
-  // Default case: no specific application.properties to copy
+  // Default case: no necessary application.properties to copy
   return "";
 };
 
