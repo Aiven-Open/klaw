@@ -42,6 +42,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
@@ -648,6 +649,7 @@ public class UtilMethods {
     schemaRequest.setTeamId(1001);
     schemaRequest.setRemarks("pls approve");
     schemaRequest.setTopicname("testtopic");
+    schemaRequest.setSchemaType(SchemaType.AVRO);
     schemaRequest.setRequestOperationType(RequestOperationType.CREATE);
     schemaList.add(schemaRequest);
 

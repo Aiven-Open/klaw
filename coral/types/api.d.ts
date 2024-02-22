@@ -534,6 +534,8 @@ export type components = {
       requestId?: number;
       topicname: string;
       schemafull: string;
+      /** @enum {string} */
+      schemaType: "AVRO" | "JSON";
       schemaversion?: string;
       forceRegister?: boolean;
       /** Format: int32 */
@@ -768,6 +770,8 @@ export type components = {
       sourceEnvironment: string;
       topicName: string;
       schemaVersion: string;
+      /** @enum {string} */
+      schemaType: "AVRO" | "JSON";
       forceRegister?: boolean;
       appName: string;
       remarks: string;
@@ -1133,6 +1137,8 @@ export type components = {
       /** Format: int32 */
       req_no: number;
       forceRegister: boolean;
+      /** @enum {string} */
+      schemaType: "AVRO" | "JSON";
       schemaversion?: string;
       deletable?: boolean;
       editable?: boolean;
@@ -1537,6 +1543,8 @@ export type components = {
       /** Format: int32 */
       prevVersion: number;
       compatibility: string;
+      /** @enum {string} */
+      schemaType: "AVRO" | "JSON";
       content: string;
       env: string;
       showNext: boolean;
