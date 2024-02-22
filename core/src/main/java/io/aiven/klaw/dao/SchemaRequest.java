@@ -1,6 +1,5 @@
 package io.aiven.klaw.dao;
 
-import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
