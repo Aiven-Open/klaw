@@ -176,19 +176,18 @@ const ClusterConnectHelpModal = ({
     clusterType,
     protocol,
   });
-
   return (
     <Modal
-      title={"Connecting clusters to Klaw"}
+      title={"Connect cluster to Klaw"}
       close={onClose}
       primaryAction={{ text: "Done", onClick: onClose }}
     >
       {applicationPropertiesString.length > 0 ? (
         <Spacing gap={"l2"}>
           <Typography.Default>
-            Copy and paste these lines with the correct values to{" "}
+            Copy, paste, and replace placeholders in{" "}
             <pre style={{ display: "inline" }}>
-              klaw/cluster-api/src/main/resources
+              klaw/cluster-api/src/main/resources/application.properties
             </pre>
             .
             <a href="https://www.klaw-project.io/docs/cluster-connectivity-setup/">

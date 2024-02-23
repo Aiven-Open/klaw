@@ -44,9 +44,9 @@ const tableRowHeader = [
   "Cluster",
   "Bootstrap servers",
   "Protocol",
-  "Type",
-  "RestApi server",
-  "Other params",
+  "Cluster type",
+  "REST API servers",
+  "Other parameters",
 ];
 
 const mockHandleShowModal = jest.fn();

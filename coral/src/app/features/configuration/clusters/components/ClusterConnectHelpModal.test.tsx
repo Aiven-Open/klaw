@@ -46,9 +46,9 @@ describe("ClusterConnectHelpModal", () => {
     );
     const expectedApplicationPropertiesString = `${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.keystore.location=path/to/client.keystore.p12\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.keystore.pwd=keystorePw\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.key.pwd=keyPw\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.truststore.location=path/to/client.truststore.jks\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.truststore.pwd=truststorePw\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.keystore.type=pkcs12\n${modalDataWithApplicationPropertiesToCopy.clusterName.toLowerCase() + modalDataWithApplicationPropertiesToCopy.clusterId}.kafkassl.truststore.type=JKS`;
 
-    expect(screen.getByText("Connecting clusters to Klaw")).toBeVisible();
+    expect(screen.getByText("Connect cluster to Klaw")).toBeVisible();
     expect(
-      screen.getByText(/Copy and paste these lines with the correct values/)
+      screen.getByText(/Copy, paste, and replace placeholders/)
     ).toBeVisible();
     expect(screen.getByRole("link", { name: /Learn more/ })).toHaveAttribute(
       "href",
@@ -81,9 +81,9 @@ describe("ClusterConnectHelpModal", () => {
       />
     );
 
-    expect(screen.getByText("Connecting clusters to Klaw")).toBeVisible();
+    expect(screen.getByText("Connect cluster to Klaw")).toBeVisible();
     expect(
-      screen.queryByText(/Copy and paste these lines with the correct values/)
+      screen.queryByText(/Copy, paste, and replace placeholders/)
     ).toBeNull();
     expect(
       screen.getByRole("link", {

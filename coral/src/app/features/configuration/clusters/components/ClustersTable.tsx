@@ -48,7 +48,7 @@ const ClustersTable = (props: ClustersTableProps) => {
     },
     {
       type: "status",
-      headerName: "Type",
+      headerName: "Cluster type",
       status: ({ clusterType }) => ({
         text: clusterTypeToString[clusterType],
         status: "neutral",
@@ -64,11 +64,11 @@ const ClustersTable = (props: ClustersTableProps) => {
     {
       type: "text",
       field: "restApiServer",
-      headerName: "RestApi server",
+      headerName: "REST API servers",
     },
     {
       type: "custom",
-      headerName: "Other params",
+      headerName: "Other parameters",
       UNSAFE_render: ({ otherParams }: ClustersTableRow) => {
         if (!otherParams.projectName && !otherParams.serviceName) {
           return <div>-NA-</div>;

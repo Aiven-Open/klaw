@@ -160,7 +160,7 @@ describe("Clusters.tsx", () => {
 
     it("renders a search field for cluster params", () => {
       const search = screen.getByRole("search", {
-        name: "Search Cluster params",
+        name: "Search Cluster parameters",
       });
 
       expect(search).toBeEnabled();
@@ -289,7 +289,7 @@ describe("Clusters.tsx", () => {
       const testSearchInput = "MyCluster";
 
       const search = screen.getByRole("search", {
-        name: "Search Cluster params",
+        name: "Search Cluster parameters",
       });
 
       await user.type(search, testSearchInput);
@@ -330,9 +330,7 @@ describe("Clusters.tsx", () => {
     it("renders ClusterConnectHelpModal on first render if correct query params are set", () => {
       const modal = screen.getByRole("dialog");
       expect(modal).toBeVisible();
-      expect(
-        within(modal).getByText("Connecting clusters to Klaw")
-      ).toBeVisible();
+      expect(within(modal).getByText("Connect cluster to Klaw")).toBeVisible();
     });
 
     it("remove showConnectHelp query param when closing ClusterConnectHelpModal ", async () => {
