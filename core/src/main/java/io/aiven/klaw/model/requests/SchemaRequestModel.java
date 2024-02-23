@@ -20,10 +20,7 @@ public class SchemaRequestModel extends BaseRequestModel implements Serializable
   @Size(min = 8, message = "Please fill in a valid schema.")
   private String schemafull;
 
-  @NotNull(message = "Please fill in a valid schema type.")
   private SchemaType schemaType = SchemaType.AVRO;
-
-  ;
 
   private String schemaversion;
 
