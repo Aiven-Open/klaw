@@ -535,7 +535,7 @@ export type components = {
       topicname: string;
       schemafull: string;
       /** @enum {string} */
-      schemaType: "AVRO" | "JSON";
+      schemaType?: "AVRO" | "JSON";
       schemaversion?: string;
       forceRegister?: boolean;
       /** Format: int32 */

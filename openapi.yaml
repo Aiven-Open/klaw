@@ -5846,7 +5846,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "environment", "requestOperationType", "schemaType", "schemafull", "topicname" ]
+        "required" : [ "environment", "requestOperationType", "schemafull", "topicname" ]
       },
       "ApiResponse" : {
         "properties" : {
