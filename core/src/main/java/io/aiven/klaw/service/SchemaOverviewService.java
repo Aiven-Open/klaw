@@ -152,7 +152,7 @@ public class SchemaOverviewService extends BaseOverviewService {
               schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
             } else {
               schemaDetailsPerEnv.setSchemaType(
-                  SchemaType.of((String) hashMapSchemaObj.get(SCHEMA_TYPE)));
+                  SchemaType.of(hashMapSchemaObj.get(SCHEMA_TYPE).toString()));
             }
             setSchemaDetailsPerEnvVersionAndCompatibility(
                 tenantId, schemaDetailsPerEnv, hashMapSchemaObj, latestSchemaVersion, schemaEnv);
@@ -170,7 +170,7 @@ public class SchemaOverviewService extends BaseOverviewService {
               schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
             } else {
               schemaDetailsPerEnv.setSchemaType(
-                  SchemaType.of((String) hashMapSchemaObj.get(SCHEMA_TYPE)));
+                  SchemaType.of(hashMapSchemaObj.get(SCHEMA_TYPE).toString()));
             }
             setSchemaDetailsPerEnvVersionAndCompatibility(
                 tenantId, schemaDetailsPerEnv, hashMapSchemaObj, schemaVersionSearch, schemaEnv);
@@ -206,7 +206,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                 tenantId,
                 schemaEnv,
                 topics.stream().map(Topic::getEnvironment).toList());
-            log.info("Getting schema details for: " + topicNameSearch);
+            log.debug("Getting schema details for: " + topicNameSearch);
           }
         }
       } catch (Exception e) {
@@ -255,7 +255,7 @@ public class SchemaOverviewService extends BaseOverviewService {
       SortedMap<Integer, Map<String, Object>> schemaObjects)
       throws Exception {
     if (schemaUpdated) {
-      log.info("GetSchema {} from DB", topicNameSearch);
+      log.debug("GetSchema {} from DB", topicNameSearch);
       for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
         Map<String, Object> schemaObj = new HashMap<>();
         schemaObj.put(SCHEMA, messageSchema.getSchemafull());
@@ -286,7 +286,7 @@ public class SchemaOverviewService extends BaseOverviewService {
             if (messageSchema.getSchemaType() == null) {
               saveChanges = true;
               if (schemaObj.containsKey(SCHEMA_TYPE)) {
-                messageSchema.setSchemaType(SchemaType.of((String) schemaObj.get(SCHEMA_TYPE)));
+                messageSchema.setSchemaType(SchemaType.of(schemaObj.get(SCHEMA_TYPE).toString()));
               } else {
                 messageSchema.setSchemaType(SchemaType.AVRO);
               }
@@ -310,7 +310,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   private SortedMap<Integer, Map<String, Object>> getSchemaFromAPI(
       String topicNameSearch, int tenantId, KwClusters kwClusters) throws Exception {
     SortedMap<Integer, Map<String, Object>> schemaObjects;
-    log.info("GetSchema {} from API", topicNameSearch);
+    log.debug("GetSchema {} from API", topicNameSearch);
     schemaObjects =
         clusterApiService.getAvroSchema(
             kwClusters.getBootstrapServers(),
