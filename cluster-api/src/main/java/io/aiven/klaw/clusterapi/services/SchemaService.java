@@ -239,7 +239,7 @@ public class SchemaService {
       String clusterIdentification,
       String topicName) {
     try {
-      log.info("Into getSchema request {} {} {}", topicName, environmentVal, protocol);
+      log.debug("Into getSchema request {} {} {}", topicName, environmentVal, protocol);
       if (environmentVal == null) {
         return null;
       }
@@ -299,7 +299,7 @@ public class SchemaService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification) {
     try {
-      log.info("Into getSchema versions {} {}", topicName, environmentVal);
+      log.debug("Into getSchema versions {} {}", topicName, environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -327,7 +327,7 @@ public class SchemaService {
                   request,
                   GET_SCHEMAVERSIONS_TYPEREF,
                   params);
-      log.info("Schema versions " + responseList);
+      log.debug("Schema versions " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting versions ", e);
@@ -341,7 +341,7 @@ public class SchemaService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification) {
     try {
-      log.info("Into getSchema compatibility {} {}", topicName, environmentVal);
+      log.debug("Into getSchema compatibility {} {}", topicName, environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -357,7 +357,7 @@ public class SchemaService {
   private String getGlobalSchemaCompatibility(
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
     try {
-      log.info("Into global getSchema compatibility {}", environmentVal);
+      log.debug("Into global getSchema compatibility {}", environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -649,6 +649,7 @@ public class SchemaService {
     }
 
     if (updateType != SchemaCacheUpdateType.NONE
+        && schemasInfoOfClusterResponseMap.containsKey(schemasVersionsStorageKey)
         && !schemasInfoOfClusterResponseMap
             .get(schemasVersionsStorageKey)
             .getSchemaInfoOfTopicList()

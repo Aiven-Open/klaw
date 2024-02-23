@@ -525,14 +525,18 @@ public class SchemaRegistryControllerService {
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
     schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
     schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
-    schemaRequest.setSchemaType(schemaPromotion.getSchemaType());
+    if (schemaPromotion.getSchemaType() == null) {
+      schemaRequest.setSchemaType(SchemaType.AVRO);
+    } else {
+      schemaRequest.setSchemaType(schemaPromotion.getSchemaType());
+    }
     return schemaRequest;
   }
 
   public ApiResponse uploadSchema(
       SchemaRequestModel schemaRequest, RequestOperationType requestOperationType)
       throws KlawException {
-    log.info("uploadSchema {}, requestOperationType {}", schemaRequest, requestOperationType);
+    log.debug("uploadSchema {}, requestOperationType {}", schemaRequest, requestOperationType);
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
