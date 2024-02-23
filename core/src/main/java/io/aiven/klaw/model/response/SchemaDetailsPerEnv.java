@@ -19,7 +19,7 @@ public class SchemaDetailsPerEnv {
   // schema registry. Or there is an issue with the data saved in the DB.
   @NotNull private String compatibility;
 
-  @NotNull private SchemaType schemaType;
+  private SchemaType schemaType;
   // The content is the actual schema
   @NotNull private String content;
   // This is the Schema Registry env that the schema relates to

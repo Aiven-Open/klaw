@@ -18,7 +18,7 @@ public class SchemaRequestsResponseModel extends BaseRequestsResponseModel imple
 
   @NotNull private Boolean forceRegister;
 
-  @NotNull private SchemaType schemaType;
+  private SchemaType schemaType;
 
   private String schemaversion;
 }
