@@ -9,7 +9,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -62,7 +62,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -136,7 +136,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -275,7 +275,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -385,7 +385,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -489,7 +489,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -542,7 +542,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -568,7 +568,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+        class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -707,7 +707,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -817,7 +817,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      class="border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none shadow-card-default w-full border-grey-5 Aquarium-Card"
+      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
