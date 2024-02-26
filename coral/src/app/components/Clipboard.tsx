@@ -57,7 +57,9 @@ const ClipBoard = ({
         >
           {description}
         </Button.SecondaryGhost>
-        <div className={"visually-hidden"}>{accessibleCopiedDescription}</div>
+        <div aria-live="polite" className={"visually-hidden"}>
+          {accessibleCopiedDescription}
+        </div>
       </Tooltip>
     );
   }
