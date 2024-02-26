@@ -1,5 +1,6 @@
 import { Box, Icon, Spacing, Typography } from "@aivenio/aquarium";
 import link from "@aivenio/aquarium/icons/link";
+import { a } from "msw/lib/core/RequestHandler-CwjkprZE";
 import ClipBoard from "src/app/components/Clipboard";
 import { Modal } from "src/app/components/Modal";
 import { ClusterDetails } from "src/domain/cluster";
@@ -108,7 +109,11 @@ const ClusterConnectHelpModal = ({
               klaw/cluster-api/src/main/resources/application.properties
             </pre>
             .
-            <a href="https://www.klaw-project.io/docs/cluster-connectivity-setup/">
+            <br />
+            <a
+              href="https://www.klaw-project.io/docs/cluster-connectivity-setup/"
+              style={{ display: "inline-block" }}
+            >
               <Box.Flex alignItems="center" gap={"2"}>
                 Learn more <Icon icon={link} />
               </Box.Flex>
