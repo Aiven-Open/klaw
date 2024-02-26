@@ -404,7 +404,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const connectButton = within(row).getByRole("button", {
-          name: `Display help for connecting the cluster ${cluster.clusterName} to Klaw`,
+          name: `Show help for connecting the cluster ${cluster.clusterName} to Klaw`,
         });
 
         expect(connectButton).toBeEnabled();
@@ -418,7 +418,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const connectButton = within(row).getByRole("button", {
-          name: `Display help for connecting the cluster ${cluster.clusterName} to Klaw`,
+          name: `Show help for connecting the cluster ${cluster.clusterName} to Klaw`,
         });
 
         await userEvent.click(connectButton);
