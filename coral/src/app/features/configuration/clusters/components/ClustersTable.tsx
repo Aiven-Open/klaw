@@ -90,7 +90,7 @@ const ClustersTable = (props: ClustersTableProps) => {
   if (handleShowModal !== undefined) {
     columns.push({
       type: "action",
-      headerName: "Help",
+      headerName: "",
       headerInvisible: true,
       action: ({ kafkaFlavor, protocol, clusterType, clusterName, id }) => ({
         text: "Connect",
@@ -105,7 +105,7 @@ const ClustersTable = (props: ClustersTableProps) => {
               clusterId: id,
             },
           }),
-        "aria-label": `Display help for connecting the cluster ${clusterName} to Klaw`,
+        "aria-label": `Show help for connecting the cluster ${clusterName} to Klaw`,
       }),
     });
   }
