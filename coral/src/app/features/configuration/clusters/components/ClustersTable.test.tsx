@@ -321,7 +321,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const type = within(row).getByRole("cell", {
-          name: cluster.clusterType,
+          name: clusterTypeToString[cluster.clusterType],
         });
 
         expect(type).toBeVisible();
@@ -335,7 +335,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const kafkaFlavor = within(row).getByRole("cell", {
-          name: cluster.kafkaFlavor,
+          name: kafkaFlavorToString[cluster.kafkaFlavor],
         });
 
         expect(kafkaFlavor).toBeVisible();
