@@ -8,6 +8,8 @@ import {
   AddNewClusterPayload,
   ClusterInfoFromEnvironment,
   ClusterDetails,
+  ClusterKafkaFlavor,
+  ClusterType,
 } from "src/domain/cluster/cluster-types";
 
 export {
@@ -20,4 +22,6 @@ export type {
   AddNewClusterPayload,
   ClusterInfoFromEnvironment,
   ClusterDetails,
+  ClusterKafkaFlavor,
+  ClusterType,
 };

@@ -10,9 +10,16 @@ type ClustersPaginatedApiResponse = ResolveIntersectionTypes<
 
 type AddNewClusterPayload = KlawApiModel<"KwClustersModel">;
 
+type ClusterKafkaFlavor =
+  KlawApiModel<"KwClustersModelResponse">["kafkaFlavor"];
+
+type ClusterType = KlawApiModel<"KwClustersModelResponse">["clusterType"];
+
 export type {
   ClusterInfoFromEnvironment,
   ClusterDetails,
   ClustersPaginatedApiResponse,
   AddNewClusterPayload,
+  ClusterKafkaFlavor,
+  ClusterType,
 };
