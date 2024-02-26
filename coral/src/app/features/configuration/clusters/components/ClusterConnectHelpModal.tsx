@@ -1,90 +1,8 @@
-import {
-  Box,
-  Button,
-  Icon,
-  PositionerPlacement,
-  Spacing,
-  Tooltip,
-  Typography,
-} from "@aivenio/aquarium";
-import duplicate from "@aivenio/aquarium/icons/duplicate";
+import { Box, Icon, Spacing, Typography } from "@aivenio/aquarium";
 import link from "@aivenio/aquarium/icons/link";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import ClipBoard from "src/app/components/Clipboard";
 import { Modal } from "src/app/components/Modal";
 import { ClusterDetails } from "src/domain/cluster";
-
-const copyToClipboard = async (text: string): Promise<void> => {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch (error) {
-    console.error("Failed to copy to clipboard:", error);
-  }
-};
-
-const ClipBoard = ({
-  text,
-  description,
-}: {
-  text: string;
-  description?: string;
-}) => {
-  const feedbackTimerRef = useRef<number>();
-
-  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
-
-  const clearTimeouts = () => {
-    window.clearTimeout(feedbackTimerRef.current);
-  };
-
-  useEffect(() => () => clearTimeouts(), []);
-
-  function handleCopy(event: FormEvent) {
-    event.preventDefault();
-    copyToClipboard(text);
-    setShowCopyFeedback(true);
-    feedbackTimerRef.current = window.setTimeout(
-      () => setShowCopyFeedback(false),
-      1000
-    );
-  }
-
-  if (showCopyFeedback) {
-    return (
-      <Tooltip
-        key="copied"
-        content="Copied"
-        isOpen
-        placement={PositionerPlacement.top}
-      >
-        <Button.SecondaryGhost
-          key="copy-button"
-          aria-label="Copy"
-          onClick={handleCopy}
-          icon={duplicate}
-        >
-          {description}
-        </Button.SecondaryGhost>
-      </Tooltip>
-    );
-  }
-
-  return (
-    <Tooltip
-      key="copy-to-clipboard"
-      content="Copy to clipboard"
-      placement={PositionerPlacement.top}
-    >
-      <Button.SecondaryGhost
-        key="copy-button"
-        aria-label="Copy"
-        onClick={handleCopy}
-        icon={duplicate}
-      >
-        {description}
-      </Button.SecondaryGhost>
-    </Tooltip>
-  );
-};
 
 const getApplicationPropertiesString = ({
   clusterName,
@@ -205,7 +123,15 @@ const ClusterConnectHelpModal = ({
             padding={"l1"}
           >
             <pre>{applicationPropertiesString}</pre>
-            <ClipBoard text={applicationPropertiesString} />
+            <ClipBoard
+              text={applicationPropertiesString}
+              accessibleCopyDescription={
+                "Copy application.properties to clipboard"
+              }
+              accessibleCopiedDescription={
+                "Copied application.properties to clipboard"
+              }
+            />
           </Box.Flex>
         </Spacing>
       ) : (
