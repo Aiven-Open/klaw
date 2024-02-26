@@ -15,7 +15,7 @@ type ModalProps = {
   title: string;
   subtitle?: string;
   close?: () => void;
-  primaryAction?: ModalAction;
+  primaryAction: ModalAction;
   secondaryAction?: ModalAction;
   children: ReactElement;
   isDialog?: boolean;
@@ -163,7 +163,7 @@ function Modal(props: ModalProps) {
                   icon={cross}
                   onClick={close}
                   data-focusable
-                  disabled={secondaryAction?.loading || primaryAction?.loading}
+                  disabled={secondaryAction?.loading || primaryAction.loading}
                 />
               )}
             </Box>
@@ -186,17 +186,15 @@ function Modal(props: ModalProps) {
                   {secondaryAction.text}
                 </Button>
               )}
-              {primaryAction && (
-                <Button
-                  kind={isDialog ? "secondary" : "primary"}
-                  onClick={primaryAction.onClick}
-                  data-focusable
-                  disabled={primaryAction.disabled}
-                  loading={primaryAction.loading}
-                >
-                  {primaryAction.text}
-                </Button>
-              )}
+              <Button
+                kind={isDialog ? "secondary" : "primary"}
+                onClick={primaryAction.onClick}
+                data-focusable
+                disabled={primaryAction.disabled}
+                loading={primaryAction.loading}
+              >
+                {primaryAction.text}
+              </Button>
             </Box>
           </Box>
         </Box>,
