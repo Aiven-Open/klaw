@@ -42,7 +42,7 @@ describe("ClipBoard", () => {
     );
   });
 
-  it("renders tooltip after button is clicked", async () => {
+  it("renders feedback tooltip after button is clicked", async () => {
     const button = screen.getByRole("button", {
       name: props.accessibleCopyDescription,
     });
@@ -50,7 +50,7 @@ describe("ClipBoard", () => {
     await waitFor(() => expect(screen.getByText("Copied")).toBeVisible());
   });
 
-  it("changes aria-label after button is clicked", async () => {
+  it("renders accessible feedback after button is clicked", async () => {
     const button = screen.getByRole("button", {
       name: props.accessibleCopyDescription,
     });
