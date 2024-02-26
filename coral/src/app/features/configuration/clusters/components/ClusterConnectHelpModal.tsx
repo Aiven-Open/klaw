@@ -120,9 +120,11 @@ const ClusterConnectHelpModal = ({
             borderRadius={"4px"}
             borderWidth={"1px"}
             justifyContent={"space-between"}
+            // flex-direction is set to row-reverse...
+            //... so that the copy button is first to be selected when navigating with keyboard
+            flexDirection="row-reverse"
             padding={"l1"}
           >
-            <pre>{applicationPropertiesString}</pre>
             <ClipBoard
               text={applicationPropertiesString}
               accessibleCopyDescription={
@@ -132,6 +134,7 @@ const ClusterConnectHelpModal = ({
                 "Copied application.properties to clipboard"
               }
             />
+            <pre>{applicationPropertiesString}</pre>
           </Box.Flex>
         </Spacing>
       ) : (
