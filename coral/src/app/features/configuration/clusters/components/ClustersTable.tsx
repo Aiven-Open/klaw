@@ -1,5 +1,7 @@
 import { Box, DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
 import { ClusterDetails } from "src/domain/cluster";
+import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
+import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 
 type ClustersTableProps = {
   clusters: ClusterDetails[];
@@ -46,7 +48,7 @@ const ClustersTable = (props: ClustersTableProps) => {
       type: "status",
       headerName: "Type",
       status: ({ clusterType }) => ({
-        text: clusterType,
+        text: clusterTypeToString[clusterType],
         status: "neutral",
       }),
     },
@@ -55,6 +57,7 @@ const ClustersTable = (props: ClustersTableProps) => {
       field: "kafkaFlavor",
       headerName: "Kafka flavor",
       width: 180,
+      formatter: (value) => kafkaFlavorToString[value],
     },
     {
       type: "text",

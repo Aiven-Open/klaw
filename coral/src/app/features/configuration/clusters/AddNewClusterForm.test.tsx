@@ -200,7 +200,7 @@ describe("<AddNewClusterForm />", () => {
       name: "Kafka Connect",
     });
     const schemaRegistryOption = screen.getByRole("radio", {
-      name: "Schema registry",
+      name: "Schema Registry",
     });
     const protocolSelect = screen.getByRole("combobox", {
       name: "Protocol *",

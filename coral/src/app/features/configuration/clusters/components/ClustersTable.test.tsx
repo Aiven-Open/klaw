@@ -3,6 +3,8 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { ClusterDetails } from "src/domain/cluster";
 import { ClustersTable } from "src/app/features/configuration/clusters/components/ClustersTable";
+import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
+import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 
 const testCluster: ClusterDetails[] = [
   {
@@ -154,7 +156,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const type = within(row).getByRole("cell", {
-          name: cluster.clusterType,
+          name: clusterTypeToString[cluster.clusterType],
         });
 
         expect(type).toBeVisible();
@@ -168,7 +170,7 @@ describe("ClusterTable.tsx", () => {
           name: new RegExp(`${cluster.clusterName}`, "i"),
         });
         const kafkaFlavor = within(row).getByRole("cell", {
-          name: cluster.kafkaFlavor,
+          name: kafkaFlavorToString[cluster.kafkaFlavor],
         });
 
         expect(kafkaFlavor).toBeVisible();

@@ -6,6 +6,7 @@ import {
   getDefinitionList,
   getAllDefinitions,
 } from "src/services/test-utils/custom-queries";
+import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 
 const testClusterDetails: ClusterDetailsType = {
   allPageNos: [],
@@ -66,7 +67,7 @@ describe("ClusterDetails", () => {
 
       expect(term).toBeVisible();
       expect(definition[0]).toHaveTextContent(
-        String(testClusterDetails.kafkaFlavor)
+        kafkaFlavorToString[testClusterDetails.kafkaFlavor]
       );
     });
 
