@@ -37,7 +37,7 @@ async function getClustersPaginated({
   "clusterType"
 >): Promise<ClustersPaginatedApiResponse> {
   const params: KlawApiRequestQueryParameters<"getClustersPaginated"> = {
-    clusterType: "all",
+    clusterType: "ALL",
     pageNo,
     ...(searchClusterParam && { searchClusterParam: searchClusterParam }),
   };

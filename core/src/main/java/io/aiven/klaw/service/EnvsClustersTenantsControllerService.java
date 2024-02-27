@@ -169,8 +169,10 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public List<KwClustersModelResponse> getClustersPaginated(
-      String typeOfCluster, String clusterId, String pageNo, String searchClusterParam) {
-    List<KwClustersModelResponse> kwClustersModelList = getClusters("all");
+      KafkaClustersType typeOfCluster, String clusterId, String pageNo, String searchClusterParam) {
+
+    String clusterTypeValue = typeOfCluster.value;
+    List<KwClustersModelResponse> kwClustersModelList = getClusters(clusterTypeValue);
 
     if (clusterId != null && !clusterId.equals("")) {
       kwClustersModelList =

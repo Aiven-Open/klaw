@@ -247,9 +247,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         method: "GET",
                         url: "getClustersPaginated",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'clusterType' : 'all', 'clusterId' : $scope.clusterIdFromUrl,
+                        params: {'clusterType' : 'ALL', 'clusterId' : $scope.clusterIdFromUrl,
                          'pageNo' : pageNo, 'searchClusterParam' : $scope.searchClusterParam},
-                        data: {'clusterType' : 'all'}
+                        data: {'clusterType' : 'ALL'}
                     }).success(function(output) {
                         $scope.allclustersset = output;
                         if(output && output.length > 0 && output[0] != null){
