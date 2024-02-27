@@ -4,6 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
+
 var app = angular.module('envsApp',[]);
 
 app.directive('onReadFile', function ($parse) {
@@ -31,6 +32,14 @@ app.directive('onReadFile', function ($parse) {
 app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
 	$scope.kafkaClusters = [ { label: 'Non-Aiven', value: 'nonaiven' }, { label: 'Aiven', value: 'aiven' }	];
+
+    $scope.kafkaFlavorToString = {
+        APACHE_KAFKA: "Apache Kafka",
+        AIVEN_FOR_APACHE_KAFKA: "Aiven for Apache Kafka",
+        CONFLUENT: "Confluent",
+        CONFLUENT_CLOUD: "Confluent Cloud",
+        OTHERS: "others",
+    };
 
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
