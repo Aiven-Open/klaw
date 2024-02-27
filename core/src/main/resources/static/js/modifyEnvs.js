@@ -7,7 +7,15 @@
 var app = angular.module('modifyEnvsApp',[]);
 
 app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
-	
+
+    $scope.kafkaFlavorToString = {
+        APACHE_KAFKA: "Apache Kafka",
+        AIVEN_FOR_APACHE_KAFKA: "Aiven for Apache Kafka",
+        CONFLUENT: "Confluent",
+        CONFLUENT_CLOUD: "Confluent Cloud",
+        OTHERS: "others",
+    };
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
