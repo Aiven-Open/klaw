@@ -1,4 +1,5 @@
 import { Box, DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import type { ClusterModal } from "src/app/features/configuration/clusters/Clusters";
 import { ClusterDetails } from "src/domain/cluster";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
@@ -6,6 +7,7 @@ import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatt
 type ClustersTableProps = {
   clusters: ClusterDetails[];
   ariaLabel: string;
+  handleShowModal?: ({ show, data }: ClusterModal) => void;
 };
 
 interface ClustersTableRow {
@@ -23,7 +25,7 @@ interface ClustersTableRow {
 }
 
 const ClustersTable = (props: ClustersTableProps) => {
-  const { clusters, ariaLabel } = props;
+  const { clusters, ariaLabel, handleShowModal } = props;
 
   const columns: Array<DataTableColumn<ClustersTableRow>> = [
     {
@@ -46,7 +48,7 @@ const ClustersTable = (props: ClustersTableProps) => {
     },
     {
       type: "status",
-      headerName: "Type",
+      headerName: "Cluster type",
       status: ({ clusterType }) => ({
         text: clusterTypeToString[clusterType],
         status: "neutral",
@@ -62,11 +64,11 @@ const ClustersTable = (props: ClustersTableProps) => {
     {
       type: "text",
       field: "restApiServer",
-      headerName: "RestApi server",
+      headerName: "REST API servers",
     },
     {
       type: "custom",
-      headerName: "Other params",
+      headerName: "Other parameters",
       UNSAFE_render: ({ otherParams }: ClustersTableRow) => {
         if (!otherParams.projectName && !otherParams.serviceName) {
           return <div>-NA-</div>;
@@ -84,6 +86,29 @@ const ClustersTable = (props: ClustersTableProps) => {
       },
     },
   ];
+
+  if (handleShowModal !== undefined) {
+    columns.push({
+      type: "action",
+      headerName: "",
+      headerInvisible: true,
+      action: ({ kafkaFlavor, protocol, clusterType, clusterName, id }) => ({
+        text: "Connect",
+        onClick: () =>
+          handleShowModal({
+            show: true,
+            data: {
+              kafkaFlavor,
+              protocol,
+              clusterType,
+              clusterName,
+              clusterId: id,
+            },
+          }),
+        "aria-label": `Show help for connecting the cluster ${clusterName} to Klaw`,
+      }),
+    });
+  }
 
   const rows: ClustersTableRow[] = clusters.map((cluster) => {
     return {

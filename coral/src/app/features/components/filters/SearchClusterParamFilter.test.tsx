@@ -13,7 +13,7 @@ describe("SearchClusterParamFilter.tsx", () => {
 
   it("renders a search input", () => {
     const searchInput = screen.getByRole("search", {
-      name: "Search Cluster params",
+      name: "Search Cluster parameters",
     });
 
     expect(searchInput).toBeEnabled();
@@ -21,7 +21,7 @@ describe("SearchClusterParamFilter.tsx", () => {
 
   it("shows a placeholder with an example search value", () => {
     const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Cluster params",
+      name: "Search Cluster parameters",
     });
 
     expect(searchInput.placeholder).toEqual("kafkaconnect");
@@ -29,7 +29,7 @@ describe("SearchClusterParamFilter.tsx", () => {
 
   it("shows a description", () => {
     const searchInput = screen.getByRole<HTMLInputElement>("search", {
-      name: "Search Cluster params",
+      name: "Search Cluster parameters",
     });
 
     expect(searchInput).toHaveAccessibleDescription(

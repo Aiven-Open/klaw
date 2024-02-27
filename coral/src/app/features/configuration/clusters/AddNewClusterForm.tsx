@@ -56,7 +56,7 @@ const AddNewClusterForm = () => {
 
   const addNewClusterMutation = useMutation(addNewCluster, {
     onSuccess: () => {
-      navigate(`${Routes.CLUSTERS}?search=${clusterName}`);
+      navigate(`${Routes.CLUSTERS}?search=${clusterName}&showConnectHelp=true`);
       toast({
         message: "Cluster successfully added",
         position: "bottom-left",

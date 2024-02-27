@@ -160,7 +160,7 @@ describe("Clusters.tsx", () => {
 
     it("renders a search field for cluster params", () => {
       const search = screen.getByRole("search", {
-        name: "Search Cluster params",
+        name: "Search Cluster parameters",
       });
 
       expect(search).toBeEnabled();
@@ -289,7 +289,7 @@ describe("Clusters.tsx", () => {
       const testSearchInput = "MyCluster";
 
       const search = screen.getByRole("search", {
-        name: "Search Cluster params",
+        name: "Search Cluster parameters",
       });
 
       await user.type(search, testSearchInput);
@@ -302,6 +302,46 @@ describe("Clusters.tsx", () => {
           searchClusterParam: testSearchInput,
         })
       );
+    });
+  });
+
+  describe("renders ClusterConnectHelpModal on first load when needed", () => {
+    beforeAll(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 1,
+        totalPages: 1,
+        entries: [testCluster[0]],
+      });
+
+      customRender(<Clusters />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: `/configuration/clusters?search=${testCluster[0].clusterName}&showConnectHelp=true`,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders ClusterConnectHelpModal on first render if correct query params are set", () => {
+      const modal = screen.getByRole("dialog");
+      expect(modal).toBeVisible();
+      expect(within(modal).getByText("Connect cluster to Klaw")).toBeVisible();
+    });
+
+    it("remove showConnectHelp query param when closing ClusterConnectHelpModal ", async () => {
+      const modal = screen.getByRole("dialog");
+      expect(modal).toBeVisible();
+
+      const closeButton = within(modal).getByRole("button", { name: "Done" });
+
+      await userEvent.click(closeButton);
+
+      expect(window.location.search).not.toContain("showConnectHelp=true");
     });
   });
 });

@@ -3,7 +3,7 @@ import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 function SearchClusterParamFilter() {
   return (
     <SearchFilter
-      label={"Search Cluster params"}
+      label={"Search Cluster parameters"}
       placeholder={"kafkaconnect"}
       description={
         "Partial match for: Cluster name, bootstrap server and protocol."
