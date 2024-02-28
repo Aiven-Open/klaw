@@ -24,6 +24,8 @@ import {
 import { addNewCluster } from "src/domain/cluster";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Routes } from "src/services/router-utils/types";
+import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
+import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 
 const AddNewClusterForm = () => {
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ const AddNewClusterForm = () => {
 
   const addNewClusterMutation = useMutation(addNewCluster, {
     onSuccess: () => {
-      navigate(`${Routes.CLUSTERS}?search=${clusterName}`);
+      navigate(`${Routes.CLUSTERS}?search=${clusterName}&showConnectHelp=true`);
       toast({
         message: "Cluster successfully added",
         position: "bottom-left",
@@ -89,13 +91,13 @@ const AddNewClusterForm = () => {
         required
       >
         <BaseRadioButton name="KAFKA" value="KAFKA">
-          Kafka
+          {clusterTypeToString["KAFKA"]}
         </BaseRadioButton>
         <BaseRadioButton name="KAFKA_CONNECT" value="KAFKA_CONNECT">
-          Kafka Connect
+          {clusterTypeToString["KAFKA_CONNECT"]}
         </BaseRadioButton>
         <BaseRadioButton name="SCHEMA_REGISTRY" value="SCHEMA_REGISTRY">
-          Schema registry
+          {clusterTypeToString["SCHEMA_REGISTRY"]}
         </BaseRadioButton>
       </RadioButtonGroup>
       <TextInput<AddNewClusterFormSchema>
@@ -136,11 +138,17 @@ const AddNewClusterForm = () => {
         placeholder="-- Please select --"
         required
       >
-        <Option value="APACHE_KAFKA">Apache Kafka</Option>
-        <Option value="AIVEN_FOR_APACHE_KAFKA">Aiven for Apache Kafka</Option>
-        <Option value="CONFLUENT">Confluent</Option>
-        <Option value="CONFLUENT_CLOUD">Confluent Cloud</Option>
-        <Option value="OTHERS">Others</Option>
+        <Option value="APACHE_KAFKA">
+          {kafkaFlavorToString["APACHE_KAFKA"]}
+        </Option>
+        <Option value="AIVEN_FOR_APACHE_KAFKA">
+          {kafkaFlavorToString["AIVEN_FOR_APACHE_KAFKA"]}
+        </Option>
+        <Option value="CONFLUENT">{kafkaFlavorToString["CONFLUENT"]}</Option>
+        <Option value="CONFLUENT_CLOUD">
+          {kafkaFlavorToString["CONFLUENT_CLOUD"]}
+        </Option>
+        <Option value="OTHERS">{kafkaFlavorToString["OTHERS"]}</Option>
       </NativeSelect>
 
       {kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA" && clusterType === "KAFKA" && (

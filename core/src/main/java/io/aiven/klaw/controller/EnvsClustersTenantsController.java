@@ -48,7 +48,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KwClustersModelResponse>> getClustersPaginated(
-      @RequestParam(value = "clusterType") String clusterType,
+      @RequestParam(value = "clusterType") KafkaClustersType clusterType,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "clusterId", defaultValue = "") String clusterId,
       @RequestParam(value = "searchClusterParam", defaultValue = "") String searchClusterParam) {

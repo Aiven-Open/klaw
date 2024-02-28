@@ -125,7 +125,7 @@ function Modal(props: ModalProps) {
             flexDirection={"column"}
             borderRadius={"4px"}
             backgroundColor={"white"}
-            width={"6/12"}
+            width={"7/12"}
             // value is arbitrary, it should prevent buttons overflowing
             // the modal in a very small screen
             //eslint-disable-next-line @typescript-eslint/ban-ts-comment

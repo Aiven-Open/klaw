@@ -4827,7 +4827,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ]
           }
         }, {
           "name" : "pageNo",

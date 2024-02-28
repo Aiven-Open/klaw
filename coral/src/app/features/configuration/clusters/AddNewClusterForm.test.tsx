@@ -200,7 +200,7 @@ describe("<AddNewClusterForm />", () => {
       name: "Kafka Connect",
     });
     const schemaRegistryOption = screen.getByRole("radio", {
-      name: "Schema registry",
+      name: "Schema Registry",
     });
     const protocolSelect = screen.getByRole("combobox", {
       name: "Protocol *",
@@ -280,7 +280,7 @@ describe("<AddNewClusterForm />", () => {
       position: "bottom-left",
     });
     expect(mockedUsedNavigate).toHaveBeenCalledWith(
-      "/configuration/clusters?search=MyCluster"
+      "/configuration/clusters?search=MyCluster&showConnectHelp=true"
     );
   });
 

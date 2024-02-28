@@ -518,16 +518,16 @@
 										<td> {{ allenv.protocol}} </td>
 
 										<td ng-show="allenv.clusterType == 'KAFKA'" >
-											<span class="badge badge-success">{{ allenv.clusterType }}</span></td>
+											<span class="badge badge-success">Kafka</span></td>
 
 										<td ng-show="allenv.clusterType == 'SCHEMA_REGISTRY'" >
-											<span class="badge badge-info">{{ allenv.clusterType }}</span></td>
+											<span class="badge badge-info">Schema Registry</span></td>
 
 										<td ng-show="allenv.clusterType == 'KAFKA_CONNECT'" >
-											<span class="badge badge-warning">{{ allenv.clusterType }}</span></td>
+											<span class="badge badge-warning">Kafka Connect</span></td>
 
 
-										<td>{{ allenv.kafkaFlavor }}</td>
+										<td>{{ kafkaFlavorToString[allenv.kafkaFlavor] }}</td>
 
 										<td>{{ allenv.associatedServers }}</td>
 

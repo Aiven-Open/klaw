@@ -4021,7 +4021,7 @@ export type operations = {
   getClustersPaginated: {
     parameters: {
       query: {
-        clusterType: string;
+        clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
         pageNo: string;
         clusterId?: string;
         searchClusterParam?: string;

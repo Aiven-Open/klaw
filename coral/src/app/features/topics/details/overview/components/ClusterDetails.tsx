@@ -8,6 +8,7 @@ import {
 } from "@aivenio/aquarium";
 import React from "react";
 import { ClusterDetails as ClusterDetailsType } from "src/domain/cluster";
+import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 
 function DefinitionBlock({
   term,
@@ -92,7 +93,11 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
 
           <DefinitionBlock
             term={"Kafka flavor"}
-            definition={clusterDetails?.kafkaFlavor}
+            definition={
+              clusterDetails
+                ? kafkaFlavorToString[clusterDetails.kafkaFlavor]
+                : undefined
+            }
             isUpdating={isUpdating}
           />
           <DefinitionBlock
