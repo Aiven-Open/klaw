@@ -6528,10 +6528,6 @@
             "type" : "string",
             "pattern" : "^[0-9]*$"
           },
-          "schemaType" : {
-            "type" : "string",
-            "enum" : [ "AVRO", "JSON" ]
-          },
           "forceRegister" : {
             "type" : "boolean"
           },
@@ -6544,7 +6540,7 @@
             "pattern" : "^[a-zA-z 0-9]*$"
           }
         },
-        "required" : [ "appName", "remarks", "schemaType", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
+        "required" : [ "appName", "remarks", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
       },
       "ConsumerOffsetResetRequestModel" : {
         "properties" : {

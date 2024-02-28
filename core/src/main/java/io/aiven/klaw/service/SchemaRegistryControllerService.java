@@ -64,6 +64,8 @@ public class SchemaRegistryControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
+  private static final String SCHEMA_TYPE = "schemaType";
+
   public SchemaRegistryControllerService(
       ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
@@ -478,6 +480,11 @@ public class SchemaRegistryControllerService {
         schemaObjects.get(Integer.valueOf(schemaPromotion.getSchemaVersion()));
     // Pretty Print the Json String so that it can be seen clearly in the UI.
     schemaRequest.setSchemafull(prettyPrintUglyJsonString((String) schemaObject.get("schema")));
+    if (schemaObject.containsKey(SCHEMA_TYPE)) {
+      schemaRequest.setSchemaType(SchemaType.of(schemaObject.get(SCHEMA_TYPE).toString()));
+    } else {
+      schemaRequest.setSchemaType(SchemaType.AVRO);
+    }
     // sending request operation type along with function call
     return uploadSchema(schemaRequest, RequestOperationType.PROMOTE);
   }
@@ -525,11 +532,6 @@ public class SchemaRegistryControllerService {
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
     schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
     schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
-    if (schemaPromotion.getSchemaType() == null) {
-      schemaRequest.setSchemaType(SchemaType.AVRO);
-    } else {
-      schemaRequest.setSchemaType(schemaPromotion.getSchemaType());
-    }
     return schemaRequest;
   }
 

@@ -1,6 +1,5 @@
 package io.aiven.klaw.model.requests;
 
-import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -26,8 +25,6 @@ public class SchemaPromotion {
   @NotNull
   @Pattern(message = "Invalid Schema Version. Pattern [0-9]", regexp = "^[0-9]*$")
   private String schemaVersion;
-
-  @NotNull private SchemaType schemaType;
 
   private boolean forceRegister;
 

@@ -770,8 +770,6 @@ export type components = {
       sourceEnvironment: string;
       topicName: string;
       schemaVersion: string;
-      /** @enum {string} */
-      schemaType: "AVRO" | "JSON";
       forceRegister?: boolean;
       appName: string;
       remarks: string;
