@@ -1,12 +1,20 @@
-import { Alert, Box, Button, useToast } from "@aivenio/aquarium";
+import {
+  Alert,
+  RadioButton as BaseRadioButton,
+  Box,
+  Button,
+  useToast,
+} from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 import { Dialog } from "src/app/components/Dialog";
 import {
   Checkbox,
   Form,
   NativeSelect,
+  RadioButtonGroup,
   SubmitButton,
   Textarea,
   useForm,
@@ -20,11 +28,13 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { requestSchemaCreation } from "src/domain/schema-request";
+import {
+  SchemaRequest,
+  requestSchemaCreation,
+} from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { KlawApiError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 
 type TopicSchemaRequestProps = {
   presetTopicName?: string;
@@ -43,6 +53,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { presetTopicName } = props;
   const [searchParams] = useSearchParams();
   const presetEnvironment = searchParams.get("env") || undefined;
+  const presetSchemaType = (searchParams.get("schemaType") ??
+    "AVRO") as SchemaRequest["schemaType"];
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [isValidationError, setIsValidationError] = useState(false);
@@ -62,6 +74,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       topicname: presetTopicName,
       schemafull: props.schemafullValueForTest || undefined,
       environment: presetEnvironment,
+      schemaType: presetSchemaType,
     },
   });
 
@@ -219,9 +232,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               })}
             </NativeSelect>
           </AsyncNativeSelectWrapper>
+          <RadioButtonGroup
+            name="schemaType"
+            labelText={"Schema type"}
+            required
+          >
+            <BaseRadioButton value="AVRO">AVRO</BaseRadioButton>
+            <BaseRadioButton value="JSON">JSON</BaseRadioButton>
+          </RadioButtonGroup>
           <TopicSchema
             name={"schemafull"}
             required={!props.schemafullValueForTest}
+            schemaType={form.watch("schemaType")}
           />
           <Textarea
             name={"remarks"}

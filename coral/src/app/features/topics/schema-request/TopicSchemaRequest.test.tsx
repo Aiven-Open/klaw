@@ -835,6 +835,43 @@ describe("TopicSchemaRequest", () => {
         remarks: "",
         schemafull: "{}",
         topicname: "my-awesome-topic",
+        schemaType: "AVRO",
+      });
+      await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
+    });
+
+    it("allows users to submit JSON type schemas", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeEnabled();
+
+      await user.selectOptions(select, option);
+      await user.tab();
+
+      const jsonRadio = within(form).getByRole("radio", { name: "JSON" });
+
+      await user.click(jsonRadio);
+      await user.upload(fileInput, testFile);
+      await user.click(button);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalledWith({
+        environment: "1",
+        remarks: "",
+        schemafull: "{}",
+        topicname: "my-awesome-topic",
+        schemaType: "JSON",
       });
       await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
     });
@@ -1128,6 +1165,7 @@ describe("TopicSchemaRequest", () => {
         remarks: "",
         schemafull: "{}",
         topicname: "my-awesome-topic",
+        schemaType: "AVRO",
       });
 
       await waitFor(() =>

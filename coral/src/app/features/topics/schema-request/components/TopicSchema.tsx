@@ -6,14 +6,16 @@ import { editor } from "monaco-editor";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import { FileInput } from "src/app/components/FileInput";
+import { SchemaRequest } from "src/domain/schema-request";
 
 type TopicSchemaProps = {
   name: keyof TopicRequestFormSchema;
+  schemaType: SchemaRequest["schemaType"];
   required: boolean;
 };
 
 function TopicSchema(props: TopicSchemaProps) {
-  const { name, required } = props;
+  const { name, required, schemaType = "AVRO" } = props;
   const { setValue, setError, clearErrors, control } =
     useFormContext<TopicRequestFormSchema>();
 
@@ -33,7 +35,9 @@ function TopicSchema(props: TopicSchemaProps) {
     if (!required) return;
     const file = event.target?.files?.[0];
     if (!file) {
-      setError(name, { message: "File missing: Upload the AVRO schema file." });
+      setError(name, {
+        message: `File missing: Upload the ${schemaType} schema file.`,
+      });
     }
   }
 
@@ -79,8 +83,8 @@ function TopicSchema(props: TopicSchemaProps) {
           <div>
             <FileInput
               {...props}
-              buttonText={"Upload AVRO schema"}
-              labelText={"Upload AVRO schema file"}
+              buttonText={`Upload ${schemaType} schema`}
+              labelText={`Upload ${schemaType} schema file`}
               noFileText={"No file chosen"}
               helperText={error?.message || ""}
               required={required}

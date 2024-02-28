@@ -17,8 +17,10 @@ describe("TopicSchema", () => {
 
   const mockedOnSubmit = jest.fn();
   const mockedOnError = jest.fn();
-  const labelUpload = "Upload AVRO schema file";
-  const emptyError = "File missing: Upload the AVRO schema file.";
+  const avroLabelUpload = "Upload AVRO schema file";
+  const avroEmptyError = "File missing: Upload the AVRO schema file.";
+  const jsonLabelUpload = "Upload JSON schema file";
+  const jsonEmptyError = "File missing: Upload the JSON schema file.";
 
   const testFile: File = new File(
     ["{ test: 'value'}"],
@@ -30,11 +32,18 @@ describe("TopicSchema", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(() => {
-      renderForm(<TopicSchema name={formElementName} required={true} />, {
-        schema: formSchema,
-        onSubmit: mockedOnSubmit,
-        onError: mockedOnError,
-      });
+      renderForm(
+        <TopicSchema
+          name={formElementName}
+          required={true}
+          schemaType={"AVRO"}
+        />,
+        {
+          schema: formSchema,
+          onSubmit: mockedOnSubmit,
+          onError: mockedOnError,
+        }
+      );
     });
 
     afterAll(() => {
@@ -44,7 +53,8 @@ describe("TopicSchema", () => {
 
     it("shows a required file upload input", () => {
       // input type=file does not have a role to look for
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
 
       expect(fileInput).toBeEnabled();
       expect(fileInput).toBeRequired();
@@ -71,11 +81,18 @@ describe("TopicSchema", () => {
 
   describe("informs user about errors", () => {
     beforeEach(() => {
-      renderForm(<TopicSchema name={formElementName} required={true} />, {
-        schema: formSchema,
-        onSubmit: mockedOnSubmit,
-        onError: mockedOnError,
-      });
+      renderForm(
+        <TopicSchema
+          name={formElementName}
+          required={true}
+          schemaType={"AVRO"}
+        />,
+        {
+          schema: formSchema,
+          onSubmit: mockedOnSubmit,
+          onError: mockedOnError,
+        }
+      );
     });
 
     afterEach(() => {
@@ -84,7 +101,8 @@ describe("TopicSchema", () => {
     });
 
     it("marks the input as invalid if user accesses and leave the input without uploading", async () => {
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
 
       //@TODO check this again / sync with team
       // this assert fails and I can't figure out why!
@@ -100,13 +118,14 @@ describe("TopicSchema", () => {
     });
 
     it("shows an error if user accesses and leave the input without uploading", async () => {
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
 
-      expect(screen.queryByText(emptyError)).not.toBeInTheDocument();
+      expect(screen.queryByText(avroEmptyError)).not.toBeInTheDocument();
       fileInput.focus();
       await userEvent.tab();
 
-      const errors = screen.getAllByText(emptyError);
+      const errors = screen.getAllByText(avroEmptyError);
       expect(errors).toHaveLength(2);
 
       expect(errors[0]).toBeVisible();
@@ -115,17 +134,18 @@ describe("TopicSchema", () => {
 
     it("shows an error if user uploads an empty file", async () => {
       mockReadFiles.mockResolvedValue("");
-      const fileEmptyError =
+      const fileavroEmptyError =
         "Uploaded file is empty, please chose a different one.";
 
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
 
-      expect(screen.queryByText(fileEmptyError)).not.toBeInTheDocument();
+      expect(screen.queryByText(fileavroEmptyError)).not.toBeInTheDocument();
 
       await userEvent.upload(fileInput, testFile);
       await userEvent.tab();
 
-      const errors = screen.getAllByText(fileEmptyError);
+      const errors = screen.getAllByText(fileavroEmptyError);
       expect(errors).toHaveLength(2);
 
       expect(errors[0]).toBeVisible();
@@ -139,11 +159,18 @@ describe("TopicSchema", () => {
     beforeEach(() => {
       mockReadFiles.mockResolvedValue(testSchema);
 
-      renderForm(<TopicSchema name={formElementName} required={true} />, {
-        schema: formSchema,
-        onSubmit: mockedOnSubmit,
-        onError: mockedOnError,
-      });
+      renderForm(
+        <TopicSchema
+          name={formElementName}
+          required={true}
+          schemaType={"AVRO"}
+        />,
+        {
+          schema: formSchema,
+          onSubmit: mockedOnSubmit,
+          onError: mockedOnError,
+        }
+      );
     });
 
     afterEach(() => {
@@ -152,7 +179,8 @@ describe("TopicSchema", () => {
     });
 
     it("processes the file when user uploaded it", async () => {
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
 
       await userEvent.upload(fileInput, testFile);
 
@@ -160,7 +188,8 @@ describe("TopicSchema", () => {
     });
 
     it("shows an accessible information about the uploaded file", async () => {
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
       await userEvent.upload(fileInput, testFile);
 
       const successInfo = screen.getByText(
@@ -170,12 +199,60 @@ describe("TopicSchema", () => {
     });
 
     it("shows a readonly editor with file content as preview ", async () => {
-      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(avroLabelUpload);
       await userEvent.upload(fileInput, testFile);
       const editor = screen.getByRole<HTMLTextAreaElement>("textbox");
 
       expect(editor).toBeVisible();
       expect(editor).toHaveDisplayValue(testSchema);
+    });
+  });
+
+  describe("renders correct label and errors when schemaType is JSON", () => {
+    beforeAll(() => {
+      renderForm(
+        <TopicSchema
+          name={formElementName}
+          required={true}
+          schemaType={"JSON"}
+        />,
+        {
+          schema: formSchema,
+          onSubmit: mockedOnSubmit,
+          onError: mockedOnError,
+        }
+      );
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a required file upload input with correct label", () => {
+      // input type=file does not have a role to look for
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(jsonLabelUpload);
+
+      expect(fileInput).toBeEnabled();
+      expect(fileInput).toBeRequired();
+      expect(fileInput.tagName).toBe("INPUT");
+    });
+
+    it("shows an error with correct schema type if user accesses and leave the input without uploading", async () => {
+      const fileInput =
+        screen.getByLabelText<HTMLInputElement>(jsonLabelUpload);
+
+      expect(screen.queryByText(jsonEmptyError)).not.toBeInTheDocument();
+      fileInput.focus();
+      await userEvent.tab();
+
+      const errors = screen.getAllByText(jsonEmptyError);
+      expect(errors).toHaveLength(2);
+
+      expect(errors[0]).toBeVisible();
+      expect(errors[1].parentNode).toHaveAttribute("aria-hidden");
     });
   });
 

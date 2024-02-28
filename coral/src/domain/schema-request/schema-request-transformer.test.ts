@@ -45,6 +45,7 @@ describe("schema-request-transformer.ts", () => {
           deletable: false,
           editable: false,
           forceRegister: false,
+          schemaType: "JSON",
         },
         {
           req_no: 1013,
@@ -71,6 +72,7 @@ describe("schema-request-transformer.ts", () => {
           deletable: false,
           editable: false,
           forceRegister: false,
+          schemaType: "JSON",
         },
       ];
       const transformedResponse = transformGetSchemaRequests(mockedResponse);
