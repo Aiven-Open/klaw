@@ -27,7 +27,7 @@ public class SchemaPromotion {
   @Pattern(message = "Invalid Schema Version. Pattern [0-9]", regexp = "^[0-9]*$")
   private String schemaVersion;
 
-  private SchemaType schemaType;
+  @NotNull private SchemaType schemaType;
 
   private boolean forceRegister;
 
