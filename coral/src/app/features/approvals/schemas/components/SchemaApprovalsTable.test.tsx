@@ -34,6 +34,7 @@ const mockedRequests: SchemaRequest[] = [
     deletable: false,
     editable: false,
     forceRegister: false,
+    schemaType: "JSON",
   },
   {
     req_no: 1013,
@@ -60,6 +61,7 @@ const mockedRequests: SchemaRequest[] = [
     deletable: false,
     editable: false,
     forceRegister: true,
+    schemaType: "JSON",
   },
 ];
 

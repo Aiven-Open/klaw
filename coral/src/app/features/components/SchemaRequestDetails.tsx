@@ -30,9 +30,13 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         <dd>{request.topicname}</dd>
       </Grid.Item>
 
-      <Grid.Item xs={2}>
+      <Grid.Item>
         <Label>Schema version</Label>
         <dd>{request.schemaversion}</dd>
+      </Grid.Item>
+      <Grid.Item>
+        <Label>Schema type</Label>
+        <dd>{request.schemaType || "AVRO"}</dd>
       </Grid.Item>
       {request.forceRegister && (
         <Grid.Item xs={2}>

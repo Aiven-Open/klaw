@@ -33,6 +33,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.requests.*;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
@@ -1320,7 +1321,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -1351,12 +1352,13 @@ public class TopicAclControllerIT {
     schemaRequest.setForceRegister(schemaRequestsResponseModel.getForceRegister());
     schemaRequest.setSchemafull(schemaRequestsResponseModel.getSchemafull());
     schemaRequest.setRequestOperationType(schemaRequestsResponseModel.getRequestOperationType());
+    schemaRequest.setSchemaType(SchemaType.AVRO);
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -1387,12 +1389,13 @@ public class TopicAclControllerIT {
     schemaRequest.setForceRegister(schemaRequestsResponseModel.getForceRegister());
     schemaRequest.setSchemafull(schemaRequestsResponseModel.getSchemafull());
     schemaRequest.setRequestOperationType(schemaRequestsResponseModel.getRequestOperationType());
+    schemaRequest.setSchemaType(SchemaType.AVRO);
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
     ApiResponse apiResponse = ApiResponse.builder().success(true).build();
     ResponseEntity<ApiResponse> responseResponseEntity =
         new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(responseResponseEntity);
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")

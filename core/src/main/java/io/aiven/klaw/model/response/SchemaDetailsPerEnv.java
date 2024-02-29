@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -17,6 +18,8 @@ public class SchemaDetailsPerEnv {
   // This can return 'Couldn't retrieve' if it is unable to retrieve that information from the
   // schema registry. Or there is an issue with the data saved in the DB.
   @NotNull private String compatibility;
+
+  @NotNull private SchemaType schemaType;
   // The content is the actual schema
   @NotNull private String content;
   // This is the Schema Registry env that the schema relates to

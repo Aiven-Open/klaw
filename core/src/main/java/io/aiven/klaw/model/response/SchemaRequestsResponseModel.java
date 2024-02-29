@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import lombok.Getter;
@@ -16,6 +17,8 @@ public class SchemaRequestsResponseModel extends BaseRequestsResponseModel imple
   @NotNull private Integer req_no;
 
   @NotNull private Boolean forceRegister;
+
+  @NotNull private SchemaType schemaType;
 
   private String schemaversion;
 }

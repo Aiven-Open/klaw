@@ -6,14 +6,18 @@ import { editor } from "monaco-editor";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import { FileInput } from "src/app/components/FileInput";
+import { SchemaRequest } from "src/domain/schema-request";
 
 type TopicSchemaProps = {
   name: keyof TopicRequestFormSchema;
+  schemaType: SchemaRequest["schemaType"];
   required: boolean;
 };
 
 function TopicSchema(props: TopicSchemaProps) {
-  const { name, required } = props;
+  const { name, required, schemaType = "AVRO" } = props;
+  const [fileName, setFileName] = useState<string | undefined>(undefined);
+
   const { setValue, setError, clearErrors, control } =
     useFormContext<TopicRequestFormSchema>();
 
@@ -29,16 +33,43 @@ function TopicSchema(props: TopicSchemaProps) {
     }
   }, [schema]);
 
+  // Reset value of schema when switching between schema types
+  useEffect(() => {
+    if (schema) {
+      setFileName(undefined);
+      setSchema(undefined);
+      setValue(name, undefined, {
+        shouldValidate: false,
+        shouldTouch: false,
+        shouldDirty: false,
+      });
+    }
+  }, [schemaType]);
+
   function checkEmptyFile(event: ChangeEvent<HTMLInputElement>) {
     if (!required) return;
     const file = event.target?.files?.[0];
     if (!file) {
-      setError(name, { message: "File missing: Upload the AVRO schema file." });
+      setError(name, {
+        message: `File missing: Upload the ${schemaType} schema file.`,
+      });
     }
   }
 
   function validateSchema(markers: editor.IMarker[]) {
     if (markers.length > 0) {
+      // We need to ignore this error because when uploading a JSON schema with a $schema property monaco-editor will error with:
+      // Unable to load schema from {value from $schema}. No schema request service available
+      // After some investigation, no obvious solution was apparent.
+      // As this error has nothing to do with what Klaw is doing, or the user's schema, we can probably ignore it.
+      const isSchemaRequestServiceError = markers?.[0]?.message.includes(
+        "No schema request service available"
+      );
+
+      if (isSchemaRequestServiceError) {
+        return;
+      }
+
       setError(name, { message: markers?.[0]?.message, type: "custom" });
       setValue(name, undefined, {
         shouldValidate: false,
@@ -57,6 +88,7 @@ function TopicSchema(props: TopicSchemaProps) {
         if (fileContent) {
           clearErrors();
           setSchema(fileContent);
+          setFileName(file.name);
         } else {
           setError(name, {
             message: "Uploaded file is empty, please chose a different one.",
@@ -79,13 +111,13 @@ function TopicSchema(props: TopicSchemaProps) {
           <div>
             <FileInput
               {...props}
-              buttonText={"Upload AVRO schema"}
-              labelText={"Upload AVRO schema file"}
-              noFileText={"No file chosen"}
+              buttonText={`Upload ${schemaType} schema`}
+              labelText={`Upload ${schemaType} schema file`}
               helperText={error?.message || ""}
               required={required}
               onBlur={checkEmptyFile}
               onChange={uploadFile}
+              fileName={fileName}
               valid={!error}
             />
             <Typography.Caption htmlTag={"label"}>

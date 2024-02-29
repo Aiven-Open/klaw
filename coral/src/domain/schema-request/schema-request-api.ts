@@ -20,7 +20,7 @@ type CreateSchemaRequestPayload = ResolveIntersectionTypes<
   Required<
     Pick<
       KlawApiRequest<"uploadSchema">,
-      "environment" | "schemafull" | "topicname"
+      "environment" | "schemafull" | "topicname" | "schemaType"
     >
   > &
     Partial<KlawApiRequest<"uploadSchema">>

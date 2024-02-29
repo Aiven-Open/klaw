@@ -23,6 +23,7 @@ import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
@@ -492,6 +493,11 @@ public class SchemaRegistrySyncControllerService {
           SchemaRequest schemaRequest = new SchemaRequest();
           schemaRequest.setForceRegister(syncSchemaUpdates.isForceRegisterSchema());
           schemaRequest.setSchemafull(messageSchema.getSchemafull());
+          if (messageSchema.getSchemaType() == null) {
+            schemaRequest.setSchemaType(SchemaType.AVRO);
+          } else {
+            schemaRequest.setSchemaType(messageSchema.getSchemaType());
+          }
 
           ResponseEntity<ApiResponse> apiResponseCreateEntity =
               clusterApiService.postSchema(

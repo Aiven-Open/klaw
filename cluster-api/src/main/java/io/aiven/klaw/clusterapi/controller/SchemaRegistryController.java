@@ -129,7 +129,8 @@ public class SchemaRegistryController {
               clusterSchemaRequest.getTopicName(),
               clusterSchemaRequest.getProtocol(),
               clusterSchemaRequest.getEnv(),
-              clusterSchemaRequest.getClusterIdentification()),
+              clusterSchemaRequest.getClusterIdentification(),
+              clusterSchemaRequest.getSchemaType()),
           HttpStatus.OK);
     } catch (Exception e) {
       return handleException(e);

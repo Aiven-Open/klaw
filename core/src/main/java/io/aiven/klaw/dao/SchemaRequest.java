@@ -1,7 +1,10 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.model.enums.SchemaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -73,6 +76,10 @@ public class SchemaRequest implements Serializable {
 
   @Column(name = "forceregister")
   private Boolean forceRegister;
+
+  @Column(name = "schematype")
+  @Enumerated(EnumType.STRING)
+  private SchemaType schemaType;
 
   @Transient private Integer schemaId;
 

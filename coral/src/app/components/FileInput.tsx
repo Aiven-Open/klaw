@@ -1,9 +1,9 @@
-import { Icon, Box, Typography, Grid } from "@aivenio/aquarium";
+import { Box, Grid, Icon, Typography } from "@aivenio/aquarium";
+import cloudUpload from "@aivenio/aquarium/dist/src/icons/cloudUpload";
 import omit from "lodash/omit";
 import uniqueId from "lodash/uniqueId";
 import { InputHTMLAttributes, useRef } from "react";
 import classes from "src/app/components/FileInput.module.css";
-import cloudUpload from "@aivenio/aquarium/dist/src/icons/cloudUpload";
 import { ResolveIntersectionTypes } from "types/utils";
 
 type FileInputProps = ResolveIntersectionTypes<
@@ -16,17 +16,24 @@ type FileInputProps = ResolveIntersectionTypes<
      * users, treat is as more decorative text */
     buttonText: string;
     helperText: string;
-    noFileText: string;
+    fileName?: string;
   }
 >;
 
+const EMPTY_FILE_NAME = "No file chosen";
+
 function FileInput(props: FileInputProps) {
-  const { valid, labelText, buttonText, helperText, noFileText } = props;
+  const {
+    valid,
+    labelText,
+    buttonText,
+    helperText,
+    fileName = EMPTY_FILE_NAME,
+  } = props;
 
   const inputRef = useRef<null | HTMLInputElement>(null);
   const inputId = uniqueId("file_upload_");
   const errorMessageId = uniqueId("file_upload_error_message");
-  const currentFileName = inputRef.current?.files?.[0]?.name;
 
   const inputAttributes = omit(props, [
     "valid",
@@ -102,7 +109,7 @@ function FileInput(props: FileInputProps) {
             aria-hidden={true}
             data-testid="file-input-filename-info"
           >
-            {currentFileName || noFileText}
+            {fileName}
           </Box>
         </Grid.Item>
 
@@ -115,8 +122,8 @@ function FileInput(props: FileInputProps) {
         >
           <label htmlFor={inputId}>
             <span className={"visually-hidden"}>
-              {currentFileName
-                ? `Uploaded file, name: ${inputRef.current?.files?.[0]?.name}. Click to upload new file.`
+              {fileName !== EMPTY_FILE_NAME
+                ? `Uploaded file, name: ${fileName}. Click to upload new file.`
                 : labelText}
             </span>
             <input

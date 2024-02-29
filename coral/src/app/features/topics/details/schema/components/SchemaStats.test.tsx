@@ -5,6 +5,8 @@ import upperFirst from "lodash/upperFirst";
 const testVersion = 99;
 const testId = 111;
 const testCompatibility = "BACKWARD";
+const testSchemaType = "AVRO";
+
 describe("SchemaStats", () => {
   describe("renders a loading state", () => {
     beforeAll(() => {
@@ -14,6 +16,7 @@ describe("SchemaStats", () => {
           version={testVersion}
           id={testId}
           compatibility={testCompatibility}
+          schemaType={testSchemaType}
         />
       );
     });
@@ -23,7 +26,7 @@ describe("SchemaStats", () => {
     it("shows loading information", () => {
       const loadingInformation = screen.getAllByText("Loading information");
 
-      expect(loadingInformation).toHaveLength(3);
+      expect(loadingInformation).toHaveLength(4);
       loadingInformation.forEach((element) => {
         expect(element).toBeVisible();
         expect(element).toHaveClass("visually-hidden");
@@ -47,6 +50,12 @@ describe("SchemaStats", () => {
 
       expect(compatibilityStat).not.toBeInTheDocument();
     });
+
+    it("shows no data for schema type", () => {
+      const schemaType = screen.queryByText(testSchemaType);
+
+      expect(schemaType).not.toBeInTheDocument();
+    });
   });
 
   describe("renders all necessary data", () => {
@@ -57,6 +66,7 @@ describe("SchemaStats", () => {
           version={testVersion}
           id={testId}
           compatibility={testCompatibility}
+          schemaType={testSchemaType}
         />
       );
     });
@@ -83,6 +93,12 @@ describe("SchemaStats", () => {
       expect(compatibility.parentElement).toHaveTextContent(
         `${upperFirst(testCompatibility.toLowerCase())}Compatibility`
       );
+    });
+
+    it("shows the given schema type info", () => {
+      const schemaType = screen.getByText("Schema type");
+
+      expect(schemaType.parentElement).toHaveTextContent(testSchemaType);
     });
   });
 });

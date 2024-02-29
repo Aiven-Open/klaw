@@ -1,6 +1,8 @@
 package io.aiven.klaw.clusterapi.models;
 
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.SchemaType;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +24,8 @@ public class ClusterSchemaRequest implements Serializable {
   private String fullSchema;
 
   private String clusterIdentification;
+
+  @NotNull private SchemaType schemaType;
 
   private boolean forceRegister;
 }

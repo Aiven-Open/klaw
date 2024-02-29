@@ -1,9 +1,9 @@
 import { cleanup, screen, within } from "@testing-library/react";
-import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicSchemaOverview } from "src/domain/topic";
-import { requestSchemaPromotion } from "src/domain/schema-request";
 import { userEvent } from "@testing-library/user-event";
+import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
+import { requestSchemaPromotion } from "src/domain/schema-request";
+import { TopicSchemaOverview } from "src/domain/topic";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 const mockPromoteSchemaRequest = requestSchemaPromotion as jest.MockedFunction<
@@ -51,6 +51,7 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: true,
     showPrev: false,
     latest: true,
+    schemaType: "JSON",
   },
 };
 
@@ -89,6 +90,7 @@ const noPromotion_testTopicSchemas: TopicSchemaOverview = {
     showNext: true,
     showPrev: false,
     latest: true,
+    schemaType: "JSON",
   },
 };
 
@@ -159,12 +161,12 @@ describe("TopicDetailsSchema", () => {
         // but it's always defined for the test here
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        const environment = testTopicSchemas.schemaDetailsPerEnv.env;
+        const { env, schemaType } = testTopicSchemas.schemaDetailsPerEnv;
 
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `/topic/${testTopicName}/request-schema?env=${environment}`
+          `/topic/${testTopicName}/request-schema?env=${env}&schemaType=${schemaType}`
         );
       });
 

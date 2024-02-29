@@ -29,6 +29,7 @@ const mockedApiResponses: SchemaRequest[] = [
     deletable: true,
     editable: false,
     forceRegister: false,
+    schemaType: "JSON",
   },
   {
     req_no: 1013,
@@ -55,6 +56,7 @@ const mockedApiResponses: SchemaRequest[] = [
     deletable: true,
     editable: false,
     forceRegister: false,
+    schemaType: "JSON",
   },
   {
     req_no: 1042,
@@ -81,6 +83,7 @@ const mockedApiResponses: SchemaRequest[] = [
     deletable: false,
     editable: false,
     forceRegister: false,
+    schemaType: "JSON",
   },
 ];
 

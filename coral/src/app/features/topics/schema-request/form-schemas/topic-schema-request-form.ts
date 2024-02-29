@@ -10,6 +10,7 @@ const topicRequestFormSchema = z.object({
   schemafull: z.string(),
   remarks: z.string().optional(),
   forceRegister: z.boolean().optional(),
+  schemaType: z.enum(["JSON", "AVRO"]),
 });
 
 type TopicRequestFormSchema = z.infer<typeof topicRequestFormSchema>;

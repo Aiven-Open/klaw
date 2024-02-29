@@ -30,6 +30,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
@@ -827,6 +828,7 @@ public class ClusterApiService {
               .fullSchema(schemaRequest.getSchemafull())
               .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
               .forceRegister(forceReg)
+              .schemaType(schemaRequest.getSchemaType())
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);
@@ -891,7 +893,8 @@ public class ClusterApiService {
   }
 
   public ResponseEntity<ApiResponse> validateSchema(
-      String fullSchema, String env, String topicName, int tenantId) throws KlawException {
+      String fullSchema, String env, String topicName, int tenantId, SchemaType schemaType)
+      throws KlawException {
     log.info("postSchema {} {}", topicName, env);
     getClusterApiProperties(tenantId);
     try {
@@ -909,6 +912,7 @@ public class ClusterApiService {
               .topicName(topicName)
               .fullSchema(fullSchema)
               .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
+              .schemaType(schemaType)
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);

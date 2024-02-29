@@ -27,6 +27,7 @@ const testRequest: SchemaRequest = {
   deletable: false,
   editable: false,
   forceRegister: false,
+  schemaType: "JSON",
 };
 
 const findTerm = (term: string) => {

@@ -14,6 +14,7 @@ import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.SchemaCacheUpdateType;
+import io.aiven.klaw.clusterapi.models.enums.SchemaType;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -199,7 +200,9 @@ public class SchemaService {
 
     HttpEntity<Map<String, String>> request =
         buildSchemaEntity(
-            clusterSchemaRequest.getFullSchema(), clusterSchemaRequest.getClusterIdentification());
+            clusterSchemaRequest.getFullSchema(),
+            clusterSchemaRequest.getClusterIdentification(),
+            clusterSchemaRequest.getSchemaType());
 
     ResponseEntity<RegisterSchemaResponse> schemaResponseResponseEntity =
         reqDetails
@@ -236,7 +239,7 @@ public class SchemaService {
       String clusterIdentification,
       String topicName) {
     try {
-      log.info("Into getSchema request {} {} {}", topicName, environmentVal, protocol);
+      log.debug("Into getSchema request {} {} {}", topicName, environmentVal, protocol);
       if (environmentVal == null) {
         return null;
       }
@@ -296,7 +299,7 @@ public class SchemaService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification) {
     try {
-      log.info("Into getSchema versions {} {}", topicName, environmentVal);
+      log.debug("Into getSchema versions {} {}", topicName, environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -324,7 +327,7 @@ public class SchemaService {
                   request,
                   GET_SCHEMAVERSIONS_TYPEREF,
                   params);
-      log.info("Schema versions " + responseList);
+      log.debug("Schema versions " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting versions ", e);
@@ -338,7 +341,7 @@ public class SchemaService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification) {
     try {
-      log.info("Into getSchema compatibility {} {}", topicName, environmentVal);
+      log.debug("Into getSchema compatibility {} {}", topicName, environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -354,7 +357,7 @@ public class SchemaService {
   private String getGlobalSchemaCompatibility(
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
     try {
-      log.info("Into global getSchema compatibility {}", environmentVal);
+      log.debug("Into global getSchema compatibility {}", environmentVal);
       if (environmentVal == null) {
         return null;
       }
@@ -529,7 +532,8 @@ public class SchemaService {
       String topicName,
       KafkaSupportedProtocol schemaProtocol,
       String schemaEnv,
-      String clusterIdentification) {
+      String clusterIdentification,
+      SchemaType schemaType) {
     try {
       log.info("Check Schema Compatibility for TopicName: {}", topicName);
       if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
@@ -541,7 +545,8 @@ public class SchemaService {
               schemaEnv + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName),
               schemaProtocol);
 
-      HttpEntity<Map<String, String>> request = buildSchemaEntity(schema, clusterIdentification);
+      HttpEntity<Map<String, String>> request =
+          buildSchemaEntity(schema, clusterIdentification, schemaType);
       ResponseEntity<SchemaCompatibilityCheckResponse> compatibility =
           reqDetails
               .getRight()
@@ -614,8 +619,9 @@ public class SchemaService {
   }
 
   private HttpEntity<Map<String, String>> buildSchemaEntity(
-      String schema, String clusterIdentification) {
+      String schema, String clusterIdentification, SchemaType schemaType) {
     Map<String, String> params = new HashMap<>();
+    params.put("schemaType", schemaType.name());
     params.put("schema", schema);
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
@@ -643,6 +649,7 @@ public class SchemaService {
     }
 
     if (updateType != SchemaCacheUpdateType.NONE
+        && schemasInfoOfClusterResponseMap.containsKey(schemasVersionsStorageKey)
         && !schemasInfoOfClusterResponseMap
             .get(schemasVersionsStorageKey)
             .getSchemaInfoOfTopicList()
