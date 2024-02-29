@@ -856,7 +856,6 @@ describe("Form", () => {
           name={"image"}
           labelText={"Please upload a file"}
           buttonText={"Upload"}
-          noFileText={"No file chose"}
         />,
         { schema, onSubmit, onError }
       );
@@ -883,7 +882,6 @@ describe("Form", () => {
           name={"image"}
           labelText={"Please upload a file"}
           buttonText={"Upload"}
-          noFileText={"No file chose"}
           required={true}
         />,
         { schema, onSubmit, onError }
