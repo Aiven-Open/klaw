@@ -23,8 +23,8 @@ function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
   const { userrole } = useAuthContext();
-  const [testCta, settestCta] = useState(
-    Boolean(localStorage.getItem("testCta"))
+  const [hideFeedbackForm, setHideFeedbackForm] = useState(
+    Boolean(localStorage.getItem("hideFeedbackForm"))
   );
 
   const superadminAccessCoralEnabled = useFeatureFlag(
@@ -221,7 +221,7 @@ function MainNavigation() {
           </MainNavigationSubmenuList>
         </li>
       </ul>
-      {!testCta && (
+      {!hideFeedbackForm && (
         <Box.Flex paddingTop={"l2"}>
           <Card
             color="info-70"
@@ -231,10 +231,10 @@ function MainNavigation() {
             }}
             secondaryAction={{
               onClick: () => {
-                settestCta(true);
-                localStorage.setItem("testCta", "true");
+                setHideFeedbackForm(true);
+                localStorage.setItem("hideFeedbackForm", "true");
               },
-              text: "Do not ask me again",
+              text: "Dismiss",
             }}
             title="Tell us what you think!"
           >
