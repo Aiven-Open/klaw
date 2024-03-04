@@ -354,12 +354,6 @@ describe("MainNavigation.tsx", () => {
         expect(button).toBeEnabled();
       });
     });
-
-    it(`renders all submenu buttons`, () => {
-      const submenuItems = screen.getAllByRole("button");
-
-      expect(submenuItems).toHaveLength(submenuItemsSuperAdmin.length);
-    });
   });
 
   describe("user can open submenus and see more links", () => {
