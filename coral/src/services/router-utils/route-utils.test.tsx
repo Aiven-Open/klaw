@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Navigate, RouteObject } from "react-router-dom";
 import { Routes } from "src/services/router-utils/types";
 import {
@@ -10,6 +9,7 @@ import {
 } from "src/services/router-utils/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { ReactElement } from "react";
 
 const isFeatureFlagActiveMock = jest.fn();
 const mockAuthUser = jest.fn();
