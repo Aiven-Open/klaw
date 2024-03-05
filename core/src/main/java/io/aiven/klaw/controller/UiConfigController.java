@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import io.aiven.klaw.service.UiConfigControllerService;
 import java.util.List;
@@ -53,8 +54,10 @@ public class UiConfigController {
   public ResponseEntity<List<ActivityLogModel>> showActivityLog(
       @RequestParam(value = "env", defaultValue = "") String env,
       @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "ordering", defaultValue = "DESC") OrderBy orderBy,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage) {
     return new ResponseEntity<>(
-        uiConfigControllerService.showActivityLog(env, pageNo, currentPage), HttpStatus.OK);
+        uiConfigControllerService.showActivityLog(env, pageNo, orderBy, currentPage),
+        HttpStatus.OK);
   }
 }

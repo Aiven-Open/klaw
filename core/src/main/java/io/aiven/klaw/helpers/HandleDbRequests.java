@@ -2,12 +2,7 @@ package io.aiven.klaw.helpers;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.OperationalRequestType;
-import io.aiven.klaw.model.enums.RequestMode;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
@@ -315,7 +310,8 @@ public interface HandleDbRequests {
 
   Env getEnvDetails(String env, int tenantId);
 
-  List<ActivityLog> getActivityLog(String user, String env, boolean allReqs, int tenantId);
+  List<ActivityLog> getActivityLog(
+      String user, String env, OrderBy orderBy, boolean allReqs, int tenantId);
 
   Map<Integer, Map<String, Map<String, String>>> getAllKwProperties();
 

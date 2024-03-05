@@ -18,6 +18,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -272,7 +273,8 @@ public class SelectDataJdbcTest {
     when(activityLogRepo.findAllByEnvAndTenantId(anyString(), anyInt()))
         .thenReturn(utilMethods.getLogs());
 
-    List<ActivityLog> activityLogs = selectData.selectActivityLog(username, env, true, 1);
+    List<ActivityLog> activityLogs =
+        selectData.selectActivityLog(username, env, OrderBy.DESC, true, 1);
 
     assertThat(activityLogs).hasSize(1);
   }
@@ -288,7 +290,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
     when(activityLogRepo.findAllByEnvAndTenantId(env, 1)).thenReturn(utilMethods.getLogs());
 
-    List<ActivityLog> activityLogs = selectData.selectActivityLog(username, env, true, 1);
+    List<ActivityLog> activityLogs =
+        selectData.selectActivityLog(username, env, OrderBy.DESC, true, 1);
 
     assertThat(activityLogs).hasSize(1);
   }
