@@ -354,12 +354,6 @@ describe("MainNavigation.tsx", () => {
         expect(button).toBeEnabled();
       });
     });
-
-    it(`renders all submenu buttons`, () => {
-      const submenuItems = screen.getAllByRole("button");
-
-      expect(submenuItems).toHaveLength(submenuItemsSuperAdmin.length);
-    });
   });
 
   describe("user can open submenus and see more links", () => {
@@ -518,6 +512,69 @@ describe("MainNavigation.tsx", () => {
       );
 
       expect(console.error).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  describe("Feedback form CTA", () => {
+    let setItemSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      setItemSpy = jest.spyOn(Storage.prototype, "setItem");
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+      localStorage.clear();
+    });
+
+    it("renders the feedback card when hideFeedbackForm is not set in local storage", () => {
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      const linkButton = screen.getByRole("link", { name: /Submit feedback/i });
+      const dismissButton = screen.getByRole("button", {
+        name: /Dismiss/i,
+      });
+
+      expect(linkButton).toHaveAttribute(
+        "href",
+        "https://forms.gle/F2Pi8aanWeJPDPLT8"
+      );
+      expect(dismissButton).toBeEnabled();
+    });
+
+    it("stores the correct value in local storage when the 'Dismiss' button is clicked", async () => {
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      const dismissButton = screen.getByRole("button", {
+        name: /Dismiss/i,
+      });
+
+      await userEvent.click(dismissButton);
+
+      expect(setItemSpy).toHaveBeenLastCalledWith("hideFeedbackForm", "true");
+    });
+
+    it("does not render the feedback card when hideFeedbackForm is true in local storage", () => {
+      localStorage.setItem("hideFeedbackForm", "true");
+
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+
+      expect(screen.queryByText("Submit feedback")).toBeNull();
+      expect(screen.queryByText("Dismiss")).toBeNull();
+      expect(screen.queryByText("Tell us what you think!")).toBeNull();
     });
   });
 });
