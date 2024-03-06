@@ -14,9 +14,15 @@ public interface ActivityLogRepo extends CrudRepository<ActivityLog, ActivityLog
 
   List<ActivityLog> findAllByEnvAndTenantId(String env, int tenantId);
 
-  List<ActivityLog> findAllByEnvAndTeamIdAndTenantId(String env, Integer teamId, int tenantId);
+  List<ActivityLog> findAllByEnvAndTeamIdAndTenantIdOrderByActivityTimeAsc(
+      String env, Integer teamId, int tenantId);
 
-  List<ActivityLog> findAllByTeamIdAndTenantId(Integer team, int tenantId);
+  List<ActivityLog> findAllByEnvAndTeamIdAndTenantIdOrderByActivityTimeDesc(
+      String env, Integer teamId, int tenantId);
+
+  List<ActivityLog> findAllByTeamIdAndTenantIdOrderByActivityTimeAsc(Integer team, int tenantId);
+
+  List<ActivityLog> findAllByTeamIdAndTenantIdOrderByActivityTimeDesc(Integer team, int tenantId);
 
   @Query(
       value =

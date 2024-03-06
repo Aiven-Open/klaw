@@ -1364,8 +1364,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      yaxes?: components["schemas"]["YAx"][];
       xaxes?: components["schemas"]["YAx"][];
+      yaxes?: components["schemas"]["YAx"][];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -4197,6 +4197,7 @@ export type operations = {
       query: {
         env?: string;
         pageNo: string;
+        ordering?: "ASC" | "DESC";
         currentPage?: string;
       };
     };

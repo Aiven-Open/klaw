@@ -10,6 +10,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.OperationalRequestType;
+import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -987,7 +988,7 @@ public class SelectDataJdbc {
   }
 
   public List<ActivityLog> selectActivityLog(
-      String username, String env, boolean allReqs, int tenantId) {
+      String username, String env, OrderBy orderBy, boolean allReqs, int tenantId) {
     log.debug("selectActivityLog {}", username);
     List<ActivityLog> activityList;
 
@@ -1000,10 +1001,25 @@ public class SelectDataJdbc {
     } else {
       final UserInfo userInfo = selectUserInfo(username);
       if (env == null || env.isBlank()) {
-        activityList = activityLogRepo.findAllByTeamIdAndTenantId(userInfo.getTeamId(), tenantId);
+        if (orderBy.equals(OrderBy.DESC)) {
+          activityList =
+              activityLogRepo.findAllByTeamIdAndTenantIdOrderByActivityTimeDesc(
+                  userInfo.getTeamId(), tenantId);
+        } else {
+          activityList =
+              activityLogRepo.findAllByTeamIdAndTenantIdOrderByActivityTimeAsc(
+                  userInfo.getTeamId(), tenantId);
+        }
       } else {
-        activityList =
-            activityLogRepo.findAllByEnvAndTeamIdAndTenantId(env, userInfo.getTeamId(), tenantId);
+        if (orderBy.equals(OrderBy.DESC)) {
+          activityList =
+              activityLogRepo.findAllByEnvAndTeamIdAndTenantIdOrderByActivityTimeDesc(
+                  env, userInfo.getTeamId(), tenantId);
+        } else {
+          activityList =
+              activityLogRepo.findAllByEnvAndTeamIdAndTenantIdOrderByActivityTimeAsc(
+                  env, userInfo.getTeamId(), tenantId);
+        }
       }
     }
 
