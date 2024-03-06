@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.response.DbAuthInfo;
@@ -47,7 +48,8 @@ public class UiConfigControllerService {
     return mailService.getUserName(getPrincipal());
   }
 
-  public List<ActivityLogModel> showActivityLog(String env, String pageNo, String currentPage) {
+  public List<ActivityLogModel> showActivityLog(
+      String env, String pageNo, OrderBy orderBy, String currentPage) {
     log.debug("showActivityLog {} {}", env, pageNo);
     String userName = getUserName();
     List<ActivityLog> origActivityList;
@@ -57,12 +59,12 @@ public class UiConfigControllerService {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
-              .getActivityLog(userName, env, false, tenantId); // only your team reqs
+              .getActivityLog(userName, env, orderBy, false, tenantId); // only your team reqs
     } else {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
-              .getActivityLog(userName, env, true, tenantId); // all teams reqs
+              .getActivityLog(userName, env, orderBy, true, tenantId); // all teams reqs
     }
 
     return Pager.getItemsList(

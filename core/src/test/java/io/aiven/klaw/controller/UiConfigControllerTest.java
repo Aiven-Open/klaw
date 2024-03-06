@@ -392,7 +392,7 @@ public class UiConfigControllerTest {
   @Order(20)
   public void showActivityLog() throws Exception {
     List<ActivityLogModel> activityLogs = utilMethods.getLogModels();
-    when(uiConfigControllerService.showActivityLog(anyString(), anyString(), anyString()))
+    when(uiConfigControllerService.showActivityLog(anyString(), anyString(), any(), anyString()))
         .thenReturn(activityLogs);
 
     mvc.perform(

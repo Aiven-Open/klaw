@@ -5208,6 +5208,15 @@
             "type" : "string"
           }
         }, {
+          "name" : "ordering",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC",
+            "enum" : [ "ASC", "DESC" ]
+          }
+        }, {
           "name" : "currentPage",
           "in" : "query",
           "required" : false,
@@ -8218,13 +8227,13 @@
       },
       "Scales" : {
         "properties" : {
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
