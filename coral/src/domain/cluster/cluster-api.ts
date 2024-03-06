@@ -32,12 +32,10 @@ function getClusterDetails(clusterId: string) {
 async function getClustersPaginated({
   pageNo,
   searchClusterParam,
-}: Omit<
-  KlawApiRequestQueryParameters<"getClustersPaginated">,
-  "clusterType"
->): Promise<ClustersPaginatedApiResponse> {
+  clusterType,
+}: KlawApiRequestQueryParameters<"getClustersPaginated">): Promise<ClustersPaginatedApiResponse> {
   const params: KlawApiRequestQueryParameters<"getClustersPaginated"> = {
-    clusterType: "ALL",
+    clusterType,
     pageNo,
     ...(searchClusterParam && { searchClusterParam: searchClusterParam }),
   };

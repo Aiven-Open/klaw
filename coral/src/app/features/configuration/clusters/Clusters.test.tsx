@@ -1,11 +1,16 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import Clusters from "src/app/features/configuration/clusters/Clusters";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
-import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
+import {
+  ClusterDetails,
+  ClusterType,
+  getClustersPaginated,
+} from "src/domain/cluster";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiError } from "src/services/api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { userEvent } from "@testing-library/user-event";
+import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 
 jest.mock("src/domain/cluster/cluster-api.ts");
 const mockGetClustersPaginated = getClustersPaginated as jest.MockedFunction<
@@ -155,7 +160,16 @@ describe("Clusters.tsx", () => {
     it("fetches data with default params on page load", async () => {
       expect(mockGetClustersPaginated).toHaveBeenCalledWith({
         pageNo: "1",
+        clusterType: "ALL",
       });
+    });
+
+    it("renders a select to filter by cluster type", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by cluster type",
+      });
+
+      expect(select).toBeEnabled();
     });
 
     it("renders a search field for cluster params", () => {
@@ -264,6 +278,7 @@ describe("Clusters.tsx", () => {
 
       expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
         pageNo: "4",
+        clusterType: "ALL",
       });
     });
   });
@@ -299,7 +314,48 @@ describe("Clusters.tsx", () => {
       await waitFor(() =>
         expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
           pageNo: "1",
+          clusterType: "ALL",
           searchClusterParam: testSearchInput,
+        })
+      );
+    });
+  });
+
+  describe("handles user filtering for Cluster type", () => {
+    beforeEach(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 3,
+        totalPages: 5,
+        entries: testCluster,
+      });
+      customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("fetches new data when user filters for a cluster type", async () => {
+      const clusterType: ClusterType = "KAFKA";
+      const clusterTypeString = clusterTypeToString[clusterType];
+
+      const select = screen.getByRole("combobox", {
+        name: "Filter by cluster type",
+      });
+
+      const option = screen.getByRole("option", { name: clusterTypeString });
+
+      await user.selectOptions(select, option);
+
+      expect(select).toHaveValue(clusterType);
+
+      await waitFor(() =>
+        expect(mockGetClustersPaginated).toHaveBeenNthCalledWith(2, {
+          pageNo: "1",
+          clusterType: clusterType,
         })
       );
     });

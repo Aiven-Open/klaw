@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AclType } from "src/domain/acl/acl-types";
+import { ClusterType } from "src/domain/cluster";
 import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import { TopicType } from "src/domain/topic";
 
@@ -13,7 +14,8 @@ type SetFiltersParams =
   | { name: "requestType"; value: RequestOperationType }
   | { name: "search"; value: string }
   | { name: "teamName"; value: string }
-  | { name: "topicType"; value: TopicType | "ALL" };
+  | { name: "topicType"; value: TopicType | "ALL" }
+  | { name: "clusterType"; value: ClusterType };
 
 interface UseFiltersDefaultValues {
   environment: string;
@@ -26,6 +28,7 @@ interface UseFiltersDefaultValues {
   paginated: boolean;
   teamName: string;
   topicType: TopicType | "ALL";
+  clusterType: ClusterType;
 }
 
 interface UseFiltersReturnedValues
@@ -44,6 +47,7 @@ const emptyValues: UseFiltersDefaultValues = {
   search: "",
   paginated: true,
   topicType: "ALL",
+  clusterType: "ALL",
 };
 
 const FiltersContext = createContext<UseFiltersReturnedValues>({
@@ -80,6 +84,9 @@ const FiltersProvider = ({
   const teamName = searchParams.get("teamName") ?? initialValues.teamName;
   const topicType =
     (searchParams.get("topicType") as TopicType) ?? initialValues.topicType;
+  const clusterType =
+    (searchParams.get("clusterType") as ClusterType) ??
+    initialValues.clusterType;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     const parsedValue = typeof value === "boolean" ? String(value) : value;
@@ -106,6 +113,7 @@ const FiltersProvider = ({
     requestType,
     search,
     topicType,
+    clusterType,
     setFilterValue,
   };
 
@@ -129,4 +137,4 @@ const withFiltersContext = ({
   return WrappedElement;
 };
 
-export { useFiltersContext, FiltersProvider, withFiltersContext };
+export { FiltersProvider, useFiltersContext, withFiltersContext };
