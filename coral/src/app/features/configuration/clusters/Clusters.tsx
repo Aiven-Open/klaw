@@ -12,6 +12,7 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import ClusterConnectHelpModal from "src/app/features/configuration/clusters/components/ClusterConnectHelpModal";
 import { ClustersTable } from "src/app/features/configuration/clusters/components/ClustersTable";
 import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
+import { ClusterTypeFilter } from "src/app/features/components/filters/ClusterTypeFilter";
 
 // We add this default data to avoid dealing with the fact that it may be undefined when closing the modal...
 // ... and resetting the state
@@ -30,16 +31,17 @@ function Clusters() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { search } = useFiltersContext();
+  const { search, clusterType } = useFiltersContext();
 
   const {
     data: clusters,
     isLoading,
     isError,
     error,
-  } = useQuery(["get-clusters-paginated", currentPage, search], {
+  } = useQuery(["get-clusters-paginated", currentPage, search, clusterType], {
     queryFn: () =>
       getClustersPaginated({
+        clusterType,
         pageNo: currentPage.toString(),
         searchClusterParam: search.length === 0 ? undefined : search,
       }),
@@ -125,7 +127,10 @@ function Clusters() {
       )}
 
       <TableLayout
-        filters={[<SearchClusterParamFilter key={"search"} />]}
+        filters={[
+          <ClusterTypeFilter key={"clusterType"} />,
+          <SearchClusterParamFilter key={"search"} />,
+        ]}
         table={
           <ClustersTable
             clusters={clusters?.entries || []}
