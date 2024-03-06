@@ -29,6 +29,9 @@ on:
       - opened
       - synchronize
 
+permissions:
+  contents: write
+
 jobs:
   check-for-changes-openapi:
     runs-on: ubuntu-latest
