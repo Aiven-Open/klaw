@@ -414,9 +414,7 @@ describe("ConnectorDocumentation", () => {
     });
 
     describe("handles errors when transforming readme intro correct markdown from backend", () => {
-      const originalConsoleError = console.error;
       beforeEach(() => {
-        console.error = jest.fn();
         mockIsDocumentationTransformationError.mockReturnValue(true);
         mockUseConnectorDetails.mockReturnValue({
           ...mockConnectorDetails,
@@ -434,7 +432,6 @@ describe("ConnectorDocumentation", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         jest.resetAllMocks();
         cleanup();
       });
@@ -459,9 +456,7 @@ describe("ConnectorDocumentation", () => {
       const existingDocumentation = "# Hello" as ConnectorDocumentationMarkdown;
       const userInput = "**Hello world**";
 
-      const originalConsoleError = console.error;
       beforeEach(() => {
-        console.error = jest.fn();
         mockUseConnectorDetails.mockReturnValue({
           ...mockConnectorDetails,
           connectorOverview: {
@@ -481,12 +476,13 @@ describe("ConnectorDocumentation", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         jest.resetAllMocks();
         cleanup();
       });
 
       it("shows errors without saving readme when user clicks button", async () => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
         const editButton = screen.getByRole("button", {
           name: "Edit readme",
         });

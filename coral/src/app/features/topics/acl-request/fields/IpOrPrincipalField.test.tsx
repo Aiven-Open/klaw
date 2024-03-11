@@ -26,16 +26,9 @@ describe("IpOrPrincipalField", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
 
-  const originalConsoleError = console.error;
-  beforeEach(() => {
-    console.error = jest.fn();
-  });
-
   afterEach(() => {
     cleanup();
-    onSubmit.mockClear();
-    onError.mockClear();
-    console.error = originalConsoleError;
+    jest.clearAllMocks();
   });
 
   it("renders a field for Service accounts with options for existing service accounts (Aiven cluster)", async () => {
@@ -43,7 +36,7 @@ describe("IpOrPrincipalField", () => {
       mockedAivenServiceAccountsResponse
     );
 
-    const result = renderForm(
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
         isAivenCluster={true}
@@ -58,7 +51,7 @@ describe("IpOrPrincipalField", () => {
 
     await waitForElementToBeRemoved(screen.getByTestId("acl_ssl-skeleton"));
 
-    const multiInput = result.getByRole("combobox", {
+    const multiInput = screen.getByRole("combobox", {
       name: "Service accounts *",
     });
     expect(multiInput).toBeVisible();
@@ -73,7 +66,6 @@ describe("IpOrPrincipalField", () => {
 
       expect(option).toBeEnabled();
     });
-    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for Service accounts which allows adding new service accounts (Aiven cluster)", async () => {
@@ -81,7 +73,7 @@ describe("IpOrPrincipalField", () => {
       mockedAivenServiceAccountsResponse
     );
 
-    const result = renderForm(
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
         isAivenCluster={true}
@@ -96,7 +88,7 @@ describe("IpOrPrincipalField", () => {
 
     await waitForElementToBeRemoved(screen.getByTestId("acl_ssl-skeleton"));
 
-    const multiInput = result.getByRole("combobox", {
+    const multiInput = screen.getByRole("combobox", {
       name: "Service accounts *",
     });
     expect(multiInput).toBeVisible();
@@ -108,13 +100,14 @@ describe("IpOrPrincipalField", () => {
     const newOption = screen.getByRole("button", { name: "Remove hello" });
     expect(newOption).toBeVisible();
     expect(newOption).toBeEnabled();
-    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a textbox field for Service accounts when getAivenServiceAccounts errors (Aiven cluster)", async () => {
-    mockGetAivenServiceAccounts.mockRejectedValue("mock-error");
+    jest.spyOn(console, "error").mockImplementationOnce((error) => error);
 
-    const result = renderForm(
+    mockGetAivenServiceAccounts.mockRejectedValueOnce("mock-error");
+
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
         isAivenCluster={true}
@@ -129,7 +122,7 @@ describe("IpOrPrincipalField", () => {
 
     await waitForElementToBeRemoved(screen.getByTestId("acl_ssl-skeleton"));
 
-    const multiInput = result.getByRole("textbox", {
+    const multiInput = screen.getByRole("textbox", {
       name: "Service accounts *",
     });
     expect(multiInput).toBeVisible();
@@ -138,7 +131,7 @@ describe("IpOrPrincipalField", () => {
   });
 
   it("renders a field for SSL DN strings / Usernames (not Aiven cluster)", () => {
-    const result = renderForm(
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
         isAivenCluster={false}
@@ -150,14 +143,13 @@ describe("IpOrPrincipalField", () => {
         onError,
       }
     );
-    const multiInput = result.getByLabelText("SSL DN strings / Usernames*");
+    const multiInput = screen.getByLabelText("SSL DN strings / Usernames*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
-    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for IP addresses (Aiven cluster)", () => {
-    const result = renderForm(
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"IP_ADDRESS"}
         isAivenCluster={true}
@@ -169,14 +161,13 @@ describe("IpOrPrincipalField", () => {
         onError,
       }
     );
-    const multiInput = result.getByLabelText("IP addresses*");
+    const multiInput = screen.getByLabelText("IP addresses*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
-    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for IP addresses (not Aiven cluster)", () => {
-    const result = renderForm(
+    renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"IP_ADDRESS"}
         isAivenCluster={false}
@@ -188,9 +179,8 @@ describe("IpOrPrincipalField", () => {
         onError,
       }
     );
-    const multiInput = result.getByLabelText("IP addresses*");
+    const multiInput = screen.getByLabelText("IP addresses*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
-    expect(console.error).not.toHaveBeenCalled();
   });
 });

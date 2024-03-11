@@ -69,29 +69,25 @@ describe("Profile.tsx", () => {
       success: false,
     };
 
-    const originalConsoleError = console.error;
-
     beforeAll(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetUser.mockRejectedValue(testError);
       customRender(<Profile />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(
         screen.getByText("User profile loading.")
       );
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
 
     afterAll(() => {
       cleanup();
       jest.resetAllMocks();
-      console.error = originalConsoleError;
     });
 
-    it("shows an error message", () => {
+    it("shows an error message", async () => {
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
-
-      expect(console.error).toHaveBeenCalledWith(testError);
     });
 
     it("does not show when there is an error", () => {
@@ -251,9 +247,7 @@ describe("Profile.tsx", () => {
   });
 
   describe("handles form validation and prevents changes on invalid forms", () => {
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetUser.mockResolvedValue({
         ...testUser,
         switchTeams: true,
@@ -267,7 +261,6 @@ describe("Profile.tsx", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.resetAllMocks();
     });
@@ -292,6 +285,7 @@ describe("Profile.tsx", () => {
     });
 
     it("does not update profile when full name is empty", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });
@@ -302,7 +296,13 @@ describe("Profile.tsx", () => {
       await user.click(submitButton);
 
       expect(mockUpdateProfile).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullName: expect.objectContaining({
+            message: "Full name must contain at least 4 characters.",
+          }),
+        })
+      );
     });
 
     it("shows error when full name does not match restriction", async () => {
@@ -326,6 +326,7 @@ describe("Profile.tsx", () => {
     });
 
     it("does not update profile when full name does not match restriction", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });
@@ -336,7 +337,15 @@ describe("Profile.tsx", () => {
       await user.click(submitButton);
 
       expect(mockUpdateProfile).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullName: expect.objectContaining({
+            message: expect.stringContaining(
+              "Invalid input. Full name can only include uppercase and lowercase letters"
+            ),
+          }),
+        })
+      );
     });
 
     it("shows error when email is empty", async () => {
@@ -359,6 +368,7 @@ describe("Profile.tsx", () => {
     });
 
     it("does not update profile when email is empty", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });
@@ -369,7 +379,13 @@ describe("Profile.tsx", () => {
       await user.click(submitButton);
 
       expect(mockUpdateProfile).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: expect.objectContaining({
+            message: "Email address can not be empty.",
+          }),
+        })
+      );
     });
 
     it("shows error when email is invalid format", async () => {
@@ -393,6 +409,7 @@ describe("Profile.tsx", () => {
     });
 
     it("does not update profile when email is invalid", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });
@@ -404,7 +421,13 @@ describe("Profile.tsx", () => {
       await user.click(submitButton);
 
       expect(mockUpdateProfile).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: expect.objectContaining({
+            message: "Email address is invalid.",
+          }),
+        })
+      );
     });
   });
 
@@ -493,9 +516,7 @@ describe("Profile.tsx", () => {
       message: "Oh no 😭",
     };
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockUpdateProfile.mockRejectedValue(error);
       mockGetUser.mockResolvedValue({
         ...testUser,
@@ -510,12 +531,12 @@ describe("Profile.tsx", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.resetAllMocks();
     });
 
     it("shows error when updating profile fails", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });
@@ -538,6 +559,7 @@ describe("Profile.tsx", () => {
     });
 
     it("does not refetches the user profile after when update failed", async () => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       const submitButton = screen.getByRole("button", {
         name: "Update profile",
       });

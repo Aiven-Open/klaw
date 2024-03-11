@@ -843,11 +843,7 @@ describe("TopicDetailsSchema", () => {
     });
 
     describe("enables topic owner to promote a schema", () => {
-      const originalConsoleError = console.error;
-
       beforeEach(() => {
-        console.error = jest.fn();
-
         mockedUseTopicDetails.mockReturnValue({
           topicOverviewIsRefetching: false,
           topicSchemasIsRefetching: false,
@@ -866,7 +862,6 @@ describe("TopicDetailsSchema", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         cleanup();
         jest.clearAllMocks();
       });
@@ -896,11 +891,10 @@ describe("TopicDetailsSchema", () => {
           targetEnvironment: "2",
           topicName: "topic-name",
         });
-
-        expect(console.error).not.toHaveBeenCalled();
       });
 
       it("shows an error if promotion did fail", async () => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
         mockPromoteSchemaRequest.mockRejectedValue({
           success: false,
           message: "Oh no",
@@ -930,11 +924,8 @@ describe("TopicDetailsSchema", () => {
     });
 
     describe("enables topic owner to promote a schema even if it's not compatible", () => {
-      const originalConsoleError = console.error;
-
       beforeEach(() => {
-        console.error = jest.fn();
-
+        jest.spyOn(console, "error").mockImplementation((error) => error);
         mockedUseTopicDetails.mockReturnValue({
           topicOverviewIsRefetching: false,
           topicSchemasIsRefetching: false,
@@ -953,7 +944,6 @@ describe("TopicDetailsSchema", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         cleanup();
         jest.clearAllMocks();
       });
@@ -1076,6 +1066,11 @@ describe("TopicDetailsSchema", () => {
         });
 
         await user.click(buttonRequest);
+
+        expect(console.error).toHaveBeenCalledWith({
+          message: "failure: Schema is not compatible",
+          success: false,
+        });
 
         const checkboxToForceRegister = screen.getByRole("checkbox");
 

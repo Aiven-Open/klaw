@@ -361,9 +361,7 @@ describe("<ConnectorRequest />", () => {
     });
 
     describe("handles an error from the api", () => {
-      const originalConsoleError = console.error;
       beforeEach(() => {
-        console.error = jest.fn();
         mockCreateConnectorRequest.mockRejectedValue({
           success: false,
           message: "Something went wrong",
@@ -371,12 +369,13 @@ describe("<ConnectorRequest />", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         jest.clearAllMocks();
         cleanup();
       });
 
       it("renders an error message", async () => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );

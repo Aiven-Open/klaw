@@ -87,7 +87,7 @@ describe("TopicSchemaRequest", () => {
       useQuerySpy.mockRestore();
     });
 
-    it("does not redirect user if topicName prop does is part of list of topicNames", async () => {
+    it("does not redirect user if topicName prop does is part of list of topicNames", () => {
       mockGetTopicNames.mockResolvedValue([
         "topic-1",
         "topic-2",
@@ -604,10 +604,8 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("handles errors from the api", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetAllEnvironmentsForTopicAndAclResponse
       );
@@ -634,7 +632,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -666,11 +664,6 @@ describe("TopicSchemaRequest", () => {
       const errorMessage = within(alert).getByText("Error in request");
 
       expect(errorMessage).toBeVisible();
-      // it's not important that the console.error is called,
-      // but it makes sure that 1) the console.error does not
-      // show up in the test logs while 2) flagging an error
-      // in case a console.error with a different message
-      // gets called - which could be hinting to a problem
       expect(console.error).toHaveBeenCalledWith({
         status: "400 BAD_REQUEST",
         data: { message: "Error in request" },
@@ -704,7 +697,6 @@ describe("TopicSchemaRequest", () => {
       );
 
       expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
       expect(console.error).toHaveBeenCalledWith({
         status: "400 BAD_REQUEST",
         data: { message: "Error in request" },
@@ -939,9 +931,8 @@ describe("TopicSchemaRequest", () => {
       message: "Oh no 😢",
     };
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetAllEnvironmentsForTopicAndAclResponse
       );
@@ -965,7 +956,6 @@ describe("TopicSchemaRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       mockedUseToast.mockReset();
       cleanup();
     });
@@ -1007,10 +997,8 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("enables user to send a schema request even if it's not compatible", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedGetAllEnvironmentsForTopicAndAclResponse
       );
@@ -1045,7 +1033,6 @@ describe("TopicSchemaRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       mockedUseToast.mockReset();
       cleanup();
     });
@@ -1116,6 +1103,11 @@ describe("TopicSchemaRequest", () => {
       await user.upload(fileInput, testFile);
       await user.click(submitButton);
 
+      expect(console.error).toHaveBeenCalledWith({
+        message: "failure: Schema is not compatible",
+        success: false,
+      });
+
       const checkboxForceRegister = within(form).getByRole("checkbox", {
         name: "Force register schema creation/changes Warning: This will override standard validation process of the schema registry. Learn more",
       });
@@ -1148,6 +1140,11 @@ describe("TopicSchemaRequest", () => {
       await user.tab();
       await user.upload(fileInput, testFile);
       await user.click(submitButton);
+
+      expect(console.error).toHaveBeenCalledWith({
+        message: "failure: Schema is not compatible",
+        success: false,
+      });
 
       const checkboxForceRegister = within(form).getByRole("checkbox", {
         name: "Force register schema creation/changes Warning: This will override standard validation process of the schema registry. Learn more",

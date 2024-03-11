@@ -375,10 +375,8 @@ describe("TeamFilter.tsx", () => {
       success: false,
     };
 
-    const originalConsoleError = jest.fn();
-
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetTeams.mockRejectedValue(testError);
       customRender(<WrappedTeamFilter />, {
         memoryRouter: true,
@@ -391,7 +389,6 @@ describe("TeamFilter.tsx", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });

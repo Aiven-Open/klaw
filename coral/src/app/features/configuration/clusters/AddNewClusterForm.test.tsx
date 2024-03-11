@@ -23,8 +23,6 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 describe("<AddNewClusterForm />", () => {
-  const originalConsoleError = console.error;
-
   beforeEach(() => {
     customRender(<AddNewClusterForm />, {
       queryClient: true,
@@ -285,9 +283,11 @@ describe("<AddNewClusterForm />", () => {
   });
 
   it("renders error message when submitting fails", async () => {
-    console.error = jest.fn();
+    jest.spyOn(console, "error").mockImplementationOnce((error) => error);
 
-    mockAddNewClusterRequest.mockRejectedValue(new Error("Request failed"));
+    const testError = new Error("Request failed");
+
+    mockAddNewClusterRequest.mockRejectedValue(testError);
 
     const clusterNameInput = screen.getByRole("textbox", {
       name: "Cluster name *",
@@ -324,7 +324,6 @@ describe("<AddNewClusterForm />", () => {
       position: "bottom-left",
     });
     expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
-    console.error = originalConsoleError;
+    expect(console.error).toHaveBeenCalledWith(testError);
   });
 });

@@ -465,10 +465,7 @@ describe("TopicSettings", () => {
   });
 
   describe("enables user to delete a topic", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
-      console.error = jest.fn();
       mockDeleteTopic.mockImplementation(jest.fn());
       mockedUseTopicDetails.mockReturnValue(mockTopicDetails);
 
@@ -482,7 +479,6 @@ describe("TopicSettings", () => {
     afterEach(() => {
       jest.clearAllMocks();
       cleanup();
-      console.error = originalConsoleError;
     });
 
     it('shows a confirmation modal when user clicks "Request topic deletion"', async () => {
@@ -497,7 +493,6 @@ describe("TopicSettings", () => {
       const confirmationModal = screen.getByRole("dialog");
 
       expect(confirmationModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it('removes modal and does not delete topic if user clicks "cancel"', async () => {
@@ -519,7 +514,6 @@ describe("TopicSettings", () => {
       expect(dialog).not.toBeInTheDocument();
       expect(mockedNavigate).not.toHaveBeenCalled();
       expect(mockDeleteTopic).not.toHaveBeenCalled();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("deletes topic successfully when user confirms deleting", async () => {
@@ -549,7 +543,6 @@ describe("TopicSettings", () => {
       });
       expect(mockedNavigate).toHaveBeenCalledWith("/topics");
       expect(dialog).not.toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("deletes topic and associates schemas successfully when user confirms deleting", async () => {
@@ -585,10 +578,10 @@ describe("TopicSettings", () => {
       });
       expect(mockedNavigate).toHaveBeenCalledWith("/topics");
       expect(dialog).not.toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a message if deleting the topic resulted in an error", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeleteTopic.mockRejectedValue({
         success: false,
         message: "Oh no error",

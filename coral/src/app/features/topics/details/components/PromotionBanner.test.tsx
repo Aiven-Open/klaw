@@ -578,14 +578,11 @@ describe("PromotionBanner", () => {
   });
 
   describe("handles error for promotion (type schema, topic and connector)", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

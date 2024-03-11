@@ -320,10 +320,7 @@ describe("ConnectorDetails", () => {
   });
 
   describe("allows users to claim a connector when they are not connector owner", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(async () => {
-      console.error = jest.fn();
       mockMatches.mockImplementation(() => [
         {
           id: "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
@@ -346,7 +343,6 @@ describe("ConnectorDetails", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.resetAllMocks();
     });
@@ -361,7 +357,6 @@ describe("ConnectorDetails", () => {
       const modal = screen.getByRole("dialog", { name: "Claim connector" });
 
       expect(modal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("sends a request when clicking the submit button without entering a message", async () => {
@@ -385,7 +380,6 @@ describe("ConnectorDetails", () => {
         connectorName: testConnectorOverview.connectorInfo.connectorName,
         env: testConnectorOverview.connectorInfo.environmentId,
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("closes the modal and renders a toast when request was successful", async () => {
@@ -416,7 +410,6 @@ describe("ConnectorDetails", () => {
           variant: "default",
         })
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("refetches connector overview after successful request", async () => {
@@ -438,7 +431,6 @@ describe("ConnectorDetails", () => {
           environmentId: "3",
         });
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("sends a request when clicking the submit button with the message entered by the user", async () => {
@@ -466,10 +458,10 @@ describe("ConnectorDetails", () => {
         env: testConnectorOverview.connectorInfo.environmentId,
         remark: "hello",
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("closes the modal displays an alert when request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       const mockErrorMessage = "There was an error";
       mockRequestConnectorClaim.mockRejectedValue(mockErrorMessage);
 

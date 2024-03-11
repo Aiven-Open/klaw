@@ -577,9 +577,7 @@ describe("TopicRequests", () => {
   });
 
   describe("enables user to delete a request", () => {
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetTopicRequestEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -595,7 +593,6 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -621,7 +618,6 @@ describe("TopicRequests", () => {
       expect(mockDeleteTopicRequest).toHaveBeenCalledWith({
         reqIds: ["1000"],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user deletes a topic request", async () => {
@@ -663,10 +659,10 @@ describe("TopicRequests", () => {
         env: "ALL",
         operationType: "ALL",
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if deleting request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeleteTopicRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -703,6 +699,7 @@ describe("TopicRequests", () => {
     });
 
     it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeleteTopicRequest.mockRejectedValue("OH NO");
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -741,7 +738,6 @@ describe("TopicRequests", () => {
   });
 
   describe("user can filter topic requests by operation type", () => {
-    const originalConsoleError = console.error;
     beforeEach(async () => {
       mockGetTopicRequestEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -759,7 +755,6 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

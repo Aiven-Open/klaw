@@ -928,10 +928,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("form submission", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(async () => {
-      console.error = jest.fn();
       // this need to be reset in beforeEach
       // because they are async and resetting them
       // afterEach may lead to false results when
@@ -976,13 +973,13 @@ describe("<TopicRequest />", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
 
     describe("handles an error from the api", () => {
       it("renders an error message", async () => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
         const testError = {
           data: { message: "Topic with such name already exists!" },
           status: 400,
@@ -1057,10 +1054,10 @@ describe("<TopicRequest />", () => {
           remarks: "",
         });
         await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
-        expect(console.error).not.toHaveBeenCalled();
       });
 
       it("errors and does not create a new topic request when input was invalid", async () => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
         await user.clear(screen.getByLabelText("Topic name*"));
 
         await user.click(
@@ -1100,7 +1097,6 @@ describe("<TopicRequest />", () => {
           position: "bottom-left",
           variant: "default",
         });
-        expect(console.error).not.toHaveBeenCalled();
       });
     });
   });

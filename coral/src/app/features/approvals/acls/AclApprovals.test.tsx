@@ -137,13 +137,10 @@ describe("AclApprovals", () => {
   });
 
   describe("shows loading or error state for fetching acls requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
       mockGetEnvironments.mockResolvedValue([]);
     });
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
     });
 
@@ -159,10 +156,11 @@ describe("AclApprovals", () => {
       const skeleton = screen.getByTestId("skeleton-table");
 
       expect(skeleton).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows an error message when an error occurs", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockGetAclRequestsForApprover.mockRejectedValue(
         "Unexpected error. Please try again later!"
       );
@@ -482,10 +480,7 @@ describe("AclApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
@@ -501,7 +496,6 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -518,7 +512,6 @@ describe("AclApprovals", () => {
       expect(mockApproveAclRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.req_no)],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a acl request", async () => {
@@ -542,10 +535,11 @@ describe("AclApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockApproveAclRequest.mockRejectedValue("OH NO");
       expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -574,11 +568,7 @@ describe("AclApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
@@ -594,7 +584,6 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -619,7 +608,6 @@ describe("AclApprovals", () => {
       expect(mockApproveAclRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.req_no)],
       });
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
@@ -652,11 +640,12 @@ describe("AclApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockApproveAclRequest.mockRejectedValue("OH NO");
       expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -694,11 +683,7 @@ describe("AclApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
@@ -714,7 +699,6 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -742,7 +726,6 @@ describe("AclApprovals", () => {
 
       expect(mockDeclineAclRequest).not.toHaveBeenCalled();
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a ACL request", async () => {
@@ -776,7 +759,6 @@ describe("AclApprovals", () => {
         reason: "my reason",
       });
 
-      expect(console.error).not.toHaveBeenCalled();
       expect(declineModal).not.toBeInTheDocument();
     });
 
@@ -815,10 +797,10 @@ describe("AclApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeclineAclRequest.mockRejectedValue("Oh no");
 
       const declineButton = screen.getByRole("button", {
@@ -857,11 +839,7 @@ describe("AclApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
@@ -877,7 +855,6 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -906,7 +883,6 @@ describe("AclApprovals", () => {
       });
 
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });
