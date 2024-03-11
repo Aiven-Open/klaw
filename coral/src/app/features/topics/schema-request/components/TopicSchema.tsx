@@ -110,7 +110,7 @@ function TopicSchema(props: TopicSchemaProps) {
         return (
           <div>
             <FileInput
-              {...props}
+              name={name}
               buttonText={`Upload ${schemaType} schema`}
               labelText={`Upload ${schemaType} schema file`}
               helperText={error?.message || ""}
