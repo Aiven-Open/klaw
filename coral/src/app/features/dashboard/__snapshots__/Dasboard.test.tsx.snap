@@ -258,7 +258,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 class="block mb-2"
               >
                 <span
-                  class="inline-flex items-center typography-small-strong text-grey-70"
+                  class="inline-flex items-center typography-small-strong text-default"
                 >
                   Timeframe
                 </span>
@@ -267,7 +267,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 class="Aquarium-NativeSelectBase relative block"
               >
                 <span
-                  class="absolute right-0 inset-y-0 mr-4 text-grey-40 flex ml-3 pointer-events-none typography-default-strong mt-4"
+                  class="absolute right-0 inset-y-0 mr-4 text-muted flex ml-3 pointer-events-none typography-default-strong mt-4"
                 >
                   <svg
                     aria-hidden="true"
@@ -292,7 +292,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                   </svg>
                 </span>
                 <select
-                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-grey-70 placeholder:text-grey-40 focus:outline-none px-3 py-3 disabled:border-grey-20 disabled:bg-grey-5 disabled:text-grey-40 border border-grey-20 hover:border-grey-50 focus:border-info-70"
+                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-muted focus:outline-none px-3 py-3 disabled:border-grey-20 disabled:bg-grey-5 disabled:text-muted border border-grey-20 hover:border-grey-50 focus:border-info-70"
                   id="react-aria-:r0:"
                 >
                   <option
