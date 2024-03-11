@@ -22,301 +22,295 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 describe("<ChangePasswordForm />", () => {
-  const originalConsoleError = console.error;
+  describe("renders all fields and submit button", () => {
+    beforeAll(() => {
+      customRender(<ChangePasswordForm />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
+    });
+    afterAll(() => {
+      cleanup();
+    });
 
-  beforeAll(() => {
-    console.error = jest.fn();
+    it("shows correct elements", () => {
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
+      });
+
+      expect(passwordField).toBeVisible();
+      expect(confirmPasswordField).toBeVisible();
+      expect(submitButton).toBeEnabled();
+    });
+
+    it("does not open confirm modal if fields are empty", async () => {
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
+      });
+
+      await userEvent.click(submitButton);
+
+      const confirmModal = screen.queryByRole("dialog", {
+        name: "Confirm password change?",
+      });
+
+      expect(confirmModal).not.toBeInTheDocument();
+      expect(mockChangePassword).not.toHaveBeenCalled();
+    });
   });
 
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
-
-  describe("ChangePasswordForm.tsx", () => {
-    describe("renders all fields and submit button", () => {
-      beforeAll(() => {
-        customRender(<ChangePasswordForm />, {
-          queryClient: true,
-          aquariumContext: true,
-        });
-      });
-      afterAll(() => {
-        cleanup();
+  describe("submits form when data is valid", () => {
+    beforeEach(() => {
+      mockChangePassword.mockResolvedValue({
+        success: true,
+        message: "success",
       });
 
-      it("shows correct elements", () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
-
-        expect(passwordField).toBeVisible();
-        expect(confirmPasswordField).toBeVisible();
-        expect(submitButton).toBeEnabled();
-      });
-
-      it("does not open confirm modal if fields are empty", async () => {
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
-
-        await userEvent.click(submitButton);
-
-        const confirmModal = screen.queryByRole("dialog", {
-          name: "Confirm password change?",
-        });
-
-        expect(confirmModal).not.toBeInTheDocument();
-        expect(mockChangePassword).not.toHaveBeenCalled();
+      customRender(<ChangePasswordForm />, {
+        queryClient: true,
+        aquariumContext: true,
       });
     });
 
-    describe("submits form when data is valid", () => {
-      beforeEach(() => {
-        mockChangePassword.mockResolvedValue({
-          success: true,
-          message: "success",
-        });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
-        customRender(<ChangePasswordForm />, {
-          queryClient: true,
-          aquariumContext: true,
-        });
+    it("sends a change password request", async () => {
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
       });
 
-      afterEach(() => {
-        cleanup();
-        jest.clearAllMocks();
+      await userEvent.type(passwordField, "newPassword");
+      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.tab();
+      await userEvent.click(submitButton);
+
+      const confirmModal = screen.getByRole("dialog", {
+        name: "Confirm password change?",
+      });
+      const continueButton = screen.getByRole("button", {
+        name: "Change password",
+      });
+      const cancelButton = screen.getByRole("button", {
+        name: "Cancel password change",
       });
 
-      it("sends a change password request", async () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
+      expect(confirmModal).toBeVisible();
+      expect(continueButton).toBeEnabled();
+      expect(cancelButton).toBeEnabled();
 
-        await userEvent.type(passwordField, "newPassword");
-        await userEvent.type(confirmPasswordField, "newPassword");
-        await userEvent.tab();
-        await userEvent.click(submitButton);
+      await userEvent.click(continueButton);
 
-        const confirmModal = screen.getByRole("dialog", {
-          name: "Confirm password change?",
-        });
-        const continueButton = screen.getByRole("button", {
-          name: "Change password",
-        });
-        const cancelButton = screen.getByRole("button", {
-          name: "Cancel password change",
-        });
-
-        expect(confirmModal).toBeVisible();
-        expect(continueButton).toBeEnabled();
-        expect(cancelButton).toBeEnabled();
-
-        await userEvent.click(continueButton);
-
-        expect(mockChangePassword).toHaveBeenCalledWith({
-          pwd: "newPassword",
-          repeatPwd: "newPassword",
-        });
-
-        expect(confirmModal).not.toBeInTheDocument();
-        expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Password successfully changed",
-          position: "bottom-left",
-          variant: "default",
-        });
+      expect(mockChangePassword).toHaveBeenCalledWith({
+        pwd: "newPassword",
+        repeatPwd: "newPassword",
       });
 
-      it("cancels password change request", async () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
-
-        await userEvent.type(passwordField, "newPassword");
-        await userEvent.type(confirmPasswordField, "newPassword");
-        await userEvent.click(submitButton);
-
-        const confirmModal = screen.getByRole("dialog", {
-          name: "Confirm password change?",
-        });
-        const continueButton = screen.getByRole("button", {
-          name: "Change password",
-        });
-        const cancelButton = screen.getByRole("button", {
-          name: "Cancel password change",
-        });
-
-        expect(confirmModal).toBeVisible();
-        expect(continueButton).toBeEnabled();
-        expect(cancelButton).toBeEnabled();
-
-        await userEvent.click(cancelButton);
-
-        expect(confirmModal).not.toBeInTheDocument();
-
-        expect(mockChangePassword).not.toHaveBeenCalledWith({
-          pwd: "newPassword",
-          repeatPwd: "newPassword",
-        });
+      expect(confirmModal).not.toBeInTheDocument();
+      expect(mockedUseToast).toHaveBeenCalledWith({
+        message: "Password successfully changed",
+        position: "bottom-left",
+        variant: "default",
       });
     });
 
-    describe("handle errors", () => {
-      beforeEach(() => {
-        mockChangePassword.mockRejectedValue({
-          success: false,
-          message: "error",
-        });
-
-        customRender(<ChangePasswordForm />, {
-          queryClient: true,
-          aquariumContext: true,
-        });
+    it("cancels password change request", async () => {
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
       });
 
-      afterEach(() => {
-        cleanup();
-        jest.clearAllMocks();
+      await userEvent.type(passwordField, "newPassword");
+      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.click(submitButton);
+
+      const confirmModal = screen.getByRole("dialog", {
+        name: "Confirm password change?",
+      });
+      const continueButton = screen.getByRole("button", {
+        name: "Change password",
+      });
+      const cancelButton = screen.getByRole("button", {
+        name: "Cancel password change",
       });
 
-      it("shows an error when password is too short", async () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
+      expect(confirmModal).toBeVisible();
+      expect(continueButton).toBeEnabled();
+      expect(cancelButton).toBeEnabled();
 
-        await userEvent.type(passwordField, "123");
-        await userEvent.type(confirmPasswordField, "123");
-        await userEvent.tab();
+      await userEvent.click(cancelButton);
 
-        const errors = screen.getAllByText("Must be 8 or more characters long");
+      expect(confirmModal).not.toBeInTheDocument();
 
-        expect(confirmPasswordField).toBeInvalid();
-        expect(errors).toHaveLength(2);
-
-        await userEvent.click(submitButton);
-
-        const confirmModal = screen.queryByRole("dialog", {
-          name: "Confirm password change?",
-        });
-
-        expect(confirmModal).not.toBeInTheDocument();
-        expect(mockChangePassword).not.toHaveBeenCalled();
+      expect(mockChangePassword).not.toHaveBeenCalledWith({
+        pwd: "newPassword",
+        repeatPwd: "newPassword",
       });
-      it("shows an error when password don't match", async () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
+    });
+  });
 
-        await userEvent.type(passwordField, "newPassword");
-        await userEvent.type(confirmPasswordField, "NOTTHESAME");
-        await userEvent.tab();
-
-        const error = screen.getByText("Passwords don't match");
-
-        expect(confirmPasswordField).toBeInvalid();
-        expect(error).toBeVisible();
-
-        await userEvent.click(submitButton);
-
-        const confirmModal = screen.queryByRole("dialog", {
-          name: "Confirm password change?",
-        });
-
-        expect(confirmModal).not.toBeInTheDocument();
-        expect(mockChangePassword).not.toHaveBeenCalled();
+  describe("handle errors", () => {
+    beforeEach(() => {
+      mockChangePassword.mockRejectedValue({
+        success: false,
+        message: "error",
       });
 
-      it("closes modal and render error when call to change password endpoint returns an error", async () => {
-        const form = screen.getByRole("form", {
-          name: "Change your password by entering a new password",
-        });
-        const passwordField = within(form).getByLabelText(
-          "New password Entered password should be at least 8 characters long"
-        );
-        const confirmPasswordField = within(form).getByLabelText(
-          "Confirm new password"
-        );
-        const submitButton = screen.getByRole("button", {
-          name: "Update password",
-        });
+      customRender(<ChangePasswordForm />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
+    });
 
-        await userEvent.type(passwordField, "newPassword");
-        await userEvent.type(confirmPasswordField, "newPassword");
-        await userEvent.tab();
-        await userEvent.click(submitButton);
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
-        const confirmModal = screen.getByRole("dialog", {
-          name: "Confirm password change?",
-        });
-        const continueButton = screen.getByRole("button", {
-          name: "Change password",
-        });
-        const cancelButton = screen.getByRole("button", {
-          name: "Cancel password change",
-        });
+    it("shows an error when password is too short", async () => {
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
+      });
 
-        expect(confirmModal).toBeVisible();
-        expect(continueButton).toBeEnabled();
-        expect(cancelButton).toBeEnabled();
+      await userEvent.type(passwordField, "123");
+      await userEvent.type(confirmPasswordField, "123");
+      await userEvent.tab();
 
-        await userEvent.click(continueButton);
+      const errors = screen.getAllByText("Must be 8 or more characters long");
 
-        expect(mockChangePassword).toHaveBeenCalledWith({
-          pwd: "newPassword",
-          repeatPwd: "newPassword",
-        });
+      expect(confirmPasswordField).toBeInvalid();
+      expect(errors).toHaveLength(2);
 
-        expect(confirmModal).not.toBeInTheDocument();
+      await userEvent.click(submitButton);
 
-        const errorBox = screen.getByRole("alert");
+      const confirmModal = screen.queryByRole("dialog", {
+        name: "Confirm password change?",
+      });
 
-        expect(errorBox).toBeVisible();
-        expect(errorBox).toHaveTextContent("error");
+      expect(confirmModal).not.toBeInTheDocument();
+      expect(mockChangePassword).not.toHaveBeenCalled();
+    });
+    it("shows an error when password don't match", async () => {
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
+      });
+
+      await userEvent.type(passwordField, "newPassword");
+      await userEvent.type(confirmPasswordField, "NOTTHESAME");
+      await userEvent.tab();
+
+      const error = screen.getByText("Passwords don't match");
+
+      expect(confirmPasswordField).toBeInvalid();
+      expect(error).toBeVisible();
+
+      await userEvent.click(submitButton);
+
+      const confirmModal = screen.queryByRole("dialog", {
+        name: "Confirm password change?",
+      });
+
+      expect(confirmModal).not.toBeInTheDocument();
+      expect(mockChangePassword).not.toHaveBeenCalled();
+    });
+
+    it("closes modal and render error when call to change password endpoint returns an error", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
+      const form = screen.getByRole("form", {
+        name: "Change your password by entering a new password",
+      });
+      const passwordField = within(form).getByLabelText(
+        "New password Entered password should be at least 8 characters long"
+      );
+      const confirmPasswordField = within(form).getByLabelText(
+        "Confirm new password"
+      );
+      const submitButton = screen.getByRole("button", {
+        name: "Update password",
+      });
+
+      await userEvent.type(passwordField, "newPassword");
+      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.tab();
+      await userEvent.click(submitButton);
+
+      const confirmModal = screen.getByRole("dialog", {
+        name: "Confirm password change?",
+      });
+      const continueButton = screen.getByRole("button", {
+        name: "Change password",
+      });
+      const cancelButton = screen.getByRole("button", {
+        name: "Cancel password change",
+      });
+
+      expect(confirmModal).toBeVisible();
+      expect(continueButton).toBeEnabled();
+      expect(cancelButton).toBeEnabled();
+
+      await userEvent.click(continueButton);
+
+      expect(mockChangePassword).toHaveBeenCalledWith({
+        pwd: "newPassword",
+        repeatPwd: "newPassword",
+      });
+
+      expect(confirmModal).not.toBeInTheDocument();
+
+      const errorBox = screen.getByRole("alert");
+
+      expect(errorBox).toBeVisible();
+      expect(errorBox).toHaveTextContent("error");
+      expect(console.error).toHaveBeenCalledWith({
+        success: false,
+        message: "error",
       });
     });
   });

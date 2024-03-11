@@ -192,15 +192,11 @@ describe("ClusterDetails", () => {
   });
 
   describe("logs error for developers if they pass wrong props", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementation((error) => error);
     });
 
-    afterEach(() => {
-      console.error = originalConsoleError;
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("logs no error if isUpdating is true and cluster details undefined", () => {
       render(<ClusterDetails clusterDetails={undefined} isUpdating={true} />);

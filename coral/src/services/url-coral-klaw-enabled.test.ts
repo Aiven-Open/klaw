@@ -11,13 +11,11 @@ describe("url-coral-klaw-enabled.ts", () => {
   describe('"buildUrl" creates a href string enabling our Angular/React switch', () => {
     const testHref = "/topics/test/me/please";
 
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
     });
 

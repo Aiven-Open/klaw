@@ -54,12 +54,7 @@ describe("SchemaRequest", () => {
   // due to its dependency on the async process of the api call
   // We'll add a helper for controlling api mocks better (get a loading state etc.)
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      // used to swallow a console.error that _should_ happen
-      // while making sure to not swallow other console.errors
-      console.error = jest.fn();
-
       mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -71,7 +66,6 @@ describe("SchemaRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });
@@ -88,10 +82,10 @@ describe("SchemaRequest", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching schema requests", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetSchemaRequests.mockRejectedValue("mock-error");
 
       customRender(<SchemaRequests />, {
@@ -107,7 +101,9 @@ describe("SchemaRequest", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(errorMessage).toBeVisible();
-      expect(console.error).toHaveBeenCalledWith("mock-error");
+      await waitFor(() =>
+        expect(console.error).toHaveBeenCalledWith("mock-error")
+      );
     });
   });
 
@@ -682,9 +678,7 @@ describe("SchemaRequest", () => {
   describe("enables user to delete a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockgetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -700,7 +694,6 @@ describe("SchemaRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -726,7 +719,6 @@ describe("SchemaRequest", () => {
       expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user deletes a schema request", async () => {
@@ -760,10 +752,10 @@ describe("SchemaRequest", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if deleting request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeleteSchemaRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
@@ -796,6 +788,7 @@ describe("SchemaRequest", () => {
     });
 
     it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeleteSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,

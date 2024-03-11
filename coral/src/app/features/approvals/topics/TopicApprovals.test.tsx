@@ -152,16 +152,12 @@ describe("TopicApprovals", () => {
   });
 
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTeams.mockResolvedValue([]);
     });
-    afterEach(() => {
-      console.error = originalConsoleError;
-      cleanup();
-    });
+
+    afterEach(cleanup);
 
     it("shows a loading state instead of a table while topic requests are being fetched", () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(
@@ -179,10 +175,11 @@ describe("TopicApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching topic requests", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockGetTopicRequestsForApprover.mockRejectedValue(
         "Unexpected error. Please try again later!"
       );
@@ -685,10 +682,7 @@ describe("TopicApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
@@ -703,7 +697,6 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -722,7 +715,6 @@ describe("TopicApprovals", () => {
       expect(mockApproveTopicRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.topicid)],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a topic request", async () => {
@@ -748,10 +740,11 @@ describe("TopicApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockApproveTopicRequest.mockRejectedValue("OH NO");
       expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -780,10 +773,7 @@ describe("TopicApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockedApiResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
@@ -798,7 +788,6 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -825,7 +814,6 @@ describe("TopicApprovals", () => {
       expect(mockApproveTopicRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.topicid)],
       });
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
@@ -860,11 +848,12 @@ describe("TopicApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockApproveTopicRequest.mockRejectedValue("OH NO");
       expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -902,10 +891,7 @@ describe("TopicApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockedApiResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
@@ -920,7 +906,6 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -950,7 +935,6 @@ describe("TopicApprovals", () => {
 
       expect(mockDeclineTopicRequest).not.toHaveBeenCalled();
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a topic request", async () => {
@@ -986,7 +970,6 @@ describe("TopicApprovals", () => {
         reason: "my reason",
       });
 
-      expect(console.error).not.toHaveBeenCalled();
       expect(declineModal).not.toBeInTheDocument();
     });
 
@@ -1027,10 +1010,10 @@ describe("TopicApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeclineTopicRequest.mockRejectedValue("Oh no");
 
       const declineButton = screen.getByRole("button", {
@@ -1069,10 +1052,7 @@ describe("TopicApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockedApiResponse.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
@@ -1087,7 +1067,6 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -1116,7 +1095,6 @@ describe("TopicApprovals", () => {
       });
 
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });

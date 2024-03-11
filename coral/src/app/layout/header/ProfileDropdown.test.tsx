@@ -250,12 +250,10 @@ describe("ProfileDropdown", () => {
       status: 500,
       message: "bad error",
     };
-    const originalConsoleError = console.error;
 
     beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockLogoutUser.mockRejectedValue(testError);
-
-      console.error = jest.fn();
       Object.defineProperty(window, "location", {
         value: {
           assign: jest.fn(),
@@ -266,7 +264,6 @@ describe("ProfileDropdown", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

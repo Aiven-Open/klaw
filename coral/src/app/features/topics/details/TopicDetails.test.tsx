@@ -446,10 +446,7 @@ describe("TopicDetails", () => {
   });
 
   describe("allows users to claim a topic when they are not topic owner", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
-      console.error = jest.fn();
       mockMatches.mockImplementation(() => [
         {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
@@ -468,7 +465,6 @@ describe("TopicDetails", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });
@@ -485,7 +481,6 @@ describe("TopicDetails", () => {
       const modal = screen.getByRole("dialog");
 
       expect(modal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("sends a request when clicking the submit button without entering a message", async () => {
@@ -511,7 +506,6 @@ describe("TopicDetails", () => {
         topicName: testTopicOverview.topicInfo.topicName,
         env: testTopicOverview.topicInfo.envId,
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("sends a request when clicking the submit button with the message entered by the user", async () => {
@@ -541,7 +535,6 @@ describe("TopicDetails", () => {
         env: testTopicOverview.topicInfo.envId,
         remark: "hello",
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("closes the modal and renders a toast when request was successful", async () => {
@@ -572,10 +565,10 @@ describe("TopicDetails", () => {
           variant: "default",
         })
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("closes the modal displays an alert when request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       const mockErrorMessage = "There was an error";
       await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 

@@ -86,26 +86,22 @@ describe("Teams.tsx", () => {
       success: false,
     };
 
-    const originalConsoleError = console.error;
-
     beforeAll(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetTeams.mockRejectedValue(testError);
       customRender(<Teams />, { queryClient: true });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
 
     afterAll(() => {
       cleanup();
       jest.resetAllMocks();
-      console.error = originalConsoleError;
     });
 
     it("does not render the table", () => {
       const table = screen.queryByRole("table");
       expect(table).not.toBeInTheDocument();
-
-      expect(console.error).toHaveBeenCalled();
     });
 
     it("shows an error alert", () => {
@@ -113,7 +109,6 @@ describe("Teams.tsx", () => {
 
       expect(error).toBeVisible();
       expect(error).toHaveTextContent(testError.message);
-      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 

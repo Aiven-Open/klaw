@@ -1,13 +1,10 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react/pure";
 import SchemaRequest from "src/app/pages/topics/schema-request";
-import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
-import { render } from "@testing-library/react";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -32,24 +29,17 @@ describe("SchemaRequest", () => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([topicName]);
-      // @TODO if we decide to go with this kind of dynamic routes,
-      // this should be enabled by customRender!
-      const queryClient = getQueryClientForTests();
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={[`/topic/${topicName}/request-schema`]}>
-            <Routes>
-              <Route
-                path={`/topic/:topicName/request-schema`}
-                element={
-                  <AquariumContext>
-                    <SchemaRequest />
-                  </AquariumContext>
-                }
-              />
-            </Routes>
-          </MemoryRouter>
-        </QueryClientProvider>
+
+      customRender(
+        <MemoryRouter initialEntries={[`/topic/${topicName}/request-schema`]}>
+          <Routes>
+            <Route
+              path={`/topic/:topicName/request-schema`}
+              element={<SchemaRequest />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        { queryClient: true, aquariumContext: true }
       );
     });
 

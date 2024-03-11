@@ -417,9 +417,7 @@ describe("TopicDocumentation", () => {
     });
 
     describe("handles errors when transforming readme intro correct markdown from backend", () => {
-      const originalConsoleError = console.error;
       beforeEach(() => {
-        console.error = jest.fn();
         mockIsDocumentationTransformationError.mockReturnValue(true);
         mockUseTopicDetails.mockReturnValue({
           ...mockTopicDetails,
@@ -437,7 +435,6 @@ describe("TopicDocumentation", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         jest.resetAllMocks();
         cleanup();
       });
@@ -462,9 +459,8 @@ describe("TopicDocumentation", () => {
       const existingReadme = "# Hello" as TopicDocumentationMarkdown;
       const userInput = "**Hello world**";
 
-      const originalConsoleError = console.error;
       beforeEach(() => {
-        console.error = jest.fn();
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
         mockUseTopicDetails.mockReturnValue({
           ...mockTopicDetails,
           topicOverview: {
@@ -484,7 +480,6 @@ describe("TopicDocumentation", () => {
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
         jest.resetAllMocks();
         cleanup();
       });

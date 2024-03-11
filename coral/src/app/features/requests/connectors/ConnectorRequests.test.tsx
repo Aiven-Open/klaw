@@ -107,12 +107,8 @@ describe("ConnectorRequests", () => {
   });
 
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      // used to swallow a console.error that _should_ happen
-      // while making sure to not swallow other console.errors
-      console.error = jest.fn();
-
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetConnectorEnvironmentRequest.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -124,7 +120,6 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });
@@ -141,7 +136,6 @@ describe("ConnectorRequests", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching connector requests", async () => {
@@ -569,7 +563,6 @@ describe("ConnectorRequests", () => {
   });
 
   describe("user can filter connector requests by operation type", () => {
-    const originalConsoleError = console.error;
     beforeEach(async () => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue(
         mockedEnvironmentResponse
@@ -589,7 +582,6 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -628,9 +620,7 @@ describe("ConnectorRequests", () => {
   });
 
   describe("enables user to delete a request", () => {
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetConnectorEnvironmentRequest.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -648,7 +638,6 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -674,7 +663,6 @@ describe("ConnectorRequests", () => {
       expect(mockDeleteConnectorRequest).toHaveBeenCalledWith({
         reqIds: ["1000"],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user deletes a Connector request", async () => {
@@ -716,10 +704,11 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         operationType: "ALL",
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if deleting request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockDeleteConnectorRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -756,6 +745,8 @@ describe("ConnectorRequests", () => {
     });
 
     it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockDeleteConnectorRequest.mockRejectedValue("OH NO");
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",

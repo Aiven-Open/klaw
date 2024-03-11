@@ -69,16 +69,11 @@ describe("StatsDisplay", () => {
   });
 
   describe("handles no or double data", () => {
-    const consoleErrorOriginal = console.error;
-
     beforeEach(() => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
     });
 
-    afterEach(() => {
-      console.error = consoleErrorOriginal;
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("shows the right information for missing chip and number", () => {
       render(<StatsDisplay isLoading={false} entity={"Test"} />);

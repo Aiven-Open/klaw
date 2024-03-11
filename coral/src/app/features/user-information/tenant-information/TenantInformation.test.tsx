@@ -22,16 +22,6 @@ const mockGetMyTenantInfoResponseUser = {
 };
 
 describe("TenantInformation.tsx", () => {
-  const originalConsoleError = console.error;
-
-  beforeAll(() => {
-    console.error = jest.fn();
-  });
-
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
-
   describe("renders tenant information data", () => {
     beforeEach(() => {
       mockGetMyTenantInfo.mockResolvedValue(mockGetMyTenantInfoResponseUser);
@@ -56,6 +46,7 @@ describe("TenantInformation.tsx", () => {
 
   describe("renders error if fetching the tenant info failed", () => {
     beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetMyTenantInfo.mockRejectedValue({
         success: false,
         message: "error",
@@ -76,6 +67,10 @@ describe("TenantInformation.tsx", () => {
 
       expect(errorBox).toBeVisible();
       expect(errorBox).toHaveTextContent("error");
+      expect(console.error).toHaveBeenCalledWith({
+        message: "error",
+        success: false,
+      });
     });
   });
 });

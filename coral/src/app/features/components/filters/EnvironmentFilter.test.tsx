@@ -409,10 +409,8 @@ describe("EnvironmentFilter.tsx", () => {
       success: false,
     };
 
-    const originalConsoleError = jest.fn();
-
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetEnvironments.mockRejectedValue(testError);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
@@ -427,7 +425,6 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.resetAllMocks();
     });

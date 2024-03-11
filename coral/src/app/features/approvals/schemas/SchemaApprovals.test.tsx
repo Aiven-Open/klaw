@@ -124,12 +124,7 @@ describe("SchemaApprovals", () => {
   // I'll add a helper for controlling api mocks better (get a loading state etc)
   // after this release cycle.
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      // used to swallow a console.error that _should_ happen
-      // while making sure to not swallow other console.errors
-      console.error = jest.fn();
-
       mockGetSchemaRequestsForApprover.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -139,7 +134,6 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });
@@ -156,10 +150,10 @@ describe("SchemaApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching schema requests", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetSchemaRequestsForApprover.mockRejectedValue("mock-error");
 
       customRender(<SchemaApprovals />, {
@@ -628,11 +622,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -650,7 +640,6 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -669,7 +658,6 @@ describe("SchemaApprovals", () => {
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.req_no)],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a schema request", async () => {
@@ -695,10 +683,10 @@ describe("SchemaApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockApproveSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -727,11 +715,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -749,7 +733,6 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -776,7 +759,6 @@ describe("SchemaApprovals", () => {
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.req_no)],
       });
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
@@ -811,11 +793,11 @@ describe("SchemaApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockApproveSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -853,11 +835,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -875,7 +853,6 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -905,7 +882,6 @@ describe("SchemaApprovals", () => {
 
       expect(mockDeclineSchemaRequest).not.toHaveBeenCalled();
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a schema request", async () => {
@@ -941,7 +917,6 @@ describe("SchemaApprovals", () => {
         reason: "my reason",
       });
 
-      expect(console.error).not.toHaveBeenCalled();
       expect(declineModal).not.toBeInTheDocument();
     });
 
@@ -982,10 +957,10 @@ describe("SchemaApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeclineSchemaRequest.mockRejectedValue("Oh no");
 
       const declineButton = screen.getByRole("button", {
@@ -1024,11 +999,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
-      console.error = jest.fn();
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -1046,7 +1017,6 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -1075,7 +1045,6 @@ describe("SchemaApprovals", () => {
       });
 
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });

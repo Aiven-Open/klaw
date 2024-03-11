@@ -82,12 +82,7 @@ describe("ActivityLog", () => {
   });
 
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      // used to swallow a console.error that _should_ happen
-      // while making sure to not swallow other console.errors
-      console.error = jest.fn();
-
       mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetActivityLog.mockResolvedValue({
         entries: [],
@@ -97,7 +92,6 @@ describe("ActivityLog", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.clearAllMocks();
     });
@@ -114,10 +108,10 @@ describe("ActivityLog", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching connector requests", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetActivityLog.mockRejectedValue("mock-error");
 
       customRender(<ActivityLog />, {

@@ -41,16 +41,6 @@ const mockedPendingRequests: RequestsWaitingForApprovalWithTotal = {
 };
 
 describe("ApprovalResourceTabs", () => {
-  const originalConsoleError = console.error;
-
-  beforeAll(() => {
-    console.error = jest.fn();
-  });
-
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
-
   describe("Tab badges and navigation", () => {
     beforeAll(() => {
       mockGetRequestsWaitingForApproval.mockResolvedValue(
@@ -141,6 +131,7 @@ describe("ApprovalResourceTabs", () => {
     });
 
     it("calls useToast with correct error message", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetRequestsWaitingForApproval.mockRejectedValue(testError);
 
       customRender(
@@ -159,6 +150,7 @@ describe("ApprovalResourceTabs", () => {
           })
         )
       );
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 });

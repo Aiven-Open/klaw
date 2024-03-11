@@ -46,15 +46,6 @@ const mockGetRequestsWaitingForApproval =
 
 describe("RequestsDropdown", () => {
   const user = userEvent.setup();
-  const originalConsoleError = console.error;
-
-  beforeAll(() => {
-    console.error = jest.fn();
-  });
-
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
 
   describe("has no pending requests", () => {
     beforeAll(() => {
@@ -407,6 +398,7 @@ describe("RequestsDropdown", () => {
     });
 
     it("calls useToast with correct error message", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetRequestsWaitingForApproval.mockRejectedValue(testError);
 
       customRender(<RequestsDropdown />, {

@@ -478,23 +478,18 @@ describe("MainNavigation.tsx", () => {
   });
 
   describe("shows an toast error notification when fetching pending requests fails", () => {
-    const originalConsoleError = console.error;
     const testError: KlawApiError = {
       message: "Oh no, this did not work",
       success: false,
     };
 
-    beforeEach(() => {
-      console.error = jest.fn();
-    });
-
     afterEach(() => {
       cleanup();
-      console.error = originalConsoleError;
       jest.resetAllMocks();
     });
 
     it("calls useToast with correct error message", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetRequestsWaitingForApproval.mockRejectedValue(testError);
 
       customRender(<MainNavigation />, {

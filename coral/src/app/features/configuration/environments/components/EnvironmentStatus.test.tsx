@@ -85,12 +85,9 @@ describe("EnvironmentStatus", () => {
   });
 
   describe("Refresh status", () => {
-    const originalConsoleError = console.error;
     const errorMessage = "Environment refresh error";
 
     beforeEach(() => {
-      console.error = jest.fn();
-
       customRender(
         <EnvironmentStatus
           envId="1"
@@ -104,7 +101,6 @@ describe("EnvironmentStatus", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
 
       cleanup();
@@ -127,7 +123,6 @@ describe("EnvironmentStatus", () => {
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Online")).toBeVisible();
     });
 
@@ -148,11 +143,12 @@ describe("EnvironmentStatus", () => {
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Offline")).toBeVisible();
     });
 
     it("renders previous Status chip and toast when there is an error", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockGetUpdateEnvStatus.mockRejectedValue(errorMessage);
 
       expect(screen.getByText("Online")).toBeVisible();
@@ -194,19 +190,16 @@ describe("EnvironmentStatus", () => {
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Offline")).toBeVisible();
 
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Offline")).toBeVisible();
 
       await userEvent.click(refreshButton);
 
       expect(mockGetUpdateEnvStatus).toHaveBeenCalledWith({ envId: "1" });
-      expect(console.error).not.toHaveBeenCalled();
       expect(screen.getByText("Offline")).toBeVisible();
     });
   });

@@ -131,15 +131,11 @@ describe("ConnectorPromotionRequest", () => {
   });
 
   describe("loads and handles available environments", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
       mockGetConnectorDetailsPerEnv.mockResolvedValue({});
-      console.error = jest.fn();
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -150,7 +146,6 @@ describe("ConnectorPromotionRequest", () => {
       renderConnectorPromotionRequest({});
 
       expect(mockGetConnectorEnvironmentRequest).toHaveBeenCalledTimes(1);
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs and redirects user when sourceEnv does not exist", async () => {
@@ -174,7 +169,6 @@ describe("ConnectorPromotionRequest", () => {
         "/connector/test-connector-name",
         { replace: true }
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs and redirects user when targetEnv does not exist", async () => {
@@ -198,10 +192,10 @@ describe("ConnectorPromotionRequest", () => {
         "/connector/test-connector-name",
         { replace: true }
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs and redirects user when an error occurs with fetching", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetConnectorEnvironmentRequest.mockRejectedValue({
         message: "Oh no",
       });
@@ -227,16 +221,11 @@ describe("ConnectorPromotionRequest", () => {
   });
 
   describe("loads and handles connector details", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue(defaultEnvironments);
-
-      console.error = jest.fn();
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -251,7 +240,6 @@ describe("ConnectorPromotionRequest", () => {
         connectorName: testConnectorName,
         envSelected: defaultSourceEnv,
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs and redirects user when connector details does not exist", async () => {
@@ -272,10 +260,10 @@ describe("ConnectorPromotionRequest", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith("/connector", {
         replace: true,
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs and redirects user when an error occurs with fetching", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetConnectorDetailsPerEnv.mockRejectedValue({
         message: "Oh no",
       });
@@ -512,10 +500,9 @@ describe("ConnectorPromotionRequest", () => {
 
   describe("handles errors when requesting promotion", () => {
     const testErrorMessage = "OH NO 😭";
-    const originalConsoleError = console.error;
 
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetConnectorEnvironmentRequest.mockResolvedValue(defaultEnvironments);
       mockGetConnectorDetailsPerEnv.mockResolvedValue(testConnectorDetails);
       mockRequestConnectorPromotion.mockRejectedValue({
@@ -528,7 +515,6 @@ describe("ConnectorPromotionRequest", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });

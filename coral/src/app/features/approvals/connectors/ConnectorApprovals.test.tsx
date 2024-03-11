@@ -127,13 +127,7 @@ describe("ConnectorApprovals", () => {
   // I'll add a helper for controlling api mocks better (get a loading state etc)
   // after this release cycle.
   describe("handles loading and error state when fetching the requests", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
-      // used to swallow a console.error that _should_ happen
-      // while making sure to not swallow other console.errors
-      console.error = jest.fn();
-
       mockGetConnectorRequestsForApprover.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -142,11 +136,7 @@ describe("ConnectorApprovals", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
     });
 
-    afterEach(() => {
-      console.error = originalConsoleError;
-      cleanup();
-      // jest.clearAllMocks();
-    });
+    afterEach(cleanup);
 
     it("shows a loading state instead of a table while Kafka connector requests are being fetched", () => {
       customRender(<ConnectorApprovals />, {
@@ -160,10 +150,10 @@ describe("ConnectorApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching Kafka connector requests", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockGetConnectorRequestsForApprover.mockRejectedValue("mock-error");
 
       customRender(<ConnectorApprovals />, {
@@ -404,9 +394,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to decline a request", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -424,7 +412,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -454,7 +441,6 @@ describe("ConnectorApprovals", () => {
       await userEvent.tab();
 
       expect(confirmDeclineButton).toBeEnabled();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a Kafka connector request", async () => {
@@ -485,7 +471,6 @@ describe("ConnectorApprovals", () => {
         reqIds: [testRequest.connectorId.toString()],
         reason: "This is my message",
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user declined a Kafka connector request", async () => {
@@ -526,10 +511,10 @@ describe("ConnectorApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeclineConnectorRequest.mockRejectedValue("OH NO");
       expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -573,10 +558,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
-
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -594,7 +576,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -613,7 +594,6 @@ describe("ConnectorApprovals", () => {
       expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.connectorId.toString()],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a Kafka connector request", async () => {
@@ -639,10 +619,10 @@ describe("ConnectorApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockApproveConnectorRequest.mockRejectedValue("OH NO");
       expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -671,9 +651,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -691,7 +669,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -710,7 +687,6 @@ describe("ConnectorApprovals", () => {
       expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.connectorId)],
       });
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a connector request", async () => {
@@ -736,10 +712,10 @@ describe("ConnectorApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockApproveConnectorRequest.mockRejectedValue("OH NO");
       expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -768,9 +744,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -788,7 +762,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -815,7 +788,6 @@ describe("ConnectorApprovals", () => {
       expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
         reqIds: [String(testRequest.connectorId)],
       });
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
@@ -850,11 +822,12 @@ describe("ConnectorApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
       expect(modal).not.toBeInTheDocument();
     });
 
     it("informs user about error if approving request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockApproveConnectorRequest.mockRejectedValue("OH NO");
       expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -892,9 +865,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -912,7 +883,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -942,7 +912,6 @@ describe("ConnectorApprovals", () => {
 
       expect(mockDeclineConnectorRequest).not.toHaveBeenCalled();
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a connector request", async () => {
@@ -978,7 +947,6 @@ describe("ConnectorApprovals", () => {
         reason: "my reason",
       });
 
-      expect(console.error).not.toHaveBeenCalled();
       expect(declineModal).not.toBeInTheDocument();
     });
 
@@ -1019,10 +987,10 @@ describe("ConnectorApprovals", () => {
         2,
         defaultApiParams
       );
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       mockDeclineConnectorRequest.mockRejectedValue("Oh no");
 
       const declineButton = screen.getByRole("button", {
@@ -1061,9 +1029,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -1081,7 +1047,6 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -1110,7 +1075,6 @@ describe("ConnectorApprovals", () => {
       });
 
       expect(declineModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });

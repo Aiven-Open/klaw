@@ -151,6 +151,9 @@ devDependencies:
   jest-environment-jsdom:
     specifier: ^29.7.0
     version: 29.7.0
+  jest-fail-on-console:
+    specifier: ^3.1.2
+    version: 3.1.2
   jest-transform-stub:
     specifier: ^2.0.0
     version: 2.0.0
@@ -7248,6 +7251,10 @@ packages:
       '@types/node': 18.17.14
       jest-mock: 29.7.0
       jest-util: 29.7.0
+    dev: true
+
+  /jest-fail-on-console@3.1.2:
+    resolution: {integrity: sha512-Z4TDJn/QvhlGflxyh8JyqRU3ovEvR2OD8rIsZU8zHJxjC9rto9XeLdqH+RPHY65Tc6riSXq1HK93uLMABaRpbg==}
     dev: true
 
   /jest-get-type@29.6.3:

@@ -259,9 +259,8 @@ describe("SwitchTeamsDropdown", () => {
       success: false,
     };
 
-    const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetTeamsOfUser.mockResolvedValue(testTeams);
       mockUpdateTeam.mockRejectedValue(mockError);
 
@@ -280,7 +279,6 @@ describe("SwitchTeamsDropdown", () => {
     });
 
     afterEach(() => {
-      console.error = originalConsoleError;
       cleanup();
       jest.resetAllMocks();
     });

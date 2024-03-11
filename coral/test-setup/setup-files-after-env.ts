@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import "whatwg-fetch";
 import * as process from "process";
 import "src/services/test-utils/mock-documenation-helper";
+import failOnConsole from "jest-fail-on-console";
 
 // Mocking crypto.randomUUID in tests which use it
 // ie: components using useToast
@@ -17,3 +18,8 @@ process.env.FEATURE_FLAG_TOPIC_REQUEST = "true";
 jest.mock("src/services/is-dev-mode", () => ({
   isDevMode: () => true,
 }));
+
+failOnConsole({
+  shouldFailOnWarn: true,
+  shouldFailOnError: true,
+});

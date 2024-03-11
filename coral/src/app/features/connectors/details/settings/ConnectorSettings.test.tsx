@@ -472,10 +472,7 @@ describe("ConnectorSettings", () => {
   });
 
   describe("enables user to delete a connector", () => {
-    const originalConsoleError = console.error;
-
     beforeEach(() => {
-      console.error = jest.fn();
       mockDeleteConnector.mockImplementation(jest.fn());
       mockedUseConnectorDetails.mockReturnValue(mockConnectorDetails);
 
@@ -489,7 +486,6 @@ describe("ConnectorSettings", () => {
     afterEach(() => {
       jest.clearAllMocks();
       cleanup();
-      console.error = originalConsoleError;
     });
 
     it('shows a confirmation modal when user clicks "Request connector deletion"', async () => {
@@ -504,7 +500,6 @@ describe("ConnectorSettings", () => {
       const confirmationModal = screen.getByRole("dialog");
 
       expect(confirmationModal).toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it('removes modal and does not Request connector deletion if user clicks "cancel"', async () => {
@@ -526,7 +521,6 @@ describe("ConnectorSettings", () => {
       expect(dialog).not.toBeInTheDocument();
       expect(mockedNavigate).not.toHaveBeenCalled();
       expect(mockDeleteConnector).not.toHaveBeenCalled();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("deletes connector successfully when user confirms deleting", async () => {
@@ -556,10 +550,11 @@ describe("ConnectorSettings", () => {
       });
       expect(mockedNavigate).toHaveBeenCalledWith("/connectors");
       expect(dialog).not.toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a message if deleting the connector resulted in an error", async () => {
+      jest.spyOn(console, "error").mockImplementationOnce((error) => error);
+
       mockDeleteConnector.mockRejectedValue({
         success: false,
         message: "Oh no error",

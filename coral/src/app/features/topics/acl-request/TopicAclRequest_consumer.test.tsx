@@ -489,13 +489,12 @@ describe("<TopicAclRequest />", () => {
     });
 
     describe("when API returns an error", () => {
-      const originalConsoleError = console.error;
-      beforeEach(async () => {
-        console.error = jest.fn();
+      beforeEach(() => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
+        jest.clearAllMocks();
       });
 
       it("renders an error message", async () => {
@@ -561,11 +560,6 @@ describe("<TopicAclRequest />", () => {
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
 
-        // it's not important that the console.error is called,
-        // but it makes sure that 1) the console.error does not
-        // show up in the test logs while 2) flagging an error
-        // in case a console.error with a different message
-        // gets called - which could be hinting to a problem
         expect(console.error).toHaveBeenCalledWith({
           message: "Error message example",
         });
@@ -1121,13 +1115,12 @@ describe("<TopicAclRequest />", () => {
     });
 
     describe("when API returns an error", () => {
-      const originalConsoleError = console.error;
-      beforeEach(async () => {
-        console.error = jest.fn();
+      beforeEach(() => {
+        jest.spyOn(console, "error").mockImplementationOnce((error) => error);
       });
 
       afterEach(() => {
-        console.error = originalConsoleError;
+        jest.clearAllMocks();
       });
 
       it("renders an error message", async () => {
@@ -1204,11 +1197,6 @@ describe("<TopicAclRequest />", () => {
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
 
-        // it's not important that the console.error is called,
-        // but it makes sure that 1) the console.error does not
-        // show up in the test logs while 2) flagging an error
-        // in case a console.error with a different message
-        // gets called - which could be hinting to a problem
         expect(console.error).toHaveBeenCalledWith({
           message: "Error message example",
         });

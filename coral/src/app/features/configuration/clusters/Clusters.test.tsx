@@ -109,34 +109,30 @@ describe("Clusters.tsx", () => {
       success: false,
     };
 
-    const originalConsoleError = console.error;
-
     beforeAll(async () => {
-      console.error = jest.fn();
+      jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetClustersPaginated.mockRejectedValue(testError);
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
+
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
 
     afterAll(() => {
       cleanup();
-      jest.resetAllMocks();
-      console.error = originalConsoleError;
+      jest.clearAllMocks();
     });
 
     it("does not render the table", () => {
       const table = screen.queryByRole("table");
       expect(table).not.toBeInTheDocument();
-
-      expect(console.error).toHaveBeenCalled();
     });
 
-    it("shows an error alert", () => {
+    it("shows an error alert", async () => {
       const error = screen.getByRole("alert");
 
       expect(error).toBeVisible();
       expect(error).toHaveTextContent(testError.message);
-      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 

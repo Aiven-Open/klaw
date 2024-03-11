@@ -261,6 +261,6 @@ describe("TopicSchema", () => {
   // link to issue above
   // alternative: test in browse environment
   // Will leave this in as reminder
-  test.todo("submits the form if input is valid");
-  test.todo("validates content of the uploaded file");
+  // test.todo("submits the form if input is valid");
+  // test.todo("validates content of the uploaded file");
 });
