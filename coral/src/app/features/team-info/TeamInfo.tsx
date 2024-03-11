@@ -31,7 +31,7 @@ function TeamInfo() {
       marginBottom={"l1"}
     >
       <Box display={"flex"} alignItems={"center"} colGap={"2"}>
-        <Typography.SmallStrong color={"grey-50"}>
+        <Typography.SmallStrong color={"grey-70"}>
           <span className={"visually-hidden"}>Your </span>
           Team
         </Typography.SmallStrong>
