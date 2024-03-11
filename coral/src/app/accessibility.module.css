@@ -142,5 +142,6 @@ a:not(.Aquarium-Button):focus-visible {
 /* changes font weight to be distinguishable */
 /* from table cells font */
 :root thead > tr > th {
-  color: black !important;
+  /*represents grey-70 */
+  color: #4a4b57 !important;
 }
