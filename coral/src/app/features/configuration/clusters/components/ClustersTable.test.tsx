@@ -451,7 +451,7 @@ describe("ClusterTable.tsx", () => {
         await userEvent.click(menuButton);
 
         const deleteButton = screen.getByRole("menuitem", {
-          name: "Delete",
+          name: "Remove",
         });
 
         await userEvent.click(deleteButton);

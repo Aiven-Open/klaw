@@ -509,14 +509,14 @@ describe("Clusters.tsx", () => {
       await userEvent.click(menuButton);
 
       const deleteItem = screen.getByRole("menuitem", {
-        name: "Delete",
+        name: "Remove",
       });
 
       await userEvent.click(deleteItem);
 
       const modal = screen.getByRole("dialog");
       const deleteButton = within(modal).getByRole("button", {
-        name: "Delete cluster",
+        name: "Remove",
       });
 
       await userEvent.click(deleteButton);
@@ -526,13 +526,13 @@ describe("Clusters.tsx", () => {
         expect(mockedUseToast).toHaveBeenCalledWith({
           variant: "default",
           position: "bottom-left",
-          message: `Cluster ${topicName} successfully deleted`,
+          message: `Cluster ${topicName} successfully removed`,
         });
       });
     });
   });
 
-  describe("cannot delete Cluster if user does not have permision", () => {
+  describe("cannot delete Cluster if user does not have permission", () => {
     beforeAll(async () => {
       mockGetClustersPaginated.mockResolvedValue({
         currentPage: 1,

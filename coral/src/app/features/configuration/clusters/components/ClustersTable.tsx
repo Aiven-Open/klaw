@@ -156,7 +156,7 @@ const ClustersTable = (props: ClustersTableProps) => {
       menu={
         <DropdownMenu.Items>
           <DropdownMenu.Item icon={deleteIcon} key="delete">
-            Delete
+            Remove
           </DropdownMenu.Item>
         </DropdownMenu.Items>
       }

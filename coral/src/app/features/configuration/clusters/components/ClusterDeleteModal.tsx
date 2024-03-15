@@ -25,7 +25,7 @@ const ClusterDeleteModal = ({
     <Dialog
       primaryAction={{
         onClick: () => handleDelete(String(clusterId)),
-        text: "Delete cluster",
+        text: "Remove",
         loading: isLoading,
         disabled: !canDeleteCluster,
       }}
@@ -33,19 +33,20 @@ const ClusterDeleteModal = ({
         onClick: handleClose,
         text: "Cancel",
       }}
-      title="Delete cluster"
+      title="Remove cluster"
       type="danger"
     >
       <Box.Flex gap="5" flexDirection="column">
         {error !== null && <Alert type="error">{parseErrorMsg(error)}</Alert>}
         {canDeleteCluster ? (
           <Typography.Default>
-            Deleting cluster <Chip text={clusterName} />.
+            Confirm removal of <Chip text={clusterName} />. The cluster will be
+            excluded from Klaw.
           </Typography.Default>
         ) : (
           <Typography.Default>
-            Cannot delete cluster <Chip text={clusterName} />: an environment is
-            associated with it.
+            <Chip text={clusterName} /> is linked to an environment and cannot
+            be removed from Klaw. Unlink the environment to proceed.
           </Typography.Default>
         )}
       </Box.Flex>

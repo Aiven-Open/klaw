@@ -54,7 +54,7 @@ function Clusters() {
   } = useMutation(deleteCluster, {
     onSuccess: () => {
       toast({
-        message: `Cluster ${deleteModal.data.clusterName} successfully deleted`,
+        message: `Cluster ${deleteModal.data.clusterName} successfully removed`,
         position: "bottom-left",
         variant: "default",
       });

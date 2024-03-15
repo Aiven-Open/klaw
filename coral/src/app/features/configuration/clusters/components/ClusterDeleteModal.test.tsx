@@ -40,8 +40,8 @@ describe("ClusterDeleteModal", () => {
         {...modalDataWithForbiddenDeletion}
       />
     );
-    const deleteButton = screen.getByRole("button", { name: "Delete cluster" });
-    expect(screen.getByText(/Cannot delete cluster/)).toBeVisible();
+    const deleteButton = screen.getByRole("button", { name: "Remove" });
+    expect(screen.getByText(/Unlink the environment to proceed/)).toBeVisible();
     expect(deleteButton).toBeDisabled();
 
     await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
@@ -59,8 +59,8 @@ describe("ClusterDeleteModal", () => {
         {...modalDataWithAllowedDeletion}
       />
     );
-    const deleteButton = screen.getByRole("button", { name: "Delete cluster" });
-    expect(screen.getByText(/Deleting cluster/)).toBeVisible();
+    const deleteButton = screen.getByRole("button", { name: "Remove" });
+    expect(screen.getByText(/Confirm removal of/)).toBeVisible();
     expect(deleteButton).toBeEnabled();
 
     await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
@@ -78,8 +78,8 @@ describe("ClusterDeleteModal", () => {
         {...modalDataWithAllowedDeletion}
       />
     );
-    const deleteButton = screen.getByRole("button", { name: "Delete cluster" });
-    expect(screen.getByText(/Deleting cluster/)).toBeVisible();
+    const deleteButton = screen.getByRole("button", { name: "Remove" });
+    expect(screen.getByText(/Confirm removal of/)).toBeVisible();
     expect(deleteButton).toBeEnabled();
 
     await userEvent.click(deleteButton);
@@ -97,7 +97,7 @@ describe("ClusterDeleteModal", () => {
         {...modalDataWithAllowedDeletion}
       />
     );
-    const deleteButton = screen.getByRole("button", { name: "Delete cluster" });
+    const deleteButton = screen.getByRole("button", { name: "Remove" });
 
     expect(deleteButton).toBeDisabled();
   });
