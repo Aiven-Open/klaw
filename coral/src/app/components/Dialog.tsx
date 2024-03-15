@@ -11,7 +11,7 @@ type DialogProps = ResolveIntersectionTypes<
   Omit<ModalProps, "isDialog" | "dialogTitle" | "close" | "children"> & {
     type: DialogType;
   } & {
-    children: string;
+    children: string | React.ReactElement;
   }
 >;
 
