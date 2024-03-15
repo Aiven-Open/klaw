@@ -1,13 +1,24 @@
-import { Box, DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
-import type { ClusterModal } from "src/app/features/configuration/clusters/Clusters";
+import {
+  Box,
+  DataTable,
+  DataTableColumn,
+  DropdownMenu,
+  EmptyState,
+} from "@aivenio/aquarium";
+import type {
+  ClusterConnectModalState,
+  ClusterDeleteModalState,
+} from "src/app/features/configuration/clusters/Clusters";
 import { ClusterDetails } from "src/domain/cluster";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
+import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 
 type ClustersTableProps = {
   clusters: ClusterDetails[];
   ariaLabel: string;
-  handleShowModal?: ({ show, data }: ClusterModal) => void;
+  handleShowConnectModal?: ({ show, data }: ClusterConnectModalState) => void;
+  handleShowDeleteModal?: ({ show, data }: ClusterDeleteModalState) => void;
 };
 
 interface ClustersTableRow {
@@ -22,10 +33,15 @@ interface ClustersTableRow {
     serviceName: ClusterDetails["serviceName"];
     projectName: ClusterDetails["projectName"];
   };
+  canDeleteCluster: ClusterDetails["showDeleteCluster"];
 }
 
 const ClustersTable = (props: ClustersTableProps) => {
-  const { clusters, ariaLabel, handleShowModal } = props;
+  const { clusters, ariaLabel, handleShowConnectModal, handleShowDeleteModal } =
+    props;
+
+  const isAdminUser =
+    handleShowConnectModal !== undefined && handleShowDeleteModal !== undefined;
 
   const columns: Array<DataTableColumn<ClustersTableRow>> = [
     {
@@ -87,7 +103,7 @@ const ClustersTable = (props: ClustersTableProps) => {
     },
   ];
 
-  if (handleShowModal !== undefined) {
+  if (isAdminUser) {
     columns.push({
       type: "action",
       headerName: "",
@@ -95,7 +111,7 @@ const ClustersTable = (props: ClustersTableProps) => {
       action: ({ kafkaFlavor, protocol, clusterType, clusterName, id }) => ({
         text: "Connect",
         onClick: () =>
-          handleShowModal({
+          handleShowConnectModal({
             show: true,
             data: {
               kafkaFlavor,
@@ -123,6 +139,7 @@ const ClustersTable = (props: ClustersTableProps) => {
         serviceName: cluster.serviceName,
         projectName: cluster.projectName,
       },
+      canDeleteCluster: cluster.showDeleteCluster,
     };
   });
 
@@ -130,7 +147,33 @@ const ClustersTable = (props: ClustersTableProps) => {
     return <EmptyState title="No Clusters">No clusters found.</EmptyState>;
   }
 
-  return (
+  return isAdminUser ? (
+    <DataTable
+      ariaLabel={ariaLabel}
+      columns={columns}
+      rows={rows}
+      noWrap={false}
+      menu={
+        <DropdownMenu.Items>
+          <DropdownMenu.Item icon={deleteIcon} key="delete">
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Items>
+      }
+      onAction={(action, data): void => {
+        if (action === "delete") {
+          handleShowDeleteModal({
+            show: true,
+            data: {
+              clusterId: data.id,
+              clusterName: data.clusterName,
+              canDeleteCluster: data.canDeleteCluster,
+            },
+          });
+        }
+      }}
+    />
+  ) : (
     <DataTable
       ariaLabel={ariaLabel}
       columns={columns}

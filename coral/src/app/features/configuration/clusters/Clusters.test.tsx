@@ -11,11 +11,63 @@ import { KlawApiError } from "src/services/api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { userEvent } from "@testing-library/user-event";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { AuthUser } from "src/domain/auth-user";
+
+const INITIAL_AUTH_DATA: AuthUser = {
+  username: "",
+  userrole: "",
+  teamname: "",
+  teamId: "",
+  canSwitchTeams: "",
+  totalTeamTopics: 0,
+  totalOrgTopics: 0,
+  permissions: {
+    addDeleteEditClusters: false,
+    canShutdownKw: false,
+    canUpdatePermissions: false,
+    addEditRoles: false,
+    viewTopics: false,
+    requestItems: false,
+    viewKafkaConnect: false,
+    syncBackTopics: false,
+    syncBackSchemas: false,
+    syncBackAcls: false,
+    updateServerConfig: false,
+    showServerConfigEnvProperties: false,
+    addUser: false,
+    addTeams: false,
+    syncTopicsAcls: false,
+    syncConnectors: false,
+    manageConnectors: false,
+    syncSchemas: false,
+    approveAtleastOneRequest: false,
+    approveDeclineTopics: false,
+    approveDeclineOperationalReqs: false,
+    approveDeclineSubscriptions: false,
+    approveDeclineSchemas: false,
+    approveDeclineConnectors: false,
+    showAddDeleteTenants: false,
+    addDeleteEditEnvs: false,
+  },
+};
 
 jest.mock("src/domain/cluster/cluster-api.ts");
 const mockGetClustersPaginated = getClustersPaginated as jest.MockedFunction<
   typeof getClustersPaginated
 >;
+
+jest.mock("src/app/context-provider/AuthProvider");
+const mockUseAuthContext = useAuthContext as jest.MockedFunction<
+  typeof useAuthContext
+>;
+
+const mockedUseToast = jest.fn();
+
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
 
 const testCluster: ClusterDetails[] = [
   {
@@ -62,6 +114,8 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [],
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
     });
 
@@ -83,6 +137,8 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [],
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
@@ -112,6 +168,8 @@ describe("Clusters.tsx", () => {
     beforeAll(async () => {
       jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetClustersPaginated.mockRejectedValue(testError);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -143,6 +201,8 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: testCluster,
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -211,6 +271,8 @@ describe("Clusters.tsx", () => {
         totalPages: 3,
         entries: testCluster,
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -245,6 +307,8 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -286,6 +350,8 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -324,6 +390,8 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -364,6 +432,7 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [testCluster[0]],
       });
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
 
       customRender(<Clusters />, {
         queryClient: true,
@@ -394,6 +463,116 @@ describe("Clusters.tsx", () => {
       await userEvent.click(closeButton);
 
       expect(window.location.search).not.toContain("showConnectHelp=true");
+    });
+  });
+
+  describe("deletes a Cluster correctly when user has permission", () => {
+    beforeAll(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 1,
+        totalPages: 1,
+        entries: [testCluster[0]],
+      });
+
+      mockUseAuthContext.mockReturnValue({
+        ...INITIAL_AUTH_DATA,
+        permissions: {
+          ...INITIAL_AUTH_DATA.permissions,
+          addDeleteEditClusters: true,
+        },
+      });
+
+      customRender(<Clusters />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("renders deletion menu and dispatch toast notification when user is allowed to delete cluster", async () => {
+      const topicName = testCluster[0].clusterName;
+
+      const table = screen.getByRole("table");
+      const row = within(table).getByRole("row", {
+        name: new RegExp(`${topicName}`),
+      });
+      const menuButton = within(row).getByRole("button", {
+        name: "Context menu",
+      });
+
+      await userEvent.click(menuButton);
+
+      const deleteItem = screen.getByRole("menuitem", {
+        name: "Delete",
+      });
+
+      await userEvent.click(deleteItem);
+
+      const modal = screen.getByRole("dialog");
+      const deleteButton = within(modal).getByRole("button", {
+        name: "Delete cluster",
+      });
+
+      await userEvent.click(deleteButton);
+
+      await waitFor(() => {
+        expect(modal).not.toBeVisible();
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          variant: "default",
+          position: "bottom-left",
+          message: `Cluster ${topicName} successfully deleted`,
+        });
+      });
+    });
+  });
+
+  describe("cannot delete Cluster if user does not have permision", () => {
+    beforeAll(async () => {
+      mockGetClustersPaginated.mockResolvedValue({
+        currentPage: 1,
+        totalPages: 1,
+        entries: [testCluster[0]],
+      });
+
+      mockUseAuthContext.mockReturnValue({
+        ...INITIAL_AUTH_DATA,
+        permissions: {
+          ...INITIAL_AUTH_DATA.permissions,
+          addDeleteEditClusters: false,
+        },
+      });
+
+      customRender(<Clusters />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("does not render action menu in table", async () => {
+      const topicName = testCluster[0].clusterName;
+
+      const table = screen.getByRole("table");
+      const row = within(table).getByRole("row", {
+        name: new RegExp(`${topicName}`),
+      });
+      const menuButton = within(row).queryByRole("button", {
+        name: "Context menu",
+      });
+
+      expect(menuButton).not.toBeInTheDocument();
     });
   });
 });
