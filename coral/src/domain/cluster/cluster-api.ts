@@ -58,8 +58,16 @@ async function addNewCluster(
   return response;
 }
 
+async function deleteCluster(
+  clusterId: string
+): Promise<KlawApiResponse<"addNewCluster">> {
+  const params = new URLSearchParams({ clusterId });
+  return api.post(API_PATHS.deleteCluster, params);
+}
+
 export {
   addNewCluster,
+  deleteCluster,
   getClusterDetails,
   getClusterInfoFromEnvironment,
   getClustersPaginated,

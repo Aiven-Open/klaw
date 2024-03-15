@@ -1,5 +1,6 @@
 import {
   addNewCluster,
+  deleteCluster,
   getClusterDetails,
   getClusterInfoFromEnvironment,
   getClustersPaginated,
@@ -14,6 +15,7 @@ import {
 
 export {
   addNewCluster,
+  deleteCluster,
   getClusterInfoFromEnvironment,
   getClusterDetails,
   getClustersPaginated,
