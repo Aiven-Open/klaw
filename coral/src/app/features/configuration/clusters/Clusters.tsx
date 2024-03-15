@@ -61,7 +61,7 @@ function Clusters() {
 
       setDeleteModal({
         show: false,
-        data: { clusterId: 0, clusterName: "", canDeleteCluster: false },
+        data: INITIAL_DELETE_MODAL_DATA,
       });
     },
   });
