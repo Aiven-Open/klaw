@@ -49,7 +49,8 @@ const tableRowHeader = [
   "Other parameters",
 ];
 
-const mockHandleShowModal = jest.fn();
+const mockHandleShowConnectModal = jest.fn();
+const mockHandleShowDeleteModal = jest.fn();
 
 describe("ClusterTable.tsx", () => {
   beforeAll(() => {
@@ -233,6 +234,31 @@ describe("ClusterTable.tsx", () => {
           expect(projectName).toBeVisible();
         });
       }
+
+      it(`does not renders the Connect help button for ${cluster.clusterName}`, () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const row = within(table).getByRole("row", {
+          name: new RegExp(`${cluster.clusterName}`, "i"),
+        });
+        const connectButton = within(row).queryByRole("button", {
+          name: `Show help for connecting the cluster ${cluster.clusterName} to Klaw`,
+        });
+
+        expect(connectButton).not.toBeInTheDocument();
+      });
+
+      it(`does not render the Actions column  `, async () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const actionsColumn = within(table).queryByRole("columnheader", {
+          name: "Actions",
+        });
+
+        expect(actionsColumn).not.toBeInTheDocument();
+      });
     });
   });
   describe("shows all clusters as a table (user with permissions.addDeleteEditClusters)", () => {
@@ -242,7 +268,8 @@ describe("ClusterTable.tsx", () => {
         <ClustersTable
           clusters={testCluster}
           ariaLabel={tableLabel}
-          handleShowModal={mockHandleShowModal}
+          handleShowConnectModal={mockHandleShowConnectModal}
+          handleShowDeleteModal={mockHandleShowDeleteModal}
         />,
         { queryClient: true }
       );
@@ -423,7 +450,7 @@ describe("ClusterTable.tsx", () => {
 
         await userEvent.click(connectButton);
 
-        expect(mockHandleShowModal).toHaveBeenCalledWith({
+        expect(mockHandleShowConnectModal).toHaveBeenCalledWith({
           show: true,
           data: {
             kafkaFlavor: cluster.kafkaFlavor,
@@ -431,6 +458,35 @@ describe("ClusterTable.tsx", () => {
             clusterType: cluster.clusterType,
             clusterName: cluster.clusterName,
             clusterId: cluster.clusterId,
+          },
+        });
+      });
+
+      it(`displays Delete modal when clicking the Delete item in action menu for ${cluster.clusterName}`, async () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const row = within(table).getByRole("row", {
+          name: new RegExp(`${cluster.clusterName}`),
+        });
+        const menuButton = within(row).getByRole("button", {
+          name: "Context menu",
+        });
+
+        await userEvent.click(menuButton);
+
+        const deleteButton = screen.getByRole("menuitem", {
+          name: "Remove",
+        });
+
+        await userEvent.click(deleteButton);
+
+        expect(mockHandleShowDeleteModal).toHaveBeenCalledWith({
+          show: true,
+          data: {
+            clusterId: cluster.clusterId,
+            clusterName: cluster.clusterName,
+            canDeleteCluster: cluster.showDeleteCluster,
           },
         });
       });

@@ -1,8 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@aivenio/aquarium";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { ClusterTypeFilter } from "src/app/features/components/filters/ClusterTypeFilter";
 import { SearchClusterParamFilter } from "src/app/features/components/filters/SearchClusterParamFilter";
 import {
   useFiltersContext,
@@ -10,13 +12,17 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import ClusterConnectHelpModal from "src/app/features/configuration/clusters/components/ClusterConnectHelpModal";
+import ClusterDeleteModalState from "src/app/features/configuration/clusters/components/ClusterDeleteModal";
 import { ClustersTable } from "src/app/features/configuration/clusters/components/ClustersTable";
-import { ClusterDetails, getClustersPaginated } from "src/domain/cluster";
-import { ClusterTypeFilter } from "src/app/features/components/filters/ClusterTypeFilter";
+import {
+  ClusterDetails,
+  deleteCluster,
+  getClustersPaginated,
+} from "src/domain/cluster";
 
 // We add this default data to avoid dealing with the fact that it may be undefined when closing the modal...
 // ... and resetting the state
-const DEFAULT_MODAL_DATA: ClusterModal["data"] = {
+const DEFAULT_CONNECT_MODAL_DATA: ClusterConnectModalState["data"] = {
   kafkaFlavor: "AIVEN_FOR_APACHE_KAFKA",
   protocol: "PLAINTEXT",
   clusterType: "KAFKA",
@@ -24,7 +30,14 @@ const DEFAULT_MODAL_DATA: ClusterModal["data"] = {
   clusterId: 0,
 };
 
+const INITIAL_DELETE_MODAL_DATA: ClusterDeleteModalState["data"] = {
+  clusterId: 0,
+  clusterName: "",
+  canDeleteCluster: false,
+};
+
 function Clusters() {
+  const toast = useToast();
   const { permissions } = useAuthContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
@@ -34,26 +47,59 @@ function Clusters() {
   const { search, clusterType } = useFiltersContext();
 
   const {
+    mutateAsync: deleteClusterAction,
+    isLoading: deleteIsLoading,
+    isSuccess: deleteIsSuccess,
+    error: deleteError,
+  } = useMutation(deleteCluster, {
+    onSuccess: () => {
+      toast({
+        message: `Cluster ${deleteModal.data.clusterName} successfully removed`,
+        position: "bottom-left",
+        variant: "default",
+      });
+
+      setDeleteModal({
+        show: false,
+        data: INITIAL_DELETE_MODAL_DATA,
+      });
+    },
+  });
+
+  const {
     data: clusters,
     isLoading,
     isError,
     error,
-  } = useQuery(["get-clusters-paginated", currentPage, search, clusterType], {
-    queryFn: () =>
-      getClustersPaginated({
-        clusterType,
-        pageNo: currentPage.toString(),
-        searchClusterParam: search.length === 0 ? undefined : search,
-      }),
-    keepPreviousData: true,
-  });
+  } = useQuery(
+    [
+      "get-clusters-paginated",
+      currentPage,
+      search,
+      clusterType,
+      deleteIsSuccess,
+    ],
+    {
+      queryFn: () =>
+        getClustersPaginated({
+          clusterType,
+          pageNo: currentPage.toString(),
+          searchClusterParam: search.length === 0 ? undefined : search,
+        }),
+      keepPreviousData: true,
+    }
+  );
 
-  const [modal, setModal] = useState<ClusterModal>({
+  const [connectModal, setConnectModal] = useState<ClusterConnectModalState>({
     show: false,
-    data: DEFAULT_MODAL_DATA,
+    data: DEFAULT_CONNECT_MODAL_DATA,
+  });
+  const [deleteModal, setDeleteModal] = useState<ClusterDeleteModalState>({
+    show: false,
+    data: INITIAL_DELETE_MODAL_DATA,
   });
 
-  // Automatically open the Connect mhelp modal after adding a cluster.
+  // Automatically open the Connect help modal after adding a cluster.
   // We know how to populate the modal data from the fact that we redirect...
   // ... to a filtered table from the AddNewClusterForm, along with a specific query param
   // For example: /configuration/clusters?search=MyCluster&showConnectHelp=true
@@ -73,7 +119,7 @@ function Clusters() {
       const { kafkaFlavor, protocol, clusterType, clusterName, clusterId } =
         latestAddedCluster;
 
-      handleShowModal({
+      handleShowConnectModal({
         show: true,
         data: {
           kafkaFlavor,
@@ -86,8 +132,8 @@ function Clusters() {
     }
   });
 
-  function handleShowModal({ show, data }: ClusterModal) {
-    setModal({
+  function handleShowConnectModal({ show, data }: ClusterConnectModalState) {
+    setConnectModal({
       show,
       data,
     });
@@ -96,6 +142,13 @@ function Clusters() {
     // Most probably when closing the modal opened automatically after adding a cluster
     searchParams.delete("showConnectHelp");
     setSearchParams(searchParams);
+  }
+
+  function handleShowDeleteModal({ show, data }: ClusterDeleteModalState) {
+    setDeleteModal({
+      show,
+      data,
+    });
   }
 
   function handleChangePage(page: number) {
@@ -111,18 +164,33 @@ function Clusters() {
         setActivePage={handleChangePage}
       />
     ) : undefined;
-
   return (
     <>
-      {modal.show && (
+      {connectModal.show && (
         <ClusterConnectHelpModal
           onClose={() =>
-            setModal({
+            setConnectModal({
               show: false,
-              data: DEFAULT_MODAL_DATA,
+              data: DEFAULT_CONNECT_MODAL_DATA,
             })
           }
-          modalData={modal.data}
+          modalData={connectModal.data}
+        />
+      )}
+      {deleteModal.show && (
+        <ClusterDeleteModalState
+          handleDelete={(clusterId: string) => deleteClusterAction(clusterId)}
+          handleClose={() =>
+            setDeleteModal({
+              show: false,
+              data: INITIAL_DELETE_MODAL_DATA,
+            })
+          }
+          isLoading={deleteIsLoading}
+          error={deleteError}
+          clusterId={deleteModal.data.clusterId}
+          clusterName={deleteModal.data.clusterName}
+          canDeleteCluster={deleteModal.data.canDeleteCluster}
         />
       )}
 
@@ -134,8 +202,15 @@ function Clusters() {
         table={
           <ClustersTable
             clusters={clusters?.entries || []}
-            handleShowModal={
-              permissions.addDeleteEditClusters ? handleShowModal : undefined
+            handleShowConnectModal={
+              permissions.addDeleteEditClusters
+                ? handleShowConnectModal
+                : undefined
+            }
+            handleShowDeleteModal={
+              permissions.addDeleteEditClusters
+                ? handleShowDeleteModal
+                : undefined
             }
             ariaLabel={`Cluster overview, page ${clusters?.currentPage ?? 0} of ${
               clusters?.totalPages ?? 0
@@ -151,7 +226,7 @@ function Clusters() {
   );
 }
 
-export interface ClusterModal {
+interface ClusterConnectModalState {
   show: boolean;
   data: {
     kafkaFlavor: ClusterDetails["kafkaFlavor"];
@@ -162,4 +237,14 @@ export interface ClusterModal {
   };
 }
 
+interface ClusterDeleteModalState {
+  show: boolean;
+  data: {
+    canDeleteCluster: ClusterDetails["showDeleteCluster"];
+    clusterName: ClusterDetails["clusterName"];
+    clusterId: ClusterDetails["clusterId"];
+  };
+}
+
+export type { ClusterConnectModalState, ClusterDeleteModalState };
 export default withFiltersContext({ element: <Clusters /> });
