@@ -234,6 +234,31 @@ describe("ClusterTable.tsx", () => {
           expect(projectName).toBeVisible();
         });
       }
+
+      it(`does not renders the Connect help button for ${cluster.clusterName}`, () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const row = within(table).getByRole("row", {
+          name: new RegExp(`${cluster.clusterName}`, "i"),
+        });
+        const connectButton = within(row).queryByRole("button", {
+          name: `Show help for connecting the cluster ${cluster.clusterName} to Klaw`,
+        });
+
+        expect(connectButton).not.toBeInTheDocument();
+      });
+
+      it(`does not render the Actions column  `, async () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const actionsColumn = within(table).queryByRole("columnheader", {
+          name: "Actions",
+        });
+
+        expect(actionsColumn).not.toBeInTheDocument();
+      });
     });
   });
   describe("shows all clusters as a table (user with permissions.addDeleteEditClusters)", () => {
