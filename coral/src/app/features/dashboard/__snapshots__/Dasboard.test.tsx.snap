@@ -6,7 +6,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
     style="display: grid; gap: 24px; grid-template-columns: 1fr;"
   >
     <div
-      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -119,7 +119,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       </div>
     </div>
     <div
-      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -232,7 +232,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       </div>
     </div>
     <div
-      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -292,7 +292,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                   </svg>
                 </span>
                 <select
-                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-muted focus:outline-none px-3 py-3 disabled:border-grey-20 disabled:bg-grey-5 disabled:text-muted border border-grey-20 hover:border-grey-50 focus:border-info-70"
+                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-muted focus:outline-none px-3 py-3 disabled:border-default disabled:bg-grey-5 disabled:text-muted border border-default hover:border-intense focus:border-info-70"
                   id="react-aria-:r0:"
                 >
                   <option
@@ -332,7 +332,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       </div>
     </div>
     <div
-      class="border-[2px] border-grey-5 rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
