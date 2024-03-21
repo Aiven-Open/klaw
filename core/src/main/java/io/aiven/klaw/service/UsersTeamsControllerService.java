@@ -72,6 +72,7 @@ public class UsersTeamsControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String MASKED_PWD = "********";
   public static final String UNUSED_PASSWD = "unusedpasswd";
+  private static final Pattern emailUsernamePattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -1096,8 +1097,9 @@ public class UsersTeamsControllerService {
   }
 
   private boolean userNamePatternValidation(String userName) {
-    Matcher m1 = defaultPattern.matcher(userName);
-    return m1.matches();
+    Matcher m1 = emailUsernamePattern.matcher(userName);
+    Matcher m2 = defaultPattern.matcher(userName);
+    return m1.matches() || m2.matches();
   }
 
   public List<TeamModelResponse> getSwitchTeams(String userId) {
