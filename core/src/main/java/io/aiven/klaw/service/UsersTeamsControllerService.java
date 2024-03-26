@@ -893,13 +893,23 @@ public class UsersTeamsControllerService {
     List<RegisterUserInfo> registerUserInfoList =
         manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
     if (registerUserInfoList.stream()
-        .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
-      return ApiResponse.notOk(TEAMS_ERR_115);
-    } else if (registerUserInfoList.stream()
-        .anyMatch(user -> user.getUsername().equals(newUser.getUsername()))) {
+        .anyMatch(
+            user -> {
+              if (user.getUsername().equals(newUser.getUsername())
+                  || user.getUsername().equals(newUser.getMailid())) {
+                // if not equal to pending it has been previously declined or should have been
+                // caught by the above check if the user already exists.
+                log.info(
+                    "if {} or {} status {}",
+                    user.getUsername().equals(newUser.getUsername()),
+                    user.getUsername().equals(newUser.getMailid()),
+                    !Objects.equals(user.getStatus(), NewUserStatus.PENDING));
+                return !Objects.equals(user.getStatus(), NewUserStatus.PENDING);
+              }
+              return false;
+            })) {
       return ApiResponse.notOk(TEAMS_ERR_115);
     }
-
     // get the user details from db
     RegisterUserInfo stagingRegisterUserInfo =
         manageDatabase
@@ -1020,7 +1030,7 @@ public class UsersTeamsControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
-      RegisterUserInfo registerUserInfo = dbHandle.getRegisterUsersInfo(username);
+      RegisterUserInfo registerUserInfo = dbHandle.getPendingRegisterUsersInfo(username);
 
       tenantId = registerUserInfo.getTenantId();
 
