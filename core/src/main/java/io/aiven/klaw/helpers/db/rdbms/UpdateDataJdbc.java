@@ -98,13 +98,15 @@ public class UpdateDataJdbc {
       UserInfoRepo userInfoRepo,
       SchemaRequestRepo schemaRequestRepo,
       InsertDataJdbc insertDataJdbcHelper,
-      SelectDataJdbc selectDataJdbcHelper) {
+      SelectDataJdbc selectDataJdbcHelper,
+      RegisterInfoRepo registerInfoRepo) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.insertDataJdbcHelper = insertDataJdbcHelper;
     this.selectDataJdbcHelper = selectDataJdbcHelper;
+    this.registerInfoRepo = registerInfoRepo;
   }
 
   public UpdateDataJdbc() {}
@@ -481,7 +483,8 @@ public class UpdateDataJdbc {
   public void updateNewUserRequest(String username, String approver, boolean isApprove) {
     log.debug("updateNewUserRequest {} {} {}", username, approver, isApprove);
     RegisterUserInfo registerUser =
-        registerInfoRepo.findFirstByUsernameAndStatus(username, NewUserStatus.PENDING.value);
+        registerInfoRepo.findFirstByUsernameAndStatusIn(
+            username, List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
     String status;
     if (isApprove) {
       status = NewUserStatus.APPROVED.value;

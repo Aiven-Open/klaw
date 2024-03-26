@@ -14,6 +14,7 @@ import io.aiven.klaw.repository.ActivityLogRepo;
 import io.aiven.klaw.repository.EnvRepo;
 import io.aiven.klaw.repository.KwEntitySequenceRepo;
 import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.RegisterInfoRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.TopicRepo;
@@ -22,6 +23,7 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class InsertDataJdbcTest {
 
   @Mock private UserInfoRepo userInfoRepo;
-
+  @Mock private RegisterInfoRepo registerInfoRepo;
   @Mock private TeamRepo teamRepo;
 
   @Mock private KwEntitySequenceRepo kwEntitySequenceRepo;
@@ -82,6 +84,7 @@ public class InsertDataJdbcTest {
     ReflectionTestUtils.setField(insertData, "aclRequestsRepo", aclRequestsRepo);
     ReflectionTestUtils.setField(insertData, "envRepo", envRepo);
     ReflectionTestUtils.setField(insertData, "kwEntitySequenceRepo", kwEntitySequenceRepo);
+    ReflectionTestUtils.setField(insertData, "registerInfoRepo", registerInfoRepo);
   }
 
   @Test
@@ -163,6 +166,37 @@ public class InsertDataJdbcTest {
         .thenReturn(kwEntitySequenceList);
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void insertIntoRegisterUsers(String userName, String mailId, String expectedResult) {
+    when(userInfoRepo.findById(eq(userName))).thenReturn(Optional.empty());
+    if (expectedResult.equals("Failure. User already exists")) {
+      when(userInfoRepo.findById(eq(userName))).thenReturn(Optional.of(new UserInfo()));
+    } else if (expectedResult.equals("Failure. Registration already exists")) {
+      when(registerInfoRepo.findFirstByUsernameAndStatusIn(eq(userName), any()))
+          .thenReturn(new RegisterUserInfo());
+    }
+    RegisterUserInfo regUser = new RegisterUserInfo();
+    regUser.setPwd("XXXXXXXXX");
+    regUser.setApprover("SUPERADMIN");
+    regUser.setRole("USER");
+    regUser.setUsername(userName);
+    regUser.setMailid(mailId);
+    String result = insertData.insertIntoRegisterUsers(regUser);
+    assertThat(result).isEqualTo(expectedResult);
+  }
+
+  private static Stream<Arguments> insertIntoRegisterUsers() {
+
+    return Stream.of(
+        Arguments.of("Octopus", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value),
+        Arguments.of(
+            "octopus@klaw-project.io", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value),
+        Arguments.of("Octopus2", "octopus@klaw-project.io", "Failure. User already exists"),
+        Arguments.of(
+            "Octopus3", "octopus@klaw-project.io", "Failure. Registration already exists"));
   }
 
   @ParameterizedTest
