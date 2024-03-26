@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -345,7 +346,29 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void addNewUser() {}
+  void addNewUserAlphaNumeric() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+  }
+
+  @Test
+  void addNewUserEmail() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    newUser.setUsername("test@test.com"); // email pattern
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+  }
+
+  @Test
+  void addNewUserInvalidPatternFailure() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    newUser.setUsername("abc123$%$"); // invalid pattern
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_109);
+  }
 
   @Test
   void addNewTeam() {}
