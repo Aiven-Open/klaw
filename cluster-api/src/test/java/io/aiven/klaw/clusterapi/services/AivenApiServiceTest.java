@@ -1,10 +1,14 @@
 package io.aiven.klaw.clusterapi.services;
 
 import static io.aiven.klaw.clusterapi.services.AivenApiService.OBJECT_MAPPER;
+import static io.aiven.klaw.clusterapi.services.AivenApiService.PROJECT_NAME;
+import static io.aiven.klaw.clusterapi.services.AivenApiService.SERVICE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.UtilMethods;
@@ -35,6 +39,9 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(SpringExtension.class)
 public class AivenApiServiceTest {
 
+  public static final String TESTUSER = "testuser";
+  public static final String SERVICE_ACLS_ENDPOINT =
+      "https://api.aiven.io/v1/project/projectName/service/serviceName/user/userName";
   AivenApiService aivenApiService;
   @Mock RestTemplate restTemplate;
 
@@ -59,9 +66,7 @@ public class AivenApiServiceTest {
         "deleteAclsApiEndpoint",
         "https://api.aiven.io/v1/project/projectName/service/serviceName/acl/aclId");
     ReflectionTestUtils.setField(
-        aivenApiService,
-        "getServiceAccountApiEndpoint",
-        "https://api.aiven.io/v1/project/projectName/service/serviceName/user/userName");
+        aivenApiService, "serviceAccountApiEndpoint", SERVICE_ACLS_ENDPOINT);
     ReflectionTestUtils.setField(
         aivenApiService,
         "addServiceAccountApiEndpoint",
@@ -158,7 +163,7 @@ public class AivenApiServiceTest {
             + clusterAclRequest.getUsername();
     Map<String, Map<String, String>> serviceAccountResponse = new HashMap<>();
     Map<String, String> userNameMap = new HashMap<>();
-    userNameMap.put("username", "testuser");
+    userNameMap.put("username", TESTUSER);
     serviceAccountResponse.put("user", userNameMap);
     ResponseEntity<Map<String, Map<String, String>>> responseEntityServiceAccount =
         new ResponseEntity<>(serviceAccountResponse, HttpStatus.OK);
@@ -252,19 +257,7 @@ public class AivenApiServiceTest {
   public void listAcls() throws Exception {
     String getAclsUrl = ACLS_BASE_URL + "testproject" + "/service/" + "testservice" + "/acl";
 
-    Map<String, String> aclMap1 = Map.of("permission", "read");
-    Map<String, String> aclMap2 = Map.of("permission", "write");
-    Map<String, String> aclMap3 = Map.of("permission", "ADMIN");
-    Map<String, String> aclMap4 = Map.of("permission", "READWRITE");
-    Map<String, String> aclMap5 = Map.of("id", "ID");
-    Map<String, String> aclMap6 = Map.of("topic", "TOPIC");
-    Map<String, String> aclMap7 = Map.of("username", "USERNAME");
-
-    List<Map<String, String>> aclList =
-        List.of(aclMap1, aclMap2, aclMap3, aclMap4, aclMap5, aclMap6, aclMap7);
-
-    Map<String, List<Map<String, String>>> aclsResp = Map.of("acl", aclList);
-
+    Map<String, List<Map<String, String>>> aclsResp = getAclListMap("testuser");
     ResponseEntity<Map<String, List<Map<String, String>>>> responseEntityServiceAccount =
         new ResponseEntity<>(aclsResp, HttpStatus.OK);
 
@@ -277,6 +270,23 @@ public class AivenApiServiceTest {
 
     Set<Map<String, String>> acls = aivenApiService.listAcls("testproject", "testservice");
     assertThat(acls).hasSize(6);
+  }
+
+  private static Map<String, List<Map<String, String>>> getAclListMap(String userName) {
+    Map<String, String> aclMap1 = Map.of("permission", "read");
+    Map<String, String> aclMap2 = Map.of("permission", "write");
+    Map<String, String> aclMap3 = Map.of("permission", "ADMIN");
+    Map<String, String> aclMap4 = Map.of("permission", "READWRITE");
+    Map<String, String> aclMap5 = Map.of("id", "ID");
+    Map<String, String> aclMap6 = Map.of("topic", "TOPIC");
+    Map<String, String> aclMap7 =
+        Map.of("username", userName, "topic", "testtopic", "permission", "write");
+
+    List<Map<String, String>> aclList =
+        List.of(aclMap1, aclMap2, aclMap3, aclMap4, aclMap5, aclMap6, aclMap7);
+
+    Map<String, List<Map<String, String>>> aclsResp = Map.of("acl", aclList);
+    return aclsResp;
   }
 
   @Test
@@ -297,18 +307,75 @@ public class AivenApiServiceTest {
   }
 
   @Test
-  public void deleteAclsTest() throws Exception {
+  public void deleteAclsTestAndServiceUser() throws Exception {
+    String projectName = "testproject";
+    String serviceName = "testservice";
+
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .aivenAclKey("4322342")
-            .projectName("testproject")
-            .serviceName("serviceName")
+            .projectName(projectName)
+            .serviceName(serviceName)
+            .username(TESTUSER)
             .build();
+
+    handleListAcls(projectName, serviceName, "testuser1"); // different user association
 
     String actual = aivenApiService.deleteAcls(clusterAclRequest);
     String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);
+    String uri =
+        SERVICE_ACLS_ENDPOINT
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
+            .replace("userName", TESTUSER);
+
+    verify(restTemplate, times(1))
+        .exchange(eq(uri), eq(HttpMethod.DELETE), any(HttpEntity.class), eq(Object.class));
+  }
+
+  @Test
+  public void deleteAclsTestAndNotServiceUser() throws Exception {
+    String projectName = "testproject";
+    String serviceName = "testservice";
+
+    ClusterAclRequest clusterAclRequest =
+        ClusterAclRequest.builder()
+            .aivenAclKey("4322342")
+            .projectName(projectName)
+            .serviceName(serviceName)
+            .username(TESTUSER)
+            .build();
+
+    handleListAcls(projectName, serviceName, TESTUSER); // same user association
+
+    String actual = aivenApiService.deleteAcls(clusterAclRequest);
+    String expected = ApiResultStatus.SUCCESS.value;
+
+    assertThat(actual).isEqualTo(expected);
+    String uri =
+        SERVICE_ACLS_ENDPOINT
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
+            .replace("userName", TESTUSER);
+
+    verify(restTemplate, times(0)) // service user is not deleted
+        .exchange(eq(uri), eq(HttpMethod.DELETE), any(HttpEntity.class), eq(Object.class));
+  }
+
+  private void handleListAcls(String projectName, String serviceName, String userName) {
+    Map<String, List<Map<String, String>>> aclsResp = getAclListMap(userName);
+    ResponseEntity<Map<String, List<Map<String, String>>>> responseEntityServiceAccount =
+        new ResponseEntity<>(aclsResp, HttpStatus.OK);
+
+    String getAclsUrl = ACLS_BASE_URL + projectName + "/service/" + serviceName + "/acl";
+    when(restTemplate.exchange(
+            eq(getAclsUrl),
+            eq(HttpMethod.GET),
+            any(),
+            (ParameterizedTypeReference<Map<String, List<Map<String, String>>>>) any()))
+        .thenReturn(responseEntityServiceAccount);
   }
 
   @Test
