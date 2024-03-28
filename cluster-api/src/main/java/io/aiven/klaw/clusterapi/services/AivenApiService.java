@@ -37,6 +37,9 @@ public class AivenApiService {
   public static final String PROJECT_NAME = "projectName";
   public static final String SERVICE_NAME = "serviceName";
   public static final String USERNAME = "username";
+  public static final String PRINCIPLE = "principle";
+  public static final String RESOURCE_TYPE = "resourceType";
+  public static final String USER_NAME = "userName";
 
   private RestTemplate restTemplate;
 
@@ -172,7 +175,7 @@ public class AivenApiService {
         serviceAccountApiEndpoint
             .replace(PROJECT_NAME, projectName)
             .replace(SERVICE_NAME, serviceName)
-            .replace("userName", serviceAccountUser);
+            .replace(USER_NAME, serviceAccountUser);
     try {
       HttpHeaders headers = getHttpHeaders();
       HttpEntity<?> request = new HttpEntity<>(headers);
@@ -197,7 +200,7 @@ public class AivenApiService {
         serviceAccountApiEndpoint
             .replace(PROJECT_NAME, projectName)
             .replace(SERVICE_NAME, serviceName)
-            .replace("userName", userName);
+            .replace(USER_NAME, userName);
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
     ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
     serviceAccountDetails.setAccountFound(false);
@@ -299,10 +302,10 @@ public class AivenApiService {
         aclsList.stream()
             .filter(
                 aclMap ->
-                    aclMap.containsKey("principle")
-                        && aclMap.containsKey("resourceType")
-                        && aclMap.get("principle").equals(clusterAclRequest.getUsername())
-                        && aclMap.get("resourceType").equals("TOPIC"))
+                    aclMap.containsKey(PRINCIPLE)
+                        && aclMap.containsKey(RESOURCE_TYPE)
+                        && aclMap.get(PRINCIPLE).equals(clusterAclRequest.getUsername())
+                        && aclMap.get(RESOURCE_TYPE).equals("TOPIC"))
             .count();
     // Check if there are any other topics using the same principle
     if (aclsListFiltered == 0) {
@@ -339,17 +342,17 @@ public class AivenApiService {
             case "id" -> aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
             case "permission" -> {
               aclsMapUpdated.put("operation", aclsMap.get(keyAcls).toUpperCase());
-              aclsMapUpdated.put("resourceType", "TOPIC");
+              aclsMapUpdated.put(RESOURCE_TYPE, "TOPIC");
             }
             case "topic" -> aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
-            case USERNAME -> aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
+            case USERNAME -> aclsMapUpdated.put(PRINCIPLE, aclsMap.get(keyAcls));
           }
         }
         aclsMapUpdated.put("host", "*");
         aclsMapUpdated.put("permissionType", "ALLOW");
         if ("READ".equals(aclsMapUpdated.get("operation"))) {
           Map<String, String> newRGroupMap = new HashMap<>(aclsMapUpdated);
-          newRGroupMap.put("resourceType", "GROUP");
+          newRGroupMap.put(RESOURCE_TYPE, "GROUP");
           newRGroupMap.put("resourceName", "-na-");
           aclsListUpdated.add(newRGroupMap);
         }
