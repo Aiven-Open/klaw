@@ -3,6 +3,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
@@ -380,13 +381,12 @@ public class InsertDataJdbc {
     if (userNameExists.isPresent()) return "Failure. User already exists";
 
     // STAGING status comes from AD users
-    Optional<RegisterUserInfo> userExists = registerInfoRepo.findById(userInfo.getUsername());
-    if (userExists.isPresent()) {
-      if ("APPROVED".equals(userExists.get().getStatus())) {
-        // do nothing -- user is deleted
-      } else if (!"STAGING".equals(userExists.get().getStatus())
-          && !"PENDING".equals(userExists.get().getStatus()))
-        return "Failure. Registration already exists";
+    RegisterUserInfo userRegistration =
+        registerInfoRepo.findFirstByUsernameAndStatusIn(
+            userInfo.getUsername(),
+            List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
+    if (userRegistration != null) {
+      return "Failure. Registration already exists";
     }
 
     registerInfoRepo.save(userInfo);

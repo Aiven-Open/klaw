@@ -2,6 +2,8 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -13,28 +15,36 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.ProfileModel;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
@@ -388,8 +398,70 @@ public class UsersTeamsControllerServiceTest {
   @Test
   void addTwoDefaultTeams() {}
 
-  @Test
-  void registerUser() {}
+  @ParameterizedTest
+  @MethodSource
+  void registerUserInternal(
+      String userName, String mailId, ApiResponse expectedResult, String responseMsg)
+      throws KlawException {
+
+    if (responseMsg.equals(TEAMS_ERR_115)) {
+      UserInfo user = new UserInfo();
+      user.setUsername(userName);
+      user.setMailid(mailId);
+      when(handleDbRequests.getAllUsersAllTenants()).thenReturn(List.of(user));
+    } else if (responseMsg.equals(TEAMS_ERR_117)) {
+      // Empty list no users currently exist
+      when(handleDbRequests.getAllUsersAllTenants()).thenReturn(new ArrayList<>());
+      RegisterUserInfo regUser = new RegisterUserInfo();
+      regUser.setUsername(userName);
+      regUser.setStatus(NewUserStatus.PENDING.value);
+      regUser.setMailid(mailId);
+      when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(List.of(regUser));
+    } else {
+      // Empty list no users currently exist
+      when(handleDbRequests.getAllUsersAllTenants()).thenReturn(new ArrayList<>());
+      when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(new ArrayList<>());
+      when(handleDbRequests.registerUser(any())).thenReturn(responseMsg);
+    }
+
+    RegisterUserInfoModel model = new RegisterUserInfoModel();
+    model.setTeam("Octopus");
+    model.setRole("USER");
+    model.setPwd("XXXXXXX");
+    model.setFullname(userName);
+    model.setUsername(userName);
+    model.setMailid(mailId);
+
+    ApiResponse result = usersTeamsControllerService.registerUser(model, false);
+    assertThat(result.getMessage()).isEqualTo(expectedResult.getMessage());
+    assertThat(result.isSuccess()).isEqualTo(expectedResult.isSuccess());
+  }
+
+  public static Stream<Arguments> registerUserInternal() {
+    return Stream.of(
+        Arguments.of(
+            "Octopus",
+            "octopus@klaw-project.io",
+            ApiResponse.SUCCESS,
+            ApiResultStatus.SUCCESS.value),
+        Arguments.of(
+            "octopus@klaw-project.io",
+            "octopus@klaw-project.io",
+            ApiResponse.FAILURE,
+            ApiResultStatus.FAILURE.value),
+        Arguments.of(
+            "octopus@klaw-project.io",
+            "octopus@klaw-project.io",
+            ApiResponse.notOk(TEAMS_ERR_117),
+            "Failure. Registration already exists"),
+        Arguments.of(
+            "Octopus2", "octopus@klaw-project.io", ApiResponse.notOk(TEAMS_ERR_117), TEAMS_ERR_117),
+        Arguments.of(
+            "Octopus3",
+            "octopus@klaw-project.io",
+            ApiResponse.notOk(TEAMS_ERR_115),
+            TEAMS_ERR_115));
+  }
 
   @Test
   void getNewUserRequests() {}

@@ -2,6 +2,8 @@ package io.aiven.klaw.dao;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -19,6 +21,10 @@ import lombok.ToString;
 public class RegisterUserInfo implements Serializable {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private int id;
+
   @Column(name = "userid")
   private String username;
 

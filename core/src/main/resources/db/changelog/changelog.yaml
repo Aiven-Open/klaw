@@ -1285,3 +1285,23 @@ databaseChangeLog:
                     type: VARCHAR2(10)
                     defaultValue: 'AVRO'
               tableName: kwavroschemas
+    - changeSet:
+        id: 25-03-2024 Alter primary key on registration table
+        author: aindriu-aiven
+        changes:
+        - dropPrimaryKey:
+            constraintName: CONSTRAINT_3
+            dropIndex: true
+            tableName: kwregisterusers
+        - addColumn:
+            tableName: kwregisterusers
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: REG_ID
+                  autoIncrement: true
+                  startWith: 1
+                  name: id
+                  type: INT
