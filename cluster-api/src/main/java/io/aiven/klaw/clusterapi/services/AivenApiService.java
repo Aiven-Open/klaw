@@ -299,7 +299,9 @@ public class AivenApiService {
         aclsList.stream()
             .filter(
                 aclMap ->
-                    aclMap.get("principle").equals(clusterAclRequest.getUsername())
+                    aclMap.containsKey("principle")
+                        && aclMap.containsKey("resourceType")
+                        && aclMap.get("principle").equals(clusterAclRequest.getUsername())
                         && aclMap.get("resourceType").equals("TOPIC"))
             .count();
     // Check if there are any other topics using the same principle
