@@ -58,7 +58,7 @@ public class AivenApiService {
   private String addServiceAccountApiEndpoint;
 
   @Value("${klaw.clusters.aiven.getserviceaccount.api:api}")
-  private String getServiceAccountApiEndpoint;
+  private String serviceAccountApiEndpoint;
 
   @Value("${klaw.clusters.aiven.servicedetails.api:api}")
   private String serviceDetailsApiEndpoint;
@@ -161,6 +161,29 @@ public class AivenApiService {
     }
   }
 
+  private String deleteServiceAccountUser(
+      String projectName, String serviceName, String serviceAccountUser) {
+    log.debug(
+        "Deleting service account user : projectName serviceName serviceAccountUser :{} {} {}",
+        projectName,
+        serviceName,
+        serviceAccountUser);
+    String uri =
+        serviceAccountApiEndpoint
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
+            .replace("userName", serviceAccountUser);
+    try {
+      HttpHeaders headers = getHttpHeaders();
+      HttpEntity<?> request = new HttpEntity<>(headers);
+      restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      return ApiResultStatus.FAILURE.value;
+    }
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   // Get Aiven service account details
   public ServiceAccountDetails getServiceAccountDetails(
       String projectName, String serviceName, String userName) {
@@ -171,7 +194,7 @@ public class AivenApiService {
         userName);
     HttpHeaders headers = getHttpHeaders();
     String uri =
-        getServiceAccountApiEndpoint
+        serviceAccountApiEndpoint
             .replace(PROJECT_NAME, projectName)
             .replace(SERVICE_NAME, serviceName)
             .replace("userName", userName);
@@ -253,6 +276,9 @@ public class AivenApiService {
       HttpHeaders headers = getHttpHeaders();
       HttpEntity<?> request = new HttpEntity<>(headers);
       restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
+
+      // Check if service user can be deleted
+      deleteServiceAccountUser(clusterAclRequest);
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException) {
@@ -264,6 +290,25 @@ public class AivenApiService {
     }
 
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  private void deleteServiceAccountUser(ClusterAclRequest clusterAclRequest) throws Exception {
+    Set<Map<String, String>> aclsList =
+        listAcls(clusterAclRequest.getProjectName(), clusterAclRequest.getServiceName());
+    long aclsListFiltered =
+        aclsList.stream()
+            .filter(
+                aclMap ->
+                    aclMap.get("principle").equals(clusterAclRequest.getUsername())
+                        && aclMap.get("resourceType").equals("TOPIC"))
+            .count();
+    // Check if there are any other topics using the same principle
+    if (aclsListFiltered == 0) {
+      deleteServiceAccountUser(
+          clusterAclRequest.getProjectName(),
+          clusterAclRequest.getServiceName(),
+          clusterAclRequest.getUsername());
+    }
   }
 
   public Set<Map<String, String>> listAcls(String projectName, String serviceName)
