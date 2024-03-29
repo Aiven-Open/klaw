@@ -98,13 +98,15 @@ public class UpdateDataJdbc {
       UserInfoRepo userInfoRepo,
       SchemaRequestRepo schemaRequestRepo,
       InsertDataJdbc insertDataJdbcHelper,
-      SelectDataJdbc selectDataJdbcHelper) {
+      SelectDataJdbc selectDataJdbcHelper,
+      RegisterInfoRepo registerInfoRepo) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.insertDataJdbcHelper = insertDataJdbcHelper;
     this.selectDataJdbcHelper = selectDataJdbcHelper;
+    this.registerInfoRepo = registerInfoRepo;
   }
 
   public UpdateDataJdbc() {}
@@ -480,21 +482,22 @@ public class UpdateDataJdbc {
 
   public void updateNewUserRequest(String username, String approver, boolean isApprove) {
     log.debug("updateNewUserRequest {} {} {}", username, approver, isApprove);
-    Optional<RegisterUserInfo> registerUser = registerInfoRepo.findById(username);
+    RegisterUserInfo registerUser =
+        registerInfoRepo.findFirstByUsernameAndStatusIn(
+            username, List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
     String status;
     if (isApprove) {
       status = NewUserStatus.APPROVED.value;
     } else {
       status = NewUserStatus.DECLINED.value;
     }
-    if (registerUser.isPresent()) {
-      RegisterUserInfo registerUserInfo = registerUser.get();
-      if (NewUserStatus.PENDING.value.equals(registerUserInfo.getStatus())) {
-        registerUserInfo.setStatus(status);
-        registerUserInfo.setApprover(approver);
-        registerUserInfo.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
+    if (registerUser != null) {
+      if (NewUserStatus.PENDING.value.equals(registerUser.getStatus())) {
+        registerUser.setStatus(status);
+        registerUser.setApprover(approver);
+        registerUser.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
 
-        registerInfoRepo.save(registerUserInfo);
+        registerInfoRepo.save(registerUser);
       }
     }
   }

@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.enums.RequestMode;
@@ -1121,8 +1122,13 @@ public class SelectDataJdbc {
   }
 
   public RegisterUserInfo selectRegisterUsersInfo(String username) {
-    Optional<RegisterUserInfo> registerUserRec = registerInfoRepo.findById(username);
+    Optional<RegisterUserInfo> registerUserRec = registerInfoRepo.findByUsername(username);
     return registerUserRec.orElse(null);
+  }
+
+  public RegisterUserInfo selectPendingRegisterUsersInfo(String username) {
+    return registerInfoRepo.findFirstByUsernameAndStatusIn(
+        username, List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
   }
 
   public List<Acl> getUniqueConsumerGroups(int tenantId) {

@@ -657,6 +657,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public RegisterUserInfo getPendingRegisterUsersInfo(String username) {
+    return jdbcSelectHelper.selectPendingRegisterUsersInfo(username);
+  }
+
+  @Override
   public AclRequests getAclRequest(int req_no, int tenantId) {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
   }

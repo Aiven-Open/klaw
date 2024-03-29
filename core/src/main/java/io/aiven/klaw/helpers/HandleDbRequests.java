@@ -292,6 +292,8 @@ public interface HandleDbRequests {
 
   RegisterUserInfo getRegisterUsersInfo(String username);
 
+  RegisterUserInfo getPendingRegisterUsersInfo(String username);
+
   AclRequests getAclRequest(int req_no, int tenantId);
 
   Optional<Acl> getAcl(int aclId, int tenantId);

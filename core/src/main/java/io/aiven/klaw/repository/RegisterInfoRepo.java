@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, String> {
-  Optional<RegisterUserInfo> findById(String userid);
+  Optional<RegisterUserInfo> findByUsername(String userid);
 
   List<RegisterUserInfo> findAllByStatusAndTenantId(String status, int tenantId);
 
@@ -15,6 +15,8 @@ public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, Strin
   List<RegisterUserInfo> findAllByStatus(String status);
 
   List<RegisterUserInfo> findAllByTenantId(int tenantId);
+
+  RegisterUserInfo findFirstByUsernameAndStatusIn(String userId, List<String> status);
 
   RegisterUserInfo findFirstByUsernameAndStatus(String userId, String status);
 

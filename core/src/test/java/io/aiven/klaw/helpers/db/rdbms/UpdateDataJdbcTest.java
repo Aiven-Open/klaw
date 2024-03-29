@@ -12,14 +12,17 @@ import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.RegisterInfoRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
@@ -30,10 +33,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -52,6 +58,8 @@ public class UpdateDataJdbcTest {
   @Mock private AclRequestsRepo aclRequestsRepo;
 
   @Mock private UserInfoRepo userInfoRepo;
+
+  @Mock private RegisterInfoRepo registerInfoRepo;
 
   @Mock private SchemaRequestRepo schemaRequestRepo;
 
@@ -83,7 +91,8 @@ public class UpdateDataJdbcTest {
             userInfoRepo,
             schemaRequestRepo,
             insertDataJdbcHelper,
-            selectDataJdbcHelper);
+            selectDataJdbcHelper,
+            registerInfoRepo);
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
     ReflectionTestUtils.setField(updateData, "selectDataJdbcHelper", selectDataJdbcHelper);
@@ -300,5 +309,57 @@ public class UpdateDataJdbcTest {
 
     String status = updateData.updateConnectorDocumentation(kwKafkaConnector);
     assertThat(status).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void updateNewUserRequest(
+      String userName,
+      String mailId,
+      String approver,
+      boolean isApproved,
+      NewUserStatus status,
+      boolean userSaved) {
+
+    RegisterUserInfo regUser = new RegisterUserInfo();
+    regUser.setPwd("XXXXXXXXX");
+    regUser.setApprover(approver);
+    regUser.setRole("USER");
+    regUser.setUsername(userName);
+    regUser.setMailid(mailId);
+    regUser.setStatus(status.value);
+    when(registerInfoRepo.findFirstByUsernameAndStatusIn(eq(userName), any())).thenReturn(regUser);
+    updateData.updateNewUserRequest(userName, approver, isApproved);
+    if (userSaved) {
+      verify(registerInfoRepo, times(1)).save(any());
+    }
+  }
+
+  private static Stream<Arguments> updateNewUserRequest() {
+
+    return Stream.of(
+        Arguments.of(
+            "Octopus", "octopus@klaw-project.io", "SUPERADMIN", true, NewUserStatus.PENDING, true),
+        Arguments.of(
+            "octopus@klaw-project.io",
+            "octopus@klaw-project.io",
+            "SUPERADMIN",
+            true,
+            NewUserStatus.STAGING,
+            false),
+        Arguments.of(
+            "Octopus2",
+            "octopus@klaw-project.io",
+            "SUPERADMIN",
+            true,
+            NewUserStatus.DECLINED,
+            false),
+        Arguments.of(
+            "Octopus3",
+            "octopus@klaw-project.io",
+            "SUPERADMIN",
+            true,
+            NewUserStatus.APPROVED,
+            false));
   }
 }
