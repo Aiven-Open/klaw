@@ -538,7 +538,8 @@ public class AclControllerService {
     if (aclOp.isEmpty()) {
       return ApiResponse.notOk("Acl does not exist.");
     }
-    //topic is owned across all environments so it doesnt matter which one is selected to get the team Id
+    // topic is owned across all environments so it doesnt matter which one is selected to get the
+    // team Id
     List<Topic> topic =
         manageDatabase.getHandleDbRequests().getTopics(aclOp.get().getTopicname(), tenantId);
     if (topic.isEmpty()) {
