@@ -23,6 +23,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Approval;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
@@ -824,18 +825,35 @@ public class AclControllerService {
     String updateAclReqStatus;
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
+
+      Env envSelected =
+          manageDatabase.getHandleDbRequests().getEnvDetails(aclReq.getEnvironment(), tenantId);
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(envSelected.getClusterId());
+
       if (Objects.requireNonNull(responseBody).isSuccess()) {
-        Map<String, String> jsonParams = new HashMap<>();
-        String aivenAclIdKey = "aivenaclid";
-        Object responseData = responseBody.getData();
-        if (responseData instanceof Map) {
-          Map<String, String> dataMap = (Map<String, String>) responseData;
-          if (dataMap.containsKey(aivenAclIdKey)) {
-            jsonParams = dataMap;
-            updateServiceAccountsForTeam(aclReq, tenantId);
+        if (Objects.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())
+            && Objects.equals(
+                RequestOperationType.DELETE.value, aclReq.getRequestOperationType())) {
+          updateServiceAccountsForTeam(aclReq, tenantId);
+          Map<String, String> emptyJsonParams = new HashMap<>();
+          updateAclReqStatus =
+              dbHandle.updateAclRequest(aclReq, userDetails, emptyJsonParams, true);
+        } else {
+          Map<String, String> jsonParams = new HashMap<>();
+          String aivenAclIdKey = "aivenaclid";
+          Object responseData = responseBody.getData();
+          if (responseData instanceof Map) {
+            Map<String, String> dataMap = (Map<String, String>) responseData;
+            if (dataMap.containsKey(aivenAclIdKey)) {
+              jsonParams = dataMap;
+              updateServiceAccountsForTeam(aclReq, tenantId);
+            }
           }
+          updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams, false);
         }
-        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams, false);
       } else {
         updateAclReqStatus = ApiResultStatus.FAILURE.value;
       }
@@ -854,7 +872,12 @@ public class AclControllerService {
     if (optionalTeam.isPresent()) {
       ServiceAccounts serviceAccounts = optionalTeam.get().getServiceAccounts();
       if (serviceAccounts != null && serviceAccounts.getServiceAccountsList() != null) {
-        serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+        if (Objects.equals(
+            RequestOperationType.DELETE.value, aclRequest.getRequestOperationType())) {
+          serviceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
+        } else {
+          serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+        }
       } else {
         serviceAccounts = new ServiceAccounts();
         serviceAccounts.setNumberOfAllowedAccounts(allowedServiceAccountsPerTeam);
