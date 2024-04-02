@@ -826,18 +826,18 @@ public class AclControllerService {
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
 
-      Env envSelected =
-          manageDatabase.getHandleDbRequests().getEnvDetails(aclReq.getEnvironment(), tenantId);
-      KwClusters kwClusters =
-          manageDatabase
-              .getClusters(KafkaClustersType.KAFKA, tenantId)
-              .get(envSelected.getClusterId());
-
       if (Objects.requireNonNull(responseBody).isSuccess()) {
-        if (Objects.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())
-            && Objects.equals(
-                RequestOperationType.DELETE.value, aclReq.getRequestOperationType())) {
-          updateServiceAccountsForTeam(aclReq, tenantId);
+        if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getRequestOperationType())) {
+          Env envSelected =
+              manageDatabase.getHandleDbRequests().getEnvDetails(aclReq.getEnvironment(), tenantId);
+          KwClusters kwClusters =
+              manageDatabase
+                  .getClusters(KafkaClustersType.KAFKA, tenantId)
+                  .get(envSelected.getClusterId());
+          if (Objects.equals(
+              KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())) {
+            updateServiceAccountsForTeam(aclReq, tenantId);
+          }
           Map<String, String> emptyJsonParams = new HashMap<>();
           updateAclReqStatus =
               dbHandle.updateAclRequest(aclReq, userDetails, emptyJsonParams, true);

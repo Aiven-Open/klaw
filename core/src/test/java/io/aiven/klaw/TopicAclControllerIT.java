@@ -751,6 +751,13 @@ public class TopicAclControllerIT {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     Integer reqNo = (Integer) hMap.get("req_no");
 
+    res = execAclResponse(reqNo);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+  }
+
+  private String execAclResponse(Integer reqNo) throws Exception {
+    String res;
     res =
         mvc.perform(
                 MockMvcRequestBuilders.post("/execAclRequest")
@@ -762,8 +769,7 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    ApiResponse response1 = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
-    assertThat(response1.isSuccess()).isTrue();
+    return res;
   }
 
   // Request for a acl
@@ -1032,6 +1038,53 @@ public class TopicAclControllerIT {
     assertThat(response1.isSuccess()).isTrue();
     getAclResAgainAndApprove(); // approve acl request
 
+    response = getTeamDetails();
+
+    TeamModelResponse teamModel = OBJECT_MAPPER.readValue(response, TeamModelResponse.class);
+    assertThat(teamModel.getServiceAccounts()).isNotNull();
+    assertThat(teamModel.getServiceAccounts().getServiceAccountsList())
+        .contains(addAclRequest.getAcl_ssl().get(0));
+  }
+
+  @Test
+  @Order(31)
+  public void deleteAivenAcl() throws Exception {
+    Integer reqNo = 1002;
+
+    DeleteAclRequestModel deleteAclRequestModel = new DeleteAclRequestModel();
+    deleteAclRequestModel.setRequestId(String.valueOf(reqNo)); // deleting the acl created above
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(deleteAclRequestModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createDeleteAclSubscriptionRequest")
+                    .with(user(user1).password(PASSWORD))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+
+    // Approve acl req
+    when(clusterApiService.approveAclRequests(any(), anyInt()))
+        .thenReturn(new ResponseEntity<>(ApiResponse.SUCCESS, HttpStatus.OK));
+    String res = execAclResponse(reqNo);
+    ApiResponse response2 = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    assertThat(response2.isSuccess()).isTrue();
+
+    response = getTeamDetails();
+
+    TeamModelResponse teamModel = OBJECT_MAPPER.readValue(response, TeamModelResponse.class);
+    assertThat(teamModel.getServiceAccounts()).isNotNull();
+    assertThat(teamModel.getServiceAccounts().getServiceAccountsList()).hasSize(0);
+  }
+
+  private String getTeamDetails() throws Exception {
+    String response;
     response =
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTeamDetails")
@@ -1044,11 +1097,7 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    TeamModelResponse teamModel = OBJECT_MAPPER.readValue(response, TeamModelResponse.class);
-    assertThat(teamModel.getServiceAccounts()).isNotNull();
-    assertThat(teamModel.getServiceAccounts().getServiceAccountsList())
-        .contains(addAclRequest.getAcl_ssl().get(0));
+    return response;
   }
 
   private String createAndApproveTopic(int topicID, boolean aivenEnv) throws Exception {
@@ -1100,7 +1149,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(31)
+  @Order(32)
   public void createEnvWithPrefixAndSuffix() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("TST");
     envModel.getParams().setTopicPrefix(List.of("prefix-"));
@@ -1140,7 +1189,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(32)
+  @Order(33)
   public void createTopicRequestFailValidation() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId5);
     addTopicRequest.setTopicname("prefix-t-suffix");
@@ -1166,7 +1215,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(33)
+  @Order(34)
   public void createTopicRequestFailValidation_prefix_suffix_overlap() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId5);
     addTopicRequest.setTopicname("prefix-suffix");
@@ -1192,7 +1241,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(34)
+  @Order(35)
   public void addNewSRCluster() throws Exception {
     // Schema registry cluster
 
@@ -1231,7 +1280,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(35)
+  @Order(36)
   public void createSREnv() throws Exception {
     EnvModel envModelSch = mockMethods.getEnvModel("DEVSCH");
     envModelSch.setClusterId(3);
@@ -1300,7 +1349,7 @@ public class TopicAclControllerIT {
     assertThat(envModels).hasSize(1);
   }
 
-  @Order(36)
+  @Order(37)
   @Test
   public void createSchemaRequest() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
@@ -1333,7 +1382,7 @@ public class TopicAclControllerIT {
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
-  @Order(37)
+  @Order(38)
   @Test
   public void editSchemaRequestFailureNotOwnerOfRequest() throws Exception {
     Integer schemaRequestId = 1001;
@@ -1370,7 +1419,7 @@ public class TopicAclControllerIT {
         .andExpect(jsonPath("$.message", is(SCHEMA_ERR_111)));
   }
 
-  @Order(38)
+  @Order(39)
   @Test
   public void editSchemaRequestSuccess() throws Exception {
     Integer schemaRequestId = 1001;
@@ -1411,7 +1460,7 @@ public class TopicAclControllerIT {
     assertThat(schemaRequestsResponseModel.getForceRegister()).isTrue();
   }
 
-  @Order(39)
+  @Order(40)
   @Test
   public void execSchemaRequests() throws Exception {
     Map<String, Object> registerSchemaCustomResponse = new HashMap<>();
@@ -1436,7 +1485,7 @@ public class TopicAclControllerIT {
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
-  @Order(40)
+  @Order(41)
   @Test
   public void getSchemaOverview() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
@@ -1461,7 +1510,7 @@ public class TopicAclControllerIT {
     assertThat(response.getAllSchemaVersions()).hasSize(1);
   }
 
-  @Order(41)
+  @Order(42)
   @Test
   public void getHistoriesOfTopicAclSchema() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
@@ -1489,7 +1538,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(42)
+  @Order(43)
   public void createOffsetResetRequestToDelete() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1497,7 +1546,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(43)
+  @Order(44)
   public void getOffsetResetRequests() throws Exception {
     List<OperationalRequestsResponseModel> operationalRequestList =
         getOperationalRequestsFromStatus(RequestStatus.CREATED.name());
@@ -1512,7 +1561,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(44)
+  @Order(45)
   public void deleteOffsetRequest() throws Exception {
     String response =
         mvc.perform(
@@ -1532,7 +1581,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(45)
+  @Order(46)
   public void createOffsetResetRequestToDecline() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1543,7 +1592,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(46)
+  @Order(47)
   public void declineOffsetRequest() throws Exception {
     String response =
         mvc.perform(
@@ -1564,7 +1613,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(47)
+  @Order(48)
   public void createOffsetResetRequestToApprove() throws Exception {
     String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
@@ -1575,7 +1624,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(48)
+  @Order(49)
   public void approveOffsetRequest() throws Exception {
     Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
         UtilMethods.getOffsetsTimingMapMap();
@@ -1602,7 +1651,7 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(49)
+  @Order(50)
   public void editTopicRequestFailureTopicDoesNotExist() throws Exception {
     TopicRequestModel updateTopicRequest = utilMethods.getTopicUpdateRequestModel(topicId1);
     updateTopicRequest.setRequestOperationType(RequestOperationType.UPDATE);
@@ -1623,7 +1672,7 @@ public class TopicAclControllerIT {
     assertThat(str).contains(TOPICS_VLD_ERR_124);
   }
 
-  @Order(50)
+  @Order(51)
   @Test
   public void deleteTopicRequestNotAuthorized() throws Exception {
     when(clusterApiService.getAllTopics(
@@ -1646,7 +1695,7 @@ public class TopicAclControllerIT {
         .andExpect(status().isUnauthorized());
   }
 
-  @Order(51)
+  @Order(52)
   @Test
   public void createTopicRequestNotAuthorized() throws Exception {
 
@@ -1693,7 +1742,7 @@ public class TopicAclControllerIT {
         .andExpect(status().isUnauthorized());
   }
 
-  @Order(52)
+  @Order(53)
   @Test
   public void editTopicRequestNotAuthorized() throws Exception {
 
