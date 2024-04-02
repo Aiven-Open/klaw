@@ -1071,7 +1071,14 @@ public class TopicAclControllerIT {
 
     // Approve acl req
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(ApiResponse.SUCCESS, HttpStatus.OK));
+        .thenReturn(
+            new ResponseEntity<>(
+                ApiResponse.builder()
+                    .success(true)
+                    .message(ApiResultStatus.SUCCESS.value)
+                    .data(true)
+                    .build(),
+                HttpStatus.OK));
     String res = execAclResponse(reqNo);
     ApiResponse response2 = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response2.isSuccess()).isTrue();

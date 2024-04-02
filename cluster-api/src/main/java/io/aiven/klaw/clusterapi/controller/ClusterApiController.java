@@ -296,14 +296,8 @@ public class ClusterApiController {
                 .build(),
             HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
-        result = aivenApiService.deleteAcls(clusterAclRequest);
-
-        return new ResponseEntity<>(
-            ApiResponse.builder()
-                .success(result.equals(ApiResultStatus.SUCCESS.value))
-                .message(result)
-                .build(),
-            HttpStatus.OK);
+        ApiResponse apiResponse = aivenApiService.deleteAcls(clusterAclRequest);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
       } else if (AclsNativeType.CONFLUENT_CLOUD
           .name()
           .equals(clusterAclRequest.getAclNativeType())) {

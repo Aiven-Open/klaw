@@ -845,11 +845,17 @@ public class AclControllerService {
                   .get(envSelected.getClusterId());
           if (Objects.equals(
               KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())) {
-            updateServiceAccountsForTeam(aclReq, tenantId);
+            Object responseData = responseBody.getData();
+            if (responseData instanceof Boolean) {
+              boolean deleteServiceUser = (Boolean) responseData;
+              if (deleteServiceUser) {
+                updateServiceAccountsForTeam(aclReq, tenantId);
+              }
+            }
           }
           Map<String, String> emptyJsonParams = new HashMap<>();
           updateAclReqStatus =
-              dbHandle.updateAclRequest(aclReq, userDetails, emptyJsonParams, true);
+              dbHandle.updateAclRequest(aclReq, userDetails, emptyJsonParams, false);
         } else {
           Map<String, String> jsonParams = new HashMap<>();
           String aivenAclIdKey = "aivenaclid";
