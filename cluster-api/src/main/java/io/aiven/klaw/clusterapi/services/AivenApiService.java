@@ -37,6 +37,9 @@ public class AivenApiService {
   public static final String PROJECT_NAME = "projectName";
   public static final String SERVICE_NAME = "serviceName";
   public static final String USERNAME = "username";
+  public static final String PRINCIPLE = "principle";
+  public static final String RESOURCE_TYPE = "resourceType";
+  public static final String USER_NAME = "userName";
 
   private RestTemplate restTemplate;
 
@@ -58,7 +61,7 @@ public class AivenApiService {
   private String addServiceAccountApiEndpoint;
 
   @Value("${klaw.clusters.aiven.getserviceaccount.api:api}")
-  private String getServiceAccountApiEndpoint;
+  private String serviceAccountApiEndpoint;
 
   @Value("${klaw.clusters.aiven.servicedetails.api:api}")
   private String serviceDetailsApiEndpoint;
@@ -161,6 +164,29 @@ public class AivenApiService {
     }
   }
 
+  private String deleteServiceAccountUser(
+      String projectName, String serviceName, String serviceAccountUser) {
+    log.debug(
+        "Deleting service account user : projectName serviceName serviceAccountUser :{} {} {}",
+        projectName,
+        serviceName,
+        serviceAccountUser);
+    String uri =
+        serviceAccountApiEndpoint
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
+            .replace(USER_NAME, serviceAccountUser);
+    try {
+      HttpHeaders headers = getHttpHeaders();
+      HttpEntity<?> request = new HttpEntity<>(headers);
+      restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      return ApiResultStatus.FAILURE.value;
+    }
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   // Get Aiven service account details
   public ServiceAccountDetails getServiceAccountDetails(
       String projectName, String serviceName, String userName) {
@@ -171,10 +197,10 @@ public class AivenApiService {
         userName);
     HttpHeaders headers = getHttpHeaders();
     String uri =
-        getServiceAccountApiEndpoint
+        serviceAccountApiEndpoint
             .replace(PROJECT_NAME, projectName)
             .replace(SERVICE_NAME, serviceName)
-            .replace("userName", userName);
+            .replace(USER_NAME, userName);
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
     ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
     serviceAccountDetails.setAccountFound(false);
@@ -253,6 +279,9 @@ public class AivenApiService {
       HttpHeaders headers = getHttpHeaders();
       HttpEntity<?> request = new HttpEntity<>(headers);
       restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
+
+      // Check if service user can be deleted
+      deleteServiceAccountUser(clusterAclRequest);
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException) {
@@ -264,6 +293,27 @@ public class AivenApiService {
     }
 
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  private void deleteServiceAccountUser(ClusterAclRequest clusterAclRequest) throws Exception {
+    Set<Map<String, String>> aclsList =
+        listAcls(clusterAclRequest.getProjectName(), clusterAclRequest.getServiceName());
+    long aclsListFiltered =
+        aclsList.stream()
+            .filter(
+                aclMap ->
+                    aclMap.containsKey(PRINCIPLE)
+                        && aclMap.containsKey(RESOURCE_TYPE)
+                        && aclMap.get(PRINCIPLE).equals(clusterAclRequest.getUsername())
+                        && aclMap.get(RESOURCE_TYPE).equals("TOPIC"))
+            .count();
+    // Check if there are any other topics using the same principle
+    if (aclsListFiltered == 0) {
+      deleteServiceAccountUser(
+          clusterAclRequest.getProjectName(),
+          clusterAclRequest.getServiceName(),
+          clusterAclRequest.getUsername());
+    }
   }
 
   public Set<Map<String, String>> listAcls(String projectName, String serviceName)
@@ -292,17 +342,17 @@ public class AivenApiService {
             case "id" -> aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
             case "permission" -> {
               aclsMapUpdated.put("operation", aclsMap.get(keyAcls).toUpperCase());
-              aclsMapUpdated.put("resourceType", "TOPIC");
+              aclsMapUpdated.put(RESOURCE_TYPE, "TOPIC");
             }
             case "topic" -> aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
-            case USERNAME -> aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
+            case USERNAME -> aclsMapUpdated.put(PRINCIPLE, aclsMap.get(keyAcls));
           }
         }
         aclsMapUpdated.put("host", "*");
         aclsMapUpdated.put("permissionType", "ALLOW");
         if ("READ".equals(aclsMapUpdated.get("operation"))) {
           Map<String, String> newRGroupMap = new HashMap<>(aclsMapUpdated);
-          newRGroupMap.put("resourceType", "GROUP");
+          newRGroupMap.put(RESOURCE_TYPE, "GROUP");
           newRGroupMap.put("resourceName", "-na-");
           aclsListUpdated.add(newRGroupMap);
         }
