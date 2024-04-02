@@ -535,8 +535,16 @@ public class AclControllerService {
 
     // Get ACL
     Optional<Acl> aclOp = manageDatabase.getHandleDbRequests().getAcl(aclId, tenantId);
+
     if (aclOp.isEmpty()) {
       return ApiResponse.notOk("Acl does not exist.");
+    }
+    // topic is owned across all environments so it doesnt matter which one is selected to get the
+    // team Id
+    List<Topic> topic =
+        manageDatabase.getHandleDbRequests().getTopics(aclOp.get().getTopicname(), tenantId);
+    if (topic.isEmpty()) {
+      return ApiResponse.notOk("Unable to find the topic related to this ACL.");
     }
 
     if (manageDatabase
@@ -569,7 +577,8 @@ public class AclControllerService {
             RequestEntityType.ACL,
             RequestOperationType.CLAIM,
             aclOp.get().getEnvironment(),
-            aclOp.get().getReq_no(),
+            topic.get(0).getTeamId(),
+            // This is the Acl Team Id
             aclOp.get().getTeamId(),
             tenantId);
 
