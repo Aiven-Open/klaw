@@ -307,18 +307,17 @@ public class UpdateDataJdbc {
     if (aclReq.getAcl_ip() != null) {
       String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
       for (String aclString : aclListIp) {
-        Acl aclObj = new Acl();
-        copyProperties(aclReq, aclObj);
-        aclObj.setTeamId(aclReq.getRequestingteam());
-        aclObj.setJsonParams(jsonParams);
-
-        acls = new ArrayList<>();
-        aclObj.setAclip(aclString);
-        aclObj.setAclssl(aclReq.getAcl_ssl());
-        acls.add(aclObj);
-
         if (aclReq.getRequestOperationType() != null
             && RequestOperationType.CREATE.value.equals(aclReq.getRequestOperationType())) {
+          Acl aclObj = new Acl();
+          copyProperties(aclReq, aclObj);
+          aclObj.setTeamId(aclReq.getRequestingteam());
+          aclObj.setJsonParams(jsonParams);
+
+          acls = new ArrayList<>();
+          aclObj.setAclip(aclString);
+          aclObj.setAclssl(aclReq.getAcl_ssl());
+          acls.add(aclObj);
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {
@@ -329,18 +328,18 @@ public class UpdateDataJdbc {
     } else if (aclReq.getAcl_ssl() != null) {
       String[] aclListSsl = aclReq.getAcl_ssl().split("<ACL>");
       for (String aclString : aclListSsl) {
-        Acl aclObj = new Acl();
-        copyProperties(aclReq, aclObj);
-        aclObj.setTeamId(aclReq.getRequestingteam());
-        aclObj.setJsonParams(jsonParams);
-
-        acls = new ArrayList<>();
-        aclObj.setAclip(aclReq.getAcl_ip());
-        aclObj.setAclssl(aclString);
-        acls.add(aclObj);
-
         if (aclReq.getRequestOperationType() != null
             && RequestOperationType.CREATE.value.equals(aclReq.getRequestOperationType())) {
+          Acl aclObj = new Acl();
+          copyProperties(aclReq, aclObj);
+          aclObj.setTeamId(aclReq.getRequestingteam());
+          aclObj.setJsonParams(jsonParams);
+
+          acls = new ArrayList<>();
+          aclObj.setAclip(aclReq.getAcl_ip());
+          aclObj.setAclssl(aclString);
+          acls.add(aclObj);
+
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {

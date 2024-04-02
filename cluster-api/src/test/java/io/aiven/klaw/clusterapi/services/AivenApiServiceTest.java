@@ -321,7 +321,7 @@ public class AivenApiServiceTest {
 
     handleListAcls(projectName, serviceName, "testuser1"); // different user association
 
-    String actual = aivenApiService.deleteAcls(clusterAclRequest);
+    String actual = aivenApiService.deleteAcls(clusterAclRequest).getMessage();
     String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);
@@ -350,7 +350,7 @@ public class AivenApiServiceTest {
 
     handleListAcls(projectName, serviceName, TESTUSER); // same user association
 
-    String actual = aivenApiService.deleteAcls(clusterAclRequest);
+    String actual = aivenApiService.deleteAcls(clusterAclRequest).getMessage();
     String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);
@@ -422,7 +422,7 @@ public class AivenApiServiceTest {
             eq(aclsUrl), eq(HttpMethod.DELETE), any(HttpEntity.class), any(Class.class)))
         .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-    String actual = aivenApiService.deleteAcls(clusterAclRequest);
+    String actual = aivenApiService.deleteAcls(clusterAclRequest).getMessage();
     String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);

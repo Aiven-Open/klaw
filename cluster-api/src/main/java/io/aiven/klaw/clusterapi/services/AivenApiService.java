@@ -3,6 +3,7 @@ package io.aiven.klaw.clusterapi.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.AivenAclResponse;
 import io.aiven.klaw.clusterapi.models.AivenAclStruct;
+import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
 import io.aiven.klaw.clusterapi.models.enums.AclAttributes;
@@ -262,9 +263,9 @@ public class AivenApiService {
     return new HashSet<>();
   }
 
-  public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {
+  public ApiResponse deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {
     RestTemplate restTemplate = getRestTemplate();
-
+    boolean serviceUserDeleted = false;
     try {
       String projectName = clusterAclRequest.getProjectName();
       String serviceName = clusterAclRequest.getServiceName();
@@ -281,21 +282,28 @@ public class AivenApiService {
       restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
 
       // Check if service user can be deleted
-      deleteServiceAccountUser(clusterAclRequest);
+      serviceUserDeleted = deleteServiceAccountUser(clusterAclRequest);
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException) {
         if (((HttpClientErrorException) e).getStatusCode() == HttpStatus.NOT_FOUND) {
-          return ApiResultStatus.SUCCESS.value;
+          return ApiResponse.builder()
+              .success(true)
+              .message(ApiResultStatus.SUCCESS.value)
+              .data(false)
+              .build();
         }
       }
       throw new Exception("Error in deleting acls " + e.getMessage());
     }
-
-    return ApiResultStatus.SUCCESS.value;
+    return ApiResponse.builder()
+        .success(true)
+        .message(ApiResultStatus.SUCCESS.value)
+        .data(serviceUserDeleted)
+        .build();
   }
 
-  private void deleteServiceAccountUser(ClusterAclRequest clusterAclRequest) throws Exception {
+  private boolean deleteServiceAccountUser(ClusterAclRequest clusterAclRequest) throws Exception {
     Set<Map<String, String>> aclsList =
         listAcls(clusterAclRequest.getProjectName(), clusterAclRequest.getServiceName());
     long aclsListFiltered =
@@ -313,7 +321,9 @@ public class AivenApiService {
           clusterAclRequest.getProjectName(),
           clusterAclRequest.getServiceName(),
           clusterAclRequest.getUsername());
+      return true;
     }
+    return false;
   }
 
   public Set<Map<String, String>> listAcls(String projectName, String serviceName)
