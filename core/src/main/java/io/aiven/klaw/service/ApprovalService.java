@@ -77,7 +77,7 @@ public class ApprovalService {
       RequestEntityType entityType,
       RequestOperationType operationType,
       String envName,
-      Integer resourceNameId,
+      Integer resourceOwnerTeamId,
       Integer aclOwnerId,
       int tenantId)
       throws KlawException {
@@ -85,7 +85,7 @@ public class ApprovalService {
     for (Approval app : approvals) {
       if (app.getApprovalType() == ApprovalType.TOPIC_TEAM_OWNER
           || app.getApprovalType() == ApprovalType.CONNECTOR_TEAM_OWNER) {
-        app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, resourceNameId));
+        app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, resourceOwnerTeamId));
       } else if (app.getApprovalType() == ApprovalType.ACL_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, aclOwnerId));
       }
