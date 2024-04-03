@@ -12,8 +12,8 @@ public class ApprovalTypeConverter implements AttributeConverter<ApprovalType, S
     if (approvalType == null) {
       return null;
     }
-
-    return approvalType.name();
+    // Pre existing code saves the ordinal as a string in Postgres and H2
+    return String.valueOf(approvalType.ordinal());
   }
 
   @Override
@@ -21,6 +21,12 @@ public class ApprovalTypeConverter implements AttributeConverter<ApprovalType, S
     if (approvalType == null) {
       return null;
     }
-    return ApprovalType.of(approvalType);
+    return switch (Integer.parseInt(approvalType)) {
+      case 0 -> ApprovalType.TOPIC_TEAM_OWNER;
+      case 1 -> ApprovalType.CONNECTOR_TEAM_OWNER;
+      case 2 -> ApprovalType.ACL_TEAM_OWNER;
+      case 3 -> ApprovalType.TEAM;
+      default -> null;
+    };
   }
 }
