@@ -108,6 +108,15 @@ public class SelectDataJdbc {
         tenantId, env, requestStatus, topicName);
   }
 
+  public boolean existsSpecificAclRequest(
+      String topicName, String requestStatus, String env, int tenantId, int associatedAclId) {
+    log.debug("associatedAclId = {}", associatedAclId);
+
+    return aclRequestsRepo
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndTopicnameAndAssociatedAclId(
+            tenantId, env, requestStatus, topicName, associatedAclId);
+  }
+
   public List<AclRequests> selectFilteredAclRequests(
       boolean isApproval,
       String requestor,

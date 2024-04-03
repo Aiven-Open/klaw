@@ -420,6 +420,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsSpecificAclRequest(
+      String topicName, String requestStatus, String env, int tenantId, int associatedAclId) {
+    return jdbcSelectHelper.existsSpecificAclRequest(
+        topicName, requestStatus, env, tenantId, associatedAclId);
+  }
+
+  @Override
   public boolean existsSchemaRequest(
       String topicName, String requestStatus, String env, int tenantId) {
     return jdbcSelectHelper.existsSchemaRequest(topicName, requestStatus, env, tenantId);

@@ -7,6 +7,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
@@ -549,12 +550,13 @@ public class AclControllerService {
 
     if (manageDatabase
         .getHandleDbRequests()
-        .existsAclRequest(
+        .existsSpecificAclRequest(
             aclOp.get().getTopicname(),
             RequestStatus.CREATED.value,
             aclOp.get().getEnvironment(),
-            tenantId)) {
-      return ApiResponse.notOk("A request for this ACL already exists.");
+            tenantId,
+            aclId)) {
+      return ApiResponse.notOk(ACL_ERR_108);
     }
 
     // Copy into ACL Request
@@ -566,6 +568,9 @@ public class AclControllerService {
     // Store the original aclId in the other Params section
 
     request.setAssociatedAclId(aclOp.get().getReq_no());
+    request.setAcl_ip(aclOp.get().getAclip());
+    request.setAcl_ssl(aclOp.get().getAclssl());
+
     // Add Complex Approvers
     request.setRequestingteam(commonUtilsService.getTeamId(userName));
     request.setRequestor(userName);

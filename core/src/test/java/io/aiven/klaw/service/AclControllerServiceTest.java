@@ -2,6 +2,8 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_108;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUESTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -18,6 +20,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
@@ -32,8 +35,10 @@ import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -46,6 +51,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +62,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -71,6 +79,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AclControllerServiceTest {
 
+  public static final int TENANT_ID = 101;
   private UtilMethods utilMethods;
   @Mock private UserDetails userDetails;
   @Mock private ClusterApiService clusterApiService;
@@ -81,8 +90,11 @@ public class AclControllerServiceTest {
   @Mock private MailUtils mailService;
   @Mock private UserInfo userInfo;
   @Mock private Pager pager;
+  @Mock private ApprovalService approvalService;
 
   private AclControllerService aclControllerService;
+
+  @Captor private ArgumentCaptor<AclRequests> aclRequestsCapture;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -95,6 +107,7 @@ public class AclControllerServiceTest {
     env.setClusterId(1);
     ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(aclControllerService, "commonUtilsService", commonUtilsService);
+    ReflectionTestUtils.setField(aclControllerService, "approvalService", approvalService);
     ReflectionTestUtils.setField(
         aclControllerService,
         "rolesPermissionsControllerService",
@@ -668,7 +681,7 @@ public class AclControllerServiceTest {
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
@@ -694,7 +707,7 @@ public class AclControllerServiceTest {
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
@@ -720,7 +733,7 @@ public class AclControllerServiceTest {
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
@@ -750,7 +763,7 @@ public class AclControllerServiceTest {
             .build();
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(utilMethods.getTeams());
 
     when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
@@ -774,7 +787,7 @@ public class AclControllerServiceTest {
             .build();
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -789,7 +802,7 @@ public class AclControllerServiceTest {
   @Order(30)
   public void verifyServiceAccountsOfTeam() {
     AclRequestsModel aclRequestsModel = getAclRequestProducer();
-    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setRequestingteam(TENANT_ID);
     aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user1", "user2")));
     Set<String> serviceAccountInfoSet = new HashSet<>();
     serviceAccountInfoSet.add("user1");
@@ -797,12 +810,12 @@ public class AclControllerServiceTest {
     stubUserInfo();
     mockKafkaFlavorAiven();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(utilMethods.getTeams());
-    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+    when(manageDatabase.getAllServiceAccounts(TENANT_ID)).thenReturn(serviceAccountInfoSet);
 
     boolean serviceAccountsCheck =
-        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, TENANT_ID);
     assertThat(serviceAccountsCheck).isFalse();
   }
 
@@ -810,7 +823,7 @@ public class AclControllerServiceTest {
   @Order(31)
   public void verifyServiceAccountsOfTeamOtherTeamOwnsAccount() {
     AclRequestsModel aclRequestsModel = getAclRequestProducer();
-    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setRequestingteam(TENANT_ID);
     aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user1", "user2")));
     Set<String> serviceAccountInfoSet = new HashSet<>();
     serviceAccountInfoSet.add("user1");
@@ -818,14 +831,14 @@ public class AclControllerServiceTest {
     stubUserInfo();
     mockKafkaFlavorAiven();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     List<Team> teamList = utilMethods.getTeams();
     teamList.get(0).setServiceAccounts(null);
     when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
-    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+    when(manageDatabase.getAllServiceAccounts(TENANT_ID)).thenReturn(serviceAccountInfoSet);
 
     boolean serviceAccountsCheck =
-        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, TENANT_ID);
     assertThat(serviceAccountsCheck).isTrue();
   }
 
@@ -833,7 +846,7 @@ public class AclControllerServiceTest {
   @Order(32)
   public void verifyServiceAccountsOfTeamNewAccount() {
     AclRequestsModel aclRequestsModel = getAclRequestProducer();
-    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setRequestingteam(TENANT_ID);
     aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user3", "user4")));
     Set<String> serviceAccountInfoSet = new HashSet<>();
     serviceAccountInfoSet.add("user1");
@@ -841,13 +854,13 @@ public class AclControllerServiceTest {
     stubUserInfo();
     mockKafkaFlavorAiven();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     List<Team> teamList = utilMethods.getTeams();
     when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
-    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+    when(manageDatabase.getAllServiceAccounts(TENANT_ID)).thenReturn(serviceAccountInfoSet);
 
     boolean serviceAccountsCheck =
-        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, TENANT_ID);
     assertThat(serviceAccountsCheck).isFalse();
   }
 
@@ -855,7 +868,7 @@ public class AclControllerServiceTest {
   @Order(33)
   public void verifyServiceAccountsOfTeamNewAccountOtherTeamOwnsAccount() {
     AclRequestsModel aclRequestsModel = getAclRequestProducer();
-    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setRequestingteam(TENANT_ID);
     aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user3")));
     Set<String> serviceAccountInfoSet = new HashSet<>();
     serviceAccountInfoSet.add("user3");
@@ -863,13 +876,13 @@ public class AclControllerServiceTest {
     stubUserInfo();
     mockKafkaFlavorAiven();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     List<Team> teamList = utilMethods.getTeams();
     when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
-    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+    when(manageDatabase.getAllServiceAccounts(TENANT_ID)).thenReturn(serviceAccountInfoSet);
 
     boolean serviceAccountsCheck =
-        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, TENANT_ID);
     assertThat(serviceAccountsCheck).isTrue();
   }
 
@@ -972,7 +985,7 @@ public class AclControllerServiceTest {
   public void getAclRequestsForApprover_RequestOperationType(RequestOperationType operationType) {
     String teamName = "teamname";
     stubUserInfo();
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TENANT_ID);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
             anyString(),
@@ -1011,7 +1024,7 @@ public class AclControllerServiceTest {
             eq(null),
             eq(null),
             eq(null),
-            eq(101));
+            eq(TENANT_ID));
   }
 
   @Test
@@ -1022,7 +1035,7 @@ public class AclControllerServiceTest {
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(TENANT_ID);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
@@ -1069,6 +1082,158 @@ public class AclControllerServiceTest {
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
     assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_101);
     assertThat(apiResp.isSuccess()).isFalse();
+  }
+
+  @Test
+  @Order(38)
+  public void claimAcl_NotAuthorized() throws KlawException, KlawBadRequestException {
+    int aclId = 224;
+
+    stubUserInfo();
+
+    when(commonUtilsService.isNotAuthorizedUser(
+            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
+        .thenReturn(true);
+    ApiResponse apiResp = aclControllerService.claimAcl(aclId);
+
+    assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(apiResp.isSuccess()).isFalse();
+  }
+
+  @Order(39)
+  @Test
+  public void claimAcl_AclDoesNotExist() throws KlawException {
+    int aclId = 224;
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(
+            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.empty());
+    ApiResponse apiResp = aclControllerService.claimAcl(aclId);
+
+    assertThat(apiResp.getMessage()).isEqualTo("Acl does not exist.");
+    assertThat(apiResp.isSuccess()).isFalse();
+  }
+
+  @Order(40)
+  @Test
+  public void claimAcl_TopicDoesNotExistOnACL() throws KlawException {
+    int aclId = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(
+            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
+    when(handleDbRequests.getTopics(eq(acl.getTopicname()), eq(TENANT_ID)))
+        .thenReturn(new ArrayList<>());
+    ApiResponse apiResp = aclControllerService.claimAcl(aclId);
+
+    assertThat(apiResp.getMessage()).isEqualTo("Unable to find the topic related to this ACL.");
+    assertThat(apiResp.isSuccess()).isFalse();
+  }
+
+  @Order(41)
+  @Test
+  public void claimAcl_claimAlreadyExists() throws KlawException {
+    int aclId = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(
+            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(handleDbRequests.getTopics(eq(acl.getTopicname()), eq(TENANT_ID))).thenReturn(topics);
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsSpecificAclRequest(
+                eq(acl.getTopicname()),
+                eq(RequestStatus.CREATED.value),
+                eq(acl.getEnvironment()),
+                eq(TENANT_ID),
+                eq(aclId)))
+        .thenReturn(true);
+    ApiResponse apiResp = aclControllerService.claimAcl(aclId);
+
+    assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_108);
+    assertThat(apiResp.isSuccess()).isFalse();
+  }
+
+  @Order(42)
+  @Test
+  public void claimAcl_createClaimRequest() throws KlawException {
+    int aclId = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(
+            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(handleDbRequests.getTopics(eq(acl.getTopicname()), eq(TENANT_ID))).thenReturn(topics);
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsSpecificAclRequest(
+                eq(acl.getTopicname()),
+                eq(RequestStatus.CREATED.value),
+                eq(acl.getEnvironment()),
+                eq(TENANT_ID),
+                eq(aclId)))
+        .thenReturn(false);
+    when(approvalService.getApprovalsForRequest(
+            eq(RequestEntityType.ACL),
+            eq(RequestOperationType.CLAIM),
+            eq(acl.getEnvironment()),
+            eq(topics.get(0).getTeamId()),
+            eq(acl.getTeamId()),
+            eq(TENANT_ID)))
+        .thenReturn(getDefaultAclApprovals("Octopus", "Crab"));
+    when(handleDbRequests.requestForAcl(any()))
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put("result", ApiResultStatus.SUCCESS.value);
+              }
+            });
+    ApiResponse apiResp = aclControllerService.claimAcl(aclId);
+    verify(approvalService, times(1))
+        .sendEmailToApprovers(
+            any(), eq("testtopic"), eq(""), eq(null), eq(ACL_REQUESTED), any(), eq(TENANT_ID));
+    verify(handleDbRequests, times(1)).requestForAcl(aclRequestsCapture.capture());
+    AclRequests request = aclRequestsCapture.getValue();
+    assertThat(apiResp.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+    assertThat(apiResp.isSuccess()).isTrue();
+    assertThat(request.getAcl_ip()).isEqualTo(acl.getAclip());
+    assertThat(request.getAcl_ssl()).isEqualTo(acl.getAclssl());
+    assertThat(request.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
+    assertThat(request.getRequestOperationType()).isEqualTo(RequestOperationType.CLAIM.value);
+    assertThat(request.getApprovals()).hasSize(2);
+  }
+
+  private static Topic createTopic() {
+    Topic topic = new Topic();
+    topic.setTeamId(1008);
+    topic.setTopicname("testtopic");
+    topic.setEnvironment("Dev");
+    return topic;
+  }
+
+  private Acl createAcl() {
+    Acl acl = new Acl();
+    acl.setTopicname("testtopic");
+    acl.setAclType(AclType.PRODUCER.value);
+    acl.setEnvironment("1");
+    acl.setAclPatternType(AclPatternType.LITERAL.value);
+    acl.setAclip(new ArrayList<>(List.of("1.1.1.1", "2.2.2.2")).toString());
+    acl.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+    return acl;
   }
 
   private AclRequestsModel getAclRequestProducer() {
@@ -1132,7 +1297,7 @@ public class AclControllerServiceTest {
 
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(userInfo.getTeamId()).thenReturn(101);
+    when(userInfo.getTeamId()).thenReturn(TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("kwusera");
     when(mailService.getCurrentUserName()).thenReturn("kwusera");
   }
@@ -1154,5 +1319,32 @@ public class AclControllerServiceTest {
     userInfo2.setTeamId(1);
     userInfo2.setRole("USER");
     return new ArrayList<>(List.of(userInfo1, userInfo2));
+  }
+
+  private List<Approval> getDefaultAclApprovals(
+      String topicOwnerTeamName, String aclOwnerTeamName) {
+    return List.of(
+        createApproval(topicOwnerTeamName, 1, ApprovalType.TOPIC_TEAM_OWNER, null, null, null),
+        createApproval(aclOwnerTeamName, 2, ApprovalType.ACL_TEAM_OWNER, null, null, null));
+  }
+
+  private Approval createApproval(
+      String requiredTeamName,
+      Integer approvalId,
+      ApprovalType type,
+      String userName,
+      String approverTeamName,
+      Integer approvingTeamId) {
+    Approval approval = new Approval();
+    approval.setApproverName(userName);
+    approval.setApprovalId(approvalId);
+    approval.setApprovalType(type);
+    approval.setApproverTeamName(approverTeamName);
+    approval.setRequiredApprover(requiredTeamName);
+    if (approvingTeamId != null) {
+      approval.setApproverTeamId(approvingTeamId);
+    }
+
+    return approval;
   }
 }
