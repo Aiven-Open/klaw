@@ -85,7 +85,8 @@ public class ApprovalService {
     for (Approval app : approvals) {
       if (app.getApprovalType() == ApprovalType.TOPIC_TEAM_OWNER
           || app.getApprovalType() == ApprovalType.CONNECTOR_TEAM_OWNER) {
-        app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, resourceOwnerTeamId));
+        app.setRequiredApprover(
+            manageDatabase.getTeamNameFromTeamId(tenantId, resourceOwnerTeamId));
       } else if (app.getApprovalType() == ApprovalType.ACL_TEAM_OWNER) {
         app.setRequiredApprover(manageDatabase.getTeamNameFromTeamId(tenantId, aclOwnerId));
       }
