@@ -54,6 +54,8 @@ public class KlawErrorMessages {
 
   public static final String ACL_ERR_107 = "A delete request already exists.";
 
+  public static final String ACL_ERR_108 = "A request for this ACL already exists.";
+
   // Acl sync service
 
   public static final String ACL_SYNC_ERR_102 = "Error in Acl creation. Acl: %s";

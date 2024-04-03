@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_108;
 import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUESTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -1159,7 +1160,7 @@ public class AclControllerServiceTest {
         .thenReturn(true);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
 
-    assertThat(apiResp.getMessage()).isEqualTo("A request for this ACL already exists.");
+    assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_108);
     assertThat(apiResp.isSuccess()).isFalse();
   }
 

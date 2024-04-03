@@ -7,6 +7,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_108;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
@@ -555,7 +556,7 @@ public class AclControllerService {
             aclOp.get().getEnvironment(),
             tenantId,
             aclId)) {
-      return ApiResponse.notOk("A request for this ACL already exists.");
+      return ApiResponse.notOk(ACL_ERR_108);
     }
 
     // Copy into ACL Request
