@@ -427,6 +427,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsAclSslInTeam(int teamId, int tenantId, String aclSsl) {
+    return jdbcSelectHelper.existsAclSslInTeam(teamId, tenantId, aclSsl);
+  }
+
+  @Override
   public boolean existsSchemaRequest(
       String topicName, String requestStatus, String env, int tenantId) {
     return jdbcSelectHelper.existsSchemaRequest(topicName, requestStatus, env, tenantId);

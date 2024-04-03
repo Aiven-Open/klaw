@@ -775,6 +775,10 @@ public class AclControllerService {
         : ApiResponse.notOk(updateAclReqStatus);
   }
 
+  private void transferServiceUserOwnership(AclRequests aclReq) {
+    updateServiceAccountsForTeam(aclReq, aclReq.getTenantId());
+  }
+
   private void saveToTopicHistory(String userDetails, int tenantId, AclRequests aclReq) {
     String remarksAcl =
         RequestEntityType.ACL.name()
@@ -895,6 +899,10 @@ public class AclControllerService {
         if (Objects.equals(
             RequestOperationType.DELETE.value, aclRequest.getRequestOperationType())) {
           serviceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
+        } else if (Objects.equals(
+            RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
+          // add to your team
+          serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         } else {
           serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         }
@@ -905,10 +913,38 @@ public class AclControllerService {
         serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         optionalTeam.get().setServiceAccounts(serviceAccounts);
       }
+
+      removeServiceAccountOnTransferOfOwnership(aclRequest, tenantId);
       // Update team with service account
       manageDatabase.getHandleDbRequests().updateTeam(optionalTeam.get());
       commonUtilsService.updateMetadata(
           tenantId, EntityType.TEAM, MetadataOperationType.UPDATE, null);
+    }
+  }
+
+  private void removeServiceAccountOnTransferOfOwnership(AclRequests aclRequest, int tenantId) {
+    if (Objects.equals(RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
+      if (!manageDatabase
+          .getHandleDbRequests()
+          .existsAclSslInTeam(
+              aclRequest.getTeamId(), aclRequest.getTenantId(), aclRequest.getAcl_ssl())) {
+        // Team still has other Acls left with service user so do not remove from here.
+        return;
+      }
+      // remove the service account from the other team as they no longer have any acls using that
+      // service user left.
+      Optional<Team> origTeam =
+          manageDatabase.getTeamObjForTenant(tenantId).stream()
+              .filter(team -> Objects.equals(team.getTeamId(), aclRequest.getTeamId()))
+              .findFirst();
+      origTeam.ifPresent(
+          team -> {
+            ServiceAccounts origServiceAccounts = team.getServiceAccounts();
+            if (origServiceAccounts != null
+                && origServiceAccounts.getServiceAccountsList().size() > 0) {
+              origServiceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
+            }
+          });
     }
   }
 
