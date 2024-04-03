@@ -19,6 +19,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.OrderBy;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -33,9 +34,13 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -312,5 +317,40 @@ public class SelectDataJdbcTest {
 
     teamList = selectData.selectTeamsOfUsers(username, 1);
     assertThat(teamList).isEmpty();
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void doesAclExist(
+      int tenantId, String env, String topicName, int aclId, boolean expectedResult) {
+
+    when(aclRequestsRepo
+            .existsByTenantIdAndEnvironmentAndRequestStatusAndTopicnameAndAssociatedAclId(
+                tenantId, env, RequestStatus.CREATED.value, topicName, aclId))
+        .thenReturn(expectedResult);
+
+    assertThat(
+            selectData.existsSpecificAclRequest(
+                topicName, RequestStatus.CREATED.value, env, tenantId, aclId))
+        .isEqualTo(expectedResult);
+
+    verify(aclRequestsRepo, times(1))
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndTopicnameAndAssociatedAclId(
+            tenantId, env, RequestStatus.CREATED.value, topicName, aclId);
+  }
+
+  public static Stream<Arguments> doesAclExist() {
+
+    return Stream.of(
+        Arguments.of(101, "Dev", "Topic1", 1222, true),
+        Arguments.of(101, "Dev", "Topic2", 3434, true),
+        Arguments.of(101, "Dev", "Topic3", 1234, true),
+        Arguments.of(101, "Dev", "Topic4", 543, true),
+        Arguments.of(101, "Dev", "Topic1", 123, false),
+        Arguments.of(101, "Dev", "Topic1", 756565, true),
+        Arguments.of(101, "TEST", "Topic1", 987, false),
+        Arguments.of(101, "TEST", "Topic2", 12333, false),
+        Arguments.of(101, "TEST", "Topic3", 19292, false),
+        Arguments.of(101, "TEST", "Topic4", 120202, false));
   }
 }

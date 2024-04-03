@@ -549,11 +549,12 @@ public class AclControllerService {
 
     if (manageDatabase
         .getHandleDbRequests()
-        .existsAclRequest(
+        .existsSpecificAclRequest(
             aclOp.get().getTopicname(),
             RequestStatus.CREATED.value,
             aclOp.get().getEnvironment(),
-            tenantId)) {
+            tenantId,
+            aclId)) {
       return ApiResponse.notOk("A request for this ACL already exists.");
     }
 
@@ -566,6 +567,9 @@ public class AclControllerService {
     // Store the original aclId in the other Params section
 
     request.setAssociatedAclId(aclOp.get().getReq_no());
+    request.setAcl_ip(aclOp.get().getAclip());
+    request.setAcl_ssl(aclOp.get().getAclssl());
+
     // Add Complex Approvers
     request.setRequestingteam(commonUtilsService.getTeamId(userName));
     request.setRequestor(userName);
