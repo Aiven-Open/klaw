@@ -46,7 +46,7 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   @Query(
       value =
-          "select true from kwacls where teamid = :teamId and tenantid = :tenantId and acl_ssl = :aclSsl",
+          "select count(*) > 0 from kwacls where teamid = :teamId and tenantid = :tenantId and aclssl = :aclSsl",
       nativeQuery = true)
   boolean existsAclSslInTeamInTenant(Integer teamId, Integer tenantId, String aclSsl);
 

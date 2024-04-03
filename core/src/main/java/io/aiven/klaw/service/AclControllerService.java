@@ -744,6 +744,8 @@ public class AclControllerService {
 
       acl.get().setTeamId(aclReq.getRequestingteam());
       manageDatabase.getHandleDbRequests().updateAcl(acl.get());
+      // Transfer Service Account ownership
+      transferServiceUserOwnership(aclReq);
     }
     aclReq.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
     String status =
@@ -770,13 +772,39 @@ public class AclControllerService {
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
+
     return ApiResultStatus.SUCCESS.value.equals(updateAclReqStatus)
         ? ApiResponse.ok(updateAclReqStatus)
         : ApiResponse.notOk(updateAclReqStatus);
   }
 
   private void transferServiceUserOwnership(AclRequests aclReq) {
-    updateServiceAccountsForTeam(aclReq, aclReq.getTenantId());
+    removeServiceAccountOnTransferOfOwnership(aclReq, aclReq.getTenantId());
+    Optional<Team> optionalTeam =
+        manageDatabase.getTeamObjForTenant(aclReq.getTenantId()).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), aclReq.getRequestingteam()))
+            .findFirst();
+    optionalTeam.ifPresent(
+        team -> {
+          if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
+            ServiceAccounts serviceAccounts = team.getServiceAccounts();
+            if (serviceAccounts != null && !serviceAccounts.getServiceAccountsList().isEmpty()) {
+              // add to your team
+              serviceAccounts.getServiceAccountsList().add(aclReq.getAcl_ssl());
+            } else {
+              serviceAccounts = new ServiceAccounts();
+              serviceAccounts.setNumberOfAllowedAccounts(allowedServiceAccountsPerTeam);
+              serviceAccounts.setServiceAccountsList(new HashSet<>());
+              serviceAccounts.getServiceAccountsList().add(aclReq.getAcl_ssl());
+              team.setServiceAccounts(serviceAccounts);
+            }
+
+            // Update team with service account
+            manageDatabase.getHandleDbRequests().updateTeam(team);
+            commonUtilsService.updateMetadata(
+                aclReq.getTenantId(), EntityType.TEAM, MetadataOperationType.UPDATE, null);
+          }
+        });
   }
 
   private void saveToTopicHistory(String userDetails, int tenantId, AclRequests aclReq) {
@@ -899,10 +927,6 @@ public class AclControllerService {
         if (Objects.equals(
             RequestOperationType.DELETE.value, aclRequest.getRequestOperationType())) {
           serviceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
-        } else if (Objects.equals(
-            RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
-          // add to your team
-          serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         } else {
           serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         }
@@ -914,7 +938,6 @@ public class AclControllerService {
         optionalTeam.get().setServiceAccounts(serviceAccounts);
       }
 
-      removeServiceAccountOnTransferOfOwnership(aclRequest, tenantId);
       // Update team with service account
       manageDatabase.getHandleDbRequests().updateTeam(optionalTeam.get());
       commonUtilsService.updateMetadata(
@@ -924,7 +947,7 @@ public class AclControllerService {
 
   private void removeServiceAccountOnTransferOfOwnership(AclRequests aclRequest, int tenantId) {
     if (Objects.equals(RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
-      if (!manageDatabase
+      if (manageDatabase
           .getHandleDbRequests()
           .existsAclSslInTeam(
               aclRequest.getTeamId(), aclRequest.getTenantId(), aclRequest.getAcl_ssl())) {
@@ -944,6 +967,7 @@ public class AclControllerService {
                 && origServiceAccounts.getServiceAccountsList().size() > 0) {
               origServiceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
             }
+            manageDatabase.getHandleDbRequests().updateTeam(team);
           });
     }
   }
