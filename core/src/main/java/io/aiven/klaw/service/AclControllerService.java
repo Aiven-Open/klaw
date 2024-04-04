@@ -788,7 +788,9 @@ public class AclControllerService {
         team -> {
           if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
             ServiceAccounts serviceAccounts = team.getServiceAccounts();
-            if (serviceAccounts != null && !serviceAccounts.getServiceAccountsList().isEmpty()) {
+            if (serviceAccounts != null
+                && serviceAccounts.getServiceAccountsList() != null
+                && !serviceAccounts.getServiceAccountsList().isEmpty()) {
               // add to your team
               serviceAccounts.getServiceAccountsList().add(aclReq.getAcl_ssl());
             } else {
@@ -964,6 +966,7 @@ public class AclControllerService {
           team -> {
             ServiceAccounts origServiceAccounts = team.getServiceAccounts();
             if (origServiceAccounts != null
+                && origServiceAccounts.getServiceAccountsList() != null
                 && origServiceAccounts.getServiceAccountsList().size() > 0) {
               origServiceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
             }
