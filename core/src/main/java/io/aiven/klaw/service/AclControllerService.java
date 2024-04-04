@@ -744,8 +744,16 @@ public class AclControllerService {
 
       acl.get().setTeamId(aclReq.getRequestingteam());
       manageDatabase.getHandleDbRequests().updateAcl(acl.get());
-      // Transfer Service Account ownership
-      transferServiceUserOwnership(aclReq);
+      if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
+        if (!manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl())) {
+          // Team has no other Acls left with service user so transfer ownership to the next
+          // team.
+          // Transfer Service Account ownership
+          transferServiceUserOwnership(aclReq);
+        }
+      }
     }
     aclReq.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
     String status =
@@ -779,15 +787,6 @@ public class AclControllerService {
   }
 
   private void transferServiceUserOwnership(AclRequests aclReq) {
-    if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
-      if (manageDatabase
-          .getHandleDbRequests()
-          .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl())) {
-        // Team still has other Acls left with service user so do not remove from here.
-        // Only transfer ownership when the original team has no acls left with this service user
-        return;
-      }
-    }
     removeServiceAccountOnTransferOfOwnership(aclReq, aclReq.getTenantId());
     Optional<Team> optionalTeam =
         manageDatabase.getTeamObjForTenant(aclReq.getTenantId()).stream()
