@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.ApprovalTypeConverter;
 import io.aiven.klaw.model.enums.ApprovalType;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class Approval implements Serializable {
   private Integer approvalId;
 
   @Column(name = "approvaltype")
+  @Convert(converter = ApprovalTypeConverter.class)
   private ApprovalType approvalType;
 
   @Column(name = "requiredapprover")
