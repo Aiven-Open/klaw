@@ -4,6 +4,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_108;
 import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_APPROVAL_ADDED;
+import static io.aiven.klaw.service.MailUtils.MailType.ACL_REQUEST_APPROVED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -23,6 +25,7 @@ import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Approval;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
@@ -95,6 +98,8 @@ public class AclControllerServiceTest {
   private AclControllerService aclControllerService;
 
   @Captor private ArgumentCaptor<AclRequests> aclRequestsCapture;
+
+  @Captor private ArgumentCaptor<Team> teamCapture;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -1217,6 +1222,293 @@ public class AclControllerServiceTest {
     assertThat(request.getApprovals()).hasSize(2);
   }
 
+  @Order(43)
+  @Test
+  public void claimAcl_approveClaim_NotAuthorized() throws KlawException, KlawBadRequestException {
+    String reqNum = "224";
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(true);
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(reqNum);
+    assertThat(apiResp.isSuccess()).isFalse();
+    assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+  }
+
+  @Order(44)
+  @Test
+  public void claimAcl_approveClaim_transferOwnership()
+      throws KlawException, KlawBadRequestException {
+    int reqNum = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    AclRequests aclReq = getAclClaimRequestDao(reqNum);
+    when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
+        .thenReturn(getAclClaimRequestDao(reqNum));
+    when(handleDbRequests.getAcl(eq(aclReq.getAssociatedAclId()), eq(TENANT_ID)))
+        .thenReturn((Optional.of(createClaimAcl())));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
+    when(approvalService.isRequestFullyApproved(any())).thenReturn(true);
+    // No acl_ssl service name left owned by the team.
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
+        .thenReturn(false);
+    when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID)))
+        .thenReturn(getTeamsListWithServiceAccounts(aclReq));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
+
+    verify(handleDbRequests, times(2)).updateTeam(teamCapture.capture());
+    List<Team> teamsCaptured = teamCapture.getAllValues();
+    for (Team team : teamsCaptured) {
+      if (team.getTeamId().equals(aclReq.getRequestingteam())) {
+        // Requesting team gets ownership
+        assertThat(team.getServiceAccounts().getServiceAccountsList().contains(aclReq.getAcl_ssl()))
+            .isTrue();
+      } else if (team.getTeamId().equals(aclReq.getTeamId())) {
+        // Previous team only had one ACl so they do not get to keep the service Account in their
+        // list
+        assertThat(team.getServiceAccounts().getServiceAccountsList()).isEmpty();
+      }
+    }
+    verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.APPROVED));
+    verify(mailService)
+        .sendMail(
+            eq(aclReq.getTopicname()),
+            eq(aclReq.getAclType()),
+            eq(""),
+            eq(aclReq.getRequestor()),
+            eq(aclReq.getApprover()),
+            eq(aclReq.getTeamId()),
+            any(),
+            eq(ACL_REQUEST_APPROVED),
+            any());
+  }
+
+  @Order(45)
+  @Test
+  public void
+      claimAcl_approveClaim_transferOwnership_noOwnershipChange_As_PreviousTeamStillHasAnotherAcl()
+          throws KlawException, KlawBadRequestException {
+    int reqNum = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    AclRequests aclReq = getAclClaimRequestDao(reqNum);
+    when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
+        .thenReturn(getAclClaimRequestDao(reqNum));
+    when(handleDbRequests.getAcl(eq(aclReq.getAssociatedAclId()), eq(TENANT_ID)))
+        .thenReturn((Optional.of(createClaimAcl())));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
+    when(approvalService.isRequestFullyApproved(any())).thenReturn(true);
+    // Another acl_ssl (service acc) is owned by the team.
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
+        .thenReturn(true);
+    when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID)))
+        .thenReturn(getTeamsListWithServiceAccounts(aclReq));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
+
+    verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.APPROVED));
+    verify(mailService)
+        .sendMail(
+            eq(aclReq.getTopicname()),
+            eq(aclReq.getAclType()),
+            eq(""),
+            eq(aclReq.getRequestor()),
+            eq(aclReq.getApprover()),
+            eq(aclReq.getTeamId()),
+            any(),
+            eq(ACL_REQUEST_APPROVED),
+            any());
+  }
+
+  @Order(46)
+  @Test
+  public void claimAcl_approveClaim_Not_fullyApproved_doNot_transferOwnership()
+      throws KlawException, KlawBadRequestException {
+    int reqNum = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    AclRequests aclReq = getAclClaimRequestDao(reqNum);
+    when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
+        .thenReturn(getAclClaimRequestDao(reqNum));
+    when(handleDbRequests.getAcl(eq(aclReq.getAssociatedAclId()), eq(TENANT_ID)))
+        .thenReturn((Optional.of(createClaimAcl())));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
+    when(approvalService.isRequestFullyApproved(any())).thenReturn(false);
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
+
+    verify(handleDbRequests, times(0)).updateTeam(any());
+    verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.CREATED));
+    verify(mailService)
+        .sendMail(
+            eq(aclReq.getTopicname()),
+            eq(aclReq.getAclType()),
+            eq(""),
+            eq(aclReq.getRequestor()),
+            eq(aclReq.getApprover()),
+            eq(aclReq.getTeamId()),
+            any(),
+            eq(ACL_REQUEST_APPROVAL_ADDED),
+            any());
+  }
+
+  @Order(47)
+  @Test
+  public void
+      claimAcl_approveClaim_transferOwnership_AddToNewowner_NullServiceAccountShouldNotThrowError()
+          throws KlawException, KlawBadRequestException {
+    int reqNum = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    AclRequests aclReq = getAclClaimRequestDao(reqNum);
+    when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
+        .thenReturn(getAclClaimRequestDao(reqNum));
+    when(handleDbRequests.getAcl(eq(aclReq.getAssociatedAclId()), eq(TENANT_ID)))
+        .thenReturn((Optional.of(createClaimAcl())));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
+    when(approvalService.isRequestFullyApproved(any())).thenReturn(true);
+    List<Team> existingTeams = getTeamsListWithServiceAccounts(aclReq);
+    for (Team team : existingTeams) {
+      if (team.getTeamId().equals(aclReq.getRequestingteam())) {
+        team.getServiceAccounts().setServiceAccountsList(null);
+      }
+    }
+    // Another acl_ssl (service acc) is owned by the team.
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
+        .thenReturn(false);
+    when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID))).thenReturn(existingTeams);
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
+
+    verify(handleDbRequests, times(2)).updateTeam(teamCapture.capture());
+    List<Team> teamsCaptured = teamCapture.getAllValues();
+    assertThat(teamsCaptured).hasSize(2);
+    for (Team team : teamsCaptured) {
+      if (team.getTeamId().equals(aclReq.getRequestingteam())) {
+        // Requesting team gets ownership added
+        assertThat(team.getServiceAccounts().getServiceAccountsList().contains(aclReq.getAcl_ssl()))
+            .isTrue();
+      } else if (team.getTeamId().equals(aclReq.getTeamId())) {
+        assertThat(team.getServiceAccounts().getServiceAccountsList()).isEmpty();
+      }
+      // The existing owner team doesnt have it removed as they have another acl that uses that
+      // account.
+    }
+    verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.APPROVED));
+    verify(mailService)
+        .sendMail(
+            eq(aclReq.getTopicname()),
+            eq(aclReq.getAclType()),
+            eq(""),
+            eq(aclReq.getRequestor()),
+            eq(aclReq.getApprover()),
+            eq(aclReq.getTeamId()),
+            any(),
+            eq(ACL_REQUEST_APPROVED),
+            any());
+  }
+
+  @Order(48)
+  @Test
+  public void
+      claimAcl_approveClaim_transferOwnership_AddToNewowner_removeFromPreviousOwner_NullServiceAccountShouldNotThrowError()
+          throws KlawException, KlawBadRequestException {
+    int reqNum = 224;
+    stubUserInfo();
+    Acl acl = createAcl();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    AclRequests aclReq = getAclClaimRequestDao(reqNum);
+    when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
+        .thenReturn(getAclClaimRequestDao(reqNum));
+    when(handleDbRequests.getAcl(eq(aclReq.getAssociatedAclId()), eq(TENANT_ID)))
+        .thenReturn((Optional.of(createClaimAcl())));
+    ArrayList<Topic> topics = new ArrayList<>();
+    topics.add(createTopic());
+    when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
+    when(approvalService.isRequestFullyApproved(any())).thenReturn(true);
+    List<Team> existingTeams = getTeamsListWithServiceAccounts(aclReq);
+    for (Team team : existingTeams) {
+      // Set all service accounts to null
+      team.getServiceAccounts().setServiceAccountsList(null);
+    }
+    // Another acl_ssl (service acc) is owned by the team.
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
+        .thenReturn(false);
+    when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID))).thenReturn(existingTeams);
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
+
+    verify(handleDbRequests, times(2)).updateTeam(teamCapture.capture());
+    List<Team> teamsCaptured = teamCapture.getAllValues();
+    assertThat(teamsCaptured).hasSize(2);
+    for (Team team : teamsCaptured) {
+      if (team.getTeamId().equals(aclReq.getRequestingteam())) {
+        // Requesting team gets ownership added
+        assertThat(team.getServiceAccounts().getServiceAccountsList().contains(aclReq.getAcl_ssl()))
+            .isTrue();
+      } else if (team.getTeamId().equals(aclReq.getTeamId())) {
+        assertThat(team.getServiceAccounts().getServiceAccountsList()).isNullOrEmpty();
+      }
+      // The existing owner team doesnt have it removed as they have another acl that uses that
+      // account.
+    }
+    verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.APPROVED));
+    verify(mailService)
+        .sendMail(
+            eq(aclReq.getTopicname()),
+            eq(aclReq.getAclType()),
+            eq(""),
+            eq(aclReq.getRequestor()),
+            eq(aclReq.getApprover()),
+            eq(aclReq.getTeamId()),
+            any(),
+            eq(ACL_REQUEST_APPROVED),
+            any());
+  }
+
+  // Add the principal name to the original owning team so it can then be removed and added to the
+  // other
+  private static List<Team> getTeamsListWithServiceAccounts(AclRequests aclReq) {
+    List<Team> teams = getTeamsList(aclReq.getTeamId(), aclReq.getRequestingteam());
+    for (Team team : teams) {
+      if (team.getTeamId().equals(aclReq.getTeamId())) {
+        team.getServiceAccounts().getServiceAccountsList().add(aclReq.getAcl_ssl());
+      }
+    }
+    return teams;
+  }
+
   private static Topic createTopic() {
     Topic topic = new Topic();
     topic.setTeamId(1008);
@@ -1273,6 +1565,36 @@ public class AclControllerServiceTest {
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
     aclReq.setRequestOperationType(RequestOperationType.CREATE.value);
     return aclReq;
+  }
+
+  private AclRequests getAclClaimRequestDao(int reqNum) {
+    AclRequests aclReq = new AclRequests();
+    aclReq.setTopicname("testtopic");
+    aclReq.setAclType(AclType.PRODUCER.value);
+    aclReq.setRequestingteam(1);
+    aclReq.setReq_no(reqNum);
+    aclReq.setEnvironment("1");
+    aclReq.setRequestor("kwuserb");
+    aclReq.setTeamId(1001);
+    aclReq.setRequestStatus(RequestStatus.CREATED.value);
+    aclReq.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+    aclReq.setRequestOperationType(RequestOperationType.CLAIM.value);
+    aclReq.setAssociatedAclId(1000001);
+    aclReq.setTenantId(TENANT_ID);
+    return aclReq;
+  }
+
+  private Acl createClaimAcl() {
+    Acl acl = new Acl();
+    acl.setReq_no(1000001);
+    acl.setTopicname("testtopic");
+    acl.setAclType(AclType.PRODUCER.value);
+    acl.setEnvironment("1");
+    acl.setAclPatternType(AclPatternType.LITERAL.value);
+    acl.setAclssl("Alice");
+    acl.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+    acl.setTeamId(1003);
+    return acl;
   }
 
   private List<AclRequests> getAclRequests(String topicPrefix, int size) {
@@ -1346,5 +1668,19 @@ public class AclControllerServiceTest {
     }
 
     return approval;
+  }
+
+  private static List<Team> getTeamsList(int... teamIds) {
+    List<Team> teams = new ArrayList<>();
+    for (int teamId : teamIds) {
+      Team team = new Team();
+      team.setTeamId(teamId);
+      team.setTenantId(TENANT_ID);
+      ServiceAccounts acc = new ServiceAccounts();
+      acc.setServiceAccountsList(new HashSet<>());
+      team.setServiceAccounts(acc);
+      teams.add(team);
+    }
+    return teams;
   }
 }

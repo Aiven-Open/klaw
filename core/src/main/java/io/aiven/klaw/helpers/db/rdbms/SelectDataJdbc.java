@@ -108,6 +108,10 @@ public class SelectDataJdbc {
         tenantId, env, requestStatus, topicName);
   }
 
+  public boolean existsAclSslInTeam(int teamId, int tenantId, String aclSsl) {
+    return aclRepo.existsAclSslInTeamInTenant(teamId, tenantId, aclSsl);
+  }
+
   public boolean existsSpecificAclRequest(
       String topicName, String requestStatus, String env, int tenantId, int associatedAclId) {
     log.debug("associatedAclId = {}", associatedAclId);

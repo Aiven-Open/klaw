@@ -188,6 +188,8 @@ public interface HandleDbRequests {
   boolean existsSpecificAclRequest(
       String topicName, String requestStatus, String env, int tenantId, int associatedAclId);
 
+  boolean existsAclSslInTeam(int teamId, int tenantId, String aclSsl);
+
   boolean existsSchemaRequest(String topicName, String requestStatus, String env, int tenantId);
 
   boolean existsSchemaRequest(

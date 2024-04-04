@@ -744,6 +744,16 @@ public class AclControllerService {
 
       acl.get().setTeamId(aclReq.getRequestingteam());
       manageDatabase.getHandleDbRequests().updateAcl(acl.get());
+      if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
+        if (!manageDatabase
+            .getHandleDbRequests()
+            .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl())) {
+          // Team has no other Acls left with service user so transfer ownership to the next
+          // team.
+          // Transfer Service Account ownership
+          transferServiceUserOwnership(aclReq);
+        }
+      }
     }
     aclReq.setApprovals(KlawResourceUtils.approvalsToAclApprovalsList(approvals));
     String status =
@@ -770,9 +780,41 @@ public class AclControllerService {
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
+
     return ApiResultStatus.SUCCESS.value.equals(updateAclReqStatus)
         ? ApiResponse.ok(updateAclReqStatus)
         : ApiResponse.notOk(updateAclReqStatus);
+  }
+
+  private void transferServiceUserOwnership(AclRequests aclReq) {
+    removeServiceAccountOnTransferOfOwnership(aclReq, aclReq.getTenantId());
+    Optional<Team> optionalTeam =
+        manageDatabase.getTeamObjForTenant(aclReq.getTenantId()).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), aclReq.getRequestingteam()))
+            .findFirst();
+    optionalTeam.ifPresent(
+        team -> {
+          if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
+            ServiceAccounts serviceAccounts = team.getServiceAccounts();
+            if (serviceAccounts != null
+                && serviceAccounts.getServiceAccountsList() != null
+                && !serviceAccounts.getServiceAccountsList().isEmpty()) {
+              // add to your team
+              serviceAccounts.getServiceAccountsList().add(aclReq.getAcl_ssl());
+            } else {
+              serviceAccounts = new ServiceAccounts();
+              serviceAccounts.setNumberOfAllowedAccounts(allowedServiceAccountsPerTeam);
+              serviceAccounts.setServiceAccountsList(new HashSet<>());
+              serviceAccounts.getServiceAccountsList().add(aclReq.getAcl_ssl());
+              team.setServiceAccounts(serviceAccounts);
+            }
+
+            // Update team with service account
+            manageDatabase.getHandleDbRequests().updateTeam(team);
+            commonUtilsService.updateMetadata(
+                aclReq.getTenantId(), EntityType.TEAM, MetadataOperationType.UPDATE, null);
+          }
+        });
   }
 
   private void saveToTopicHistory(String userDetails, int tenantId, AclRequests aclReq) {
@@ -905,10 +947,32 @@ public class AclControllerService {
         serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         optionalTeam.get().setServiceAccounts(serviceAccounts);
       }
+
       // Update team with service account
       manageDatabase.getHandleDbRequests().updateTeam(optionalTeam.get());
       commonUtilsService.updateMetadata(
           tenantId, EntityType.TEAM, MetadataOperationType.UPDATE, null);
+    }
+  }
+
+  private void removeServiceAccountOnTransferOfOwnership(AclRequests aclRequest, int tenantId) {
+    if (Objects.equals(RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
+      // remove the service account from the other team as they no longer have any acls using that
+      // service user left.
+      Optional<Team> origTeam =
+          manageDatabase.getTeamObjForTenant(tenantId).stream()
+              .filter(team -> Objects.equals(team.getTeamId(), aclRequest.getTeamId()))
+              .findFirst();
+      origTeam.ifPresent(
+          team -> {
+            ServiceAccounts origServiceAccounts = team.getServiceAccounts();
+            if (origServiceAccounts != null
+                && origServiceAccounts.getServiceAccountsList() != null
+                && origServiceAccounts.getServiceAccountsList().size() > 0) {
+              origServiceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
+            }
+            manageDatabase.getHandleDbRequests().updateTeam(team);
+          });
     }
   }
 
