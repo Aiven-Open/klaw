@@ -779,6 +779,15 @@ public class AclControllerService {
   }
 
   private void transferServiceUserOwnership(AclRequests aclReq) {
+    if (Objects.equals(RequestOperationType.CLAIM.value, aclReq.getRequestOperationType())) {
+      if (manageDatabase
+          .getHandleDbRequests()
+          .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl())) {
+        // Team still has other Acls left with service user so do not remove from here.
+        // Only transfer ownership when the original team has no acls left with this service user
+        return;
+      }
+    }
     removeServiceAccountOnTransferOfOwnership(aclReq, aclReq.getTenantId());
     Optional<Team> optionalTeam =
         manageDatabase.getTeamObjForTenant(aclReq.getTenantId()).stream()
@@ -949,13 +958,6 @@ public class AclControllerService {
 
   private void removeServiceAccountOnTransferOfOwnership(AclRequests aclRequest, int tenantId) {
     if (Objects.equals(RequestOperationType.CLAIM.value, aclRequest.getRequestOperationType())) {
-      if (manageDatabase
-          .getHandleDbRequests()
-          .existsAclSslInTeam(
-              aclRequest.getTeamId(), aclRequest.getTenantId(), aclRequest.getAcl_ssl())) {
-        // Team still has other Acls left with service user so do not remove from here.
-        return;
-      }
       // remove the service account from the other team as they no longer have any acls using that
       // service user left.
       Optional<Team> origTeam =

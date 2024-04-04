@@ -1293,8 +1293,9 @@ public class AclControllerServiceTest {
 
   @Order(45)
   @Test
-  public void claimAcl_approveClaim_transferOwnership_AddToNewowner_doNotRemoveFromPrevious()
-      throws KlawException, KlawBadRequestException {
+  public void
+      claimAcl_approveClaim_transferOwnership_noOwnershipChange_As_PreviousTeamStillHasAnotherAcl()
+          throws KlawException, KlawBadRequestException {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
@@ -1320,18 +1321,6 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
-    verify(handleDbRequests, times(1)).updateTeam(teamCapture.capture());
-    List<Team> teamsCaptured = teamCapture.getAllValues();
-    assertThat(teamsCaptured).hasSize(1);
-    for (Team team : teamsCaptured) {
-      if (team.getTeamId().equals(aclReq.getRequestingteam())) {
-        // Requesting team gets ownership added
-        assertThat(team.getServiceAccounts().getServiceAccountsList().contains(aclReq.getAcl_ssl()))
-            .isTrue();
-      }
-      // The existing owner team doesnt have it removed as they have another acl that uses that
-      // accounr.
-    }
     verify(handleDbRequests).claimAclRequest(any(), eq(RequestStatus.APPROVED));
     verify(mailService)
         .sendMail(
@@ -1413,19 +1402,21 @@ public class AclControllerServiceTest {
     when(manageDatabase
             .getHandleDbRequests()
             .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
-        .thenReturn(true);
+        .thenReturn(false);
     when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID))).thenReturn(existingTeams);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
-    verify(handleDbRequests, times(1)).updateTeam(teamCapture.capture());
+    verify(handleDbRequests, times(2)).updateTeam(teamCapture.capture());
     List<Team> teamsCaptured = teamCapture.getAllValues();
-    assertThat(teamsCaptured).hasSize(1);
+    assertThat(teamsCaptured).hasSize(2);
     for (Team team : teamsCaptured) {
       if (team.getTeamId().equals(aclReq.getRequestingteam())) {
         // Requesting team gets ownership added
         assertThat(team.getServiceAccounts().getServiceAccountsList().contains(aclReq.getAcl_ssl()))
             .isTrue();
+      } else if (team.getTeamId().equals(aclReq.getTeamId())) {
+        assertThat(team.getServiceAccounts().getServiceAccountsList()).isEmpty();
       }
       // The existing owner team doesnt have it removed as they have another acl that uses that
       // account.
