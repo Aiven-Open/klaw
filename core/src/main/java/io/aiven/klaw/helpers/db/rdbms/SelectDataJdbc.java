@@ -109,7 +109,7 @@ public class SelectDataJdbc {
   }
 
   public boolean existsAclSslInTeam(int teamId, int tenantId, String aclSsl) {
-    return aclRepo.existsAclSslInTeamInTenant(teamId, tenantId, aclSsl);
+    return aclRepo.existsByTeamIdAndTenantIdAndAclssl(teamId, tenantId, aclSsl);
   }
 
   public boolean existsSpecificAclRequest(

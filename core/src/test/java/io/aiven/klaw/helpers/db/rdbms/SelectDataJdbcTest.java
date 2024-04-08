@@ -359,11 +359,12 @@ public class SelectDataJdbcTest {
   public void doesAclSslExistInTeam(
       int teamId, int tenantId, String aclSsl, boolean expectedResult) {
 
-    when(aclRepo.existsAclSslInTeamInTenant(teamId, tenantId, aclSsl)).thenReturn(expectedResult);
+    when(aclRepo.existsByTeamIdAndTenantIdAndAclssl(teamId, tenantId, aclSsl))
+        .thenReturn(expectedResult);
 
     assertThat(selectData.existsAclSslInTeam(teamId, tenantId, aclSsl)).isEqualTo(expectedResult);
 
-    verify(aclRepo, times(1)).existsAclSslInTeamInTenant(teamId, tenantId, aclSsl);
+    verify(aclRepo, times(1)).existsByTeamIdAndTenantIdAndAclssl(teamId, tenantId, aclSsl);
   }
 
   public static Stream<Arguments> doesAclSslExistInTeam() {
