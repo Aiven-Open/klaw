@@ -219,4 +219,4 @@ Klaw (formerly Kafkawize) is maintained by, [Aiven](https://aiven.io/) open sour
 Recent contributors are listed on the GitHub project page,
 https://github.com/aiven/klaw/graphs/contributors
 
-Copyright (c) 2023 Aiven Oy and klaw project contributors.
+Copyright (c) 2024 Aiven Oy and klaw project contributors.

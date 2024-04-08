@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.8.0"
+    "version" : "2.9.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -8227,13 +8227,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
