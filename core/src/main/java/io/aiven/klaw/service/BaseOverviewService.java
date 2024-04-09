@@ -16,6 +16,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
@@ -260,7 +261,16 @@ public abstract class BaseOverviewService {
         // Claim Acl is available to teams that are unable to delete the Acl as they do not own the
         // ACL.
         // Will need to add an extra check when an acl claim is opened.
-        mp.setShowClaimAcl(!mp.isShowDeleteAcl());
+        mp.setShowClaimAcl(
+            !mp.isShowDeleteAcl()
+                && !manageDatabase
+                    .getHandleDbRequests()
+                    .existsSpecificAclRequest(
+                        mp.getTopicname(),
+                        RequestStatus.CREATED.value,
+                        mp.getEnvironment(),
+                        tenantId,
+                        Integer.valueOf(mp.getReq_no())));
         aclList.add(mp);
       }
     }

@@ -186,8 +186,12 @@ public class SelectDataJdbc {
 
         if (RequestOperationType.DELETE.value.equals(rowRequestOperationType)) {
           teamId = row.getRequestingteam();
-        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)) {
-
+        } else if (RequestOperationType.CLAIM.value.equals(rowRequestOperationType)
+            && row.getApprovals().stream()
+                .anyMatch(approval -> requestor.equals(approval.getApproverName()))) {
+          // Multi Approval filtering remove this row as it is an approval that has already been
+          // approved by this user.
+          continue;
         }
 
       } else {
