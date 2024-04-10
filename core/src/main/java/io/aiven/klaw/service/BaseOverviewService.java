@@ -270,7 +270,7 @@ public abstract class BaseOverviewService {
                         RequestStatus.CREATED.value,
                         mp.getEnvironment(),
                         tenantId,
-                        Integer.valueOf(mp.getReq_no())));
+                        Integer.parseInt(mp.getReq_no())));
         aclList.add(mp);
       }
     }
