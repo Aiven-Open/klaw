@@ -44,11 +44,7 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select count(*) > 0 from kwacls where teamid = :teamId and tenantid = :tenantId and aclssl = :aclSsl",
-      nativeQuery = true)
-  boolean existsAclSslInTeamInTenant(Integer teamId, Integer tenantId, String aclSsl);
+  boolean existsByTeamIdAndTenantIdAndAclssl(Integer teamId, Integer tenantId, String aclSsl);
 
   @Query(
       value = "select count(*) from kwacls where env = :envId and tenantid = :tenantId",
