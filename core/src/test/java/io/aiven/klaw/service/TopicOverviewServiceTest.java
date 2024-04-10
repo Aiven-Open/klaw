@@ -735,11 +735,17 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.existsClaimTopicRequest(
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
+    when(handleDbRequests.existsSpecificAclRequest(
+            eq(TESTTOPIC), eq(RequestStatus.CREATED.value), anyString(), eq(101), anyInt()))
+        .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
+        .thenReturn(getAclsSOT(TESTTOPIC));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
 
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isTrue(); // topic hasAcl
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest()).isTrue();
 
@@ -751,6 +757,9 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
         .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.getAclInfoList().get(0).isShowClaimAcl())
+        .isFalse(); // topic has open claim request so this can't be claimed twice. Don't offer UI
+    // choice to claim it.
   }
 
   @Test
@@ -767,7 +776,8 @@ public class TopicOverviewServiceTest {
     createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
-
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -780,6 +790,8 @@ public class TopicOverviewServiceTest {
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+    when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
+        .thenReturn(getAclsSOT(TESTTOPIC));
 
     TopicOverview topicOverview =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -787,7 +799,7 @@ public class TopicOverviewServiceTest {
     verify(handleDbRequests, times(0)).existsTopicRequest(any(), any(), any(), anyInt());
     verify(handleDbRequests, times(0)).existsAclRequest(any(), any(), any(), anyInt());
     verify(handleDbRequests, times(0)).existsSchemaRequest(any(), any(), any(), anyInt());
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic claim
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isTrue();
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest()).isTrue();
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest()).isFalse();
@@ -796,6 +808,7 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequestOnAnyEnv())
         .isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse();
+    assertThat(topicOverview.getAclInfoList().get(0).isShowClaimAcl()).isTrue();
   }
 
   private static Map<Integer, KwClusters> getKwClusterMap() {
