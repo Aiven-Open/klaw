@@ -9,6 +9,7 @@ import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { RequestsDropdown } from "src/app/layout/header/RequestsDropdown";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { Routes } from "src/services/router-utils/types";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
@@ -18,37 +19,42 @@ const requestNewEntityPaths: { [key: string]: string } = {
 };
 
 function HeaderNavigation() {
+  const { userrole } = useAuthContext();
   const navigate = useNavigate();
+
+  const userIsSuperAdmin = userrole === "SUPERADMIN";
 
   return (
     <Box display={"flex"} colGap={"l1"} alignItems="center">
-      <DropdownMenu
-        onAction={(key) => {
-          if (requestNewEntityPaths[key.toString()] !== undefined) {
-            navigate(requestNewEntityPaths[key.toString()]);
-          }
-        }}
-      >
-        <DropdownMenu.Trigger>
-          <Button.PrimaryDropdown aria-label="Request a new">
-            Request a new
-          </Button.PrimaryDropdown>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Items>
-          <DropdownMenu.Item key="topic" icon={codeBlock}>
-            Topic
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="acl" icon={people}>
-            ACL
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="schema" icon={code}>
-            Schema
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="connector" icon={dataflow02}>
-            Kafka connector
-          </DropdownMenu.Item>
-        </DropdownMenu.Items>
-      </DropdownMenu>
+      {!userIsSuperAdmin && (
+        <DropdownMenu
+          onAction={(key) => {
+            if (requestNewEntityPaths[key.toString()] !== undefined) {
+              navigate(requestNewEntityPaths[key.toString()]);
+            }
+          }}
+        >
+          <DropdownMenu.Trigger>
+            <Button.PrimaryDropdown aria-label="Request a new">
+              Request a new
+            </Button.PrimaryDropdown>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Items>
+            <DropdownMenu.Item key="topic" icon={codeBlock}>
+              Topic
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="acl" icon={people}>
+              ACL
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="schema" icon={code}>
+              Schema
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="connector" icon={dataflow02}>
+              Kafka connector
+            </DropdownMenu.Item>
+          </DropdownMenu.Items>
+        </DropdownMenu>
+      )}
 
       <Box height={"l3"} paddingRight={"4"}>
         <Divider direction="vertical" size={1} />
@@ -61,9 +67,11 @@ function HeaderNavigation() {
           colGap={"l2"}
           alignItems={"baseline"}
         >
-          <li>
-            <RequestsDropdown />
-          </li>
+          {!userIsSuperAdmin && (
+            <li>
+              <RequestsDropdown />
+            </li>
+          )}
           <li>
             <ProfileDropdown />
           </li>
