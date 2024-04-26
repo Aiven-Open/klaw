@@ -1,28 +1,14 @@
-# This workflow is called when a pull request  is approved
-# that targets the protected branch `main`.
-# The job `merge-to-main` ("Status check for enabling merging to main")
-# is a required status check.
-# (https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28)
-# We can only merge to main when this job has run and is green.
-# The workflow can be triggered manually, too.
-name: Checks enabling merge to main
+# This workflow is used in a merge queue
+# when a branch targets the protected branch `main`.
+
+name: Enabling merge to main in merge queue
 
 on:
-  pull_request_review:
-    types:
-      - submitted
-    branches:
-      - main
-  pull_request:
-    types:
-      - synchronize
-    branches:
-      - main
+  merge_group:
   workflow_dispatch:
 
 jobs:
   checkout-code:
-    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,33 +18,18 @@ jobs:
           fetch-depth: 0
 
   run-coral-jobs:
-    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
-    name: Run coral workflow before enabling merge to main
+    name: Coral workflow
     needs: checkout-code
     uses: ./.github/workflows/jobs-coral.yaml
 
-
   run-maven-jobs:
-    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
-    name: Run maven workflow before enabling merge to main
+    name: Maven workflow
     needs: checkout-code
     uses: ./.github/workflows/jobs-maven.yaml
 
   run-e2e-tests:
-    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
-    name: Run Playwright e2e test before enabling merge to main
+    name: Playwright e2e test
     needs: checkout-code
     permissions:
       actions: write
     uses: ./.github/workflows/end-to-end-tests.yaml
-
-  merge-to-main:
-    name: Status check for enabling merging to main
-    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize') || (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
-    runs-on: ubuntu-latest
-    needs: [ run-maven-jobs, run-coral-jobs, run-e2e-tests ]
-
-    steps:
-      - name: Confirm check
-        run: echo "🎉 this was successful"
-
