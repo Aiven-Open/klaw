@@ -11,9 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  if: github.event_name != 'pull_request' || github.event.action == 'enqueued' || github.event_name == 'merge_group'
-  
   checkout-code:
+    if: github.event_name != 'pull_request' || github.event.action == 'enqueued' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -23,16 +22,19 @@ jobs:
           fetch-depth: 0
 
   run-coral-jobs:
+    if: github.event_name != 'pull_request' || github.event.action == 'enqueued' || github.event_name == 'merge_group'
     name: Coral workflow
     needs: checkout-code
     uses: ./.github/workflows/jobs-coral.yaml
 
   run-maven-jobs:
+    if: github.event_name != 'pull_request' || github.event.action == 'enqueued' || github.event_name == 'merge_group'
     name: Maven workflow
     needs: checkout-code
     uses: ./.github/workflows/jobs-maven.yaml
 
   run-e2e-tests:
+    if: github.event_name != 'pull_request' || github.event.action == 'enqueued' || github.event_name == 'merge_group'
     name: Playwright e2e test
     needs: checkout-code
     permissions:
