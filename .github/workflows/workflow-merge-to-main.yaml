@@ -1,6 +1,8 @@
 # This workflow is used in a merge queue
 # when a branch targets the protected branch `main`.
 
+# A TEST
+
 name: Enabling merge to main in merge queue
 
 on:
