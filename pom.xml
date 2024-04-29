@@ -52,7 +52,7 @@
         <assertj-core.version>3.25.3</assertj-core.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <google-java-format.version>1.17.0</google-java-format.version>
-        <guava.version>33.0.0-jre</guava.version>
+        <guava.version>33.1.0-jre</guava.version>
         <httpclient5.version>5.2.1</httpclient5.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <jjwt.version>0.12.5</jjwt.version>
