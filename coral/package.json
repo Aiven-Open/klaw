@@ -45,7 +45,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@tanstack/react-query": "^4.29.5",
     "@types/react-syntax-highlighter": "^15.5.11",
-    "monaco-editor": "^0.47.0",
+    "monaco-editor": "^0.48.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.3",
