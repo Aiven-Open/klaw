@@ -134,8 +134,8 @@ devDependencies:
     specifier: ^7.4.0
     version: 7.4.0(eslint@8.57.0)
   eslint-plugin-no-relative-import-paths:
-    specifier: ^1.5.3
-    version: 1.5.3
+    specifier: ^1.5.4
+    version: 1.5.4
   eslint-plugin-react:
     specifier: ^7.33.2
     version: 7.33.2(eslint@8.57.0)
@@ -5718,8 +5718,8 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /eslint-plugin-no-relative-import-paths@1.5.3:
-    resolution: {integrity: sha512-z7c7Km1U0zdLyPziWeRKSsN2mPaGaBHDjfXn98B8XjRIhFi2bPqduRYcxWih1kI5al5tQtiChXVmspLkB0wNsQ==}
+  /eslint-plugin-no-relative-import-paths@1.5.4:
+    resolution: {integrity: sha512-2smViH7R3682NR6dwgYr8Vm7emqNP1gEjBku6DbvUy3Ef/2Fz+mhwsFjZGSixzWzazMCj4MAgIWTsHELCCDJKA==}
     dev: true
 
   /eslint-plugin-react@7.33.2(eslint@8.57.0):
