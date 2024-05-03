@@ -1497,6 +1497,55 @@ public class AclControllerServiceTest {
             any());
   }
 
+  @Test
+  @Order(49)
+  public void createAclProducer_alreadyExists() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestProducer();
+    copyProperties(aclRequests, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.existsAcl(
+            eq(aclRequests.getTopicname()),
+            eq(aclRequests.getAclType()),
+            eq(aclRequests.getAcl_ip()),
+            eq(aclRequests.getAcl_ssl()),
+            eq(aclRequests.getEnvironment()),
+            eq(0)))
+        .thenReturn(true);
+    stubUserInfo();
+    mockKafkaFlavor();
+
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
+    assertThat(resultResp.getMessage()).isEqualTo("Subscription already exists.");
+  }
+
+  @Test
+  @Order(50)
+  public void createAclConsumer_alreadyExists() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestConsumer();
+    copyProperties(aclRequests, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.existsAcl(
+            aclRequests.getTopicname(),
+            aclRequests.getAclType(),
+            aclRequests.getAcl_ip(),
+            aclRequests.getAcl_ssl(),
+            aclRequests.getEnvironment(),
+            0))
+        .thenReturn(true);
+
+    mockKafkaFlavor();
+    stubUserInfo();
+
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
+    assertThat(resultResp.getMessage()).isEqualTo("Subscription already exists.");
+  }
+
   // Add the principal name to the original owning team so it can then be removed and added to the
   // other
   private static List<Team> getTeamsListWithServiceAccounts(AclRequests aclReq) {

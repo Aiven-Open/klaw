@@ -55,14 +55,6 @@ public class ClusterApiController {
     return new ResponseEntity<>(ClusterStatus.ONLINE, HttpStatus.OK);
   }
 
-  //    @RequestMapping(value = "/reloadTruststore/{protocol}/{clusterName}", method =
-  // RequestMethod.GET,produces = {MediaType.APPLICATION_JSON_VALUE})
-  //    public ResponseEntity<String> reloadTruststore(@PathVariable String protocol,
-  //                                                   @PathVariable String clusterName){
-  //        return new ResponseEntity<>(manageKafkaComponents.reloadTruststore(protocol,
-  // clusterName), HttpStatus.OK);
-  //    }
-
   @RequestMapping(
       value =
           "/getStatus/{bootstrapServers}/{protocol}/{clusterName}/{clusterType}/kafkaFlavor/{kafkaFlavor}",

@@ -85,21 +85,20 @@ public class AivenApiService {
     HttpEntity<Map<String, String>> request = new HttpEntity<>(permissionsMap, headers);
 
     try {
-      ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
-      AivenAclResponse aivenAclResponse =
-          OBJECT_MAPPER.readValue(response.getBody(), AivenAclResponse.class);
+
+      ResponseEntity<AivenAclResponse> aclResponse =
+          restTemplate.postForEntity(uri, request, AivenAclResponse.class);
       Optional<AivenAclStruct> aivenAclStructOptional =
-          Arrays.stream(aivenAclResponse.getAcl())
-              .filter(
-                  acl ->
-                      acl.getUsername().equals(clusterAclRequest.getUsername())
-                          && acl.getTopic().equals(clusterAclRequest.getTopicName())
-                          && acl.getPermission().equals(clusterAclRequest.getPermission()))
-              .findFirst();
+          extractAcl(clusterAclRequest, aclResponse.getBody());
+      if (aivenAclStructOptional.isEmpty()) {
+        aclResponse = restTemplate.postForEntity(uri, request, AivenAclResponse.class);
+        aivenAclStructOptional = extractAcl(clusterAclRequest, aclResponse.getBody());
+      }
       aivenAclStructOptional.ifPresent(
           aivenAclStruct -> resultMap.put("aivenaclid", aivenAclStruct.getId()));
 
-      handleAclCreationResponse(clusterAclRequest, resultMap, projectName, serviceName, response);
+      handleAclCreationResponse(
+          clusterAclRequest, resultMap, projectName, serviceName, aclResponse);
 
       return resultMap;
     } catch (Exception e) {
@@ -109,12 +108,23 @@ public class AivenApiService {
     }
   }
 
+  private static Optional<AivenAclStruct> extractAcl(
+      ClusterAclRequest clusterAclRequest, AivenAclResponse aivenAclResponse) {
+    return Arrays.stream(aivenAclResponse.getAcl())
+        .filter(
+            acl ->
+                acl.getUsername().equals(clusterAclRequest.getUsername())
+                    && acl.getTopic().equals(clusterAclRequest.getTopicName())
+                    && acl.getPermission().equals(clusterAclRequest.getPermission()))
+        .findFirst();
+  }
+
   private void handleAclCreationResponse(
       ClusterAclRequest clusterAclRequest,
       Map<String, String> resultMap,
       String projectName,
       String serviceName,
-      ResponseEntity<String> response) {
+      ResponseEntity<AivenAclResponse> response) {
     if (response.getStatusCode().equals(HttpStatus.OK)) {
       log.info(
           "Acl created. Project :{} Service : {} Topic : {}",
@@ -133,7 +143,7 @@ public class AivenApiService {
           projectName,
           serviceName,
           clusterAclRequest.getTopicName());
-      resultMap.put("result", "Failure in adding acls" + response.getBody());
+      resultMap.put("result", "Failure in adding acls" + response.getBody().getMessage());
     }
   }
 
