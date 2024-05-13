@@ -270,7 +270,7 @@ describe("KafkaConnectEnvironments.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input", async () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Kafka Connect Environment",
       });
       expect(search).toHaveValue("");
@@ -288,7 +288,7 @@ describe("KafkaConnectEnvironments.tsx", () => {
     });
 
     it("enables user to navigate to search input with keyboard", async () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Kafka Connect Environment",
       });
 

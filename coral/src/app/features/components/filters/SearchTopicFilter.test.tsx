@@ -12,7 +12,7 @@ describe("SearchTopicFilter.tsx", () => {
   afterAll(cleanup);
 
   it("renders a search input", () => {
-    const searchInput = screen.getByRole("search", {
+    const searchInput = screen.getByRole("searchbox", {
       name: "Search Topic",
     });
 
@@ -20,7 +20,7 @@ describe("SearchTopicFilter.tsx", () => {
   });
 
   it("shows a placeholder with an example search value", () => {
-    const searchInput = screen.getByRole<HTMLInputElement>("search", {
+    const searchInput = screen.getByRole<HTMLInputElement>("searchbox", {
       name: "Search Topic",
     });
 
@@ -28,7 +28,7 @@ describe("SearchTopicFilter.tsx", () => {
   });
 
   it("shows a description", () => {
-    const searchInput = screen.getByRole<HTMLInputElement>("search", {
+    const searchInput = screen.getByRole<HTMLInputElement>("searchbox", {
       name: "Search Topic",
     });
 
