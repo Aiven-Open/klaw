@@ -433,7 +433,7 @@ describe("Users.tsx", () => {
     });
 
     it("renders a search field for username", () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search username",
       });
 
@@ -447,7 +447,7 @@ describe("Users.tsx", () => {
     it("fetches new data when user searches for username", async () => {
       const usernameSearch = "myname";
 
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search username",
       });
 
@@ -464,7 +464,7 @@ describe("Users.tsx", () => {
     it("removes username search as url param when user deletes input", async () => {
       const usernameSearch = "myname";
 
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search username",
       });
 

@@ -34,7 +34,6 @@ function SearchFilter({
         aria-label={placeholder}
         aria-labelledby={labelId}
         aria-describedby={descriptionId}
-        role="search"
         placeholder={placeholder}
         defaultValue={search.toString()}
         onChange={debounce(

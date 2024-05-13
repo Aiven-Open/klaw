@@ -360,7 +360,7 @@ describe("ConnectorRequests", () => {
         aquariumContext: true,
       });
 
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Connector",
       });
       expect(search).toBeVisible();

@@ -9,7 +9,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -29,7 +29,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
                 <div
-                  class="typography-heading text-grey-70"
+                  class="typography-heading text-default"
                 >
                   1
                 </div>
@@ -43,7 +43,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
                 <div
-                  class="typography-heading text-grey-70"
+                  class="typography-heading text-default"
                 >
                   1
                 </div>
@@ -62,7 +62,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -76,7 +76,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             class="typography-caption text-grey-70"
           >
             <div
-              class="typography-default text-grey-70"
+              class="typography-default text-default"
             >
               Ospo
             </div>
@@ -91,13 +91,13 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
         data-testid="topic-promotion-banner"
       >
         <div
-          class="Aquarium-Banner rounded flex justify-between gap-7 flex-nowrap p-6 bg-grey-0"
+          class="Aquarium-Banner rounded flex justify-between gap-7 flex-nowrap p-6 bg-muted"
         >
           <div
             class="flex w-full flex-col"
           >
             <div
-              class="typography-default text-grey-70 flex-grow"
+              class="typography-default text-default flex-grow"
             >
               <div
                 style="display: flex; flex-direction: column; gap: 16px;"
@@ -113,7 +113,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                 </p>
               </div>
               <a
-                class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-90 disabled:bg-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
                 href="/topic/aivendemotopic/request-promotion?sourceEnv=1&targetEnv=2"
               >
                 Promote
@@ -136,7 +136,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -169,11 +169,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Bootstrap server
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -187,11 +187,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Protocol
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -205,11 +205,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Kafka flavor
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -223,11 +223,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Rest API
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -241,11 +241,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Cluster name
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -259,11 +259,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                     Cluster status
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -275,7 +275,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -295,7 +295,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               style="display: flex; justify-content: space-around; flex-direction: column;"
             >
               <div
-                class="typography-heading text-grey-70"
+                class="typography-heading text-default"
               >
                 1
               </div>
@@ -309,7 +309,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               style="display: flex; justify-content: space-around; flex-direction: column;"
             >
               <div
-                class="typography-heading text-grey-70"
+                class="typography-heading text-default"
               >
                 0
               </div>
@@ -327,7 +327,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -371,7 +371,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -385,7 +385,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -402,7 +402,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             style="display: flex; justify-content: space-around; flex-direction: column;"
           >
             <div
-              class="typography-heading text-grey-70"
+              class="typography-heading text-default"
             >
               1
             </div>
@@ -419,7 +419,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -463,7 +463,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -489,7 +489,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -509,7 +509,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
                 <div
-                  class="typography-heading text-grey-70"
+                  class="typography-heading text-default"
                 >
                   1
                 </div>
@@ -523,7 +523,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
                 <div
-                  class="typography-heading text-grey-70"
+                  class="typography-heading text-default"
                 >
                   1
                 </div>
@@ -542,7 +542,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -556,7 +556,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
             class="typography-caption text-grey-70"
           >
             <div
-              class="typography-default text-grey-70"
+              class="typography-default text-default"
             >
               Ospo
             </div>
@@ -568,7 +568,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       style="grid-column: [object Object];"
     >
       <div
-        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+        class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
           class="flex flex-col gap-4"
@@ -601,11 +601,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Bootstrap server
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -619,11 +619,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Protocol
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -637,11 +637,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Kafka flavor
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -655,11 +655,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Rest API
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -673,11 +673,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Cluster name
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -691,11 +691,11 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                     Cluster status
                   </dt>
                   <dd
-                    class="typography-small text-grey-70"
+                    class="typography-small text-default"
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
                       role="progressbar"
                     />
                   </dd>
@@ -707,7 +707,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -727,7 +727,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               style="display: flex; justify-content: space-around; flex-direction: column;"
             >
               <div
-                class="typography-heading text-grey-70"
+                class="typography-heading text-default"
               >
                 1
               </div>
@@ -741,7 +741,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               style="display: flex; justify-content: space-around; flex-direction: column;"
             >
               <div
-                class="typography-heading text-grey-70"
+                class="typography-heading text-default"
               >
                 0
               </div>
@@ -759,7 +759,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -803,7 +803,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -817,7 +817,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-white outline-none transition-all w-full Aquarium-Card"
+      class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
         class="flex flex-col gap-4"
@@ -834,7 +834,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
             style="display: flex; justify-content: space-around; flex-direction: column;"
           >
             <div
-              class="typography-heading text-grey-70"
+              class="typography-heading text-default"
             >
               1
             </div>
@@ -851,7 +851,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -895,7 +895,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-90 focus-visible:text-primary-90 hover:text-primary-90 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"

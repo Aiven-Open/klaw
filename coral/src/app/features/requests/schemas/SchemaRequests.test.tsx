@@ -154,7 +154,7 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", { name: "Search Topic" });
+      const search = screen.getByRole("searchbox", { name: "Search Topic" });
 
       expect(search).toBeVisible();
     });
@@ -520,7 +520,7 @@ describe("SchemaRequest", () => {
     });
 
     it("enables user to search for topic", async () => {
-      const search = screen.getByRole("search", { name: "Search Topic" });
+      const search = screen.getByRole("searchbox", { name: "Search Topic" });
 
       // since the search term is persisted, it's the current
       // value of the search element.

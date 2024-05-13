@@ -121,7 +121,7 @@ describe("TopicRequests", () => {
         memoryRouter: true,
         aquariumContext: true,
       });
-      const search = screen.getByRole("search", { name: "Search Topic" });
+      const search = screen.getByRole("searchbox", { name: "Search Topic" });
       expect(search).toBeVisible();
 
       await userEvent.type(search, "abc");
