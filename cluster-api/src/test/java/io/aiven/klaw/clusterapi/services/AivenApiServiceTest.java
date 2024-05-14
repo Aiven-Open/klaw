@@ -130,6 +130,26 @@ public class AivenApiServiceTest {
     assertThat(response.get("aivenaclid")).isEqualTo("testid");
   }
 
+  @Test
+  public void createAclsService_NullResponse_FromschemaRegistry() throws Exception {
+    ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
+    String createAclsUri =
+        ACLS_BASE_URL
+            + clusterAclRequest.getProjectName()
+            + "/service/"
+            + clusterAclRequest.getServiceName()
+            + "/acl";
+
+    // create acl stubs
+    ResponseEntity<AivenAclResponse> responseEntity =
+        new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(AivenAclResponse.class)))
+        .thenReturn(responseEntity);
+
+    Map<String, String> response = aivenApiService.createAcls(clusterAclRequest);
+    assertThat(response.get("result")).isEqualTo("Failure in adding acls indeterminable exception");
+  }
+
   // Create Acls (service account already exists)
   @Test
   public void createAclsServiceAccountExists() throws Exception {
@@ -142,7 +162,6 @@ public class AivenApiServiceTest {
             + "/acl";
 
     AivenAclResponse aivenAclResponse = utilMethods.getAivenAclResponse();
-    //    String aivenAclResponseString = OBJECT_MAPPER.writeValueAsString(aivenAclResponse);
 
     // create acl stubs
     ResponseEntity<AivenAclResponse> responseEntity =

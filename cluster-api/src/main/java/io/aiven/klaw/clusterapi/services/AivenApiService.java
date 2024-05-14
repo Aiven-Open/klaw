@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -110,6 +111,9 @@ public class AivenApiService {
 
   private static Optional<AivenAclStruct> extractAcl(
       ClusterAclRequest clusterAclRequest, AivenAclResponse aivenAclResponse) {
+    if (aivenAclResponse == null) {
+      return Optional.empty();
+    }
     return Arrays.stream(aivenAclResponse.getAcl())
         .filter(
             acl ->
@@ -143,7 +147,12 @@ public class AivenApiService {
           projectName,
           serviceName,
           clusterAclRequest.getTopicName());
-      resultMap.put("result", "Failure in adding acls" + response.getBody().getMessage());
+      AivenAclResponse resultMsg = response.getBody();
+      String failureMsg =
+          (resultMsg != null && StringUtils.isEmpty(resultMsg.getMessage()))
+              ? resultMsg.getMessage()
+              : "indeterminable exception";
+      resultMap.put("result", "Failure in adding acls " + failureMsg);
     }
   }
 
