@@ -1,6 +1,5 @@
 package io.aiven.klaw.clusterapi.services;
 
-import static io.aiven.klaw.clusterapi.services.AivenApiService.OBJECT_MAPPER;
 import static io.aiven.klaw.clusterapi.services.AivenApiService.PROJECT_NAME;
 import static io.aiven.klaw.clusterapi.services.AivenApiService.SERVICE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,12 +91,10 @@ public class AivenApiServiceTest {
             + "/acl";
 
     AivenAclResponse aivenAclResponse = utilMethods.getAivenAclResponse();
-    String aivenAclResponseString = OBJECT_MAPPER.writeValueAsString(aivenAclResponse);
-
     // create acl stubs
-    ResponseEntity<String> responseEntity =
-        new ResponseEntity<>(aivenAclResponseString, HttpStatus.OK);
-    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(String.class)))
+    ResponseEntity<AivenAclResponse> responseEntity =
+        new ResponseEntity<>(aivenAclResponse, HttpStatus.OK);
+    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(AivenAclResponse.class)))
         .thenReturn(responseEntity);
 
     // get service account stubs
@@ -133,6 +130,26 @@ public class AivenApiServiceTest {
     assertThat(response.get("aivenaclid")).isEqualTo("testid");
   }
 
+  @Test
+  public void createAclsService_NullResponse_FromschemaRegistry() throws Exception {
+    ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
+    String createAclsUri =
+        ACLS_BASE_URL
+            + clusterAclRequest.getProjectName()
+            + "/service/"
+            + clusterAclRequest.getServiceName()
+            + "/acl";
+
+    // create acl stubs
+    ResponseEntity<AivenAclResponse> responseEntity =
+        new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(AivenAclResponse.class)))
+        .thenReturn(responseEntity);
+
+    Map<String, String> response = aivenApiService.createAcls(clusterAclRequest);
+    assertThat(response.get("result")).isEqualTo("Failure in adding acls indeterminable exception");
+  }
+
   // Create Acls (service account already exists)
   @Test
   public void createAclsServiceAccountExists() throws Exception {
@@ -145,12 +162,11 @@ public class AivenApiServiceTest {
             + "/acl";
 
     AivenAclResponse aivenAclResponse = utilMethods.getAivenAclResponse();
-    String aivenAclResponseString = OBJECT_MAPPER.writeValueAsString(aivenAclResponse);
 
     // create acl stubs
-    ResponseEntity<String> responseEntity =
-        new ResponseEntity<>(aivenAclResponseString, HttpStatus.OK);
-    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(String.class)))
+    ResponseEntity<AivenAclResponse> responseEntity =
+        new ResponseEntity<>(aivenAclResponse, HttpStatus.OK);
+    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(AivenAclResponse.class)))
         .thenReturn(responseEntity);
 
     // get service account stubs
@@ -426,5 +442,24 @@ public class AivenApiServiceTest {
     String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);
+  }
+
+  // Create Acl Conflict 409 already exists, create service user
+  @Test
+  public void createAclAlreadyExists() {
+    ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
+    String createAclsUri =
+        ACLS_BASE_URL
+            + clusterAclRequest.getProjectName()
+            + "/service/"
+            + clusterAclRequest.getServiceName()
+            + "/acl";
+
+    // create acl stubs throw error
+    when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(String.class)))
+        .thenThrow(new RuntimeException("Acl ID already exists"));
+
+    Map<String, String> response = aivenApiService.createAcls(clusterAclRequest);
+    assertThat(response.get("result")).contains("Failure");
   }
 }

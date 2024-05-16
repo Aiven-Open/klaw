@@ -185,6 +185,14 @@ public interface HandleDbRequests {
 
   boolean existsAclRequest(String topicName, String requestStatus, String env, int tenantId);
 
+  boolean existsAcl(
+      String topicName,
+      AclType aclType,
+      List<String> permission_ip,
+      List<String> permission_ssl,
+      String env,
+      int tenantId);
+
   boolean existsSpecificAclRequest(
       String topicName, String requestStatus, String env, int tenantId, int associatedAclId);
 

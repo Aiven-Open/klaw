@@ -109,6 +109,10 @@ public class AclControllerService {
       return ApiResponse.notOk(ACL_ERR_101);
     }
 
+    if (verifyIfAclAlreadyExists(aclRequestsModel, tenantId)) {
+      return ApiResponse.notOk("Subscription already exists.");
+    }
+
     String kafkaFlavor =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA, tenantId)
@@ -155,6 +159,19 @@ public class AclControllerService {
 
     aclRequestsDao.setTenantId(tenantId);
     return executeAclRequestModel(currentUserName, aclRequestsDao, ACL_REQUESTED);
+  }
+
+  private boolean verifyIfAclAlreadyExists(AclRequestsModel aclRequestsModel, int tenantId) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsAcl(
+            aclRequestsModel.getTopicname(),
+            aclRequestsModel.getAclType(),
+            aclRequestsModel.getAcl_ip(),
+            aclRequestsModel.getAcl_ssl(),
+            aclRequestsModel.getEnvironment(),
+            tenantId);
   }
 
   public boolean verifyServiceAccountsOfTeam(AclRequestsModel aclRequestsModel, int tenantId) {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRepo;
@@ -254,6 +256,198 @@ public class SelectDataJdbcTest {
 
     AclRequests aclRequests = selectData.selectAcl(1, 1);
     assertThat(aclRequests.getTeamId()).isEqualTo(3);
+  }
+
+  @Test
+  public void checkIfAclProduerExists_false() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.PRODUCER;
+    List<String> permission_ip = null;
+    List<String> permission_ssl = new ArrayList<>();
+    permission_ssl.add("Alice");
+    permission_ssl.add("Octopus");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(false);
+    boolean exists = selectData.aclExists(topicName, aclType, null, permission_ssl, env, tenantId);
+
+    assertThat(exists).isFalse();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Alice"));
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Octopus"));
+  }
+
+  @Test
+  public void checkIfAclProducerExists_true() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.PRODUCER;
+    List<String> permission_ip = null;
+    List<String> permission_ssl = new ArrayList<>();
+    permission_ssl.add("Alice");
+    permission_ssl.add("Octopus");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(true);
+    boolean exists = selectData.aclExists(topicName, aclType, null, permission_ssl, env, tenantId);
+
+    assertThat(exists).isTrue();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Alice"));
+    // Found Alce acl so it wll return and not check for octopus
+    verify(aclRepo, times(0))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Octopus"));
+  }
+
+  @Test
+  public void checkIfAclConsumerExists_false() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.CONSUMER;
+    List<String> permission_ip = null;
+    List<String> permission_ssl = new ArrayList<>();
+    permission_ssl.add("Alice");
+    permission_ssl.add("Octopus");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(false);
+    boolean exists = selectData.aclExists(topicName, aclType, null, permission_ssl, env, tenantId);
+
+    assertThat(exists).isFalse();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Alice"));
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Octopus"));
+  }
+
+  @Test
+  public void checkIfAclConsumerExists_true() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.CONSUMER;
+    List<String> permission_ip = null;
+    List<String> permission_ssl = new ArrayList<>();
+    permission_ssl.add("Alice");
+    permission_ssl.add("Octopus");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(true);
+    boolean exists = selectData.aclExists(topicName, aclType, null, permission_ssl, env, tenantId);
+
+    assertThat(exists).isTrue();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Alice"));
+    // Found Alce acl so it wll return and not check for octopus
+    verify(aclRepo, times(0))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), eq("Octopus"));
+  }
+
+  @Test
+  public void checkIfAclProduerExists_ip_false() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.PRODUCER;
+    List<String> permission_ip = new ArrayList<>();
+    permission_ip.add("127.0.0.1");
+    permission_ip.add("127.0.10.1");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(false);
+    boolean exists = selectData.aclExists(topicName, aclType, permission_ip, null, env, tenantId);
+
+    assertThat(exists).isFalse();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.0.1"), eq(null));
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.10.1"), eq(null));
+  }
+
+  @Test
+  public void checkIfAclProducerExists_ip_true() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.PRODUCER;
+    List<String> permission_ip = new ArrayList<>();
+    permission_ip.add("127.0.0.1");
+    permission_ip.add("127.0.10.1");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), any(), eq(null)))
+        .thenReturn(true);
+    boolean exists = selectData.aclExists(topicName, aclType, permission_ip, null, env, tenantId);
+
+    assertThat(exists).isTrue();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.0.1"), eq(null));
+    // Found Alce acl so it wll return and not check for octopus
+    verify(aclRepo, times(0))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.10.1"), eq(null));
+  }
+
+  @Test
+  public void checkIfAclConsumerExists_ip_false() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.CONSUMER;
+    List<String> permission_ip = new ArrayList<>();
+    permission_ip.add("127.0.0.1");
+    permission_ip.add("127.0.10.1");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq(null), any()))
+        .thenReturn(false);
+    boolean exists = selectData.aclExists(topicName, aclType, permission_ip, null, env, tenantId);
+
+    assertThat(exists).isFalse();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.0.1"), eq(null));
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.10.1"), eq(null));
+  }
+
+  @Test
+  public void checkIfAclConsumerExists_ip_true() {
+    String topicName = "testtopic";
+    AclType aclType = AclType.CONSUMER;
+    List<String> permission_ip = new ArrayList<>();
+    permission_ip.add("127.0.0.1");
+    permission_ip.add("127.0.10.1");
+    String env = "1";
+    int tenantId = 101;
+    when(aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), any(), eq(null)))
+        .thenReturn(true);
+    boolean exists = selectData.aclExists(topicName, aclType, permission_ip, null, env, tenantId);
+
+    assertThat(exists).isTrue();
+    verify(aclRepo, times(1))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.0.1"), eq(null));
+    // Found Alce acl so it wll return and not check for octopus
+    verify(aclRepo, times(0))
+        .existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            eq(env), eq(topicName), eq(tenantId), eq(aclType.value), eq("127.0.10.1"), eq(null));
   }
 
   @Test

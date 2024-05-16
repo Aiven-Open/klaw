@@ -38,6 +38,14 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByTenantId(int tenantId);
 
+  boolean existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+      String environment,
+      String topicName,
+      Integer tenantId,
+      String AclType,
+      String aclip,
+      String aclssl);
+
   boolean existsByTeamIdNotAndTenantIdAndConsumergroup(
       Integer teamId, Integer tenantId, String consumerGroup);
 
