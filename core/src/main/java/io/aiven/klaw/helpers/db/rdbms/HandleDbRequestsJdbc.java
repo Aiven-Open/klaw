@@ -420,6 +420,18 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsAcl(
+      String topicName,
+      AclType aclType,
+      List<String> permission_ip,
+      List<String> permission_ssl,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.aclExists(
+        topicName, aclType, permission_ip, permission_ssl, env, tenantId);
+  }
+
+  @Override
   public boolean existsSpecificAclRequest(
       String topicName, String requestStatus, String env, int tenantId, int associatedAclId) {
     return jdbcSelectHelper.existsSpecificAclRequest(

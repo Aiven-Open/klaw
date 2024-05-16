@@ -952,6 +952,35 @@ public class SelectDataJdbc {
     return aclReq.orElse(null);
   }
 
+  public boolean aclExists(
+      String topicName,
+      AclType aclType,
+      List<String> permission_ip,
+      List<String> permission_ssl,
+      String env,
+      int tenantId) {
+    if (permission_ip != null) {
+      for (String ip : permission_ip) {
+        if (aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            env, topicName, tenantId, aclType.value, ip, null)) {
+          // Match found
+          return true;
+        }
+      }
+    }
+    if (permission_ssl != null) {
+      for (String serviceName : permission_ssl) {
+        if (aclRepo.existsByEnvironmentAndTopicnameAndTenantIdAndAclTypeAndAclipAndAclssl(
+            env, topicName, tenantId, aclType.value, null, serviceName)) {
+          // Match found
+          return true;
+        }
+      }
+    }
+    // no existing matches
+    return false;
+  }
+
   public Optional<Acl> getAcl(int aclId, int tenantId) {
     return aclRepo.findById(new AclID(aclId, tenantId));
   }
