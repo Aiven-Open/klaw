@@ -546,7 +546,7 @@ export type components = {
       errCode?: string;
       message: string;
       debugMessage?: string;
-      data?: Record<string, never>;
+      data?: unknown;
       /** Format: date-time */
       timestamp?: string;
     };
@@ -629,7 +629,7 @@ export type components = {
       sourceEnv?: string;
       selectedTeam?: string;
       typeOfSync?: string;
-      topicDetails?: Record<string, never>[];
+      topicDetails?: unknown[];
       topicSearchFilter?: string;
     };
     SyncConnectorUpdates: {
@@ -2230,25 +2230,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
@@ -2267,25 +2267,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
@@ -2304,25 +2304,25 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Multi Status */
       207: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Bad Request */
       405: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
       /** @description Internal Server Error */
       500: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": unknown;
         };
       };
     };
