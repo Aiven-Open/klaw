@@ -70,8 +70,6 @@ import {
   SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
 
-const superAdminAccessCoralEnabled = true;
-
 const routes: Array<RouteObject> = [
   {
     path: "/",
@@ -458,15 +456,11 @@ const superadminRouteMap: SuperadminRouteMap = {
   },
 };
 
-// until we have permission in place like planned,
-// we are filtering the `routes` object and handling
-// routing based on role
-const routeToUse = superAdminAccessCoralEnabled
-  ? filteredRoutesForSuperAdmin(routes, superadminRouteMap)
-  : routes;
-
-const router = createBrowserRouter(routeToUse, {
-  basename: getRouterBasename(),
-});
+const router = createBrowserRouter(
+  filteredRoutesForSuperAdmin(routes, superadminRouteMap),
+  {
+    basename: getRouterBasename(),
+  }
+);
 
 export default router;
