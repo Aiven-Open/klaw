@@ -519,8 +519,7 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setGoogleFeedbackFormLink(GOOGLE_FEEDBACK_FORM_LINK);
 
       // coral attributes
-      authenticationInfo.setCoralEnabled(
-          Boolean.toString(coralEnabled && isCoralBuilt && !isUserSuperadmin));
+      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt));
 
       authenticationInfo.setCoralAvailableForUser(Boolean.toString(coralEnabled && isCoralBuilt));
 

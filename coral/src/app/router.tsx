@@ -69,11 +69,8 @@ import {
   filteredRoutesForSuperAdmin,
   SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
-import { isFeatureFlagActive } from "src/services/feature-flags/utils";
 
-const superAdminAccessCoralEnabled = isFeatureFlagActive(
-  FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
-);
+const superAdminAccessCoralEnabled = true;
 
 const routes: Array<RouteObject> = [
   {

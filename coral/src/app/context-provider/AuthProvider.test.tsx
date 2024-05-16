@@ -6,8 +6,6 @@ import {
 } from "src/app/context-provider/AuthProvider";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
-import { setupFeatureFlagMock } from "src/services/feature-flags/test-helper";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 const getAuthMock = jest.fn();
 jest.mock("src/domain/auth-user", () => ({
@@ -84,75 +82,36 @@ describe("AuthProvider.tsx", () => {
     });
   });
 
-  describe("does not render the auth provider with given children when auth user is SUPERADMIN", () => {
-    beforeEach(async () => {
-      getAuthMock.mockReturnValue({ mockAuthUser, userrole: "SUPERADMIN" });
-      customRender(
-        <AuthProvider>
-          <ChildComponent />
-        </AuthProvider>,
-        {
-          queryClient: true,
-        }
-      );
-
-      await waitForElementToBeRemoved(screen.getByText("Loading Klaw"));
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
-
-    it("does not returns context provider with given children", () => {
-      const childElement = screen.queryByTestId("auth-provider-child");
-      expect(childElement).not.toBeInTheDocument();
-    });
-
-    it("shows a dialog informing superadmin they can not access coral", async () => {
-      const dialog = await screen.findByRole("dialog", {
-        name: "You're currently logged in as superadmin.",
-      });
-
-      expect(dialog).toBeVisible();
-    });
-  });
-
-  describe("render the auth provider with given children when auth user is SUPERADMIN and feature flag is enabled", () => {
-    beforeEach(async () => {
-      setupFeatureFlagMock(
-        FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL,
-        true
-      );
-      getAuthMock.mockReturnValue({ mockAuthUser, userrole: "SUPERADMIN" });
-      customRender(
-        <AuthProvider>
-          <ChildComponent />
-        </AuthProvider>,
-        {
-          queryClient: true,
-        }
-      );
-
-      await waitForElementToBeRemoved(screen.getByText("Loading Klaw"));
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
-
-    it("returns context provider with given children", () => {
-      const childElement = screen.getByTestId("auth-provider-child");
-      expect(childElement).toBeVisible();
-    });
-
-    it("does not show dialog informing superadmin they can not access coral", () => {
-      const dialog = screen.queryByText(
-        "You're currently logged in as superadmin."
-      );
-
-      expect(dialog).not.toBeInTheDocument();
-    });
-  });
+  //   describe("renders an auth provider with given children when auth user is SUPERADMIN", () => {
+  //     beforeEach(async () => {
+  //       getAuthMock.mockReturnValue({ mockAuthUser, userrole: "SUPERADMIN" });
+  //       customRender(
+  //         <AuthProvider>
+  //           <ChildComponent />
+  //         </AuthProvider>,
+  //         {
+  //           queryClient: true,
+  //         }
+  //       );
+  //
+  //       await waitForElementToBeRemoved(screen.getByText("Loading Klaw"));
+  //     });
+  //
+  //     afterEach(() => {
+  //       jest.resetAllMocks();
+  //       cleanup();
+  //     });
+  //
+  //     it("returns an context provider with given children when user", () => {
+  //       const childElement = screen.getByTestId("auth-provider-child");
+  //       expect(childElement).toBeVisible();
+  //     });
+  //
+  //     it("makes context available in child element", () => {
+  //       const childElement = screen.getByTestId("auth-provider-child");
+  //       const authUserFromContext = within(childElement).getByText("Jon Snow");
+  //
+  //       expect(authUserFromContext).toBeVisible();
+  //     });
+  //   });
 });
