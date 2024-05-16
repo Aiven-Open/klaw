@@ -438,7 +438,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input", async () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Connector",
       });
       expect(search).toHaveValue("");
@@ -456,7 +456,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     it("enables user to navigate to search input with keyboard", async () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Connector",
       });
 

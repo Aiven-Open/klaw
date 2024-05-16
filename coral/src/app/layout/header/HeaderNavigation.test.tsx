@@ -6,6 +6,7 @@ import {
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
 import * as hook from "src/app/hooks/usePendingRequests";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
@@ -14,13 +15,6 @@ jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToastContext: () => [mockToast, mockDismiss],
 }));
-
-const quickLinksNavItems = [
-  {
-    name: "Go to Klaw documentation page",
-    linkTo: "https://www.klaw-project.io/docs",
-  },
-];
 
 const mockedNoPendingRequests = {
   TOPIC: 0,
@@ -42,7 +36,17 @@ const mockedPendingRequests = {
   TOTAL_NOTIFICATIONS: 6,
 };
 
+let mockAuthUser = testAuthUser;
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUser,
+}));
+
 describe("HeaderNavigation.tsx", () => {
+  const requestANewButton = "Request a new";
+  const defaultPendingRequestsButton = "No pending requests";
+  const profileButton = "Open profile menu";
+  const documentationPageLink = "Go to Klaw documentation page";
+
   describe("shows all necessary elements", () => {
     beforeAll(() => {
       jest
@@ -57,37 +61,98 @@ describe("HeaderNavigation.tsx", () => {
       jest.clearAllMocks();
     });
 
-    it("renders a navigation element with quick links", () => {
-      const nav = screen.getByRole("navigation", { name: "Quick links" });
-
-      expect(nav).toBeVisible();
-    });
-
-    quickLinksNavItems.forEach((item) => {
-      it(`renders a link to ${item.name}`, () => {
-        const nav = screen.getByRole("navigation", { name: "Quick links" });
-        const link = within(nav).getByRole("link", { name: item.name });
-
-        expect(link).toBeEnabled();
-        expect(link).toHaveAttribute("href", item.linkTo);
-      });
-    });
-
-    it(`renders a button for the profile dropdown`, () => {
-      const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const button = within(nav).getByRole("button", {
-        name: "Open profile menu",
+    it("renders a button to request a new entity", () => {
+      const button = screen.getByRole("button", {
+        name: requestANewButton,
       });
 
       expect(button).toBeEnabled();
       expect(button).toHaveAttribute("aria-haspopup", "true");
     });
 
-    it("renders all links in the header menu", () => {
+    it("renders a navigation element with quick links", () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const links = within(nav).getAllByRole("link");
 
-      expect(links).toHaveLength(quickLinksNavItems.length);
+      expect(nav).toBeVisible();
+    });
+
+    it(`renders a button to show open requests`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const button = within(nav).getByRole("button", {
+        name: defaultPendingRequestsButton,
+      });
+
+      expect(button).toBeEnabled();
+      expect(button).toHaveAttribute("aria-haspopup", "true");
+    });
+
+    it(`renders a button for the profile dropdown`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const button = within(nav).getByRole("button", {
+        name: profileButton,
+      });
+
+      expect(button).toBeEnabled();
+      expect(button).toHaveAttribute("aria-haspopup", "true");
+    });
+
+    it(`renders a link to Klaw documentation page`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const link = within(nav).getByRole("link", {
+        name: documentationPageLink,
+      });
+
+      expect(link).toBeEnabled();
+      expect(link).toHaveAttribute("href", "https://www.klaw-project.io/docs");
+    });
+  });
+
+  describe("removes specific elements if user is superadmin", () => {
+    beforeAll(() => {
+      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      jest
+        .spyOn(hook, "usePendingRequests")
+        .mockImplementation(() => mockedNoPendingRequests);
+
+      customRender(<HeaderNavigation />, { memoryRouter: true });
+    });
+
+    afterAll(() => {
+      mockAuthUser = testAuthUser;
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("does not show a button to request a new entity", () => {
+      const button = screen.queryByText(requestANewButton);
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it(`does not show a button to show open requests`, () => {
+      const button = screen.queryByText(defaultPendingRequestsButton);
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it(`renders a button for the profile dropdown`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const button = within(nav).getByRole("button", {
+        name: profileButton,
+      });
+
+      expect(button).toBeEnabled();
+      expect(button).toHaveAttribute("aria-haspopup", "true");
+    });
+
+    it(`renders a link to Klaw documentation page`, () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
+      const link = within(nav).getByRole("link", {
+        name: documentationPageLink,
+      });
+
+      expect(link).toBeEnabled();
+      expect(link).toHaveAttribute("href", "https://www.klaw-project.io/docs");
     });
   });
 
@@ -96,7 +161,7 @@ describe("HeaderNavigation.tsx", () => {
       "Request a new",
       "No pending requests",
       "Open profile menu",
-      ...quickLinksNavItems.map((link) => link.name),
+      "Go to Klaw documentation page",
     ];
 
     describe("user can navigate through elements", () => {

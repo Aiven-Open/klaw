@@ -229,7 +229,7 @@ describe("Clusters.tsx", () => {
     });
 
     it("renders a search field for cluster params", () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Cluster parameters",
       });
 
@@ -365,7 +365,7 @@ describe("Clusters.tsx", () => {
     it("fetches new data when user searches for Cluster params", async () => {
       const testSearchInput = "MyCluster";
 
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Cluster parameters",
       });
 

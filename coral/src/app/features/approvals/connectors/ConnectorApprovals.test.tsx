@@ -213,7 +213,7 @@ describe("ConnectorApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search", {
+      const search = screen.getByRole("searchbox", {
         name: "Search Connector",
       });
 

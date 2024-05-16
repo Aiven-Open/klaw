@@ -329,7 +329,7 @@ describe("TopicSubscriptions.tsx", () => {
       expect(filter).toBeEnabled();
     });
     it("should render search filter", () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("searchbox");
       expect(search).toBeVisible();
       expect(search).toBeEnabled();
     });
@@ -389,7 +389,7 @@ describe("TopicSubscriptions.tsx", () => {
     });
 
     it("should allow searching", async () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("searchbox");
 
       await userEvent.type(search, "declineme");
 

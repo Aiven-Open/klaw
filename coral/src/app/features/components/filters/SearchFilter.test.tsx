@@ -31,25 +31,25 @@ describe("SearchFilter.tsx", () => {
     afterAll(cleanup);
 
     it("renders a search input", () => {
-      const searchInput = screen.getByRole("search", { name: label });
+      const searchInput = screen.getByRole("searchbox", { name: label });
 
       expect(searchInput).toBeEnabled();
     });
 
     it("shows accessible label", () => {
-      const searchInput = screen.getByRole("search");
+      const searchInput = screen.getByRole("searchbox");
 
       expect(searchInput).toHaveAccessibleName(label);
     });
 
     it("shows a placeholder dependent on prop", () => {
-      const searchInput = screen.getByRole("search", { name: label });
+      const searchInput = screen.getByRole("searchbox", { name: label });
 
       expect(searchInput).toHaveAttribute("placeholder", placeholder);
     });
 
     it("shows a description dependent on description and ariaDescriptionprops", () => {
-      const searchInput = screen.getByRole("search", { name: label });
+      const searchInput = screen.getByRole("searchbox", { name: label });
 
       expect(searchInput).toHaveAccessibleDescription(
         `${description} ${ariaDescription}`
@@ -85,7 +85,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     it("renders `topic-test` as field value", async () => {
-      const searchInput = await screen.findByRole("search");
+      const searchInput = await screen.findByRole("searchbox");
       expect(searchInput).toHaveValue(topicTest);
     });
   });
@@ -114,7 +114,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     it("sets the topic the user choose as active option", async () => {
-      const searchInput = screen.getByRole("search", { name: label });
+      const searchInput = screen.getByRole("searchbox", { name: label });
 
       await userEvent.type(searchInput, "testing");
 
@@ -152,7 +152,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     it("sets `testing` and `page=1` as search param when user types in search input", async () => {
-      const searchInput = screen.getByRole("search", { name: label });
+      const searchInput = screen.getByRole("searchbox", { name: label });
 
       await userEvent.type(searchInput, "testing");
 
