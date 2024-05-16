@@ -8,8 +8,6 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-import { setupFeatureFlagMock } from "src/services/feature-flags/test-helper";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 jest.mock("src/domain/team/team-api.ts");
 
@@ -300,10 +298,6 @@ describe("MainNavigation.tsx", () => {
 
     beforeAll(() => {
       mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
-      setupFeatureFlagMock(
-        FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL,
-        true
-      );
       mockGetRequestsStatistics.mockResolvedValue([]);
       mockGetRequestsWaitingForApproval.mockResolvedValue([]);
       customRender(<MainNavigation />, {
