@@ -18,8 +18,8 @@ dependencies:
     specifier: ^4.29.5
     version: 4.29.5(react-dom@18.2.0)(react@18.3.1)
   '@types/react-syntax-highlighter':
-    specifier: ^15.5.11
-    version: 15.5.11
+    specifier: ^15.5.13
+    version: 15.5.13
   json5:
     specifier: '>=1.0.2'
     version: 2.2.3
@@ -4043,8 +4043,8 @@ packages:
     dependencies:
       '@types/react': 18.3.1
 
-  /@types/react-syntax-highlighter@15.5.11:
-    resolution: {integrity: sha512-ZqIJl+Pg8kD+47kxUjvrlElrraSUrYa4h0dauY/U/FTUuprSCqvUj+9PNQNQzVc6AJgIWUUxn87/gqsMHNbRjw==}
+  /@types/react-syntax-highlighter@15.5.13:
+    resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
     dependencies:
       '@types/react': 18.3.1
     dev: false
