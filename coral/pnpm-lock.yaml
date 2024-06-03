@@ -164,8 +164,8 @@ devDependencies:
     specifier: ^4.17.21
     version: 4.17.21
   msw:
-    specifier: ^2.3.0
-    version: 2.3.0(typescript@5.4.5)
+    specifier: ^2.3.1
+    version: 2.3.1(typescript@5.4.5)
   openapi-typescript:
     specifier: ^6.7.6
     version: 6.7.6
@@ -8153,8 +8153,8 @@ packages:
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
-  /msw@2.3.0(typescript@5.4.5):
-    resolution: {integrity: sha512-cDr1q/QTMzaWhY8n9lpGhceY209k29UZtdTgJ3P8Bzne3TSMchX2EM/ldvn4ATLOktpCefCU2gcEgzHc31GTPw==}
+  /msw@2.3.1(typescript@5.4.5):
+    resolution: {integrity: sha512-ocgvBCLn/5l3jpl1lssIb3cniuACJLoOfZu01e3n5dbJrpA5PeeWn28jCLgQDNt6d7QT8tF2fYRzm9JoEHtiig==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
