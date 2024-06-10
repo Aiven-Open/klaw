@@ -43,16 +43,7 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.enums.SchemaType;
-import io.aiven.klaw.model.requests.AclRequestsModel;
-import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
-import io.aiven.klaw.model.requests.EnvModel;
-import io.aiven.klaw.model.requests.ProfileModel;
-import io.aiven.klaw.model.requests.ResetEntityCache;
-import io.aiven.klaw.model.requests.SchemaPromotion;
-import io.aiven.klaw.model.requests.SchemaRequestModel;
-import io.aiven.klaw.model.requests.TopicCreateRequestModel;
-import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
-import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.requests.*;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -178,6 +169,33 @@ public class UtilMethods {
     userInfoList.add(userInfo);
 
     return userInfoList;
+  }
+
+  public Team getTeamDaoMock() {
+    ServiceAccounts serviceAccounts = new ServiceAccounts();
+    serviceAccounts.setNumberOfAllowedAccounts(-1);
+
+    Team team = new Team();
+    team.setTeamname("Seahorses");
+    team.setTeamId(101);
+    team.setContactperson("Contact Person");
+    team.setTenantId(101);
+    team.setTeamphone("3142342343242");
+    team.setTeammail("team@teammail.com");
+    team.setApp("app");
+    team.setRequestTopicsEnvs("1,2,3");
+    team.setRestrictionsObj("restrictionsObj");
+    team.setServiceAccounts(serviceAccounts);
+    team.setOtherParams("otherParams");
+
+    return team;
+  }
+
+  public Map<Integer, String> getTenantMapMock() {
+    Map<Integer, String> tenantMap = new HashMap<>();
+    tenantMap.put(101, "testTenantName");
+
+    return tenantMap;
   }
 
   public List<ActivityLog> getLogs() {
@@ -535,6 +553,17 @@ public class UtilMethods {
     team.setTeamname("Seahorses");
     allTopicReqs.add(team);
     return allTopicReqs;
+  }
+
+  public TeamModel getTeamModelMock() {
+    TeamModel team = new TeamModel();
+    team.setTeamname("Seahorses");
+    team.setContactperson("Contact Person");
+    team.setTeamphone("314234234");
+    team.setTenantId(101);
+    team.setTeamId(101);
+    team.setEnvList(List.of("1", "2"));
+    return team;
   }
 
   public List<TopicRequest> getTopicRequests() {
