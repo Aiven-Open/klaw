@@ -19,34 +19,34 @@ on:
   workflow_dispatch:
 
 jobs:
-#  check-changes:
-#    runs-on: ubuntu-latest
-#    outputs:
-#      changes-maven: ${{ steps.check-changed-dirs.outputs.changes-maven }}
-#      changes-coral: ${{ steps.check-changed-dirs.outputs.changes-coral }}
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  #v4.1.6
-#        with:
-#          ref: ${{ github.ref }}
-#          fetch-depth: 0
-#
-#      - id: check-changed-dirs
-#        name: Check directories of changes
-#        run: |
-#          if git diff --name-only HEAD^ HEAD | grep -q '^coral/'; then
-#            echo "Changes detected in coral directory 🪸"
-#            echo "changes-coral=true" >> $GITHUB_OUTPUT
-#          fi
-#          if git diff --name-only HEAD^ HEAD | grep -qE '^cluster-api/|^core/|^pom.xml$'; then
-#            echo "Changes detected for cluster-api/core or pom.xml"
-#            echo "changes-maven=true" >> $GITHUB_OUTPUT
-#          fi
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes-maven: ${{ steps.check-changed-dirs.outputs.changes-maven }}
+      changes-coral: ${{ steps.check-changed-dirs.outputs.changes-coral }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  #v4.1.6
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - id: check-changed-dirs
+        name: Check directories of changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^coral/'; then
+            echo "Changes detected in coral directory 🪸"
+            echo "changes-coral=true" >> $GITHUB_OUTPUT
+          fi
+          if git diff --name-only HEAD^ HEAD | grep -qE '^cluster-api/|^core/|^pom.xml$'; then
+            echo "Changes detected for cluster-api/core or pom.xml"
+            echo "changes-maven=true" >> $GITHUB_OUTPUT
+          fi
 
   check-requester-approver:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
+      - name: Dump GitHub event
         env:
           GITHUB_CONTEXT: ${{ toJson(github.event.sender) }}
         run: echo "$GITHUB_CONTEXT"
