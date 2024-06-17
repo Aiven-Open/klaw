@@ -9,8 +9,8 @@ dependencies:
     specifier: 1.66.0
     version: 1.66.0(@types/react-dom@18.2.21)(@types/react@18.3.3)(less@4.2.0)(lodash@4.17.21)(postcss@8.4.31)(prop-types@15.8.1)(react-dom@18.2.0)(react@18.3.1)(typescript@5.4.5)(webpack@5.89.0)
   '@hookform/resolvers':
-    specifier: ^3.3.4
-    version: 3.3.4(react-hook-form@7.52.0)
+    specifier: ^3.6.0
+    version: 3.6.0(react-hook-form@7.52.0)
   '@monaco-editor/react':
     specifier: ^4.6.0
     version: 4.6.0(monaco-editor@0.49.0)(react-dom@18.2.0)(react@18.3.1)
@@ -1118,8 +1118,8 @@ packages:
     dependencies:
       tslib: 2.6.2
 
-  /@hookform/resolvers@3.3.4(react-hook-form@7.52.0):
-    resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
+  /@hookform/resolvers@3.6.0(react-hook-form@7.52.0):
+    resolution: {integrity: sha512-UBcpyOX3+RR+dNnqBd0lchXpoL8p4xC21XP8H6Meb8uve5Br1GCnmg0PcBoKKqPKgGu9GHQ/oygcmPrQhetwqw==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
