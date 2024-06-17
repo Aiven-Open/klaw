@@ -39,7 +39,7 @@ jobs:
       change_detected: ${{ steps.detect-openapi-changes.outputs.change_detected }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  #v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  #v4.1.7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  #v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  #v4.1.7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29  #v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  #v4.1.7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
