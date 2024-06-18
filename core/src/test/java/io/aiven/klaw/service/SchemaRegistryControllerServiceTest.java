@@ -925,7 +925,7 @@ public class SchemaRegistryControllerServiceTest {
     SchemaRequest schReq = new SchemaRequest();
     schReq.setEnvironment("3");
     schReq.setRequestStatus(RequestStatus.CREATED.value);
-    schReq.setTeamId(101);
+    schReq.setTeamId(104);
     schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     schReq.setTopicname("testtopic");
 

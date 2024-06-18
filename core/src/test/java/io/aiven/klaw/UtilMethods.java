@@ -50,6 +50,7 @@ import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -89,6 +90,8 @@ import org.springframework.http.HttpHeaders;
 @Slf4j
 public class UtilMethods {
 
+  private static final int TEST_TENANT_ID = 101;
+
   public HttpHeaders createHeaders(String username, String password) {
     return new HttpHeaders() {
       {
@@ -107,7 +110,7 @@ public class UtilMethods {
     mSchema.setSchemaversion("1.0");
     mSchema.setTopicname("testtopic");
     mSchema.setSchemafull("schema");
-    mSchema.setTenantId(101);
+    mSchema.setTenantId(TEST_TENANT_ID);
     listMSchemas.add(mSchema);
 
     return listMSchemas;
@@ -125,7 +128,7 @@ public class UtilMethods {
     UserInfoModel userInfo = new UserInfoModel();
     userInfo.setUsername("kwusera");
     userInfo.setTeamId(101);
-    userInfo.setTenantId(101);
+    userInfo.setTenantId(TEST_TENANT_ID);
     userInfo.setRole("USER");
     userInfo.setMailid("test@test.com");
     userInfo.setFullname("My full name");
@@ -139,7 +142,7 @@ public class UtilMethods {
     userInfo.setTeam("Seahorses");
     userInfo.setUsername("kwusera");
     userInfo.setTeamId(101);
-    userInfo.setTenantId(101);
+    userInfo.setTenantId(TEST_TENANT_ID);
     userInfo.setRole("USER");
     userInfo.setMailid("test@test.com");
     userInfo.setFullname("My full name");
@@ -152,7 +155,7 @@ public class UtilMethods {
     UserInfo userInfo = new UserInfo();
     userInfo.setTeamId(3);
     userInfo.setUsername("kwusera");
-    userInfo.setTenantId(101);
+    userInfo.setTenantId(TEST_TENANT_ID);
     userInfo.setRole("USER");
 
     return userInfo;
@@ -178,6 +181,33 @@ public class UtilMethods {
     userInfoList.add(userInfo);
 
     return userInfoList;
+  }
+
+  public Team getTeamDaoMock() {
+    ServiceAccounts serviceAccounts = new ServiceAccounts();
+    serviceAccounts.setNumberOfAllowedAccounts(-1);
+
+    Team team = new Team();
+    team.setTeamname("Seahorses");
+    team.setTeamId(3);
+    team.setContactperson("Contact Person");
+    team.setTenantId(TEST_TENANT_ID);
+    team.setTeamphone("3142342343242");
+    team.setTeammail("team@teammail.com");
+    team.setApp("app");
+    team.setRequestTopicsEnvs("1,2,3");
+    team.setRestrictionsObj("restrictionsObj");
+    team.setServiceAccounts(serviceAccounts);
+    team.setOtherParams("otherParams");
+
+    return team;
+  }
+
+  public Map<Integer, String> getTenantMapMock() {
+    Map<Integer, String> tenantMap = new HashMap<>();
+    tenantMap.put(TEST_TENANT_ID, "testTenantName");
+
+    return tenantMap;
   }
 
   public List<ActivityLog> getLogs() {
@@ -216,7 +246,7 @@ public class UtilMethods {
     topicRequest.setTopicname("testtopic");
     topicRequest.setTeamId(3);
     topicRequest.setNoOfPartitions(1);
-    topicRequest.setTenantId(101);
+    topicRequest.setTenantId(TEST_TENANT_ID);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -276,7 +306,7 @@ public class UtilMethods {
     Acl topicRequest = new Acl();
     topicRequest.setTeamId(3);
     topicRequest.setAclType(AclType.PRODUCER.value);
-    topicRequest.setTenantId(101);
+    topicRequest.setTenantId(TEST_TENANT_ID);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -286,13 +316,13 @@ public class UtilMethods {
     Acl acl1 = new Acl();
     acl1.setTeamId(102);
     acl1.setAclType(AclType.PRODUCER.value);
-    acl1.setTenantId(101);
+    acl1.setTenantId(TEST_TENANT_ID);
     allTopicReqs.add(acl1);
 
     Acl acl2 = new Acl();
     acl2.setTeamId(103);
     acl2.setAclType(AclType.CONSUMER.value);
-    acl2.setTenantId(101);
+    acl2.setTenantId(TEST_TENANT_ID);
     allTopicReqs.add(acl2);
 
     return allTopicReqs;
@@ -480,7 +510,7 @@ public class UtilMethods {
     team.setTeamname("Seahorses");
     team.setTeamId(101);
     team.setContactperson("Contact Person");
-    team.setTenantId(101);
+    team.setTenantId(TEST_TENANT_ID);
     team.setTeamphone("3142342343242");
     team.setTeammail("test@test.com");
 
@@ -500,9 +530,9 @@ public class UtilMethods {
     List<Team> teams = new ArrayList<>();
     Team team1 = new Team();
     team1.setTeamname("Seahorses");
-    team1.setTeamId(101);
+    team1.setTeamId(104);
     team1.setContactperson("Contact Person1");
-    team1.setTenantId(101);
+    team1.setTenantId(TEST_TENANT_ID);
     team1.setTeamphone("3142342343242");
     team1.setTeammail("test1@test.com");
 
@@ -510,7 +540,7 @@ public class UtilMethods {
     team2.setTeamname("Octopus");
     team2.setTeamId(102);
     team2.setContactperson("Contact Person2");
-    team2.setTenantId(101);
+    team2.setTenantId(TEST_TENANT_ID);
     team2.setTeamphone("3142342343242");
     team2.setTeammail("test2@test.com");
 
@@ -518,7 +548,7 @@ public class UtilMethods {
     team3.setTeamname("Dragons");
     team3.setTeamId(103);
     team3.setContactperson("Contact Person3");
-    team3.setTenantId(101);
+    team3.setTenantId(TEST_TENANT_ID);
     team3.setTeamphone("3142342343242");
     team3.setTeammail("test3@test.com");
 
@@ -535,6 +565,17 @@ public class UtilMethods {
     team.setTeamname("Seahorses");
     allTopicReqs.add(team);
     return allTopicReqs;
+  }
+
+  public TeamModel getTeamModelMock() {
+    TeamModel team = new TeamModel();
+    team.setTeamname("Seahorses");
+    team.setContactperson("Contact Person");
+    team.setTeamphone("314234234");
+    team.setTenantId(TEST_TENANT_ID);
+    team.setTeamId(3);
+    team.setEnvList(List.of("1", "2"));
+    return team;
   }
 
   public List<TopicRequest> getTopicRequests() {
@@ -567,7 +608,7 @@ public class UtilMethods {
     topicRequest.setEnvironment("1");
     topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     topicRequest.setDescription("Test desc");
-    topicRequest.setTenantId(101);
+    topicRequest.setTenantId(TEST_TENANT_ID);
     return topicRequest;
   }
 
@@ -622,7 +663,7 @@ public class UtilMethods {
     aclRequest.setAcl_ip("10.11.112.113");
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setOtherParams("101");
-    aclRequest.setTenantId(101);
+    aclRequest.setTenantId(TEST_TENANT_ID);
     return aclRequest;
   }
 
@@ -686,7 +727,7 @@ public class UtilMethods {
     schemaRequest.setTeamId(3);
     schemaRequest.setRequestor("kwusera");
     schemaRequest.setSchemafull("schema");
-    schemaRequest.setTenantId(101);
+    schemaRequest.setTenantId(TEST_TENANT_ID);
     schemaList.add(schemaRequest);
     return schemaList;
   }
@@ -696,7 +737,7 @@ public class UtilMethods {
     kwKafkaConnector.setConnectorConfig("config");
     kwKafkaConnector.setConnectorId(101);
     kwKafkaConnector.setConnectorName("testconn");
-    kwKafkaConnector.setTenantId(101);
+    kwKafkaConnector.setTenantId(TEST_TENANT_ID);
     kwKafkaConnector.setTeamId(1003);
     return kwKafkaConnector;
   }
@@ -760,20 +801,20 @@ public class UtilMethods {
     env.setName("DEV");
     envList.add(env);
     env.setClusterId(1);
-    env.setTenantId(101);
+    env.setTenantId(TEST_TENANT_ID);
 
     Env env2 = new Env();
     env2.setId("2");
     env2.setName("TST");
     env2.setClusterId(2);
-    env2.setTenantId(101);
+    env2.setTenantId(TEST_TENANT_ID);
     envList.add(env2);
 
     Env env3 = new Env();
     env3.setId("3");
     env3.setName("PRD");
     env3.setClusterId(3);
-    env3.setTenantId(101);
+    env3.setTenantId(TEST_TENANT_ID);
     envList.add(env3);
 
     return envList;
@@ -786,7 +827,7 @@ public class UtilMethods {
     env.setName("DEV");
     envList.add(env);
     env.setClusterId(1);
-    env.setTenantId(101);
+    env.setTenantId(TEST_TENANT_ID);
     env.setAssociatedEnv(new EnvTag("3", "DEV"));
     return envList;
   }
@@ -796,7 +837,7 @@ public class UtilMethods {
     env.setId("3");
     env.setName("DEV");
     env.setClusterId(3);
-    env.setTenantId(101);
+    env.setTenantId(TEST_TENANT_ID);
     env.setAssociatedEnv(new EnvTag("1", "DEV"));
 
     return env;
@@ -1185,7 +1226,7 @@ public class UtilMethods {
     for (int i = 0; i < topicNames.length; i++) {
       Topic topic = new Topic();
       topic.setTopicname(topicNames[i]);
-      topic.setTenantId(101);
+      topic.setTenantId(TEST_TENANT_ID);
       topic.setTopicid(i);
       topic.setTeamId(10);
       topic.setNoOfReplicas("3");
@@ -1198,7 +1239,7 @@ public class UtilMethods {
 
   public ResetEntityCache getResetEntityCache() {
     return ResetEntityCache.builder()
-        .tenantId(101)
+        .tenantId(TEST_TENANT_ID)
         .entityType(EntityType.USERS.name())
         .entityValue("testuser")
         .operationType(MetadataOperationType.CREATE.name())
@@ -1208,7 +1249,7 @@ public class UtilMethods {
   public List<KwTenants> getTenants() {
     List<KwTenants> kwTenantsList = new ArrayList<>();
     KwTenants kwTenants = new KwTenants();
-    kwTenants.setTenantId(101);
+    kwTenants.setTenantId(TEST_TENANT_ID);
     kwTenants.setTenantName("default");
     kwTenantsList.add(kwTenants);
 
