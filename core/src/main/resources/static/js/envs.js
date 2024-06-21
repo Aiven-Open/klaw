@@ -707,8 +707,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                 var defRepFactor = parseInt($scope.addNewEnv.defrepfctr,10)
                 var maxRepFactor = parseInt($scope.addNewEnv.maxrepfctr,10)
-                var defPartitionFactor = parseInt($scope.addNewEnv.defparts,10)
-                var maxPartitionFactor = parseInt($scope.addNewEnv.defmaxparts,10)
+                var defPartitions = parseInt($scope.addNewEnv.defparts,10)
+                var maxPartitions = parseInt($scope.addNewEnv.defmaxparts,10)
 
                 // Validation partitions
                 if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
@@ -718,7 +718,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 	return;
                 }
 
-                if(isNaN(defPartitionFactor)){
+                if(isNaN(defPartitions)){
                     $scope.alertnote = "Default partitions should be a valid number";
                     $scope.showAlertToast();
                     return;
@@ -731,13 +731,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 	return;
                 }
 
-                if(isNaN(maxPartitionFactor)){
+                if(isNaN(maxPartitions)){
                     $scope.alertnote = "Maximum partitions should be a valid number";
                     $scope.showAlertToast();
                     return;
                 }
 
-                if(defPartitionFactor > maxPartitionFactor){
+                if(defPartitions > maxPartitions){
                     $scope.alertnote = "Default partitions should be less than Maximum partitions";
                     $scope.showAlertToast();
                     return;
