@@ -897,11 +897,7 @@ public class EnvsClustersTenantsControllerService {
       kwTenantModel.setActiveTenant(true);
     }
 
-    if (kwTenantModel.isActiveTenant()) {
-      kwTenants.setIsActive("true");
-    } else {
-      kwTenants.setIsActive("false");
-    }
+    kwTenants.setIsActive(String.valueOf(kwTenantModel.isActiveTenant()));
 
     try {
       String addNewTenantStatus = manageDatabase.getHandleDbRequests().addNewTenant(kwTenants);

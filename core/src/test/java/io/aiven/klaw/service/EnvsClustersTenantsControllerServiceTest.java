@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -17,10 +18,8 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.KwTenantModel;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
@@ -58,6 +57,7 @@ class EnvsClustersTenantsControllerServiceTest {
 
   @Mock private UsersTeamsControllerService usersTeamsControllerService;
   @Mock private HandleDbRequestsJdbc handleDbRequestsJdbc;
+  @Mock private DefaultDataService defaultDataService;
 
   @Captor ArgumentCaptor<Env> envCapture;
 
@@ -70,6 +70,7 @@ class EnvsClustersTenantsControllerServiceTest {
     ReflectionTestUtils.setField(service, "clusterApiService", clusterApiService);
     ReflectionTestUtils.setField(
         service, "usersTeamsControllerService", usersTeamsControllerService);
+    ReflectionTestUtils.setField(service, "defaultDataService", defaultDataService);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(handleDbRequestsJdbc.getUsersInfo(any())).thenReturn(buildUserInfo());
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
@@ -282,6 +283,186 @@ class EnvsClustersTenantsControllerServiceTest {
     List<EnvModelResponse> response = service.getEnvsPaginated(type, "", pageNo, searchBy);
 
     assertThat(response).hasSize(expectedMatches);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteTenantUnauthorizedUser1() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse response = service.deleteTenant();
+
+    assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteTenantUnauthorizedUser2() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    ApiResponse response = service.deleteTenant();
+
+    assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteTenantFailed() throws KlawException {
+    int tenantId = 102;
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(manageDatabase.getTenantMap())
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(tenantId, "first");
+                put(103, "second");
+              }
+            });
+    String message = "failed";
+    when(handleDbRequestsJdbc.disableTenant(tenantId)).thenReturn(message);
+    UserInfo info = new UserInfo();
+    info.setTenantId(tenantId);
+    info.setUsername("first user");
+    when(handleDbRequestsJdbc.getAllUsersInfo(tenantId)).thenReturn(List.of(info));
+    ApiResponse response = service.deleteTenant();
+
+    assertThat(response.getMessage()).contains(message);
+    assertThat(response.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteTenant() throws KlawException {
+    int tenantId = 102;
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(manageDatabase.getTenantMap())
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(tenantId, "first");
+                put(103, "second");
+              }
+            });
+    String message = "success";
+    when(handleDbRequestsJdbc.disableTenant(tenantId)).thenReturn(message);
+    UserInfo info = new UserInfo();
+    info.setTenantId(tenantId);
+    info.setUsername("first user");
+    when(handleDbRequestsJdbc.getAllUsersInfo(tenantId)).thenReturn(List.of(info));
+    ApiResponse response = service.deleteTenant();
+
+    assertThat(response.getMessage()).contains(message);
+    assertThat(String.valueOf(response.getData())).contains("first");
+    assertThat(response.isSuccess()).isTrue();
+    verify(usersTeamsControllerService, times(1)).deleteUser("first user", false);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllUsers(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllTeams(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllEnvs(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllClusters(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllRolesPerms(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteAllKwProps(tenantId);
+    verify(handleDbRequestsJdbc, times(1)).deleteTxnData(tenantId);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addTenantIdExceedMax() throws KlawException {
+    when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(new KwTenants(), new KwTenants()));
+    ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 1);
+    ApiResponse response = service.addTenantId(new KwTenantModel(), true);
+
+    assertThat(response.getMessage()).contains(ENV_CLUSTER_TNT_ERR_108);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addTenantIdUnauthorized() throws KlawException {
+    when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(new KwTenants(), new KwTenants()));
+    ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse response = service.addTenantId(new KwTenantModel(), true);
+
+    assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addTenantIdInternal() throws KlawException {
+    KwTenantModel kwTenantModel = new KwTenantModel();
+    kwTenantModel.setTenantName("first tenant");
+    KwTenants kwTenant1 = new KwTenants();
+    kwTenant1.setTenantName("first tenant");
+    kwTenant1.setTenantId(101);
+    KwTenants kwTenant2 = new KwTenants();
+    kwTenant2.setTenantName("second tenant");
+    kwTenant2.setTenantId(102);
+    when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(kwTenant1, kwTenant2));
+    ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.addNewTenant(any())).thenReturn("add new tenant");
+    ApiResponse response = service.addTenantId(kwTenantModel, false);
+
+    assertThat(response.getMessage()).contains("add new tenant");
+    assertThat(response.isSuccess()).isTrue();
+    verify(commonUtilsService, times(1))
+        .updateMetadata(
+            anyInt(), eq(EntityType.TENANT), eq(MetadataOperationType.CREATE), eq(null));
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addTenantIdExternal() throws KlawException {
+    KwTenantModel kwTenantModel = new KwTenantModel();
+    kwTenantModel.setTenantName("first tenant");
+    KwTenants kwTenant1 = new KwTenants();
+    kwTenant1.setTenantName("first tenant");
+    kwTenant1.setTenantId(101);
+    KwTenants kwTenant2 = new KwTenants();
+    kwTenant2.setTenantName("second tenant");
+    kwTenant2.setTenantId(102);
+    when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(kwTenant1, kwTenant2));
+    ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
+    ReflectionTestUtils.setField(service, "kwInstallationType", "kwInstallationType");
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.addNewTenant(any())).thenReturn("add new tenant");
+    List kwProperties = List.of(new KwProperties());
+    List kwRolesPermissions = List.of(new KwRolesPermissions());
+    when(defaultDataService.createDefaultProperties(101, "")).thenReturn(kwProperties);
+    when(defaultDataService.createDefaultRolesPermissions(101, false, "kwInstallationType"))
+        .thenReturn(kwRolesPermissions);
+    ApiResponse response = service.addTenantId(kwTenantModel, true);
+
+    assertThat(response.getMessage()).contains("add new tenant");
+    assertThat(response.isSuccess()).isTrue();
+    verify(commonUtilsService, times(1))
+        .updateMetadata(101, EntityType.TENANT, MetadataOperationType.CREATE, null);
+    verify(handleDbRequestsJdbc, times(1)).insertDefaultKwProperties(kwProperties);
+    verify(handleDbRequestsJdbc, times(1)).insertDefaultRolesPermissions(kwRolesPermissions);
+    verify(commonUtilsService, times(1))
+        .updateMetadata(101, EntityType.ROLES_PERMISSIONS, MetadataOperationType.CREATE, null);
+    verify(commonUtilsService, times(1))
+        .updateMetadata(101, EntityType.PROPERTIES, MetadataOperationType.CREATE, null);
   }
 
   private static Stream<Arguments> getEnvs() {
