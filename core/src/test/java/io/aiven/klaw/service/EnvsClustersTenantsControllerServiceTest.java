@@ -2,8 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -24,10 +23,7 @@ import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
-import io.aiven.klaw.model.response.EnvIdInfo;
-import io.aiven.klaw.model.response.EnvModelResponse;
-import io.aiven.klaw.model.response.EnvParams;
-import io.aiven.klaw.model.response.EnvUpdatedStatus;
+import io.aiven.klaw.model.response.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -506,7 +502,8 @@ class EnvsClustersTenantsControllerServiceTest {
     Map<Integer, KwClusters> clusters = buildClusters(KafkaClustersType.KAFKA, 3);
     KwClusters kwCluster = clusters.get(3);
     when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId)).thenReturn(clusters);
-    when(clusterApiService.getKafkaClusterStatus(null, null, "33", "kafka", null, tenantId))
+    when(clusterApiService.getKafkaClusterStatus(
+            null, null, "33", "kafka", KafkaFlavors.APACHE_KAFKA.value, tenantId))
         .thenReturn(ClusterStatus.ONLINE);
 
     EnvUpdatedStatus envUpdatedStatus = service.getUpdateEnvStatus("3");
@@ -814,6 +811,33 @@ class EnvsClustersTenantsControllerServiceTest {
     assertThat(result.getTenantName()).isEqualTo("first");
   }
 
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getClusters() {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+    when(manageDatabase.getAllEnvList(tenantId))
+        .thenReturn(
+            List.of(
+                buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", tenantId, "env2", KafkaClustersType.KAFKA, 2)));
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+
+    List<KwClustersModelResponse> result = service.getClusters(KafkaClustersType.KAFKA.value);
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(0).getClusterId()).isEqualTo(1);
+    assertThat(result.get(0).isShowDeleteCluster()).isFalse();
+    assertThat(result.get(1).getClusterId()).isEqualTo(2);
+    assertThat(result.get(1).isShowDeleteCluster()).isFalse();
+    assertThat(result.get(2).getClusterId()).isEqualTo(3);
+    assertThat(result.get(2).isShowDeleteCluster()).isTrue();
+  }
+
   private static Stream<Arguments> getEnvs() {
     return Stream.of(
         Arguments.arguments(KafkaClustersType.KAFKA, "", "1", 3),
@@ -897,6 +921,7 @@ class EnvsClustersTenantsControllerServiceTest {
       cluster.setClusterId(i);
       cluster.setTenantId(101);
       cluster.setClusterType(type.value);
+      cluster.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       map.put(i, cluster);
     }
     return map;
