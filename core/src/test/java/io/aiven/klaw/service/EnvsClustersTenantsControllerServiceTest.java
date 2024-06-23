@@ -29,6 +29,7 @@ import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -768,6 +769,49 @@ class EnvsClustersTenantsControllerServiceTest {
     List<EnvIdInfo> result = service.getSyncEnvs();
 
     assertThat(result.size()).isEqualTo(2);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getEnvDetailsUnauthorized() {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(commonUtilsService.getEnvsFromUserId(anyString())).thenReturn(new HashSet<>());
+    EnvModelResponse result = service.getEnvDetails("env id", "cluster type");
+    assertThat(result).isNull();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getEnvDetails() {
+    int tenantId = 101;
+    String envId = "1";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId))
+        .thenReturn(buildEnv(envId, tenantId, "env name", KafkaClustersType.KAFKA, 1));
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+    when(manageDatabase.getTenantMap())
+        .thenReturn(
+            new HashMap<Integer, String>() {
+              {
+                put(tenantId, "first");
+                put(103, "second");
+              }
+            });
+    EnvModelResponse result = service.getEnvDetails(envId, KafkaClustersType.KAFKA.value);
+
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isEqualTo(envId);
+    assertThat(result.getName()).isEqualTo("env name");
+    assertThat(result.getTenantId()).isEqualTo(tenantId);
+    assertThat(result.getClusterName()).isEqualTo("1");
+    assertThat(result.getTenantName()).isEqualTo("first");
   }
 
   private static Stream<Arguments> getEnvs() {
