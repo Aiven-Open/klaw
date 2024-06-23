@@ -606,7 +606,6 @@ public class EnvsClustersTenantsControllerService {
 
   public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
     log.info("addNewCluster {}", kwClustersModel);
-    Map<String, String> resultMap = new HashMap<>();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -687,18 +686,19 @@ public class EnvsClustersTenantsControllerService {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
-    switch (envType) {
-      case "kafka":
+    KafkaClustersType type = KafkaClustersType.of(envType);
+    switch (type) {
+      case KAFKA:
         if (manageDatabase.getHandleDbRequests().existsKafkaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_105);
         }
         break;
-      case "kafkaconnect":
+      case KAFKA_CONNECT:
         if (manageDatabase.getHandleDbRequests().existsConnectorComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_106);
         }
         break;
-      case "schemaregistry":
+      case SCHEMA_REGISTRY:
         if (manageDatabase.getHandleDbRequests().existsSchemaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_107);
         }
@@ -1034,28 +1034,28 @@ public class EnvsClustersTenantsControllerService {
     EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<Env> allEnvs = manageDatabase.getAllEnvList(tenantId);
-    Optional<Env> env =
+    Optional<Env> optionalEnv =
         allEnvs.stream()
             .filter(e -> e.getId().equals(envId) && e.getTenantId().equals(tenantId))
             .findFirst();
 
-    if (env.isEmpty()) {
+    if (optionalEnv.isEmpty()) {
       throw new KlawBadRequestException("No Such environment.");
     }
 
     ClusterStatus status;
-    KwClusters kwClusters = null;
-    kwClusters =
+    Env env = optionalEnv.get();
+    KwClusters kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.of(env.get().getType()), tenantId)
-            .get(env.get().getClusterId());
+            .getClusters(KafkaClustersType.of(env.getType()), tenantId)
+            .get(env.getClusterId());
     try {
       status =
           clusterApiService.getKafkaClusterStatus(
               kwClusters.getBootstrapServers(),
               kwClusters.getProtocol(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
-              env.get().getType(),
+              env.getType(),
               kwClusters.getKafkaFlavor(),
               tenantId);
 
@@ -1064,15 +1064,15 @@ public class EnvsClustersTenantsControllerService {
       log.error("Error from getUpdateEnvStatus ", e);
     }
     LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
-    env.get().setEnvStatus(status);
-    env.get().setEnvStatusTime(statusTime);
-    env.get().setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
+    env.setEnvStatus(status);
+    env.setEnvStatusTime(statusTime);
+    env.setEnvStatusTimeString(DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(statusTime));
 
     // Is this required can we remove it?
     kwClusters.setClusterStatus(status);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
 
-    manageDatabase.addEnvToCache(tenantId, env.get(), false);
+    manageDatabase.addEnvToCache(tenantId, env, false);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);
