@@ -24,10 +24,7 @@ import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -836,6 +833,47 @@ class EnvsClustersTenantsControllerServiceTest {
     assertThat(result.get(1).isShowDeleteCluster()).isFalse();
     assertThat(result.get(2).getClusterId()).isEqualTo(3);
     assertThat(result.get(2).isShowDeleteCluster()).isTrue();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getMyTenantInfo() {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    KwTenants tenant = buildTenants(tenantId);
+    when(handleDbRequestsJdbc.getMyTenants(tenantId)).thenReturn(Optional.of(tenant));
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    KwTenantModel result = service.getMyTenantInfo();
+    assertThat(result.getTenantName()).isEqualTo(tenant.getTenantName());
+    assertThat(result.getContactPerson()).isEqualTo(tenant.getContactPerson());
+    assertThat(result.isActiveTenant()).isEqualTo(Boolean.valueOf(tenant.getIsActive()));
+    assertThat(result.getOrgName()).isEqualTo(tenant.getOrgName());
+    assertThat(result.getTenantDesc()).isEqualTo(tenant.getTenantDesc());
+    assertThat(result.getTenantId()).isEqualTo(tenant.getTenantId());
+    assertThat(result.isAuthorizedToDelete()).isFalse();
+  }
+
+//  @Test
+//  @WithMockUser(
+//          username = "james",
+//          authorities = {"ADMIN", "USER"})
+//  void getAllTenantsNotSuperAdmin() {
+//    when(handleDbRequestsJdbc.g)
+//
+//  }
+
+  private KwTenants buildTenants(int tenantId) {
+    KwTenants tenant = new KwTenants();
+    tenant.setTenantName("tenant name");
+    tenant.setContactPerson("contact person");
+    tenant.setOrgName("org name");
+    tenant.setTenantDesc("tenant desc");
+    tenant.setTenantId(tenantId);
+    tenant.setIsActive("true");
+
+    return tenant;
   }
 
   private static Stream<Arguments> getEnvs() {
