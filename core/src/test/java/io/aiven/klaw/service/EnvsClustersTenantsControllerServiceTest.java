@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -14,15 +14,20 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
+import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -465,6 +470,306 @@ class EnvsClustersTenantsControllerServiceTest {
         .updateMetadata(101, EntityType.PROPERTIES, MetadataOperationType.CREATE, null);
   }
 
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getUpdateEnvStatusUnknownEnv() {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(manageDatabase.getAllEnvList(tenantId))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", 101, "TST", KafkaClustersType.KAFKA, 2),
+                buildEnv("3", 101, "PRD", KafkaClustersType.KAFKA, 3)));
+
+    assertThatExceptionOfType(KlawBadRequestException.class)
+        .isThrownBy(
+            () -> {
+              service.getUpdateEnvStatus("4");
+            });
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getUpdateEnvStatus() throws KlawBadRequestException {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    Env env1 = buildEnv("1", 101, "PRD", KafkaClustersType.KAFKA, 1);
+    Env env2 = buildEnv("2", 101, "PRD", KafkaClustersType.KAFKA, 2);
+    Env env3 = buildEnv("3", 101, "PRD", KafkaClustersType.KAFKA, 3);
+    when(manageDatabase.getAllEnvList(tenantId)).thenReturn(List.of(env1, env2, env3));
+    Map<Integer, KwClusters> clusters = buildClusters(KafkaClustersType.KAFKA, 3);
+    KwClusters kwCluster = clusters.get(3);
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId)).thenReturn(clusters);
+    when(clusterApiService.getKafkaClusterStatus(null, null, "33", "kafka", null, tenantId))
+        .thenReturn(ClusterStatus.ONLINE);
+
+    EnvUpdatedStatus envUpdatedStatus = service.getUpdateEnvStatus("3");
+    assertThat(kwCluster.getClusterStatus()).isEqualTo(ClusterStatus.ONLINE);
+    verify(handleDbRequestsJdbc, times(1)).addNewCluster(kwCluster);
+    verify(manageDatabase, times(1)).addEnvToCache(tenantId, env3, false);
+    assertThat(envUpdatedStatus.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(envUpdatedStatus.getEnvStatus()).isEqualTo(ClusterStatus.ONLINE);
+    assertThat(envUpdatedStatus.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentUnauthorized() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse response = service.deleteEnvironment("envId", "envType");
+
+    assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentExistKafkaComponents() throws KlawException {
+    int tenantId = 101;
+    String envId = "20";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(true);
+    ApiResponse response = service.deleteEnvironment(envId, KafkaClustersType.KAFKA.value);
+
+    assertThat(response.getMessage()).contains(ENV_CLUSTER_TNT_ERR_105);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentExistKafkaConnectComponents() throws KlawException {
+    int tenantId = 101;
+    String envId = "20";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.existsConnectorComponentsForEnv(envId, tenantId)).thenReturn(true);
+    ApiResponse response = service.deleteEnvironment(envId, KafkaClustersType.KAFKA_CONNECT.value);
+
+    assertThat(response.getMessage()).contains(ENV_CLUSTER_TNT_ERR_106);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentExistSchemaRegistryComponents() throws KlawException {
+    int tenantId = 101;
+    String envId = "20";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.existsSchemaComponentsForEnv(envId, tenantId)).thenReturn(true);
+    ApiResponse response =
+        service.deleteEnvironment(envId, KafkaClustersType.SCHEMA_REGISTRY.value);
+
+    assertThat(response.getMessage()).contains(ENV_CLUSTER_TNT_ERR_107);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentWithAssociatedEnv() throws KlawException {
+    int tenantId = 101;
+    String envId = "20";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(false);
+    Env env = buildEnv(envId, tenantId, "Env Name", KafkaClustersType.KAFKA, 1);
+    Env associatedEnv = buildEnv("21", tenantId, "Associated Env Name", KafkaClustersType.KAFKA, 2);
+    EnvTag associatedEnvTag = new EnvTag();
+    associatedEnvTag.setId(associatedEnv.getId());
+    env.setAssociatedEnv(associatedEnvTag);
+    when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId)).thenReturn(env);
+    when(handleDbRequestsJdbc.getEnvDetails(associatedEnv.getId(), tenantId))
+        .thenReturn(associatedEnv);
+    when(handleDbRequestsJdbc.deleteEnvironmentRequest(envId, tenantId))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse response = service.deleteEnvironment(envId, KafkaClustersType.KAFKA.value);
+
+    assertThat(response.getMessage()).contains(ApiResultStatus.SUCCESS.value);
+    assertThat(response.isSuccess()).isTrue();
+    verify(manageDatabase, times(1)).removeEnvFromCache(tenantId, 20, false);
+    verify(handleDbRequestsJdbc, times(1)).addNewEnv(associatedEnv);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteEnvironmentFailed() throws KlawException {
+    int tenantId = 101;
+    String envId = "20";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(false);
+    Env env = buildEnv(envId, tenantId, "Env Name", KafkaClustersType.KAFKA, 1);
+    when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId)).thenReturn(env);
+    when(handleDbRequestsJdbc.deleteEnvironmentRequest(envId, tenantId))
+        .thenReturn("Failed to delete");
+    ApiResponse response = service.deleteEnvironment(envId, KafkaClustersType.KAFKA.value);
+
+    assertThat(response.getMessage()).contains("Failed to delete");
+    assertThat(response.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewClusterUnauthorized() {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse response = service.addNewCluster(new KwClustersModel());
+
+    assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewCluster() {
+    int tenantId = 101;
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.addNewCluster(any(KwClusters.class)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    KwClustersModel model = new KwClustersModel();
+    model.setClusterName("new cluster");
+    model.setClusterType(KafkaClustersType.KAFKA);
+    model.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
+    model.setClusterType(KafkaClustersType.KAFKA);
+    ApiResponse response = service.addNewCluster(model);
+
+    assertThat(response).isEqualTo(ApiResponse.SUCCESS);
+    verify(commonUtilsService, times(1))
+        .updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.CREATE, null);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewClusterFailed() {
+    int tenantId = 101;
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.addNewCluster(any(KwClusters.class)))
+        .thenReturn("failed to add cluster");
+
+    KwClustersModel model = new KwClustersModel();
+    model.setClusterName("new cluster");
+    model.setClusterType(KafkaClustersType.KAFKA);
+    model.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA);
+    model.setClusterType(KafkaClustersType.KAFKA);
+    ApiResponse response = service.addNewCluster(model);
+
+    assertThat(response).isEqualTo(ApiResponse.FAILURE);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewClusterNameExists() {
+    int tenantId = 101;
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(manageDatabase.getClusters(KafkaClustersType.ALL, tenantId))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+
+    KwClustersModel model = new KwClustersModel();
+    model.setClusterName("3");
+    model.setClusterType(KafkaClustersType.KAFKA);
+    ApiResponse response = service.addNewCluster(model);
+
+    assertThat(response.getMessage()).isEqualTo(ENV_CLUSTER_TNT_ERR_102);
+    assertThat(response.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getSyncEnvsEmptySyncCluster() {
+    when(mailService.getUserName(anyString())).thenReturn("user name");
+    UserInfo userInfo = buildUserInfo();
+    when(handleDbRequestsJdbc.getUsersInfo("user name")).thenReturn(userInfo);
+    KwTenantConfigModel model = new KwTenantConfigModel();
+    when(manageDatabase.getTenantConfig())
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(101, model);
+              }
+            });
+    List<EnvIdInfo> result = service.getSyncEnvs();
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getSyncEnvsFailedToGetSyncCluster() {
+    when(mailService.getUserName(anyString())).thenReturn("user name");
+    UserInfo userInfo = buildUserInfo();
+    when(handleDbRequestsJdbc.getUsersInfo("user name")).thenReturn(userInfo);
+    when(manageDatabase.getTenantConfig()).thenReturn(null);
+    List<EnvIdInfo> result = service.getSyncEnvs();
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getSyncEnvs() {
+    when(mailService.getUserName(anyString())).thenReturn("user name");
+    UserInfo userInfo = buildUserInfo();
+    when(handleDbRequestsJdbc.getUsersInfo("user name")).thenReturn(userInfo);
+    KwTenantConfigModel model = new KwTenantConfigModel();
+    model.setBaseSyncEnvironment("Sync Cluster");
+    when(manageDatabase.getTenantConfig())
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(101, model);
+              }
+            });
+    when(commonUtilsService.getEnvProperty(101, ORDER_OF_TOPIC_ENVS)).thenReturn("Order of Envs");
+    when(manageDatabase.getKafkaEnvList(101))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "env1", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", 101, "env2", KafkaClustersType.KAFKA, 2)));
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, 101))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+    List<EnvIdInfo> result = service.getSyncEnvs();
+
+    assertThat(result.size()).isEqualTo(2);
+  }
+
   private static Stream<Arguments> getEnvs() {
     return Stream.of(
         Arguments.arguments(KafkaClustersType.KAFKA, "", "1", 3),
@@ -509,9 +814,6 @@ class EnvsClustersTenantsControllerServiceTest {
     return env;
   }
 
-  @Test
-  void deleteEnvironment() {}
-
   private EnvID buildEnvID(String id, int tenantId) {
     EnvID env = new EnvID();
     env.setId(id);
@@ -548,6 +850,7 @@ class EnvsClustersTenantsControllerServiceTest {
       cluster.setClusterName(Integer.toString(i));
       cluster.setServiceName(Integer.toString(i));
       cluster.setProjectName(Integer.toString(i));
+      cluster.setClusterId(i);
       cluster.setTenantId(101);
       cluster.setClusterType(type.value);
       map.put(i, cluster);
