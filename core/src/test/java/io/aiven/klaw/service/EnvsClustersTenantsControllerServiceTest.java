@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -899,6 +900,28 @@ class EnvsClustersTenantsControllerServiceTest {
     assertThat(result.get(1).getTenantId()).isEqualTo(tenants2.getTenantId());
     assertThat(result.get(0).getEmailId()).isEqualTo(info1.getMailid());
     assertThat(result.get(1).getEmailId()).isEqualTo(info2.getMailid());
+  }
+
+  @Test
+  @WithMockUser(
+          username = "james",
+          authorities = {"ADMIN", "USER"})
+  void getEnvsForRequestTopicsCluster() {
+    int tenantId = 101;
+    when(handleDbRequestsJdbc.getUsersInfo(anyString())).thenReturn(buildUserInfo());
+     when(commonUtilsService.getEnvProperty(tenantId, REQUEST_TOPICS_OF_ENVS)).thenReturn("1,2,3");
+     when(commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS)).thenReturn("2,1,3");
+    when(manageDatabase.getKafkaEnvList(tenantId)).thenReturn(List.of(
+            buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1),
+            buildEnv("2", tenantId, "env2", KafkaClustersType.KAFKA, 2),
+            buildEnv("3", tenantId, "env3", KafkaClustersType.KAFKA, 3)
+    ));
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId)).thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+    List<EnvModelResponse> result = service.getEnvsForRequestTopicsCluster();
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(0).getId()).isEqualTo("2");
+    assertThat(result.get(1).getId()).isEqualTo("1");
+    assertThat(result.get(2).getId()).isEqualTo("3");
   }
 
   private KwTenants buildTenants(int tenantId) {

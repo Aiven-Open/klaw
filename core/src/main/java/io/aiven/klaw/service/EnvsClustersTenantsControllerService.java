@@ -374,19 +374,13 @@ public class EnvsClustersTenantsControllerService {
   private List<EnvModelResponse> getEnvModels(
       List<Env> listEnvs, KafkaClustersType clusterType, int tenantId) {
     List<EnvModelResponse> envModelList = new ArrayList<>();
-    EnvModelResponse envModel;
-    KwClusters kwCluster;
     for (Env listEnv : listEnvs) {
       log.debug("Params {} for env {}", listEnv.getParams(), listEnv.getName());
-      kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
+      KwClusters kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
-        envModel = new EnvModelResponse();
+        EnvModelResponse envModel = new EnvModelResponse();
         copyProperties(listEnv, envModel);
-        envModel.setClusterName(
-            manageDatabase
-                .getClusters(clusterType, tenantId)
-                .get(envModel.getClusterId())
-                .getClusterName());
+        envModel.setClusterName(kwCluster.getClusterName());
         envModelList.add(envModel);
       } else {
         log.error("Error : Environment/cluster not loaded :{}", listEnv);
@@ -429,18 +423,7 @@ public class EnvsClustersTenantsControllerService {
       String[] reqEnvs, List<EnvModelResponse> envModelList) {
     envModelList =
         envModelList.stream()
-            .filter(
-                env -> {
-                  boolean found = false;
-                  for (String reqEnv : reqEnvs) {
-                    if (Objects.equals(env.getId(), reqEnv)) {
-                      found = true;
-                      break;
-                    }
-                  }
-                  return found;
-                })
-            .collect(toList());
+            .filter(env -> Arrays.asList(reqEnvs).contains(env.getId())).collect(toList());
     return envModelList;
   }
 
@@ -839,15 +822,15 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getClusterDetails(Integer.parseInt(clusterId), tenantId);
-      if (kwClusters != null) {
-        KwClustersModelResponse kwClustersModel = new KwClustersModelResponse();
-        copyProperties(kwClusters, kwClustersModel);
-        kwClustersModel.setKafkaFlavor(KafkaFlavors.of(kwClusters.getKafkaFlavor()));
-        kwClustersModel.setClusterType(KafkaClustersType.of(kwClusters.getClusterType()));
 
-        return kwClustersModel;
-      }
-      return null;
+      if (kwClusters == null) return null;
+
+      KwClustersModelResponse kwClustersModel = new KwClustersModelResponse();
+      copyProperties(kwClusters, kwClustersModel);
+      kwClustersModel.setKafkaFlavor(KafkaFlavors.of(kwClusters.getKafkaFlavor()));
+      kwClustersModel.setClusterType(KafkaClustersType.of(kwClusters.getClusterType()));
+
+      return kwClustersModel;
     } catch (Exception e) {
       log.error("Exception:", e);
       return null;
