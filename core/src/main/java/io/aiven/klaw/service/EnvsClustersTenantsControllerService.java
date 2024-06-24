@@ -625,13 +625,11 @@ public class EnvsClustersTenantsControllerService {
 
   public ApiResponse deleteCluster(String clusterId) throws KlawException {
     log.info("deleteCluster {}", clusterId);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
-
+    int tenantId = commonUtilsService.getTenantId(getUserName());
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
     if (allEnvList.stream()
         .anyMatch(env -> Objects.equals(env.getClusterId(), Integer.parseInt(clusterId)))) {
