@@ -498,7 +498,12 @@ class EnvsClustersTenantsControllerServiceTest {
     KwClusters kwCluster = clusters.get(3);
     when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId)).thenReturn(clusters);
     when(clusterApiService.getKafkaClusterStatus(
-            null, KafkaSupportedProtocol.SSL, "33", "kafka", KafkaFlavors.APACHE_KAFKA.value, tenantId))
+            null,
+            KafkaSupportedProtocol.SSL,
+            "33",
+            "kafka",
+            KafkaFlavors.APACHE_KAFKA.value,
+            tenantId))
         .thenReturn(ClusterStatus.ONLINE);
 
     EnvUpdatedStatus envUpdatedStatus = service.getUpdateEnvStatus("3");
