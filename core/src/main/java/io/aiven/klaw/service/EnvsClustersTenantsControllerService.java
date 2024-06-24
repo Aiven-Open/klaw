@@ -13,7 +13,6 @@ import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
-import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static java.util.stream.Collectors.toList;
@@ -28,18 +27,10 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
-import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.ClusterStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.KafkaFlavors;
-import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
-import io.aiven.klaw.model.enums.MetadataOperationType;
-import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -809,40 +800,36 @@ public class EnvsClustersTenantsControllerService {
     return mailService.getUserName(getPrincipal());
   }
 
+  private Boolean isUserSuperAdmin() {
+    return SUPERADMIN
+        .name()
+        .equals(manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getRole());
+  }
+
   public List<KwTenantModel> getAllTenants() {
-    if (SUPERADMIN
-            .name()
-            .equals(manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getRole())
-        && commonUtilsService.getTenantId(getUserName()) == DEFAULT_TENANT_ID) {
-      HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-      List<KwTenants> tenants = dbHandle.getTenants();
-      List<KwTenantModel> tenantModels = new ArrayList<>();
+    boolean allowToRetrieve =
+        isUserSuperAdmin() && commonUtilsService.getTenantId(getUserName()) == DEFAULT_TENANT_ID;
 
-      List<UserInfo> allUsers = dbHandle.getAllUsersAllTenants();
-
-      KwTenantModel kwTenantModel;
-      for (KwTenants tenant : tenants) {
-        kwTenantModel = new KwTenantModel();
-        copyProperties(tenant, kwTenantModel);
-
-        Optional<UserInfo> userFound =
-            allUsers.stream()
-                .filter(
-                    userInfo ->
-                        userInfo.getTenantId() == tenant.getTenantId()
-                            && Objects.equals(userInfo.getRole(), SUPERADMIN_ROLE))
-                .findFirst();
-        if (userFound.isPresent()) {
-          kwTenantModel.setEmailId(userFound.get().getMailid());
-        }
-
-        kwTenantModel.setActiveTenant(Boolean.parseBoolean(tenant.getIsActive()));
-        tenantModels.add(kwTenantModel);
-      }
-      return tenantModels;
-    } else {
+    if (!allowToRetrieve) {
       return new ArrayList<>();
     }
+
+    List<KwTenants> tenants = manageDatabase.getHandleDbRequests().getTenants();
+
+    Map<Integer, UserInfo> superAdminMap = manageDatabase.getUserInfoMap(SUPERADMIN);
+
+    List<KwTenantModel> tenantModels =
+        tenants.stream()
+            .map(
+                tenant -> {
+                  KwTenantModel kwTenantModel = new KwTenantModel(tenant);
+                  UserInfo superAdmin = superAdminMap.get(tenant.getTenantId());
+                  kwTenantModel.setEmailId(superAdmin == null ? null : superAdmin.getMailid());
+                  return kwTenantModel;
+                })
+            .collect(Collectors.toList());
+
+    return tenantModels;
   }
 
   public KwClustersModelResponse getClusterDetails(String clusterId) {

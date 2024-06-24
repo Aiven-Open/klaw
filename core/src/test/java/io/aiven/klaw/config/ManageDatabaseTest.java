@@ -8,10 +8,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.RolesType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -120,9 +123,33 @@ public class ManageDatabaseTest {
         .insertIntoKwEntitySequence(EntityType.TEAM.name(), 1001, 101);
   }
 
+  @Test
+  public void getUserInfoMap() {
+    UserInfo info1 = buildUserInfo();
+    UserInfo info2 = buildUserInfo();
+    info2.setTenantId(102);
+    UserInfo info3 = buildUserInfo();
+    info3.setTenantId(103);
+    when(handleDbRequests.getAllUsersAllTenants(RolesType.SUPERADMIN))
+        .thenReturn(List.of(info1, info2, info3));
+
+    Map<Integer, UserInfo> result = manageDatabase.getUserInfoMap(RolesType.SUPERADMIN);
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(TENANT_ID).getTenantId()).isEqualTo(TENANT_ID);
+    assertThat(result.get(102).getTenantId()).isEqualTo(102);
+    assertThat(result.get(103).getTenantId()).isEqualTo(103);
+  }
+
   private List<Topic> getTopicFromCache(int tenantId, int topicId) {
     return manageDatabase.getTopicsForTenant(tenantId).stream()
         .filter(entry -> entry.getTopicid().equals(topicId))
         .collect(Collectors.toList());
+  }
+
+  private UserInfo buildUserInfo() {
+    UserInfo info = new UserInfo();
+    info.setTenantId(TENANT_ID);
+    info.setRole(RolesType.SUPERADMIN.name());
+    return info;
   }
 }

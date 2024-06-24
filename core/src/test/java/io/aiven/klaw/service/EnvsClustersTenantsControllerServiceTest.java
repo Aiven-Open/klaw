@@ -855,14 +855,51 @@ class EnvsClustersTenantsControllerServiceTest {
     assertThat(result.isAuthorizedToDelete()).isFalse();
   }
 
-//  @Test
-//  @WithMockUser(
-//          username = "james",
-//          authorities = {"ADMIN", "USER"})
-//  void getAllTenantsNotSuperAdmin() {
-//    when(handleDbRequestsJdbc.g)
-//
-//  }
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getAllTenantsNotSuperAdmin() {
+    when(handleDbRequestsJdbc.getUsersInfo(anyString())).thenReturn(buildUserInfo());
+    List<KwTenantModel> result = service.getAllTenants();
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getAllTenants() {
+    UserInfo info1 = buildUserInfo();
+    info1.setMailid("Mail Id 1");
+    info1.setRole(RolesType.SUPERADMIN.name());
+    when(handleDbRequestsJdbc.getUsersInfo(anyString())).thenReturn(info1);
+    KwTenants tenants1 = buildTenants(101);
+    tenants1.setTenantName("tenant 101");
+    KwTenants tenants2 = buildTenants(102);
+    tenants2.setTenantName("tenant 102");
+    when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(tenants1, tenants2));
+    UserInfo info2 = buildUserInfo();
+    info2.setMailid("Mail Id 2");
+    info2.setTenantId(102);
+    info2.setRole(RolesType.SUPERADMIN.name());
+    when(manageDatabase.getUserInfoMap(RolesType.SUPERADMIN))
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(101, info1);
+                put(102, info2);
+              }
+            });
+    List<KwTenantModel> result = service.getAllTenants();
+    assertThat(result.size()).isEqualTo(2);
+    assertThat(result.get(0).getTenantName()).isEqualTo(tenants1.getTenantName());
+    assertThat(result.get(1).getTenantName()).isEqualTo(tenants2.getTenantName());
+    assertThat(result.get(0).getTenantId()).isEqualTo(tenants1.getTenantId());
+    assertThat(result.get(1).getTenantId()).isEqualTo(tenants2.getTenantId());
+    assertThat(result.get(0).getEmailId()).isEqualTo(info1.getMailid());
+    assertThat(result.get(1).getEmailId()).isEqualTo(info2.getMailid());
+  }
 
   private KwTenants buildTenants(int tenantId) {
     KwTenants tenant = new KwTenants();
