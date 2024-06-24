@@ -985,6 +985,100 @@ class EnvsClustersTenantsControllerServiceTest {
         .updateMetadata(tenantId, EntityType.TENANT, MetadataOperationType.UPDATE, null);
   }
 
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getClusterInfoFromEnvUnauthorized() {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(commonUtilsService.getEnvsFromUserId(anyString())).thenReturn(new HashSet<>());
+    ClusterInfo result = service.getClusterInfoFromEnv("1", KafkaClustersType.KAFKA.value);
+    assertThat(result).isNull();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getClusterInfoFromEnv() {
+    int tenantId = 101;
+    String envId = "1";
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId))
+        .thenReturn(buildEnv(envId, tenantId, "env1", KafkaClustersType.KAFKA, 1));
+    when(handleDbRequestsJdbc.getClusterDetails(1, tenantId))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 1).get(1));
+    ClusterInfo result = service.getClusterInfoFromEnv(envId, KafkaClustersType.KAFKA.value);
+    assertThat(result.isAivenCluster()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteClusterUnauthorized() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse result = service.deleteCluster("cluster id");
+    assertThat(result).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteClusterNotAllowed() throws KlawException {
+    int tenantId = 101;
+    String clusterId = "1";
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(manageDatabase.getAllEnvList(tenantId))
+        .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));
+    ApiResponse result = service.deleteCluster(clusterId);
+    assertThat(result.getMessage()).isEqualTo(ENV_CLUSTER_TNT_ERR_104);
+    assertThat(result.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteClusterFailed() throws KlawException {
+    int tenantId = 101;
+    String clusterId = "2";
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(manageDatabase.getAllEnvList(tenantId))
+        .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));
+    when(handleDbRequestsJdbc.deleteCluster(2, tenantId)).thenReturn("Failed to delete cluster");
+    ApiResponse result = service.deleteCluster(clusterId);
+    assertThat(result.getMessage()).isEqualTo("Failed to delete cluster");
+    assertThat(result.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void deleteCluster() throws KlawException {
+    int tenantId = 101;
+    String clusterId = "2";
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(manageDatabase.getAllEnvList(tenantId))
+        .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));
+    when(handleDbRequestsJdbc.deleteCluster(2, tenantId)).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse result = service.deleteCluster(clusterId);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.isSuccess()).isTrue();
+  }
+
   private KwTenants buildTenants(int tenantId) {
     KwTenants tenant = new KwTenants();
     tenant.setTenantName("tenant name");
