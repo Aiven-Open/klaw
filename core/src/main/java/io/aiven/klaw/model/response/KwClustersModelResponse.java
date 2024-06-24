@@ -1,5 +1,8 @@
 package io.aiven.klaw.model.response;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
@@ -43,4 +46,12 @@ public class KwClustersModelResponse implements Serializable {
   private String projectName;
 
   private String serviceName;
+
+  public KwClustersModelResponse() {}
+
+  public KwClustersModelResponse(KwClusters kwClusters) {
+    copyProperties(kwClusters, this);
+    this.kafkaFlavor = KafkaFlavors.of(kwClusters.getKafkaFlavor());
+    this.clusterType = KafkaClustersType.of(kwClusters.getClusterType());
+  }
 }

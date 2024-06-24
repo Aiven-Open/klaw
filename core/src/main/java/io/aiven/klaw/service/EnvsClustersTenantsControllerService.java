@@ -376,7 +376,8 @@ public class EnvsClustersTenantsControllerService {
     List<EnvModelResponse> envModelList = new ArrayList<>();
     for (Env listEnv : listEnvs) {
       log.debug("Params {} for env {}", listEnv.getParams(), listEnv.getName());
-      KwClusters kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
+      KwClusters kwCluster =
+          manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
         EnvModelResponse envModel = new EnvModelResponse();
         copyProperties(listEnv, envModel);
@@ -423,7 +424,8 @@ public class EnvsClustersTenantsControllerService {
       String[] reqEnvs, List<EnvModelResponse> envModelList) {
     envModelList =
         envModelList.stream()
-            .filter(env -> Arrays.asList(reqEnvs).contains(env.getId())).collect(toList());
+            .filter(env -> Arrays.asList(reqEnvs).contains(env.getId()))
+            .collect(toList());
     return envModelList;
   }
 
@@ -825,11 +827,7 @@ public class EnvsClustersTenantsControllerService {
 
       if (kwClusters == null) return null;
 
-      KwClustersModelResponse kwClustersModel = new KwClustersModelResponse();
-      copyProperties(kwClusters, kwClustersModel);
-      kwClustersModel.setKafkaFlavor(KafkaFlavors.of(kwClusters.getKafkaFlavor()));
-      kwClustersModel.setClusterType(KafkaClustersType.of(kwClusters.getClusterType()));
-
+      KwClustersModelResponse kwClustersModel = new KwClustersModelResponse(kwClusters);
       return kwClustersModel;
     } catch (Exception e) {
       log.error("Exception:", e);
