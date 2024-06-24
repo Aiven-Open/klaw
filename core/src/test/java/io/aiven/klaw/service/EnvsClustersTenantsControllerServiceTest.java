@@ -904,24 +904,85 @@ class EnvsClustersTenantsControllerServiceTest {
 
   @Test
   @WithMockUser(
-          username = "james",
-          authorities = {"ADMIN", "USER"})
+      username = "james",
+      authorities = {"ADMIN", "USER"})
   void getEnvsForRequestTopicsCluster() {
     int tenantId = 101;
     when(handleDbRequestsJdbc.getUsersInfo(anyString())).thenReturn(buildUserInfo());
-     when(commonUtilsService.getEnvProperty(tenantId, REQUEST_TOPICS_OF_ENVS)).thenReturn("1,2,3");
-     when(commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS)).thenReturn("2,1,3");
-    when(manageDatabase.getKafkaEnvList(tenantId)).thenReturn(List.of(
-            buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1),
-            buildEnv("2", tenantId, "env2", KafkaClustersType.KAFKA, 2),
-            buildEnv("3", tenantId, "env3", KafkaClustersType.KAFKA, 3)
-    ));
-    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId)).thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
+    when(commonUtilsService.getEnvProperty(tenantId, REQUEST_TOPICS_OF_ENVS)).thenReturn("1,2,3");
+    when(commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS)).thenReturn("2,1,3");
+    when(manageDatabase.getKafkaEnvList(tenantId))
+        .thenReturn(
+            List.of(
+                buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", tenantId, "env2", KafkaClustersType.KAFKA, 2),
+                buildEnv("3", tenantId, "env3", KafkaClustersType.KAFKA, 3)));
+    when(manageDatabase.getClusters(KafkaClustersType.KAFKA, tenantId))
+        .thenReturn(buildClusters(KafkaClustersType.KAFKA, 3));
     List<EnvModelResponse> result = service.getEnvsForRequestTopicsCluster();
     assertThat(result.size()).isEqualTo(3);
     assertThat(result.get(0).getId()).isEqualTo("2");
     assertThat(result.get(1).getId()).isEqualTo("1");
     assertThat(result.get(2).getId()).isEqualTo("3");
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getClusterDetails() {
+    int tenantId = 101;
+    KwClusters kwClusters = buildClusters(KafkaClustersType.KAFKA, 1).get(1);
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(handleDbRequestsJdbc.getClusterDetails(1, tenantId)).thenReturn(kwClusters);
+    KwClustersModelResponse result = service.getClusterDetails("1");
+    assertThat(result.getClusterId()).isEqualTo(1);
+    assertThat(result.getClusterName()).isEqualTo("1");
+    assertThat(result.getClusterType()).isEqualTo(KafkaClustersType.KAFKA);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void updateTenantUnauthorized() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    ApiResponse result = service.updateTenant(new KwTenantModel());
+    assertThat(result).isEqualTo(ApiResponse.NOT_AUTHORIZED);
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void updateTenantFailed() throws KlawException {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.addNewTenant(any(KwTenants.class)))
+        .thenReturn("failed to add new tenant");
+    ApiResponse result = service.updateTenant(new KwTenantModel());
+    assertThat(result.getMessage()).isEqualTo("failed to add new tenant");
+    assertThat(result.isSuccess()).isFalse();
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void updateTenant() throws KlawException {
+    int tenantId = 101;
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.addNewTenant(any(KwTenants.class)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse result = service.updateTenant(new KwTenantModel());
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.isSuccess()).isTrue();
+    verify(commonUtilsService, times(1))
+        .updateMetadata(tenantId, EntityType.TENANT, MetadataOperationType.UPDATE, null);
   }
 
   private KwTenants buildTenants(int tenantId) {
