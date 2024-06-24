@@ -47,6 +47,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class EnvsClustersTenantsControllerService {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  @Autowired ManageDatabase manageDatabase;
+  @Autowired private ManageDatabase manageDatabase;
 
   @Autowired private ClusterApiService clusterApiService;
 
@@ -96,24 +97,21 @@ public class EnvsClustersTenantsControllerService {
     }
 
     Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envSelected, tenantId);
-    if (env != null && "false".equals(env.getEnvExists())) {
+    if (env == null || "false".equals(env.getEnvExists())) {
       return null;
     }
 
-    if (env != null) {
-      EnvModelResponse envModel = new EnvModelResponse();
-      copyProperties(env, envModel);
-      envModel.setClusterName(
-          manageDatabase
-              .getClusters(KafkaClustersType.of(clusterType), tenantId)
-              .get(envModel.getClusterId())
-              .getClusterName());
-      envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
+    EnvModelResponse envModel = new EnvModelResponse();
+    copyProperties(env, envModel);
+    envModel.setClusterName(
+        manageDatabase
+            .getClusters(KafkaClustersType.of(clusterType), tenantId)
+            .get(envModel.getClusterId())
+            .getClusterName());
+    envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
-      log.debug("Return env model {}", envModel);
-      return envModel;
-    }
-    return null;
+    log.debug("Return env model {}", envModel);
+    return envModel;
   }
 
   public UserInfoModel getUserDetails(String userId) {
@@ -137,19 +135,13 @@ public class EnvsClustersTenantsControllerService {
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
     KwClustersModelResponse tmpClusterModel;
     for (KwClusters cluster : clusters) {
-      tmpClusterModel = new KwClustersModelResponse();
-      copyProperties(cluster, tmpClusterModel);
-      tmpClusterModel.setKafkaFlavor(KafkaFlavors.of(cluster.getKafkaFlavor()));
-      tmpClusterModel.setClusterType(KafkaClustersType.of(cluster.getClusterType()));
-
-      KwClustersModelResponse finalTmpClusterModel = tmpClusterModel;
+      tmpClusterModel = new KwClustersModelResponse(cluster);
+      int clusterId = tmpClusterModel.getClusterId();
       tmpClusterModel.setShowDeleteCluster(true);
       // set only for authorized users
       if (!commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-        if (allEnvList.stream()
-            .anyMatch(
-                env -> Objects.equals(env.getClusterId(), finalTmpClusterModel.getClusterId()))) {
+        if (allEnvList.stream().anyMatch(env -> Objects.equals(env.getClusterId(), clusterId))) {
           tmpClusterModel.setShowDeleteCluster(false);
         }
       }
@@ -168,7 +160,7 @@ public class EnvsClustersTenantsControllerService {
     if (clusterId != null && !clusterId.equals("")) {
       kwClustersModelList =
           kwClustersModelList.stream()
-              .filter(env -> Objects.equals((env.getClusterId() + "").toLowerCase(), clusterId))
+              .filter(cluster -> Objects.equals(cluster.getClusterId() + "", clusterId))
               .collect(toList());
     }
 
@@ -176,22 +168,15 @@ public class EnvsClustersTenantsControllerService {
       kwClustersModelList =
           kwClustersModelList.stream()
               .filter(
-                  env ->
-                      env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase())
-                          || env.getBootstrapServers()
-                              .toLowerCase()
-                              .contains(searchClusterParam.toLowerCase())
-                          || env.getProtocol()
-                              .getName()
-                              .toLowerCase()
-                              .contains(searchClusterParam.toLowerCase()))
-              .collect(
-                  Collectors.collectingAndThen(
-                      Collectors.toCollection(
-                          () ->
-                              new TreeSet<>(
-                                  Comparator.comparing(KwClustersModelResponse::getClusterId))),
-                      ArrayList::new));
+                  model ->
+                      Stream.of(
+                              model.getClusterName(),
+                              model.getBootstrapServers(),
+                              model.getProtocol().getName())
+                          .map(String::toLowerCase)
+                          .anyMatch(s -> s.contains(searchClusterParam.toLowerCase())))
+              .sorted(Comparator.comparingInt(KwClustersModelResponse::getClusterId))
+              .collect(toList());
     }
     return Pager.getItemsList(
         pageNo,
@@ -200,11 +185,11 @@ public class EnvsClustersTenantsControllerService {
         kwClustersModelList,
         (pageContext, mp) -> {
           mp.setTotalNoPages(pageContext.getTotalPages());
-          List<String> numList = new ArrayList<>();
           int totalPages = Integer.parseInt(pageContext.getTotalPages());
-          for (int k = 1; k <= totalPages; k++) {
-            numList.add("" + k);
-          }
+          List<String> numList =
+              IntStream.range(1, totalPages + 1)
+                  .mapToObj(String::valueOf)
+                  .collect(Collectors.toList());
           mp.setAllPageNos(numList);
           mp.setCurrentPage(pageContext.getPageNo());
           return mp;
@@ -300,10 +285,11 @@ public class EnvsClustersTenantsControllerService {
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
     List<EnvModelResponse> envModelList =
         getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
-
-    envModelList.forEach(
-        envModel ->
-            envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId())));
+    Optional<KwTenants> kwTenantsOptional =
+        manageDatabase.getHandleDbRequests().getMyTenants(tenantId);
+    String kwTenantsName =
+        kwTenantsOptional.isPresent() ? kwTenantsOptional.get().getTenantName() : null;
+    envModelList.forEach(envModel -> envModel.setTenantName(kwTenantsName));
 
     envModelList.sort(Comparator.comparingInt(topicEnv -> orderOfEnvs.indexOf(topicEnv.getId())));
     return envModelList;
