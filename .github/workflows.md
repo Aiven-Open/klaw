@@ -16,35 +16,21 @@ We have two types of files in the `/workflows` directory:
 - they shouldn't (and can't) be used in isolation, as they don't take care of the code being checked out
 - 📄 starting with `workflow_` indicate a collection of jobs that are automatically triggered by certain events or actions
 
-## Pipelines
+## Pipelines and workflows
 
-We have two types of workflows triggered by Pull Requests:
+We have one workflow triggered by Pull Requests. When a Pull Request is opened, we run selected jobs based on the location and changes made in the code. We have two sets of jobs:
 
-1. When a Pull Request is opened, we run selected jobs based on the location and changes made in the code. We have two sets of jobs:
-   - if changes are made inside the `/coral` directory, we run all [coral jobs](./workflows/jobs-coral.yaml)
-   - if are made outside in `/core` or `/cluster-api` directories or `pom.xml`, we run all [maven jobs](./workflows/jobs-maven.yaml). This jobs are only run when the Pull Request is ready for review, excluding "Draft" PRs.
-2. When a Pull Request is approved, the [`workflow-merge-to-main`](./workflows/workflow-merge-to-main.yaml) is triggered.
+- if changes are made inside the `/coral` directory, we run all [coral jobs](./workflows/jobs-coral.yaml)
+  - if are made outside in `/core` or `/cluster-api` directories or `pom.xml`, we run all [maven jobs](./workflows/jobs-maven.yaml). 
 
-   - This workflow runs all [coral jobs](./workflows/jobs-coral.yaml) and [maven jobs](./workflows/jobs-maven.yaml)
-   - After they are successful, it runs a job called `merge-to-main`. This job is defined in the [Branch protection rule](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/managing-a-branch-protection-rule) for `main` and is and is necessary to enable merging on our default branch.
+These jobs are only run when the Pull Request is ready for review, excluding "Draft" PRs.
 
-   **Note**: This workflow is also triggered when a Pull Request targeting main is synchronized. This way we make sure that the checks are always automatically run on the latest code.
+We have one workflow [`workflow-merge-to-main`](./workflows/workflow-merge-to-main.yaml) that we run in a merge queue before merging an approved PR branch to `main`.
+
+- This workflow runs all [coral jobs](./workflows/jobs-coral.yaml) and [maven jobs](./workflows/jobs-maven.yaml)
 
 In addition, we have a workflow that is triggered when changes are made to the `openapi.yaml file`. We check whether the changes affect the TypeScript file in `/coral`. If the changes do affect the TypeScript file, the `api.d.ts` file is automatically generated, and the TypeScript compiler is run. If the TypeScript compiler finds no errors, the file is committed. Otherwise the job fails.
 
-## Drawbacks
-
-We have identified two potential drawbacks with this strategy:
-
-1. There will be a delay between approving a Pull Request and merging it because of the required job on approval. We can mitigate this in the future:
-
-   - by adding automatic notification about a PR being ready to merge.
-   - consider auto-merging it in the future. Currently, we prefer manual merges to maintain more control over the process.
-
-2. Depending on the workflow, some job runs may be redundant and increase the time between giving a Pull Request for review and merging it.
-
-- We plan to iterate over our workflows to reduce redundancy and improve efficiency and will pay attention if this slows us down,
-- We are using the `merge-to-main` workflow as a temporary solution until we move to GitHub merge queues, when they become mores stable.
 
 ## Background of this strategy
 

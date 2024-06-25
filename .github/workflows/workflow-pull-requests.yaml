@@ -43,7 +43,6 @@ jobs:
             echo "changes-maven=true" >> $GITHUB_OUTPUT
           fi
 
-
   run-maven-jobs:
     needs: check-changes
     # the condition makes sure that changes on a draft PR do not trigger the job, except it's a "ready_for_review" event
