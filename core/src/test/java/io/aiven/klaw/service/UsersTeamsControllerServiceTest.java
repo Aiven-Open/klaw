@@ -4,11 +4,14 @@ import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,24 +19,33 @@ import static org.mockito.Mockito.when;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
+import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -45,6 +57,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
@@ -61,6 +74,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class UsersTeamsControllerServiceTest {
 
   public static final String OCTOPUS = "octopus";
+  private static final int TEST_TENANT_ID = 101;
+  private static final int TEST_TEAM_ID = 3;
+  private static final String TEST_TENANT_NAME = "testTenantName";
   private UtilMethods utilMethods;
 
   @Mock InMemoryUserDetailsManager inMemoryUserDetailsManager;
@@ -73,11 +89,13 @@ public class UsersTeamsControllerServiceTest {
 
   private UsersTeamsControllerService usersTeamsControllerService;
   private UserInfo userInfo;
+  private ArgumentCaptor<Team> teamCaptor;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     utilMethods = new UtilMethods();
     usersTeamsControllerService = new UsersTeamsControllerService();
+    teamCaptor = ArgumentCaptor.forClass(Team.class);
     ReflectionTestUtils.setField(
         usersTeamsControllerService, "inMemoryUserDetailsManager", inMemoryUserDetailsManager);
     ReflectionTestUtils.setField(usersTeamsControllerService, "manageDatabase", manageDatabase);
@@ -92,7 +110,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void getUserInfoDetails() {
+  public void getUserInfoDetails() {
     String userId = "testuser";
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("testteam");
@@ -104,7 +122,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void updateProfile() throws KlawException {
+  public void updateProfile() throws KlawException {
     ProfileModel userInfoModel = utilMethods.getUserInfoToUpdateMock();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("kwusera");
@@ -114,7 +132,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void updateProfileFailureDbUpdate() {
+  public void updateProfileFailureDbUpdate() {
     ProfileModel userInfoModel = utilMethods.getUserInfoToUpdateMock();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("kwusera");
@@ -126,7 +144,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void updateUserNotAuthorized() throws KlawException {
+  public void updateUserNotAuthorized() throws KlawException {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
@@ -134,7 +152,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
+  public void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
@@ -239,63 +257,114 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void getTeamDetails() {}
+  public void getTeamDetails() {
+    Team teamDaoMock = utilMethods.getTeamDaoMock();
+    Map<Integer, String> tenantMapMock = utilMethods.getTenantMapMock();
+
+    getTeamDetailsSetupTest(tenantMapMock, teamDaoMock, "testUserName");
+
+    TeamModelResponse response =
+        usersTeamsControllerService.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_NAME);
+
+    getTeamDetailsVerifyResponse(response, teamDaoMock, tenantMapMock);
+    assertThat(response.getEnvList())
+        .isEqualTo(List.of(teamDaoMock.getRequestTopicsEnvs().split("\\s*,\\s*")));
+  }
 
   @Test
-  void resetPassword() {}
+  public void getTeamDetailsNoRequestTopicsEnvs() {
+    Team teamDaoMock = utilMethods.getTeamDaoMock();
+    teamDaoMock.setRequestTopicsEnvs(null);
+    Map<Integer, String> tenantMapMock = utilMethods.getTenantMapMock();
+
+    getTeamDetailsSetupTest(tenantMapMock, teamDaoMock, "testUserName");
+
+    TeamModelResponse response =
+        usersTeamsControllerService.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_NAME);
+
+    getTeamDetailsVerifyResponse(response, teamDaoMock, tenantMapMock);
+    assertThat(response.getEnvList()).isNull();
+  }
 
   @Test
-  void getAllTeamsSUFromRegisterUsers() {}
+  public void getTeamDetailsTeamDoesNotExist() {
+    final String testUserName = "testUserName";
+    when(mailService.getUserName(any())).thenReturn(testUserName);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_ID)).thenReturn(null);
+
+    TeamModelResponse response =
+        usersTeamsControllerService.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_NAME);
+
+    assertThat(response).isNull();
+  }
 
   @Test
-  void getAllTeamsSU() {}
+  public void getTeamDetailsInvalidTenantName() {
+    Team teamDaoMock = utilMethods.getTeamDaoMock();
+
+    getTeamDetailsSetupTest(Collections.emptyMap(), teamDaoMock, "testUserName");
+
+    assertThatExceptionOfType(NoSuchElementException.class)
+        .isThrownBy(
+            () -> usersTeamsControllerService.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_NAME))
+        .withMessage("No value present");
+  }
 
   @Test
-  void getAllTeamsSUOnly() {
-    int tenantId = 101;
+  public void resetPassword() {}
+
+  @Test
+  public void getAllTeamsSUFromRegisterUsers() {}
+
+  @Test
+  public void getAllTeamsSU() {}
+
+  @Test
+  public void getAllTeamsSUOnly() {
     int teamId = 101;
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("testuser");
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
-    when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeams());
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(manageDatabase.getTeamObjForTenant(TEST_TENANT_ID)).thenReturn(utilMethods.getTeams());
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
-    when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(false);
-    when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(false);
+    when(handleDbRequests.existsComponentsCountForTeam(teamId, TEST_TENANT_ID)).thenReturn(false);
+    when(handleDbRequests.existsUsersInfoForTeam(teamId, TEST_TENANT_ID)).thenReturn(false);
     List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
     assertThat(teams.get(0).isShowDeleteTeam()).isTrue();
 
-    when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(true);
+    when(handleDbRequests.existsComponentsCountForTeam(teamId, TEST_TENANT_ID)).thenReturn(true);
     teams = usersTeamsControllerService.getAllTeamsSU();
     assertThat(teams.get(0).isShowDeleteTeam()).isFalse();
   }
 
   @Test
-  void deleteTeamFailure() throws KlawException {
+  public void deleteTeamFailure() throws KlawException {
     int teamId = 101;
-    int tenantId = 101;
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
-    when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(true);
+    when(handleDbRequests.existsUsersInfoForTeam(teamId, TEST_TENANT_ID)).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
     assertThat(apiResponse.getMessage())
         .isEqualTo("Not allowed to delete this team, as there are associated users.");
   }
 
   @Test
-  void deleteUserFailureHasRequests() throws KlawException {
+  public void deleteUserFailureHasRequests() throws KlawException {
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
-    when(handleDbRequests.existsComponentsCountForUser("testuser", 101)).thenReturn(true);
+    when(handleDbRequests.existsComponentsCountForUser("testuser", TEST_TENANT_ID))
+        .thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
     assertThat(apiResponse.getMessage())
         .isEqualTo(
@@ -303,11 +372,11 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void deleteUserFailureisAdmin() throws KlawException {
+  public void deleteUserFailureisAdmin() throws KlawException {
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
@@ -317,11 +386,11 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void deleteUserSuccessNormalUser() throws KlawException {
+  public void deleteUserSuccessNormalUser() throws KlawException {
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForNormalUser());
@@ -331,11 +400,11 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void deleteUserFailureNoSuperUserPermission() throws KlawException {
+  public void deleteUserFailureNoSuperUserPermission() throws KlawException {
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
         .thenReturn(false, true);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
@@ -344,10 +413,10 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void deleteUserFailureNoDeletionPermission() throws KlawException {
+  public void deleteUserFailureNoDeletionPermission() throws KlawException {
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
@@ -356,7 +425,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void addNewUserAlphaNumeric() throws KlawException {
+  public void addNewUserAlphaNumeric() throws KlawException {
     UserInfoModel newUser = utilMethods.getUserInfoMock();
     when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
@@ -364,7 +433,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void addNewUserEmail() throws KlawException {
+  public void addNewUserEmail() throws KlawException {
     UserInfoModel newUser = utilMethods.getUserInfoMock();
     newUser.setUsername("test@test.com"); // email pattern
     when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
@@ -373,7 +442,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void addNewUserInvalidPatternFailure() throws KlawException {
+  public void addNewUserInvalidPatternFailure() throws KlawException {
     UserInfoModel newUser = utilMethods.getUserInfoMock();
     newUser.setUsername("abc123$%$"); // invalid pattern
     ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
@@ -381,26 +450,150 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void addNewTeam() {}
+  public void addNewTeamSuccess() throws KlawException {
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    addNewTeamSetupTest("testuser", "existingTeamName");
+    when(handleDbRequests.addNewTeam(teamCaptor.capture()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    ApiResponse apiResponse = usersTeamsControllerService.addNewTeam(teamModel, true);
+
+    addNewTeamVerifyCapturedTeam(teamModel);
+
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    verify(commonUtilsService)
+        .updateMetadata(TEST_TENANT_ID, EntityType.TEAM, MetadataOperationType.CREATE, null);
+  }
 
   @Test
-  void updateTeam() {}
+  public void addNewTeamWithApiFailureFromDB() throws KlawException {
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    addNewTeamSetupTest("testuser", "existingTeamName");
+    when(handleDbRequests.addNewTeam(teamCaptor.capture()))
+        .thenReturn(ApiResultStatus.FAILURE.value);
+
+    ApiResponse apiResponse = usersTeamsControllerService.addNewTeam(teamModel, true);
+
+    addNewTeamVerifyCapturedTeam(teamModel);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
 
   @Test
-  void changePwd() {}
+  public void addNewTeamFailureWithException() {
+    String errorMessage = "Failure. Team already exists";
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    addNewTeamSetupTest("testuser", "existingTeamName");
+    when(handleDbRequests.addNewTeam(teamCaptor.capture()))
+        .thenThrow(new RuntimeException(errorMessage));
+
+    assertThatExceptionOfType(KlawException.class)
+        .isThrownBy(() -> usersTeamsControllerService.addNewTeam(teamModel, true))
+        .withMessage(errorMessage);
+
+    addNewTeamVerifyCapturedTeam(teamModel);
+
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
 
   @Test
-  void showUsers() {}
+  public void addNewTeamFailureWithExistingTeamName() throws KlawException {
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    when(manageDatabase.getTeamNamesForTenant(teamModel.getTenantId()))
+        .thenReturn(List.of(teamModel.getTeamname()));
+
+    ApiResponse apiResponse = usersTeamsControllerService.addNewTeam(teamModel, false);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_119);
+  }
 
   @Test
-  void getMyProfileInfo() {}
+  public void addNewTeamFailureWithUnAuthorizedUser() throws KlawException {
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+
+    ApiResponse apiResponse = usersTeamsControllerService.addNewTeam(teamModel, true);
+    assertThat(apiResponse).isSameAs(ApiResponse.NOT_AUTHORIZED);
+  }
 
   @Test
-  void addTwoDefaultTeams() {}
+  public void updateTeam() {}
+
+  @Test
+  public void changePwd() {}
+
+  @Test
+  public void showUsers() {}
+
+  @Test
+  public void getMyProfileInfo() {}
+
+  @Test
+  public void addTwoDefaultTeamsSuccess() throws KlawException {
+    String contactPerson = "contactPerson";
+
+    addTwoDefaultTeamsSetupTest(
+        "testuser",
+        "existingTeamName",
+        ApiResultStatus.SUCCESS.value,
+        ApiResultStatus.SUCCESS.value);
+
+    addTwoDefaultTeamsVerifyCapturedTeams(
+        contactPerson,
+        2,
+        usersTeamsControllerService.addTwoDefaultTeams(contactPerson, "newTenant", TEST_TENANT_ID),
+        "success",
+        "success");
+  }
+
+  @Test
+  public void addTwoDefaultTeamsWithApiFailureForFirstTeam() throws KlawException {
+    String contactPerson = "contactPerson";
+
+    addTwoDefaultTeamsSetupTest(
+        "testuser",
+        "existingTeamName",
+        ApiResultStatus.FAILURE.value,
+        ApiResultStatus.SUCCESS.value);
+
+    addTwoDefaultTeamsVerifyCapturedTeams(
+        contactPerson,
+        1,
+        usersTeamsControllerService.addTwoDefaultTeams(contactPerson, "newTenant", TEST_TENANT_ID),
+        "failure",
+        "success");
+  }
+
+  @Test
+  public void addTwoDefaultTeamsWithApiFailureForSecondTeam() throws KlawException {
+    String contactPerson = "contactPerson";
+
+    addTwoDefaultTeamsSetupTest(
+        "testuser",
+        "existingTeamName",
+        ApiResultStatus.SUCCESS.value,
+        ApiResultStatus.FAILURE.value);
+
+    addTwoDefaultTeamsVerifyCapturedTeams(
+        contactPerson,
+        1,
+        usersTeamsControllerService.addTwoDefaultTeams(contactPerson, "newTenant", TEST_TENANT_ID),
+        "success",
+        "failure");
+  }
 
   @ParameterizedTest
   @MethodSource
-  void registerUserInternal(
+  public void registerUserInternal(
       String userName, String mailId, ApiResponse expectedResult, String responseMsg)
       throws KlawException {
 
@@ -464,19 +657,19 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  void getNewUserRequests() {}
+  public void getNewUserRequests() {}
 
   @Test
-  void approveNewUserRequests() {}
+  public void approveNewUserRequests() {}
 
   @Test
-  void declineNewUserRequests() {}
+  public void declineNewUserRequests() {}
 
   @Test
-  void getRegistrationInfoFromId() {}
+  public void getRegistrationInfoFromId() {}
 
   @Test
-  void getEnvDetailsFromId() {}
+  public void getEnvDetailsFromId() {}
 
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);
@@ -534,5 +727,86 @@ public class UsersTeamsControllerServiceTest {
     info.setTeamId(10);
     info.setRole("User");
     return info;
+  }
+
+  private void getTeamDetailsSetupTest(
+      Map<Integer, String> tenantMapMock, Team teamDaoMock, String testUserName) {
+    when(manageDatabase.getTenantMap()).thenReturn(tenantMapMock);
+    when(mailService.getUserName(any())).thenReturn(testUserName);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getTeamDetails(TEST_TEAM_ID, TEST_TENANT_ID)).thenReturn(teamDaoMock);
+  }
+
+  private void getTeamDetailsVerifyResponse(
+      TeamModelResponse response, Team teamDaoMock, Map<Integer, String> tenantMapMock) {
+    assertThat(response.getTeamname()).isEqualTo(teamDaoMock.getTeamname());
+    assertThat(response.getTeamphone()).isEqualTo(teamDaoMock.getTeamphone());
+    assertThat(response.getContactperson()).isEqualTo(teamDaoMock.getContactperson());
+    assertThat(response.getTeamId()).isEqualTo(teamDaoMock.getTeamId());
+    assertThat(response.getTenantId())
+        .isEqualTo(
+            tenantMapMock.entrySet().stream()
+                .filter(obj -> Objects.equals(obj.getValue(), TEST_TENANT_NAME))
+                .findFirst()
+                .get()
+                .getKey());
+    assertThat(response.getTenantName()).isEqualTo(TEST_TENANT_NAME);
+    assertThat(response.getTeammail()).isEqualTo(teamDaoMock.getTeammail());
+    assertThat(response.getApp()).isEqualTo(teamDaoMock.getApp());
+    assertThat(response.getServiceAccounts()).isEqualTo(teamDaoMock.getServiceAccounts());
+  }
+
+  private void addTwoDefaultTeamsSetupTest(
+      String userName, String existingTeamName, String firstApiResult, String secondApiResult) {
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(manageDatabase.getTeamNamesForTenant(TEST_TENANT_ID))
+        .thenReturn(List.of(existingTeamName));
+    when(handleDbRequests.addNewTeam(teamCaptor.capture()))
+        .thenReturn(firstApiResult)
+        .thenReturn(secondApiResult);
+  }
+
+  private void addTwoDefaultTeamsVerifyCapturedTeams(
+      String contactPerson,
+      int expectedUpdateMetaDataInvocations,
+      Map<String, String> teamMap,
+      String team1Result,
+      String team2Result) {
+    List<Team> capturedTeams = teamCaptor.getAllValues();
+
+    assertThat(capturedTeams.size()).isEqualTo(2);
+    assertThat(capturedTeams.get(0).getTenantId()).isEqualTo(TEST_TENANT_ID);
+    assertThat(capturedTeams.get(0).getTeamname()).isEqualTo(KwConstants.INFRATEAM);
+    assertThat(capturedTeams.get(0).getContactperson()).isEqualTo(contactPerson);
+    assertThat(capturedTeams.get(1).getTenantId()).isEqualTo(TEST_TENANT_ID);
+    assertThat(capturedTeams.get(1).getTeamname()).isEqualTo(KwConstants.STAGINGTEAM);
+    assertThat(capturedTeams.get(1).getContactperson()).isEqualTo(contactPerson);
+
+    assertThat(teamMap.size()).isEqualTo(2);
+    assertThat(teamMap.get("team1result")).isEqualTo(team1Result);
+    assertThat(teamMap.get("team2result")).isEqualTo(team2Result);
+
+    verify(commonUtilsService, times(expectedUpdateMetaDataInvocations))
+        .updateMetadata(TEST_TENANT_ID, EntityType.TEAM, MetadataOperationType.CREATE, null);
+  }
+
+  private void addNewTeamSetupTest(String userName, String existingTeamName) {
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(manageDatabase.getTeamNamesForTenant(TEST_TENANT_ID))
+        .thenReturn(List.of(existingTeamName));
+  }
+
+  private void addNewTeamVerifyCapturedTeam(TeamModel teamModel) {
+    Team capturedTeam = teamCaptor.getValue();
+
+    assertThat(capturedTeam.getRequestTopicsEnvs())
+        .isEqualTo(String.join(",", teamModel.getEnvList().toArray(new String[0])));
+    assertThat(capturedTeam.getTeamname()).isEqualTo(teamModel.getTeamname());
+    assertThat(capturedTeam.getTeamphone()).isEqualTo(teamModel.getTeamphone());
+    assertThat(capturedTeam.getContactperson()).isEqualTo(teamModel.getContactperson());
+    assertThat(capturedTeam.getTeamId()).isEqualTo(teamModel.getTeamId());
+    assertThat(capturedTeam.getTenantId()).isEqualTo(TEST_TENANT_ID);
   }
 }
