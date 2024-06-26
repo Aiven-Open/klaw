@@ -195,8 +195,7 @@ public class InsertDataJdbcTest {
         Arguments.of(
             "octopus@klaw-project.io", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value),
         Arguments.of("Octopus2", "octopus@klaw-project.io", "Failure. User already exists"),
-        Arguments.of(
-            "Octopus3", "octopus@klaw-project.io", "Failure. Registration already exists"));
+        Arguments.of("Octopus3", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value));
   }
 
   @ParameterizedTest

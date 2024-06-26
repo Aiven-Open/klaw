@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
@@ -44,10 +45,12 @@ public class UsersTeamsControllerIT {
 
   @Autowired private MockMvc mvc;
 
-  private static String superAdmin = "superadmin";
+  static String superAdmin = "superadmin";
   private static String superAdminPwd = "welcometoklaw";
   private static String user1 = "kwusera",
       user2 = "kwuserb",
+      user3 = "kwuserg",
+      user4 = "kwuserh",
       switchUser1 = "kwuserc",
       switchUser2 = "kwuserd",
       switchUser3 = "kwusere";
@@ -337,17 +340,7 @@ public class UsersTeamsControllerIT {
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
 
-    response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getUserDetails")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .param("userId", user1)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+    response = getUserDetails(user1);
 
     assertThat(response).isEmpty();
   }
@@ -510,17 +503,7 @@ public class UsersTeamsControllerIT {
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
 
-    response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getUserDetails")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .param("userId", switchUser1)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+    response = getUserDetails(switchUser1);
     UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeamId()).isEqualTo(newTeamId);
@@ -552,17 +535,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
     assertThat(response).contains(ApiResultStatus.NOT_AUTHORIZED.value);
 
-    response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getUserDetails")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .param("userId", switchUser1)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+    response = getUserDetails(switchUser1);
     UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeamId()).isEqualTo(1002); // no change
@@ -633,7 +606,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
     List<UserInfoModelResponse> userInfoModelList =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertThat(userInfoModelList).hasSizeBetween(3, 6); // superadmin, kwuserb, kwuserc
+    assertThat(userInfoModelList).hasSizeBetween(3, 9); // superadmin, kwuserb, kwuserc
     assertThat(
             userInfoModelList.stream()
                 .filter(userInfo -> userInfo.getUsername().equals(switchUser1))
@@ -669,5 +642,111 @@ public class UsersTeamsControllerIT {
     assertThat(userInfoModelActual.getSwitchAllowedTeamIds())
         .hasSize(2)
         .containsExactlyInAnyOrder(1001, 1002);
+  }
+
+  @Test
+  @Order(22)
+  public void registerAndApproveUser() throws Exception {
+    String role = "USER";
+    RegisterUserInfoModel userInfoModel = mockMethods.getRegisterUserInfoModel(user3, role);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    ApiResponse apiResponse = getApiResponseForUserRegistration(jsonReq);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    apiResponse = getApiResponseUserApprove(user3);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    String userDetailsResponse = getUserDetails(user3);
+    UserInfoModelResponse userInfoModelActual =
+        new ObjectMapper().readValue(userDetailsResponse, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(INFRATEAM);
+  }
+
+  @Test
+  @Order(22)
+  public void registerAndDeclineAndReRegisterAndApproveUser() throws Exception {
+    String role = "USER";
+    RegisterUserInfoModel userInfoModel = mockMethods.getRegisterUserInfoModel(user4, role);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    ApiResponse apiResponse = getApiResponseForUserRegistration(jsonReq);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    String declineUserResponse =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/execNewUserRequestDecline")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("username", user4)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    apiResponse = OBJECT_MAPPER.readValue(declineUserResponse, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    apiResponse = getApiResponseForUserRegistration(jsonReq);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    apiResponse = getApiResponseUserApprove(user4);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    String userDetailsResponse = getUserDetails(user4);
+    UserInfoModelResponse userInfoModelActual =
+        new ObjectMapper().readValue(userDetailsResponse, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(INFRATEAM);
+  }
+
+  private ApiResponse getApiResponseUserApprove(String userToApprove) throws Exception {
+    ApiResponse apiResponse;
+    String approveUserResponse =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/execNewUserRequestApprove")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("username", userToApprove)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    apiResponse = OBJECT_MAPPER.readValue(approveUserResponse, new TypeReference<>() {});
+    return apiResponse;
+  }
+
+  private ApiResponse getApiResponseForUserRegistration(String jsonReq) throws Exception {
+    ApiResponse apiResponse;
+    String registerUserResponse;
+    registerUserResponse =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/registerUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    apiResponse = OBJECT_MAPPER.readValue(registerUserResponse, new TypeReference<>() {});
+    return apiResponse;
+  }
+
+  private String getUserDetails(String user) throws Exception {
+    String response;
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getUserDetails")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("userId", user)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    return response;
   }
 }
