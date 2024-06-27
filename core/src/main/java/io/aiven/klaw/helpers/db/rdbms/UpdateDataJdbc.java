@@ -488,7 +488,10 @@ public class UpdateDataJdbc {
     if (isApprove) {
       status = NewUserStatus.APPROVED.value;
     } else {
-      status = NewUserStatus.DECLINED.value;
+      // In case if user registration is declined, delete the record from db, so user can try to
+      // register again with any new data.
+      registerInfoRepo.deleteById("" + registerUser.getId());
+      return;
     }
     if (registerUser != null) {
       if (NewUserStatus.PENDING.value.equals(registerUser.getStatus())) {

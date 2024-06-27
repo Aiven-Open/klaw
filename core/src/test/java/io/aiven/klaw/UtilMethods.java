@@ -172,6 +172,20 @@ public class UtilMethods {
     return userInfoList;
   }
 
+  public List<UserInfo> getUserInfoList(int count, String usernamePrefix) {
+    List<UserInfo> userInfoList = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      UserInfo userInfo = new UserInfo();
+      userInfo.setTeamId(i % 2);
+      userInfo.setSwitchAllowedTeamIds(Set.of((i + 1) % 2));
+      userInfo.setSwitchTeams(true);
+      userInfo.setUsername(usernamePrefix + i);
+      userInfoList.add(userInfo);
+    }
+
+    return userInfoList;
+  }
+
   public List<UserInfoModelResponse> getUserInfoListModel(String username, String role) {
     List<UserInfoModelResponse> userInfoList = new ArrayList<>();
     UserInfoModelResponse userInfo = new UserInfoModelResponse();

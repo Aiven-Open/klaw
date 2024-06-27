@@ -1,9 +1,10 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
@@ -380,13 +381,21 @@ public class InsertDataJdbc {
     Optional<UserInfo> userNameExists = userInfoRepo.findById(userInfo.getUsername());
     if (userNameExists.isPresent()) return "Failure. User already exists";
 
-    // STAGING status comes from AD users
-    RegisterUserInfo userRegistration =
-        registerInfoRepo.findFirstByUsernameAndStatusIn(
-            userInfo.getUsername(),
-            List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
-    if (userRegistration != null) {
-      return "Failure. Registration already exists";
+    Optional<RegisterUserInfo> optionalUserRegistration =
+        registerInfoRepo.findByUsername(userInfo.getUsername());
+    if (optionalUserRegistration.isPresent()) {
+      if ("APPROVED".equals(optionalUserRegistration.get().getStatus())) {
+        // do nothing -- user is deleted
+      } else if (!"STAGING".equals(optionalUserRegistration.get().getStatus())
+          && !"PENDING".equals(optionalUserRegistration.get().getStatus())) {
+        return "Failure. Registration already exists";
+      } else {
+        int id = optionalUserRegistration.get().getId();
+        copyProperties(userInfo, optionalUserRegistration.get());
+        optionalUserRegistration.get().setId(id);
+        registerInfoRepo.save(optionalUserRegistration.get());
+        return ApiResultStatus.SUCCESS.value;
+      }
     }
 
     registerInfoRepo.save(userInfo);

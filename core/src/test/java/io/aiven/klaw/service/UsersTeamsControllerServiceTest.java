@@ -41,11 +41,13 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -532,10 +534,178 @@ public class UsersTeamsControllerServiceTest {
   public void changePwd() {}
 
   @Test
-  public void showUsers() {}
+  public void showUsersWithNoFilterAndSwitchEnabled() {
+    List<UserInfo> userInfosMock = showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(2);
+    showUsersValidateUserInfo(userInfos.get(0), userInfosMock.get(0).getTeamId(), "Seahorses");
+    showUsersValidateUserInfo(userInfos.get(1), userInfosMock.get(1).getTeamId(), "Octopus");
+  }
 
   @Test
-  public void getMyProfileInfo() {}
+  public void showUsersWithNoFilterAndOneSwitchDisable() {
+    List<UserInfo> userInfosMock = showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+    userInfosMock.get(1).setSwitchTeams(false);
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(2);
+    showUsersValidateUserInfo(userInfos.get(0), userInfosMock.get(0).getTeamId(), "Seahorses");
+    assertThat(userInfos.get(1).getTeamId()).isEqualTo(userInfosMock.get(1).getTeamId());
+    assertThat(userInfos.get(1).getSwitchAllowedTeamNames()).isNull();
+  }
+
+  @Test
+  public void showUsersWithNoFilterAndSwitchTeamExistsButUserNotMember() {
+    List<UserInfo> userInfosMock =
+        showUsersSetupTest(
+            "testuser", 1, 1, "Seahorses", Integer.MAX_VALUE, "Not Member of this Team");
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(1);
+    showUsersValidateUserInfo(userInfos.get(0), userInfosMock.get(0).getTeamId(), "Seahorses");
+  }
+
+  @Test
+  public void showUsersWithNoFilterAndSwitchToTeamThatDoesNotExist() {
+    String userName = "testuser";
+    List<UserInfo> userInfosMock = utilMethods.getUserInfoList(1, "testUser");
+
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(commonUtilsService.getTenantId(userName)).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getAllUsersInfo(TEST_TENANT_ID)).thenReturn(userInfosMock);
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(1);
+    showUsersValidateUserInfo(userInfos.get(0), userInfosMock.get(0).getTeamId(), null);
+  }
+
+  @Test
+  public void showUsersWithValidTeamIdFilter() {
+    int filterUserIndex = 1;
+    List<UserInfo> userInfosMock = showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+
+    List<UserInfoModelResponse> userInfos =
+        usersTeamsControllerService.showUsers(filterUserIndex, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(1);
+    showUsersValidateUserInfo(
+        userInfos.get(0), userInfosMock.get(filterUserIndex).getTeamId(), "Octopus");
+  }
+
+  @Test
+  public void showUsersWithInValidTeamIdFilter() {
+    showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+
+    List<UserInfoModelResponse> userInfos =
+        usersTeamsControllerService.showUsers(Integer.MAX_VALUE, null, "1");
+
+    assertThat(userInfos.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void showUsersWithValidUserSearchStrFilter() {
+    List<UserInfo> userInfosMock = showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, "0", "1");
+
+    assertThat(userInfos.size()).isEqualTo(1);
+    showUsersValidateUserInfo(userInfos.get(0), userInfosMock.get(0).getTeamId(), "Seahorses");
+  }
+
+  @Test
+  public void showUsersWithInValidUserSearchStrFilter() {
+    showUsersSetupTest("testuser", 2, 0, "Octopus", 1, "Seahorses");
+
+    List<UserInfoModelResponse> userInfos =
+        usersTeamsControllerService.showUsers(null, "invalid", "1");
+
+    assertThat(userInfos.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void showUsersWithMultiplePages() {
+    String userName = "testuser";
+    List<UserInfo> userInfosMock = utilMethods.getUserInfoList(30, "testUser");
+
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(commonUtilsService.getTenantId(userName)).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getAllUsersInfo(TEST_TENANT_ID)).thenReturn(userInfosMock);
+
+    List<UserInfoModelResponse> userInfos = usersTeamsControllerService.showUsers(null, null, "1");
+    assertThat(userInfos.size()).isEqualTo(20);
+
+    userInfos = usersTeamsControllerService.showUsers(null, null, "2");
+    assertThat(userInfos.size()).isEqualTo(10);
+
+    userInfos = usersTeamsControllerService.showUsers(null, null, "3");
+    assertThat(userInfos.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void getMyProfileInfoWithValidSwitchTeam() {
+    String userTeamName = "Seahorse";
+    String switchTeamName = "Octopus";
+    getMyProfileInfoSetupTest(true, userTeamName, switchTeamName);
+
+    UserInfoModelResponse userInfoModelResponse = usersTeamsControllerService.getMyProfileInfo();
+
+    getMyProfileInfoVerifyUserInfoModelResponse(userInfoModelResponse, userTeamName);
+    getMyProfileInfoVerifySwitchTeam(userInfoModelResponse, switchTeamName);
+  }
+
+  @Test
+  public void getMyProfileInfoWithSwitchTeamDisabled() {
+    String userTeamName = "Seahorse";
+    getMyProfileInfoSetupTest(false, userTeamName, null);
+
+    UserInfoModelResponse userInfoModelResponse = usersTeamsControllerService.getMyProfileInfo();
+
+    getMyProfileInfoVerifyUserInfoModelResponse(userInfoModelResponse, userTeamName);
+    assertThat(userInfoModelResponse.isSwitchTeams()).isFalse();
+    assertThat(userInfoModelResponse.getSwitchAllowedTeamNames()).isNull();
+
+    verify(manageDatabase, never())
+        .getTeamNameFromTeamId(userInfo.getTenantId(), userInfo.getTeamId() - 1);
+  }
+
+  @Test
+  public void getMyProfileInfoWithSwitchTeamExistsButUserNotMember() {
+    String userTeamName = "Seahorse";
+    String switchTeamName = "Octopus";
+    getMyProfileInfoSetupTest(true, userTeamName, switchTeamName);
+
+    when(manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), Integer.MAX_VALUE))
+        .thenReturn("User not member of this team");
+
+    UserInfoModelResponse userInfoModelResponse = usersTeamsControllerService.getMyProfileInfo();
+
+    getMyProfileInfoVerifyUserInfoModelResponse(userInfoModelResponse, userTeamName);
+    getMyProfileInfoVerifySwitchTeam(userInfoModelResponse, switchTeamName);
+  }
+
+  @Test
+  public void getMyProfileInfoWithSwitchToTeamThatDoesNotExist() {
+    String userTeamName = "Seahorse";
+    String userName = "testUser";
+    userInfo.setSwitchAllowedTeamIds(Set.of(userInfo.getTeamId() - 1));
+    userInfo.setSwitchTeams(true);
+
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(handleDbRequests.getUsersInfo(userName)).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(userName)).thenReturn(userInfo.getTenantId());
+    when(manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfo.getTeamId()))
+        .thenReturn("Seahorse");
+
+    UserInfoModelResponse userInfoModelResponse = usersTeamsControllerService.getMyProfileInfo();
+
+    getMyProfileInfoVerifyUserInfoModelResponse(userInfoModelResponse, userTeamName);
+    getMyProfileInfoVerifySwitchTeam(userInfoModelResponse, null);
+  }
 
   @Test
   public void addTwoDefaultTeamsSuccess() throws KlawException {
@@ -589,6 +759,122 @@ public class UsersTeamsControllerServiceTest {
         usersTeamsControllerService.addTwoDefaultTeams(contactPerson, "newTenant", TEST_TENANT_ID),
         "success",
         "failure");
+  }
+
+  @Test
+  public void updateUserTeamFromSwitchTeamsSuccess() {
+    UserInfoModel userInfoModel = updateUserTeamFromSwitchTeamsSetupTest();
+
+    when(handleDbRequests.updateUserTeam(userInfoModel.getUsername(), userInfoModel.getTeamId()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    ApiResponse apiResponse =
+        usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel);
+
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    verify(manageDatabase).loadUsersForAllTenants();
+  }
+
+  @Test
+  public void updateUserTeamFromSwitchTeamsWithDBApiFailure() {
+    UserInfoModel userInfoModel = updateUserTeamFromSwitchTeamsSetupTest();
+
+    when(handleDbRequests.updateUserTeam(userInfoModel.getUsername(), userInfoModel.getTeamId()))
+        .thenReturn(ApiResultStatus.FAILURE.value);
+
+    ApiResponse apiResponse =
+        usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    verify(manageDatabase, never()).loadUsersForAllTenants();
+  }
+
+  @Test
+  public void updateUserTeamFromSwitchTeamsWithDBExceptionFailure() {
+    UserInfoModel userInfoModel = updateUserTeamFromSwitchTeamsSetupTest();
+    String errorMessage = "Failure Team doesn't exist";
+
+    when(handleDbRequests.updateUserTeam(userInfoModel.getUsername(), userInfoModel.getTeamId()))
+        .thenThrow(new RuntimeException(errorMessage));
+
+    assertThatExceptionOfType(RuntimeException.class)
+        .isThrownBy(() -> usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel))
+        .withMessage(errorMessage);
+
+    verify(manageDatabase, never()).loadUsersForAllTenants();
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void updateUserTeamFromSwitchTeamsWithUnAuthorizedUserFailure(
+      boolean setSwitchTeams, Set<Integer> teamIds, Integer userProfileTeamId) {
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    userInfoModel.setTeamId(userProfileTeamId);
+
+    userInfo.setSwitchTeams(setSwitchTeams);
+    userInfo.setSwitchAllowedTeamIds(teamIds);
+
+    when(handleDbRequests.getUsersInfo(userInfoModel.getUsername())).thenReturn(userInfo);
+
+    ApiResponse apiResponse =
+        usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.NOT_AUTHORIZED.getMessage());
+    verify(handleDbRequests, never()).updateUserTeam(anyString(), anyInt());
+  }
+
+  public static Stream<Arguments> updateUserTeamFromSwitchTeamsWithUnAuthorizedUserFailure() {
+    return Stream.of(
+        Arguments.of(false, Set.of(1, 2), 1),
+        Arguments.of(true, null, 1),
+        Arguments.of(true, Collections.emptySet(), 1),
+        Arguments.of(true, Set.of(1, 2), 3));
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void getSwitchTeams(String userId, Set<Integer> teamIds, boolean setSwitchTeams) {
+    String testUserName = "testUserName";
+
+    userInfo.setSwitchTeams(setSwitchTeams);
+    userInfo.setSwitchAllowedTeamIds(teamIds);
+
+    when(handleDbRequests.getUsersInfo(userId)).thenReturn(userInfo);
+    when(mailService.getUserName(any())).thenReturn(testUserName);
+    when(commonUtilsService.getTenantId(testUserName)).thenReturn(TEST_TENANT_ID);
+    for (Integer teamId : teamIds) {
+      when(manageDatabase.getTeamNameFromTeamId(TEST_TENANT_ID, teamId))
+          .thenReturn(String.format("team%d", teamId));
+    }
+
+    List<TeamModelResponse> responses = usersTeamsControllerService.getSwitchTeams(userId);
+
+    if (userId.equals("testuser")) {
+      assertThat(responses).isEmpty();
+    } else {
+      assertThat(responses).isNotEmpty();
+      assertThat(responses.size()).isEqualTo(teamIds.size());
+
+      responses.sort(Comparator.comparing(TeamModelResponse::getTeamId));
+
+      assertThat(responses.get(0).getTeamId()).isEqualTo(1);
+      assertThat(responses.get(0).getTeamname()).isEqualTo("team1");
+
+      if (userId.equals("testuser2")) {
+        assertThat(responses.get(1).getTeamId()).isEqualTo(2);
+        assertThat(responses.get(1).getTeamname()).isEqualTo("team2");
+      }
+    }
+  }
+
+  public static Stream<Arguments> getSwitchTeams() {
+    return Stream.of(
+        Arguments.of("testuser", Collections.emptySet(), false),
+        Arguments.of("testuser1", Set.of(1), true),
+        Arguments.of("testuser2", Set.of(1, 2), true));
   }
 
   @ParameterizedTest
@@ -808,5 +1094,75 @@ public class UsersTeamsControllerServiceTest {
     assertThat(capturedTeam.getContactperson()).isEqualTo(teamModel.getContactperson());
     assertThat(capturedTeam.getTeamId()).isEqualTo(teamModel.getTeamId());
     assertThat(capturedTeam.getTenantId()).isEqualTo(TEST_TENANT_ID);
+  }
+
+  private List<UserInfo> showUsersSetupTest(
+      String userName,
+      int totalMocks,
+      int switchTeam1ID,
+      String switchTeam1Name,
+      int switchTeam2ID,
+      String switchTeam2Name) {
+    List<UserInfo> userInfosMock = utilMethods.getUserInfoList(totalMocks, userName);
+
+    when(mailService.getUserName(any())).thenReturn(userName);
+    when(commonUtilsService.getTenantId(userName)).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getAllUsersInfo(TEST_TENANT_ID)).thenReturn(userInfosMock);
+    when(manageDatabase.getTeamNameFromTeamId(TEST_TENANT_ID, switchTeam1ID))
+        .thenReturn(switchTeam1Name);
+    when(manageDatabase.getTeamNameFromTeamId(TEST_TENANT_ID, switchTeam2ID))
+        .thenReturn(switchTeam2Name);
+
+    return userInfosMock;
+  }
+
+  private void showUsersValidateUserInfo(
+      UserInfoModelResponse userInfoResponse, int teamId, String switchTeamName) {
+    assertThat(userInfoResponse.getTeamId()).isEqualTo(teamId);
+    assertThat(userInfoResponse.getSwitchAllowedTeamNames().size()).isEqualTo(1);
+    assertThat(userInfoResponse.getSwitchAllowedTeamNames().contains(switchTeamName)).isTrue();
+  }
+
+  private UserInfoModel updateUserTeamFromSwitchTeamsSetupTest() {
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+
+    userInfo.setSwitchTeams(true);
+    userInfo.setSwitchAllowedTeamIds(Set.of(userInfoModel.getTeamId()));
+
+    when(handleDbRequests.getUsersInfo(userInfoModel.getUsername())).thenReturn(userInfo);
+
+    return userInfoModel;
+  }
+
+  private void getMyProfileInfoSetupTest(
+      boolean switchTeamsEnabled, String userTeamName, String switchTeamName) {
+    userInfo.setSwitchAllowedTeamIds(Set.of(userInfo.getTeamId() - 1));
+    userInfo.setSwitchTeams(switchTeamsEnabled);
+
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(handleDbRequests.getUsersInfo("testuser")).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId("testuser")).thenReturn(userInfo.getTenantId());
+    when(manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfo.getTeamId()))
+        .thenReturn("Seahorse");
+    if (switchTeamsEnabled) {
+      when(manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfo.getTeamId() - 1))
+          .thenReturn("Octopus");
+    }
+  }
+
+  private void getMyProfileInfoVerifyUserInfoModelResponse(
+      UserInfoModelResponse userInfoModelResponse, String userTeamName) {
+    assertThat(userInfoModelResponse.getTeamId()).isEqualTo(userInfo.getTeamId());
+    assertThat(userInfoModelResponse.getRole()).isEqualTo(userInfo.getRole());
+    assertThat(userInfoModelResponse.getTenantId()).isEqualTo(userInfo.getTenantId());
+    assertThat(userInfoModelResponse.getUsername()).isEqualTo(userInfo.getUsername());
+    assertThat(userInfoModelResponse.getTeam()).isEqualTo(userTeamName);
+  }
+
+  private void getMyProfileInfoVerifySwitchTeam(
+      UserInfoModelResponse userInfoModelResponse, String switchTeamName) {
+    assertThat(userInfoModelResponse.isSwitchTeams()).isTrue();
+    assertThat(userInfoModelResponse.getSwitchAllowedTeamNames().size()).isEqualTo(1);
+    assertThat(userInfoModelResponse.getSwitchAllowedTeamNames().contains(switchTeamName)).isTrue();
   }
 }

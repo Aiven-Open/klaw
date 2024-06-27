@@ -59,7 +59,7 @@ public class WindowsActiveDirectoryAuthenticationIT {
       MockHttpServletResponse response =
           mvc.perform(
                   MockMvcRequestBuilders.get("/")
-                      .with(user("testuser").password("testpwd")) // User doesn't exist in klaw
+                      .with(user("testuser1").password("testpwd")) // User doesn't exist in klaw
                       // authentication
                       .contentType(MediaType.APPLICATION_JSON)
                       .accept(MediaType.APPLICATION_JSON))

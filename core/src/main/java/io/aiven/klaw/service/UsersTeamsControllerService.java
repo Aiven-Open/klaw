@@ -620,7 +620,8 @@ public class UsersTeamsControllerService {
 
       if (isExternal) {
 
-        if ("".equals(newUser.getUserPassword())) {
+        if ("".equals(newUser.getUserPassword())
+            || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
           mailService.sendMail(
               newUser.getUsername(),
               newUser.getUserPassword(),
