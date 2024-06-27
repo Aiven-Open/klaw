@@ -705,6 +705,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
         $scope.addNewEnv = function() {
 
+                var defRepFactor = parseInt($scope.addNewEnv.defrepfctr,10)
+                var maxRepFactor = parseInt($scope.addNewEnv.maxrepfctr,10)
+                var defPartitions = parseInt($scope.addNewEnv.defparts,10)
+                var maxPartitions = parseInt($scope.addNewEnv.defmaxparts,10)
+
                 // Validation partitions
                 if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
                 {
@@ -713,7 +718,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 	return;
                 }
 
-                if(isNaN($scope.addNewEnv.defparts)){
+                if(isNaN(defPartitions)){
                     $scope.alertnote = "Default partitions should be a valid number";
                     $scope.showAlertToast();
                     return;
@@ -726,13 +731,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 	return;
                 }
 
-                if(isNaN($scope.addNewEnv.defmaxparts)){
+                if(isNaN(maxPartitions)){
                     $scope.alertnote = "Maximum partitions should be a valid number";
                     $scope.showAlertToast();
                     return;
                 }
 
-                if($scope.addNewEnv.defparts > $scope.addNewEnv.defmaxparts){
+                if(defPartitions > maxPartitions){
                     $scope.alertnote = "Default partitions should be less than Maximum partitions";
                     $scope.showAlertToast();
                     return;
@@ -747,26 +752,26 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 	return;
                 }
 
-                if(isNaN($scope.addNewEnv.defrepfctr)){
+                if(isNaN(defRepFactor)){
                     $scope.alertnote = "Default replication factor should be a valid number";
                     $scope.showAlertToast();
                     return;
                 }
 
-                if($scope.addNewEnv.maxrepfctr.length<=0 || $scope.addNewEnv.maxrepfctr<=0)
+                if(defRepFactor<=0 || maxRepFactor<=0)
                 {
                     $scope.alertnote = "Maximum Replication factor should not be empty and should be greater than 0";
                     $scope.showAlertToast();
                     return;
                 }
 
-                if(isNaN($scope.addNewEnv.maxrepfctr)){
+                if(isNaN(maxRepFactor)){
                     $scope.alertnote = "Maximum Replication factor should be a valid number";
                     $scope.showAlertToast();
                     return;
                 }
 
-                if($scope.addNewEnv.defrepfctr > $scope.addNewEnv.maxrepfctr){
+                if(defRepFactor > maxRepFactor){
                     $scope.alertnote = "Default Replication factor should be less than Maximum Replication factor";
                     $scope.showAlertToast();
                     return;
