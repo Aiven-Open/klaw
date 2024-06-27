@@ -998,7 +998,7 @@ public class EnvsClustersTenantsControllerService {
   public ClusterInfo getClusterInfoFromEnv(String envSelected, String clusterType) {
     //    Map<String, String> clusterInfo = new HashMap<>();
     ClusterInfo clusterInfo = new ClusterInfo();
-    log.debug("getEnvDetails {}", envSelected);
+    log.debug("getClusterInfoFromEnv {}", envSelected);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (!isAuthorizedFor(ADD_EDIT_DELETE_ENVS)
         && !commonUtilsService.getEnvsFromUserId(getUserName()).contains(envSelected)) {
