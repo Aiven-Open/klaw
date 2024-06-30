@@ -967,14 +967,13 @@ public class UsersTeamsControllerServiceTest {
   @ParameterizedTest
   @MethodSource
   public void getNewUserRequestsSuccess(int count) throws KlawNotAuthorizedException {
-    String testAuthenticatedUser = "testAuthenticatedUser";
     int authenticatedUserTenantId = TEST_TENANT_ID;
     Map<Integer, String> tenantMapMock = utilMethods.getTenantMapMock();
     List<RegisterUserInfo> regUserList =
         utilMethods.getRegisterUserInfoList(tenantMapMock, count, "testUser");
 
-    when(mailService.getUserName(userDetails)).thenReturn(testAuthenticatedUser);
-    when(commonUtilsService.getTenantId(testAuthenticatedUser))
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME))
         .thenReturn(authenticatedUserTenantId);
     when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(regUserList);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMapMock);
@@ -1007,9 +1006,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void getNewUserRequestsWithNoRequestsInDBNullPointerException() {
-    String testAuthenticatedUser = "testAuthenticatedUser";
-    when(mailService.getUserName(userDetails)).thenReturn(testAuthenticatedUser);
-    when(commonUtilsService.getTenantId(testAuthenticatedUser)).thenReturn(TEST_TENANT_ID);
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
     when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(null);
 
     assertThatExceptionOfType(NullPointerException.class)
