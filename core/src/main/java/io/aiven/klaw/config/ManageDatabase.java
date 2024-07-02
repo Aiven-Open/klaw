@@ -22,6 +22,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.RolesType;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.DefaultDataService;
 import io.aiven.klaw.service.utils.CacheService;
@@ -454,6 +455,16 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public Map<Integer, String> getTenantMap() {
     return tenantMap;
+  }
+
+  public Map<Integer, UserInfo> getUserInfoMap(RolesType rolesType) {
+    List<UserInfo> userInfoList = handleDbRequests.getAllUsersAllTenants(rolesType);
+    Map<Integer, UserInfo> userInfoMap = new HashMap<>();
+    for (UserInfo info : userInfoList) {
+      userInfoMap.put(info.getTenantId(), info);
+    }
+
+    return userInfoMap;
   }
 
   public Map<Integer, KwClusters> getClusters(KafkaClustersType clusterType, int tenantId) {

@@ -1,6 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static io.aiven.klaw.helpers.KwConstants.*;
+import static io.aiven.klaw.helpers.KwConstants.DATE_DDMMMYYYY_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
@@ -15,6 +15,7 @@ import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.RolesType;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import io.aiven.klaw.service.CommonUtilsService;
@@ -22,7 +23,19 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -1622,6 +1635,10 @@ public class SelectDataJdbc {
 
   public List<UserInfo> selectAllUsersAllTenants() {
     return Lists.newArrayList(userInfoRepo.findAll());
+  }
+
+  public List<UserInfo> selectAllUsersAllTenants(RolesType role) {
+    return Lists.newArrayList(userInfoRepo.findAllByRole(role.name()));
   }
 
   public Optional<ProductDetails> selectProductDetails(String name) {

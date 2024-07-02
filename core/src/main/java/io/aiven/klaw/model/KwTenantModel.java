@@ -1,5 +1,8 @@
 package io.aiven.klaw.model;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
+import io.aiven.klaw.dao.KwTenants;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -38,4 +41,11 @@ public class KwTenantModel implements Serializable {
   private boolean isActiveTenant = true;
 
   private boolean authorizedToDelete;
+
+  public KwTenantModel() {}
+
+  public KwTenantModel(KwTenants tenant) {
+    copyProperties(tenant, this);
+    isActiveTenant = Boolean.parseBoolean(tenant.getIsActive());
+  }
 }
