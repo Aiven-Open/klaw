@@ -322,7 +322,7 @@ public class EnvsClustersTenantsControllerService {
                               env.getClusterName(),
                               env.getOtherParams(),
                               env.getTenantName())
-                          .filter(s -> s != null)
+                          .filter(Objects::nonNull)
                           .map(String::toLowerCase)
                           .anyMatch(s -> s.contains(searchEnvParam.toLowerCase())))
               .collect(toList());
