@@ -7,6 +7,7 @@ import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.EnvParams;
@@ -45,6 +46,18 @@ public class MockMethods {
     UserInfoModel userInfoModel = new UserInfoModel();
     userInfoModel.setUsername(username);
     userInfoModel.setUserPassword("userpass");
+    userInfoModel.setRole(role);
+    userInfoModel.setTeamId(1001);
+    userInfoModel.setFullname("New User");
+    userInfoModel.setMailid("test@test.com");
+
+    return userInfoModel;
+  }
+
+  public RegisterUserInfoModel getRegisterUserInfoModel(String username, String role) {
+    RegisterUserInfoModel userInfoModel = new RegisterUserInfoModel();
+    userInfoModel.setUsername(username);
+    userInfoModel.setPwd("testpwd");
     userInfoModel.setRole(role);
     userInfoModel.setTeamId(1001);
     userInfoModel.setFullname("New User");

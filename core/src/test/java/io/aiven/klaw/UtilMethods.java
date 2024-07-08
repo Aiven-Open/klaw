@@ -12,6 +12,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
@@ -37,6 +38,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
@@ -172,6 +174,20 @@ public class UtilMethods {
     return userInfoList;
   }
 
+  public List<UserInfo> getUserInfoList(int count, String usernamePrefix) {
+    List<UserInfo> userInfoList = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      UserInfo userInfo = new UserInfo();
+      userInfo.setTeamId(i % 2);
+      userInfo.setSwitchAllowedTeamIds(Set.of((i + 1) % 2));
+      userInfo.setSwitchTeams(true);
+      userInfo.setUsername(usernamePrefix + i);
+      userInfoList.add(userInfo);
+    }
+
+    return userInfoList;
+  }
+
   public List<UserInfoModelResponse> getUserInfoListModel(String username, String role) {
     List<UserInfoModelResponse> userInfoList = new ArrayList<>();
     UserInfoModelResponse userInfo = new UserInfoModelResponse();
@@ -179,6 +195,37 @@ public class UtilMethods {
     userInfo.setUsername(username);
     userInfo.setRole(role);
     userInfoList.add(userInfo);
+
+    return userInfoList;
+  }
+
+  public RegisterUserInfo getRegisterUserInfoMock(String newUserName, String pwd) {
+    RegisterUserInfo regUser = new RegisterUserInfo();
+    regUser.setUsername(newUserName);
+    regUser.setFullname("John Doe");
+    regUser.setStatus(NewUserStatus.PENDING.value);
+    regUser.setPwd(pwd);
+    regUser.setMailid("mail@mail.com");
+    regUser.setTeamId(TEST_TENANT_ID + 1);
+    regUser.setTenantId(TEST_TENANT_ID);
+    regUser.setRole("USER");
+    return regUser;
+  }
+
+  public List<RegisterUserInfo> getRegisterUserInfoList(
+      Map<Integer, String> tenantMapMock, int count, String usernamePrefix) {
+    List<RegisterUserInfo> userInfoList = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      RegisterUserInfo userInfo = new RegisterUserInfo();
+      userInfo.setTeamId(i + 1);
+      userInfo.setUsername(usernamePrefix + i);
+      userInfo.setMailid(String.format("%s@mail.com", userInfo.getUsername()));
+      userInfo.setStatus(NewUserStatus.PENDING.value);
+      userInfo.setTenantId(i + count);
+      userInfoList.add(userInfo);
+
+      tenantMapMock.put(userInfo.getTenantId(), String.format("tenant%s", userInfo.getTenantId()));
+    }
 
     return userInfoList;
   }

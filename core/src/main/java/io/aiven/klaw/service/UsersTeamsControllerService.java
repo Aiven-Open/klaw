@@ -53,6 +53,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -620,7 +621,8 @@ public class UsersTeamsControllerService {
 
       if (isExternal) {
 
-        if ("".equals(newUser.getUserPassword())) {
+        if ("".equals(newUser.getUserPassword())
+            || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
           mailService.sendMail(
               newUser.getUsername(),
               newUser.getUserPassword(),
@@ -645,7 +647,7 @@ public class UsersTeamsControllerService {
       } catch (Exception e1) {
         log.error("Try deleting user");
       }
-      if (e.getMessage().contains("should not exist")) {
+      if (StringUtils.isNotBlank(e.getMessage()) && e.getMessage().contains("should not exist")) {
         return ApiResponse.notOk(TEAMS_ERR_110);
       } else {
         log.error("Error ", e);

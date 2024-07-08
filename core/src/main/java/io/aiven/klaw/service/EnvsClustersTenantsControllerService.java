@@ -193,7 +193,7 @@ public class EnvsClustersTenantsControllerService {
                               model.getClusterName(),
                               model.getBootstrapServers(),
                               model.getProtocol().getName())
-                          .filter(s -> s != null)
+                          .filter(Objects::nonNull)
                           .map(String::toLowerCase)
                           .anyMatch(s -> s.contains(searchClusterParam.toLowerCase())))
               .sorted(Comparator.comparingInt(KwClustersModelResponse::getClusterId))
@@ -322,7 +322,7 @@ public class EnvsClustersTenantsControllerService {
                               env.getClusterName(),
                               env.getOtherParams(),
                               env.getTenantName())
-                          .filter(s -> s != null)
+                          .filter(Objects::nonNull)
                           .map(String::toLowerCase)
                           .anyMatch(s -> s.contains(searchEnvParam.toLowerCase())))
               .collect(toList());

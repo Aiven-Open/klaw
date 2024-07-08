@@ -813,7 +813,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -826,7 +825,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -839,7 +837,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -852,7 +849,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -885,7 +881,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -898,7 +893,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -911,7 +905,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -924,7 +917,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -957,7 +949,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -970,7 +961,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -983,7 +973,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -996,7 +985,6 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ApiResponse"
                   }
@@ -5872,9 +5860,7 @@
           "debugMessage" : {
             "type" : "string"
           },
-          "data" : {
-            "type" : "object"
-          },
+          "data" : { },
           "timestamp" : {
             "type" : "string",
             "format" : "date-time"
@@ -6130,9 +6116,7 @@
           },
           "topicDetails" : {
             "type" : "array",
-            "items" : {
-              "type" : "object"
-            }
+            "items" : { }
           },
           "topicSearchFilter" : {
             "type" : "string"
@@ -6927,15 +6911,13 @@
           "acl_ip" : {
             "type" : "array",
             "items" : {
-              "type" : "string",
-              "pattern" : "^$|^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$"
+              "type" : "string"
             }
           },
           "acl_ssl" : {
             "type" : "array",
             "items" : {
-              "type" : "string",
-              "pattern" : "^$|^[a-zA-Z 0-9_.,=-]{3,}$"
+              "type" : "string"
             }
           },
           "aclPatternType" : {
