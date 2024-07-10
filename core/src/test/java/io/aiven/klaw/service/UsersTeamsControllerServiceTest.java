@@ -3,9 +3,11 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_120;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,9 +25,11 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawErrorMessages;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.KwConstants;
@@ -36,6 +41,7 @@ import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
@@ -109,6 +115,7 @@ public class UsersTeamsControllerServiceTest {
   private ArgumentCaptor<Team> teamCaptor;
   private ArgumentCaptor<UserDetails> userDetailsArgCaptor;
   private ArgumentCaptor<UserInfo> userInfoArgCaptor;
+  private ArgumentCaptor<String> stringArgCaptor;
 
   @BeforeEach
   public void setUp() {
@@ -117,6 +124,7 @@ public class UsersTeamsControllerServiceTest {
     teamCaptor = ArgumentCaptor.forClass(Team.class);
     userDetailsArgCaptor = ArgumentCaptor.forClass(UserDetails.class);
     userInfoArgCaptor = ArgumentCaptor.forClass(UserInfo.class);
+    stringArgCaptor = ArgumentCaptor.forClass(String.class);
     testNewRegUser =
         utilMethods.getRegisterUserInfoMock(
             TEST_NEW_USER_UNAME, encodePwd(TEST_NEW_USER_PWD_PLAIN_TEXT));
@@ -336,47 +344,301 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void resetPassword() {}
+  public void getAllTeamsSUFromRegisterUsers() {
+    Team team = utilMethods.getTeamDaoMock();
+    List<Env> envs = utilMethods.getEnvLists();
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
 
-  @Test
-  public void getAllTeamsSUFromRegisterUsers() {}
+    getAllTeamsSUFromRegisteredUsersSetupTest(List.of(team), envs, tenantMap);
 
-  @Test
-  public void getAllTeamsSU() {}
+    List<TeamModelResponse> teamModelResponses =
+        usersTeamsControllerService.getAllTeamsSUFromRegisterUsers();
 
-  @Test
-  public void getAllTeamsSUOnly() {
-    int teamId = 101;
-    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(mailService.getUserName(any())).thenReturn("testuser");
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
-    when(manageDatabase.getTeamObjForTenant(TEST_TENANT_ID)).thenReturn(utilMethods.getTeams());
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
-        .thenReturn(false);
-    when(handleDbRequests.existsComponentsCountForTeam(teamId, TEST_TENANT_ID)).thenReturn(false);
-    when(handleDbRequests.existsUsersInfoForTeam(teamId, TEST_TENANT_ID)).thenReturn(false);
-    List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
-    assertThat(teams.get(0).isShowDeleteTeam()).isTrue();
+    assertThat(teamModelResponses.size()).isEqualTo(1);
+    TeamModelResponse teamModelResponse = teamModelResponses.get(0);
 
-    when(handleDbRequests.existsComponentsCountForTeam(teamId, TEST_TENANT_ID)).thenReturn(true);
-    teams = usersTeamsControllerService.getAllTeamsSU();
-    assertThat(teams.get(0).isShowDeleteTeam()).isFalse();
+    getAllTeamsSUFromRegisteredUsersVerifyResponse(teamModelResponse, team, envs);
+    verify(manageDatabase, times(3)).getKafkaEnvList(TEST_TENANT_ID);
   }
 
   @Test
-  public void deleteTeamFailure() throws KlawException {
-    int teamId = 101;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
-        .thenReturn(false);
-    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
-    when(mailService.getUserName(any())).thenReturn("testuser");
-    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
-        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
-    when(handleDbRequests.existsUsersInfoForTeam(teamId, TEST_TENANT_ID)).thenReturn(true);
-    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
-    assertThat(apiResponse.getMessage())
-        .isEqualTo("Not allowed to delete this team, as there are associated users.");
+  public void getAllTeamsSUFromRegisterUsersNoEnvs() {
+    Team team = utilMethods.getTeamDaoMock();
+    team.setRequestTopicsEnvs(null);
+
+    List<Env> envs = utilMethods.getEnvLists();
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+
+    getAllTeamsSUFromRegisteredUsersSetupTest(List.of(team), envs, tenantMap);
+
+    List<TeamModelResponse> teamModelResponses =
+        usersTeamsControllerService.getAllTeamsSUFromRegisterUsers();
+
+    assertThat(teamModelResponses.size()).isEqualTo(1);
+    TeamModelResponse teamModelResponse = teamModelResponses.get(0);
+
+    getAllTeamsSUFromRegisteredUsersVerifyResponse(teamModelResponse, team, null);
+    verify(manageDatabase, never()).getKafkaEnvList(anyInt());
+  }
+
+  @Test
+  public void getAllTeamsSUFromRegisterUsersEnvInvalidForTenant() {
+    List<Team> teams = utilMethods.getTeamsForTenant();
+    teams.get(0).setRequestTopicsEnvs("1, X, 3");
+    teams.get(1).setRequestTopicsEnvs("X, 1, 2");
+    teams.get(2).setRequestTopicsEnvs("1, 2, X");
+
+    List<Env> envs = utilMethods.getEnvLists();
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+
+    getAllTeamsSUFromRegisteredUsersSetupTest(teams, envs, tenantMap);
+
+    List<TeamModelResponse> teamModelResponses =
+        usersTeamsControllerService.getAllTeamsSUFromRegisterUsers();
+
+    assertThat(teamModelResponses.size()).isEqualTo(3);
+
+    getAllTeamsSUFromRegisteredUsersVerifyResponse(
+        teamModelResponses.get(0), teams.get(0), List.of(envs.get(0)));
+    getAllTeamsSUFromRegisteredUsersVerifyResponse(
+        teamModelResponses.get(1), teams.get(1), Collections.emptyList());
+    getAllTeamsSUFromRegisteredUsersVerifyResponse(
+        teamModelResponses.get(2), teams.get(2), List.of(envs.get(0), envs.get(1)));
+
+    verify(manageDatabase, times(6)).getKafkaEnvList(TEST_TENANT_ID);
+  }
+
+  @Test
+  public void getAllTeamsSUFromRegisterUsersNoUsersForTenant() {
+    getAllTeamsSUFromRegisteredUsersSetupTest(
+        Collections.emptyList(), utilMethods.getEnvLists(), utilMethods.getTenantMapMock());
+
+    List<TeamModelResponse> teamModelResponses =
+        usersTeamsControllerService.getAllTeamsSUFromRegisterUsers();
+
+    assertThat(teamModelResponses.size()).isEqualTo(0);
+    verify(manageDatabase, never()).getKafkaEnvList(anyInt());
+  }
+
+  @Test
+  public void getAllTeamsSUOnlyWhenNoMatchingTeamName() {
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+    List<Team> teamsForTenant = utilMethods.getTeamsForTenant();
+    List<Team> teamsForUser = List.of(utilMethods.getTeamDaoMock());
+    teamsForUser.get(0).setTeamname("diffName");
+    List<UserInfo> userInfoList = utilMethods.getUserInfoList(1, "testUser");
+
+    getAllTeamsSUSetupTest(teamsForTenant, userInfoList, tenantMap, false);
+    when(handleDbRequests.getAllTeamsOfUsers(TEST_AUTHENTICATED_USER_UNAME, TEST_TENANT_ID))
+        .thenReturn(teamsForUser);
+
+    List<String> resultTeamNames = usersTeamsControllerService.getAllTeamsSUOnly();
+
+    assertThat(resultTeamNames.size()).isEqualTo(teamsForTenant.size() + teamsForUser.size() + 1);
+    assertThat(resultTeamNames.get(0)).isEqualTo("All teams");
+    assertThat(resultTeamNames.get(1)).isEqualTo(teamsForUser.get(0).getTeamname());
+    for (int i = 0; i < teamsForTenant.size(); i++) {
+      assertThat(resultTeamNames.get(i + 2)).isEqualTo(teamsForTenant.get(i).getTeamname());
+    }
+  }
+
+  @Test
+  public void getAllTeamsSUOnlyWhenMatchingTeamName() {
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+    List<Team> teamsForTenant = utilMethods.getTeamsForTenant();
+    List<Team> teamsForUser = List.of(utilMethods.getTeamDaoMock());
+    List<UserInfo> userInfoList = utilMethods.getUserInfoList(1, "testUser");
+
+    getAllTeamsSUSetupTest(teamsForTenant, userInfoList, tenantMap, false);
+    when(handleDbRequests.getAllTeamsOfUsers(TEST_AUTHENTICATED_USER_UNAME, TEST_TENANT_ID))
+        .thenReturn(teamsForUser);
+
+    List<String> resultTeamNames = usersTeamsControllerService.getAllTeamsSUOnly();
+
+    assertThat(resultTeamNames.size()).isEqualTo(teamsForTenant.size() + teamsForUser.size());
+    assertThat(resultTeamNames.get(0)).isEqualTo("All teams");
+    for (int i = 0; i < teamsForTenant.size(); i++) {
+      assertThat(resultTeamNames.get(i + 1)).isEqualTo(teamsForTenant.get(i).getTeamname());
+    }
+  }
+
+  @Test
+  public void getAllTeamsSUMultipleTeams() {
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+    List<Team> teamList = utilMethods.getTeamsForTenant();
+    List<UserInfo> userInfoList = utilMethods.getUserInfoList(1, "testUser");
+    userInfoList.get(0).setSwitchAllowedTeamIds(Set.of(Integer.MAX_VALUE));
+
+    getAllTeamsSUSetupTest(teamList, userInfoList, tenantMap, false);
+
+    for (Team team : teamList) {
+      when(handleDbRequests.existsComponentsCountForTeam(team.getTeamId(), TEST_TENANT_ID))
+          .thenReturn(false);
+      when(handleDbRequests.existsUsersInfoForTeam(team.getTeamId(), TEST_TENANT_ID))
+          .thenReturn(false);
+    }
+
+    List<TeamModelResponse> teamModelResponses = usersTeamsControllerService.getAllTeamsSU();
+
+    assertThat(teamModelResponses.size()).isEqualTo(teamList.size());
+    getAllTeamSUVerifyResponse(teamModelResponses, teamList, tenantMap);
+
+    for (TeamModelResponse teamModelResponse : teamModelResponses) {
+      assertThat(teamModelResponse.isShowDeleteTeam()).isTrue();
+    }
+
+    verify(handleDbRequests, times(3)).existsComponentsCountForTeam(anyInt(), anyInt());
+    verify(handleDbRequests, times(3)).existsUsersInfoForTeam(anyInt(), anyInt());
+  }
+
+  @Test
+  public void getAllTeamsSUNoTeams() {
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+    List<UserInfo> userInfoList = utilMethods.getUserInfoList(1, "testUser");
+
+    getAllTeamsSUSetupTest(Collections.emptyList(), userInfoList, tenantMap, false);
+
+    List<TeamModelResponse> teamModelResponses = usersTeamsControllerService.getAllTeamsSU();
+
+    assertThat(teamModelResponses).isEmpty();
+    verify(handleDbRequests, never()).existsComponentsCountForTeam(anyInt(), anyInt());
+    verify(handleDbRequests, never()).existsUsersInfoForTeam(anyInt(), anyInt());
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void getAllTeamsSUShowDeleteTeam(
+      boolean existComponentsCountForTeam,
+      boolean existUsersInfoForTeam,
+      boolean switchAllowedTeamMatch,
+      boolean unAuthorizedUser) {
+    Map<Integer, String> tenantMap = utilMethods.getTenantMapMock();
+    List<Team> teamList = utilMethods.getTeams();
+    teamList.get(0).setTeamId(TEST_TEAM_ID);
+
+    List<UserInfo> userInfoList = utilMethods.getUserInfoList(1, "testUser");
+    if (switchAllowedTeamMatch) {
+      userInfoList.get(0).setSwitchAllowedTeamIds(Set.of(TEST_TEAM_ID));
+    } else {
+      userInfoList.get(0).setSwitchAllowedTeamIds(Set.of(TEST_TEAM_ID + 1));
+    }
+
+    getAllTeamsSUSetupTest(teamList, userInfoList, tenantMap, unAuthorizedUser);
+    when(handleDbRequests.existsComponentsCountForTeam(TEST_TEAM_ID, TEST_TENANT_ID))
+        .thenReturn(existComponentsCountForTeam);
+    when(handleDbRequests.existsUsersInfoForTeam(TEST_TEAM_ID, TEST_TENANT_ID))
+        .thenReturn(existUsersInfoForTeam);
+
+    List<TeamModelResponse> teamModelResponses = usersTeamsControllerService.getAllTeamsSU();
+
+    assertThat(teamModelResponses.size()).isEqualTo(1);
+    getAllTeamSUVerifyResponse(teamModelResponses, teamList, tenantMap);
+
+    if (!unAuthorizedUser) {
+      if (existComponentsCountForTeam || existUsersInfoForTeam || switchAllowedTeamMatch) {
+        assertThat(teamModelResponses.get(0).isShowDeleteTeam()).isFalse();
+      } else {
+        assertThat(teamModelResponses.get(0).isShowDeleteTeam()).isTrue();
+      }
+    } else {
+      assertThat(teamModelResponses.get(0).isShowDeleteTeam()).isFalse();
+      verify(handleDbRequests, never()).existsComponentsCountForTeam(anyInt(), anyInt());
+      verify(handleDbRequests, never()).existsUsersInfoForTeam(anyInt(), anyInt());
+    }
+  }
+
+  public static Stream<Arguments> getAllTeamsSUShowDeleteTeam() {
+    return Stream.of(
+        Arguments.of(false, false, false, false),
+        Arguments.of(true, false, false, false),
+        Arguments.of(false, true, false, false),
+        Arguments.of(false, false, true, false),
+        Arguments.of(false, false, false, true));
+  }
+
+  @Test
+  public void deleteTeamSuccess() throws KlawException {
+    deleteTeamSetup(ApiResultStatus.SUCCESS, false, false, false, false, TEST_TEAM_ID + 1);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+    verify(commonUtilsService)
+        .updateMetadata(TEST_TENANT_ID, EntityType.TEAM, MetadataOperationType.DELETE, null);
+  }
+
+  @Test
+  public void deleteTeamFailureUnAuthorizedUser() throws KlawException {
+    deleteTeamSetup(null, true, false, false, false, Integer.MAX_VALUE);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.NOT_AUTHORIZED.getMessage());
+    verifyNoInteractions(manageDatabase);
+    verifyNoInteractions(handleDbRequests);
+    verify(commonUtilsService, never()).getTenantId(anyString());
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void deleteTeamFailureUserInfoForTeamExists() throws KlawException {
+    deleteTeamSetup(null, false, true, false, false, TEST_TEAM_ID);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(KlawErrorMessages.TEAMS_ERR_103);
+    verify(handleDbRequests, never()).existsComponentsCountForTeam(anyInt(), anyInt());
+    verify(handleDbRequests, never()).deleteTeamRequest(anyInt(), anyInt());
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void deleteTeamFailureComponentCountForTeamExists() throws KlawException {
+    deleteTeamSetup(null, false, false, true, false, TEST_TEAM_ID);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(KlawErrorMessages.TEAMS_ERR_104);
+    verify(handleDbRequests, never()).deleteTeamRequest(anyInt(), anyInt());
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void deleteTeamFailureDeletingOwnTeam() throws KlawException {
+    deleteTeamSetup(null, false, false, false, false, TEST_TEAM_ID);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(KlawErrorMessages.TEAMS_ERR_105);
+    verify(handleDbRequests, never()).deleteTeamRequest(anyInt(), anyInt());
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void deleteTeamFailureDbApi() throws KlawException {
+    deleteTeamSetup(ApiResultStatus.FAILURE, false, false, false, false, TEST_TEAM_ID + 1);
+
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(TEST_TEAM_ID);
+
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void deleteTeamFailureDbException() {
+    deleteTeamSetup(null, false, false, false, true, TEST_TEAM_ID + 1);
+
+    assertThatExceptionOfType(KlawException.class)
+        .isThrownBy(() -> usersTeamsControllerService.deleteTeam(TEST_TEAM_ID))
+        .withMessage("Db exception");
+
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
   }
 
   @Test
@@ -550,10 +812,139 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void updateTeam() {}
+  public void updateTeamSuccess() throws KlawException {
+    TeamModel teamModel = updateTeamSetupTest("newTeamName", ApiResultStatus.SUCCESS);
+
+    ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
+
+    updateTeamVerifySuccess(apiResponse, teamModel, true);
+  }
 
   @Test
-  public void changePwd() {}
+  public void updateTeamSuccessWhenNoEnvList() throws KlawException {
+    TeamModel teamModel = updateTeamSetupTest("newTeamName", ApiResultStatus.SUCCESS);
+    teamModel.setEnvList(null);
+
+    ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
+
+    updateTeamVerifySuccess(apiResponse, teamModel, false);
+  }
+
+  @Test
+  public void updateTeamWhenUnAuthorizedUser() throws KlawException {
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_TEAMS))
+        .thenReturn(true);
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+
+    ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
+
+    assertThat(apiResponse).isSameAs(ApiResponse.NOT_AUTHORIZED);
+    verifyNoInteractions(manageDatabase);
+    verifyNoInteractions(handleDbRequests);
+  }
+
+  @Test
+  public void updateTeamWhenTeamNameExists() throws KlawException {
+    TeamModel teamModel = updateTeamSetupTest("Seahorses", ApiResultStatus.SUCCESS);
+
+    ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_119);
+    assertThat(apiResponse.isSuccess()).isFalse();
+    verifyNoInteractions(handleDbRequests);
+  }
+
+  @Test
+  public void updateTeamWhenDBApiError() throws KlawException {
+    TeamModel teamModel = updateTeamSetupTest("newTeamName", ApiResultStatus.FAILURE);
+
+    ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.FAILURE.getMessage());
+    assertThat(apiResponse.isSuccess()).isFalse();
+    verify(commonUtilsService)
+        .updateMetadata(TEST_TENANT_ID, EntityType.TEAM, MetadataOperationType.UPDATE, null);
+
+    updateTeamVerifyCapturedTeam(teamModel, true);
+  }
+
+  @Test
+  public void updateTeamWhenDBExceptionError() {
+    TeamModel teamModel = updateTeamSetupTest("newTeamName", null);
+
+    assertThatExceptionOfType(KlawException.class)
+        .isThrownBy(() -> usersTeamsControllerService.updateTeam(teamModel))
+        .withMessage("DB Error");
+
+    verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
+  }
+
+  @Test
+  public void changePwd() throws KlawException {
+    UserDetails updatePwdUserDetails = mock(UserDetails.class);
+    ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
+    changePwdSetupTest(updatePwdUserDetails, ApiResultStatus.SUCCESS);
+
+    ApiResponse apiResponse = usersTeamsControllerService.changePwd(changePwdRequestModel);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    changePwdEncodedParams(updatePwdUserDetails, changePwdRequestModel);
+  }
+
+  @Test
+  public void changePwdWhenDbApiFailure() throws KlawException {
+    UserDetails updatePwdUserDetails = mock(UserDetails.class);
+    ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
+    changePwdSetupTest(updatePwdUserDetails, ApiResultStatus.FAILURE);
+
+    ApiResponse apiResponse = usersTeamsControllerService.changePwd(changePwdRequestModel);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThat(apiResponse.isSuccess()).isFalse();
+
+    changePwdEncodedParams(updatePwdUserDetails, changePwdRequestModel);
+  }
+
+  @Test
+  public void changePwdWhenDbExceptionFailure() {
+    changePwdSetupTest(mock(UserDetails.class), null);
+
+    assertThatExceptionOfType(KlawException.class)
+        .isThrownBy(
+            () -> usersTeamsControllerService.changePwd(utilMethods.getChangePwdRequestModelMock()))
+        .withMessage("DB Error");
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void changePwdWhenNonDBAuth(AuthenticationType authType) throws KlawException {
+    ReflectionTestUtils.setField(usersTeamsControllerService, "authenticationType", authType.value);
+
+    ApiResponse apiResponse = usersTeamsControllerService.changePwd(null);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_114);
+    assertThat(apiResponse.isSuccess()).isFalse();
+    changePwdVerifyNoInteractionsWithAnyServices();
+  }
+
+  public static Stream<Arguments> changePwdWhenNonDBAuth() {
+    return Stream.of(
+        Arguments.of(AuthenticationType.LDAP), Arguments.of(AuthenticationType.ACTIVE_DIRECTORY));
+  }
+
+  @Test
+  public void changePwdWhenWhenRepeatPwdDoesNotMatch() throws KlawException {
+    ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
+    changePwdRequestModel.setRepeatPwd(String.format("%s%s", changePwdRequestModel.getPwd(), "1"));
+
+    ApiResponse apiResponse = usersTeamsControllerService.changePwd(changePwdRequestModel);
+
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_120);
+    assertThat(apiResponse.isSuccess()).isFalse();
+    changePwdVerifyNoInteractionsWithAnyServices();
+  }
 
   @Test
   public void showUsersWithNoFilterAndSwitchEnabled() {
@@ -1291,9 +1682,6 @@ public class UsersTeamsControllerServiceTest {
     assertThat(response).isNull();
   }
 
-  @Test
-  public void getEnvDetailsFromId() {}
-
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -1589,5 +1977,173 @@ public class UsersTeamsControllerServiceTest {
             PasswordEncoderFactories.createDelegatingPasswordEncoder()
                 .matches(TEST_NEW_USER_PWD_PLAIN_TEXT, capturedUserDetails.getPassword()))
         .isTrue();
+  }
+
+  private TeamModel updateTeamSetupTest(String teamName, ApiResultStatus dbResultStatus) {
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
+    when(manageDatabase.getTeamObjForTenant(TEST_TENANT_ID)).thenReturn(utilMethods.getTeams());
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_TEAMS))
+        .thenReturn(false);
+    if (dbResultStatus != null) {
+      when(handleDbRequests.updateTeam(teamCaptor.capture())).thenReturn(dbResultStatus.value);
+    } else {
+      doThrow(new RuntimeException("DB Error")).when(handleDbRequests).updateTeam(any());
+    }
+    TeamModel teamModel = utilMethods.getTeamModelMock();
+    teamModel.setTeamname(teamName);
+    return teamModel;
+  }
+
+  private void updateTeamVerifySuccess(
+      ApiResponse apiResponse, TeamModel requestModel, boolean withEnvList) {
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+    assertThat(apiResponse.isSuccess()).isTrue();
+    verify(commonUtilsService)
+        .updateMetadata(TEST_TENANT_ID, EntityType.TEAM, MetadataOperationType.UPDATE, null);
+    updateTeamVerifyCapturedTeam(requestModel, withEnvList);
+  }
+
+  private void updateTeamVerifyCapturedTeam(TeamModel requestModel, boolean withEnvList) {
+    Team team = teamCaptor.getValue();
+    assertThat(team.getTeamname()).isEqualTo(requestModel.getTeamname());
+    assertThat(team.getContactperson()).isEqualTo(requestModel.getContactperson());
+    assertThat(team.getTeamphone()).isEqualTo(requestModel.getTeamphone());
+    assertThat(team.getTenantId()).isEqualTo(requestModel.getTenantId());
+    assertThat(team.getTeamId()).isEqualTo(requestModel.getTeamId());
+
+    if (withEnvList) {
+      assertThat(team.getRequestTopicsEnvs())
+          .isEqualTo(String.join(",", requestModel.getEnvList().toArray(new String[0])));
+    } else {
+      assertThat(team.getRequestTopicsEnvs()).isNull();
+    }
+  }
+
+  private void changePwdEncodedParams(
+      UserDetails updatePwdUserDetails, ChangePasswordRequestModel changePwdRequestModel) {
+    verify(inMemoryUserDetailsManager)
+        .updatePassword(userDetailsArgCaptor.capture(), stringArgCaptor.capture());
+    verify(handleDbRequests)
+        .updatePassword(eq(TEST_AUTHENTICATED_USER_UNAME), stringArgCaptor.capture());
+
+    assertThat(userDetailsArgCaptor.getValue()).isSameAs(updatePwdUserDetails);
+
+    assertThat(
+            PasswordEncoderFactories.createDelegatingPasswordEncoder()
+                .matches(changePwdRequestModel.getPwd(), stringArgCaptor.getAllValues().get(0)))
+        .isTrue();
+    assertThat(decodePwd(stringArgCaptor.getAllValues().get(1)))
+        .isEqualTo(changePwdRequestModel.getPwd());
+  }
+
+  private void changePwdSetupTest(UserDetails updatePwdUserDetails, ApiResultStatus dbApiResult) {
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(inMemoryUserDetailsManager.loadUserByUsername(TEST_AUTHENTICATED_USER_UNAME))
+        .thenReturn(updatePwdUserDetails);
+    if (dbApiResult != null) {
+      when(handleDbRequests.updatePassword(eq(TEST_AUTHENTICATED_USER_UNAME), anyString()))
+          .thenReturn(dbApiResult.value);
+    } else {
+      when(handleDbRequests.updatePassword(eq(TEST_AUTHENTICATED_USER_UNAME), anyString()))
+          .thenThrow(new RuntimeException("DB Error"));
+    }
+  }
+
+  private void changePwdVerifyNoInteractionsWithAnyServices() {
+    verifyNoInteractions(inMemoryUserDetailsManager);
+    verifyNoInteractions(manageDatabase);
+    verifyNoInteractions(handleDbRequests);
+    verifyNoInteractions(mailService);
+  }
+
+  private void getAllTeamsSUFromRegisteredUsersSetupTest(
+      List<Team> teams, List<Env> envs, Map<Integer, String> tenantMap) {
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.getAllTeams(TEST_TENANT_ID)).thenReturn(teams);
+    when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
+    when(manageDatabase.getKafkaEnvList(TEST_TENANT_ID)).thenReturn(envs);
+  }
+
+  private void getAllTeamsSUFromRegisteredUsersVerifyResponse(
+      TeamModelResponse teamModelResponse, Team team, List<Env> envs) {
+    assertThat(teamModelResponse.getTeamname()).isEqualTo(team.getTeamname());
+    assertThat(teamModelResponse.getTeamId()).isEqualTo(team.getTeamId());
+    assertThat(teamModelResponse.getContactperson()).isEqualTo(team.getContactperson());
+    assertThat(teamModelResponse.getTenantId()).isEqualTo(team.getTenantId());
+    assertThat(teamModelResponse.getTeamphone()).isEqualTo(team.getTeamphone());
+    assertThat(teamModelResponse.getTeammail()).isEqualTo(team.getTeammail());
+    assertThat(teamModelResponse.getApp()).isEqualTo(team.getApp());
+    assertThat(teamModelResponse.getServiceAccounts()).isEqualTo(team.getServiceAccounts());
+
+    if (envs != null) {
+      assertThat(teamModelResponse.getEnvList().size()).isEqualTo(envs.size());
+      for (int i = 0; i < teamModelResponse.getEnvList().size(); i++) {
+        assertThat(teamModelResponse.getEnvList().get(i)).isEqualTo(envs.get(i).getName());
+      }
+    } else {
+      assertThat(teamModelResponse.getEnvList().size()).isEqualTo(1);
+      assertThat(teamModelResponse.getEnvList().get(0)).isEqualTo("ALL");
+    }
+  }
+
+  private void getAllTeamsSUSetupTest(
+      List<Team> teamList,
+      List<UserInfo> userInfoList,
+      Map<Integer, String> tenantMap,
+      boolean userUnAuthorized) {
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
+    when(manageDatabase.getTeamObjForTenant(TEST_TENANT_ID)).thenReturn(teamList);
+    when(commonUtilsService.isNotAuthorizedUser(
+            TEST_AUTHENTICATED_USER_UNAME, PermissionType.ADD_EDIT_DELETE_TEAMS))
+        .thenReturn(userUnAuthorized);
+    when(handleDbRequests.getAllUsersInfo(TEST_TENANT_ID)).thenReturn(userInfoList);
+    when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
+  }
+
+  private void getAllTeamSUVerifyResponse(
+      List<TeamModelResponse> teamModelResponses,
+      List<Team> teams,
+      Map<Integer, String> tenantMap) {
+    for (int i = 0; i < teamModelResponses.size(); i++) {
+      TeamModelResponse teamModelResponse = teamModelResponses.get(i);
+      Team team = teams.get(i);
+      assertThat(teamModelResponse.getTeamId()).isEqualTo(team.getTeamId());
+      assertThat(teamModelResponse.getTeamname()).isEqualTo(team.getTeamname());
+      assertThat(teamModelResponse.getTeamphone()).isEqualTo(team.getTeamphone());
+      assertThat(teamModelResponse.getContactperson()).isEqualTo(team.getContactperson());
+      assertThat(teamModelResponse.getTenantId()).isEqualTo(team.getTenantId());
+      assertThat(teamModelResponse.getTenantName()).isEqualTo(tenantMap.get(team.getTenantId()));
+      assertThat(teamModelResponse.getTeammail()).isEqualTo(team.getTeammail());
+      assertThat(teamModelResponse.getServiceAccounts()).isEqualTo(team.getServiceAccounts());
+    }
+  }
+
+  private void deleteTeamSetup(
+      ApiResultStatus dbApiResult,
+      boolean unAuthorizedUser,
+      boolean userInfoForTeamExists,
+      boolean componentsCountForTeamExists,
+      boolean dbFailureException,
+      int userTeamId) {
+    when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_TEAMS))
+        .thenReturn(unAuthorizedUser);
+    when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
+    when(handleDbRequests.existsUsersInfoForTeam(TEST_TEAM_ID, TEST_TENANT_ID))
+        .thenReturn(userInfoForTeamExists);
+    when(handleDbRequests.existsComponentsCountForTeam(TEST_TEAM_ID, TEST_TENANT_ID))
+        .thenReturn(componentsCountForTeamExists);
+    when(commonUtilsService.getTeamId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(userTeamId);
+    if (dbFailureException) {
+      doThrow(new RuntimeException("Db exception"))
+          .when(handleDbRequests)
+          .deleteTeamRequest(TEST_TEAM_ID, TEST_TENANT_ID);
+    } else {
+      when(handleDbRequests.deleteTeamRequest(TEST_TEAM_ID, TEST_TENANT_ID))
+          .thenReturn(dbApiResult != null ? dbApiResult.value : null);
+    }
   }
 }
