@@ -3,13 +3,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.OperationalRequestType;
-import io.aiven.klaw.model.enums.OrderBy;
-import io.aiven.klaw.model.enums.RequestMode;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
@@ -634,6 +628,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<UserInfo> getAllUsersInfo(int tenantId) {
     return jdbcSelectHelper.selectAllUsersInfo(tenantId);
+  }
+
+  @Override
+  public List<UserInfo> getAllUsersAllTenants(RolesType role) {
+    return jdbcSelectHelper.selectAllUsersAllTenants(role);
   }
 
   @Override
