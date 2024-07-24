@@ -2,13 +2,7 @@ package io.aiven.klaw.helpers;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
-import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.OperationalRequestType;
-import io.aiven.klaw.model.enums.OrderBy;
-import io.aiven.klaw.model.enums.RequestMode;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.*;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.service.CommonUtilsService;
 import java.util.List;
@@ -288,6 +282,8 @@ public interface HandleDbRequests {
   List<UserInfo> getAllUsersInfo(int tenantId);
 
   List<UserInfo> getAllUsersAllTenants();
+
+  List<UserInfo> getAllUsersAllTenants(RolesType role);
 
   List<UserInfo> getAllUsersInfoForTeam(Integer teamId, int tenantId);
 

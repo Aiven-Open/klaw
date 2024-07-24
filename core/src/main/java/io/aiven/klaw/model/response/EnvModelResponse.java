@@ -1,12 +1,15 @@
 package io.aiven.klaw.model.response;
 
 import io.aiven.klaw.dao.EnvTag;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -54,5 +57,15 @@ public class EnvModelResponse implements Serializable {
 
   public void setClusterType(KafkaClustersType type) {
     this.type = type.value;
+  }
+
+  public EnvModelResponse loadPageContext(Pager.PageContext context) {
+    totalNoPages = context.getTotalPages();
+    int totalPages = Integer.parseInt(context.getTotalPages());
+    List<String> pageNos =
+        IntStream.range(1, totalPages + 1).mapToObj(String::valueOf).collect(Collectors.toList());
+    allPageNos = pageNos;
+    currentPage = context.getPageNo();
+    return this;
   }
 }

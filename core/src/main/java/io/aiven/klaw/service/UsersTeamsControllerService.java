@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -266,18 +265,6 @@ public class UsersTeamsControllerService {
         .get()
         .getKey();
   }
-
-  String generateRandomWord(int len) {
-    String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi" + "jklmnopqrstuvwxyz";
-    Random rnd = new Random();
-    StringBuilder sb = new StringBuilder(len);
-    for (int i = 0; i < len; i++) {
-      sb.append(chars.charAt(rnd.nextInt(chars.length())));
-    }
-    return sb.toString();
-  }
-
-  //  public ResetPasswordInfo resetPassword(String userName,String token, String password) { }
 
   public ResetPasswordInfo resetPasswordGenerateToken(String username) {
     log.info("resetPasswordGenerateToken {}", username);

@@ -46,6 +46,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.ProfileModel;
@@ -623,6 +624,13 @@ public class UtilMethods {
     team.setTeamId(3);
     team.setEnvList(List.of("1", "2"));
     return team;
+  }
+
+  public ChangePasswordRequestModel getChangePwdRequestModelMock() {
+    ChangePasswordRequestModel changePwd = new ChangePasswordRequestModel();
+    changePwd.setPwd("newpassword");
+    changePwd.setRepeatPwd("newpassword");
+    return changePwd;
   }
 
   public List<TopicRequest> getTopicRequests() {
