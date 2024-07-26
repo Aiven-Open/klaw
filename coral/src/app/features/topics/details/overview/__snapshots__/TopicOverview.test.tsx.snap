@@ -20,7 +20,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             Topic details
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               style="display: flex; gap: 160px;"
@@ -73,7 +73,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             Topic owner
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               class="typography-default text-default"
@@ -147,7 +147,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             Cluster details
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               class="visually-hidden"
@@ -286,7 +286,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
           Subscriptions
         </div>
         <div
-          class="typography-caption text-grey-70"
+          class="typography-caption text-default"
         >
           <div
             style="display: flex; gap: 160px;"
@@ -327,7 +327,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -371,7 +371,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -396,7 +396,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
           Schemas
         </div>
         <div
-          class="typography-caption text-grey-70"
+          class="typography-caption text-default"
         >
           <div
             style="display: flex; justify-content: space-around; flex-direction: column;"
@@ -419,7 +419,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -463,7 +463,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -500,7 +500,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
             Topic details
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               style="display: flex; gap: 160px;"
@@ -553,7 +553,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
             Topic owner
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               class="typography-default text-default"
@@ -579,7 +579,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
             Cluster details
           </div>
           <div
-            class="typography-caption text-grey-70"
+            class="typography-caption text-default"
           >
             <div
               class="visually-hidden"
@@ -718,7 +718,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
           Subscriptions
         </div>
         <div
-          class="typography-caption text-grey-70"
+          class="typography-caption text-default"
         >
           <div
             style="display: flex; gap: 160px;"
@@ -759,7 +759,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -803,7 +803,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
@@ -828,7 +828,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
           Schemas
         </div>
         <div
-          class="typography-caption text-grey-70"
+          class="typography-caption text-default"
         >
           <div
             style="display: flex; justify-content: space-around; flex-direction: column;"
@@ -851,7 +851,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
@@ -895,7 +895,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-intense-2x focus-visible:text-primary-intense-2x hover:text-primary-intense-2x disabled:text-primary-muted-2x inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
               >
                 <div
                   class="typography-small-strong text-primary-80"
