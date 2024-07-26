@@ -77,10 +77,7 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
         </Link>
       )}
       {notifications > 0 && (
-        <Box.Flex
-          alignItems="center"
-          color={"var(--aquarium-colors-primary-80)"}
-        >
+        <Box.Flex alignItems="center" color={"primary-80"}>
           <Box.Flex height={"fit"}>
             <TabBadge value={notifications} />
           </Box.Flex>
