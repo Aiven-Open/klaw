@@ -15,8 +15,6 @@ import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import { usePendingRequests } from "src/app/hooks/usePendingRequests";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 import { Routes } from "src/services/router-utils/types";
 
 function MainNavigation() {
@@ -27,12 +25,7 @@ function MainNavigation() {
     Boolean(localStorage.getItem("hideFeedbackForm"))
   );
 
-  const superadminAccessCoralEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
-  );
-
-  const showNavigationForSuperAdmin =
-    superadminAccessCoralEnabled && userrole === "SUPERADMIN";
+  const showNavigationForSuperAdmin = userrole === "SUPERADMIN";
 
   return (
     <Box
