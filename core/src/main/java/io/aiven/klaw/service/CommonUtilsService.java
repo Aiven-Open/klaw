@@ -226,7 +226,7 @@ public class CommonUtilsService {
     List<String> labels = new ArrayList<>(size);
     List<String> colors = new ArrayList<>(size);
 
-    if (activityCountList.isEmpty()) {
+    if (activityCountList != null && activityCountList.isEmpty()) {
       data.add(0);
       labels.add("");
     }
