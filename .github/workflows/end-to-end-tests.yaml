@@ -130,7 +130,7 @@ jobs:
         run: BASE_URL=http://${{ steps.containerIp.outputs.CONTAINER_IP }}:9097 pnpm __test
 
       - name: Upload Playwright artifacts
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
         # Upload whether steps before where a failure, but only when the playwright tests did run
         # This way we make sure we don't attempt to upload files that are not there, bc.
         # for example the build has failed.
