@@ -30,7 +30,6 @@ function SearchFilter({
       </Label>
 
       <SearchInput
-        type={"search"}
         aria-label={placeholder}
         aria-labelledby={labelId}
         aria-describedby={descriptionId}

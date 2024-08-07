@@ -26,7 +26,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         >
           <input
             aria-required="false"
-            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-muted-2x placeholder:text-muted-2x focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
             id="test-id"
             name="password"
             type="password"
@@ -74,7 +74,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
         >
           <input
             aria-required="false"
-            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-muted-2x placeholder:text-muted-2x focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
             id="test-id"
             name="formFieldsCustomName"
             type="text"
