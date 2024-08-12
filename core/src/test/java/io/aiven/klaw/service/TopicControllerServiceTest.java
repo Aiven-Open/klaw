@@ -226,26 +226,31 @@ public class TopicControllerServiceTest {
   @Test
   @Order(5)
   public void createTopicsFailureInvalidTopicDescriptionLength()
-          throws KlawException, KlawNotAuthorizedException {
+      throws KlawException, KlawNotAuthorizedException {
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
-            .thenReturn(false);
+        .thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-            .thenReturn(Collections.singletonList("1"));
+        .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    SQLDataException causeException = new SQLDataException("Seed size for the object exceeds the\n" +
-            "column size in the database. Value too long for column...");
-    DataIntegrityViolationException exception = new DataIntegrityViolationException("Error message", causeException);
+    SQLDataException causeException =
+        new SQLDataException(
+            "Seed size for the object exceeds the\n"
+                + "column size in the database. Value too long for column...");
+    DataIntegrityViolationException exception =
+        new DataIntegrityViolationException("Error message", causeException);
     when(handleDbRequests.requestForTopic(any())).thenThrow(exception);
 
-    ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopicWithLongDescription());
-    assertThat(apiResponse.getMessage()).isEqualTo("Failure. Topic values exceed allowed lengths.");
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsCreateRequest(getFailureTopicWithLongDescription());
+    assertThat(apiResponse.getMessage())
+        .isEqualTo("Failure. Topic description exceeds allowed length.");
   }
 
   @Test
