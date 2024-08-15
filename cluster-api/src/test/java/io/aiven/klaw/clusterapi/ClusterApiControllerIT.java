@@ -22,26 +22,18 @@ import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import io.aiven.klaw.clusterapi.services.SchemaService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.security.Key;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -64,7 +56,6 @@ import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -112,6 +103,8 @@ public class ClusterApiControllerIT {
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
 
+  private final UtilMethods utilMethods = new UtilMethods();
+
   private static final String bootStrapServers = "localhost:9092";
   private static final String bootStrapServersSsl = "localhost:9093";
 
@@ -131,7 +124,8 @@ public class ClusterApiControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -153,7 +147,8 @@ public class ClusterApiControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -198,7 +193,8 @@ public class ClusterApiControllerIT {
                 .content(jsonReq)
                 .header(
                     AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    BEARER_PREFIX
+                        + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn()
@@ -494,7 +490,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -564,7 +561,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -634,7 +632,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -749,7 +748,8 @@ public class ClusterApiControllerIT {
                             .header(
                                 AUTHORIZATION,
                                 BEARER_PREFIX
-                                    + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                                    + utilMethods.generateToken(
+                                        KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -770,14 +770,15 @@ public class ClusterApiControllerIT {
             + "SSL/undefined/testtopic/custom/partitionId/0/"
             + "selectedNumberOfOffsets/"
             + numberOfOffsetsToRead
-            + "/DEV2";
+            + "/DEV2/rangeOffsets/0/0";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -802,14 +803,15 @@ public class ClusterApiControllerIT {
             + "/"
             + "selectedNumberOfOffsets/"
             + numberOfOffsetsToRead
-            + "/DEV2";
+            + "/DEV2/rangeOffsets/0/0";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -869,7 +871,8 @@ public class ClusterApiControllerIT {
                 .content(jsonReq)
                 .header(
                     AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    BEARER_PREFIX
+                        + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn()
@@ -899,23 +902,6 @@ public class ClusterApiControllerIT {
         .replicationFactor(Short.parseShort("1"))
         .advancedTopicConfiguration(advancedConfig)
         .build();
-  }
-
-  private String generateToken(
-      String clusterApiUser, String clusterAccessSecret, long expirationTime) {
-    Key hmacKey =
-        new SecretKeySpec(
-            Base64.decodeBase64(clusterAccessSecret), SignatureAlgorithm.HS256.getJcaName());
-    Instant now = Instant.now();
-
-    return Jwts.builder()
-        .claim("name", clusterApiUser)
-        .subject(clusterApiUser)
-        .id(UUID.randomUUID().toString())
-        .issuedAt(Date.from(now))
-        .expiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
-        .signWith(hmacKey)
-        .compact();
   }
 
   private static Map<String, String> buildBrokerProperties() {

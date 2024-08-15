@@ -42,6 +42,8 @@ class TopicContentsServiceTest {
             offsetPosition + "",
             0,
             0,
+            0,
+            0,
             readMessagesType,
             TestConstants.CLUSTER_IDENTIFICATION);
 
