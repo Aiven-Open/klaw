@@ -17,6 +17,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_116;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_125;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_126;
 import static io.aiven.klaw.helpers.KwConstants.KLAW_OPTIONAL_PERMISSION_NEW_TOPIC_CREATION_KEY;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.UtilMethods.updateEnvStatus;
@@ -77,6 +79,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -153,8 +156,17 @@ public class TopicControllerService {
     mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
     topicRequestDao.setTenantId(commonUtilsService.getTenantId(userName));
 
-    String result = dbHandle.requestForTopic(topicRequestDao).get("result");
-    // default to Topic_CREATE which is the old hard coded
+    String result;
+    try {
+      result = dbHandle.requestForTopic(topicRequestDao).get("result");
+      // default to Topic_CREATE which is the old hard coded
+    } catch (DataIntegrityViolationException e) {
+      log.error("Error in creating a topic ", e);
+      if (e.getCause().getMessage().contains("Value too long for column")) {
+        return ApiResponse.notOk(TOPICS_VLD_ERR_125);
+      }
+      throw new KlawException(TOPICS_VLD_ERR_126 + e);
+    }
 
     mailService.sendMail(
         topicRequestReq.getTopicname(),
