@@ -1273,7 +1273,7 @@ public class ClusterApiService {
         .subject(username)
         .id(UUID.randomUUID().toString())
         .issuedAt(Date.from(now))
-        .expiration(Date.from(now.plus(300L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .expiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
         .signWith(hmacKey)
         .compact();
   }
