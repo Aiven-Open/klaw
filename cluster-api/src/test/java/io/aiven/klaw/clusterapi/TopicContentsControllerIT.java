@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -41,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
     brokerProperties = {"listeners=PLAINTEXT://" + TopicContentsControllerIT.BOOTSTRAP_SERVER},
     partitions = 1,
     topics = {TopicContentsControllerIT.TEST_TOPIC_NAME})
-@Slf4j
 public class TopicContentsControllerIT {
 
   public static final String CUSTOM_SELECTION = "custom";
