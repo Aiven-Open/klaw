@@ -39,6 +39,7 @@ import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
+import java.sql.SQLDataException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -219,6 +221,36 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
+  @Order(5)
+  public void createTopicsFailureInvalidTopicDescriptionLength()
+      throws KlawException, KlawNotAuthorizedException {
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    SQLDataException causeException =
+        new SQLDataException(
+            "Seed size for the object exceeds the\n"
+                + "column size in the database. Value too long for column...");
+    DataIntegrityViolationException exception =
+        new DataIntegrityViolationException("Error message", causeException);
+    when(handleDbRequests.requestForTopic(any())).thenThrow(exception);
+
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsCreateRequest(getFailureTopicWithLongDescription());
+    assertThat(apiResponse.getMessage())
+        .isEqualTo("Failure. Topic description exceeds allowed length.");
   }
 
   @Test
@@ -1759,6 +1791,17 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(-1);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE);
+    return topicRequest;
+  }
+
+  private TopicRequestModel getFailureTopicWithLongDescription() {
+    TopicRequestModel topicRequest = new TopicRequestModel();
+    topicRequest.setTopicname("newtopicname");
+    int DESCRIPTION_COLUMN_LENGTH = 100; // VARCHAR(100) but can be other length.
+    topicRequest.setDescription("x".repeat(DESCRIPTION_COLUMN_LENGTH + 1));
+    topicRequest.setEnvironment(env.getId());
+    topicRequest.setTopicpartitions(2);
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }

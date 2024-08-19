@@ -405,6 +405,11 @@ public class KlawErrorMessages {
   public static final String TOPICS_VLD_ERR_124 =
       "Failure. This topic does not exist in the cluster.";
 
+  public static final String TOPICS_VLD_ERR_125 =
+      "Failure. Topic description exceeds allowed length.";
+
+  public static final String TOPICS_VLD_ERR_126 = "Failure. Data integrity violation: ";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 

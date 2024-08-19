@@ -47,7 +47,7 @@ const formSchema = z
     topicname: topicNameField,
     advancedConfiguration: advancedConfigurationField,
     remarks: z.string(),
-    description: z.string().min(1),
+    description: z.string().min(1).max(100),
   })
   .superRefine(validateTopicPartitions)
   .superRefine(validateReplicationFactor)
