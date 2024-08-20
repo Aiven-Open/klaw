@@ -25,6 +25,8 @@ Pre-20th of August 2024
 - [pnpm](https://pnpm.io/)  (>=8.0.0 <9.0.0)
 - [nodejs](https://nodejs.org/) (>=18.0.0 <19.0.0)
 
+If in doubt of the version you require locally you can see the information in [here](coral/package.json) under engines.
+
 ### Formatting
 
 Formatting can be tricky so to keep a consistent java code format throughout we use the spotless maven plugin.
