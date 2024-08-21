@@ -33,6 +33,9 @@ public class ResourceClientController {
   @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsernameAttribute;
 
+  @Value("${klaw.ad.email.attribute:preferred_username}")
+  private String emailAttribute;
+
   private static final String authorizationRequestBaseUri = "oauth2/authorize-client";
   Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
   @Autowired private OAuth2AuthorizedClientService authorizedClientService;
@@ -64,10 +67,13 @@ public class ResourceClientController {
     try {
       Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
+      String userName = (String) defaultOAuth2User.getAttributes().get(preferredUsernameAttribute);
+      if (userName == null) {
+        userName = (String) defaultOAuth2User.getAttributes().get(emailAttribute);
+      }
       OAuth2AuthorizedClient client =
           authorizedClientService.loadAuthorizedClient(
-              authentication.getAuthorizedClientRegistrationId(),
-              (String) defaultOAuth2User.getAttributes().get(preferredUsernameAttribute));
+              authentication.getAuthorizedClientRegistrationId(), userName);
       if (client == null) {
         return ("redirect:oauthLogin");
       }

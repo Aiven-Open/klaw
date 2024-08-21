@@ -31,6 +31,9 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
   @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsernameAttribute;
 
+  @Value("${klaw.ad.email.attribute:preferred_username}")
+  private String emailAttribute;
+
   @Autowired HandleDbRequestsJdbc handleDbRequests;
 
   @Override
@@ -53,7 +56,8 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     if (quickStartEnabled
         && handleDbRequests
             .getUsersInfo(
-                UtilMethods.getUserName(authentication.getPrincipal(), preferredUsernameAttribute))
+                UtilMethods.getUserName(
+                    authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
             .getRole()
             .equals(KwConstants.USER_ROLE)) {
       return coralTopicsUri;
@@ -63,7 +67,8 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         && UtilControllerService.isCoralBuilt
         && !handleDbRequests
             .getUsersInfo(
-                UtilMethods.getUserName(authentication.getPrincipal(), preferredUsernameAttribute))
+                UtilMethods.getUserName(
+                    authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
             .getRole()
             .equals(KwConstants.SUPERADMIN_ROLE)) {
       return coralTopicsUri;

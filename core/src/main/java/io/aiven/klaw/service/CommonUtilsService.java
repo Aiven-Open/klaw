@@ -109,11 +109,16 @@ public class CommonUtilsService {
     return SecurityContextHolder.getContext().getAuthentication();
   }
 
+  public ArrayList<String> getUserNameAttributes() {
+    return new ArrayList<>(List.of(preferredUsernameAttribute, emailAttribute));
+  }
+
   String getAuthority(Object principal) {
     if (enableUserAuthorizationFromAD) {
       if (principal instanceof DefaultOAuth2User) {
         DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
-        String userName = extractUserNameFromOAuthUser(defaultOAuth2User);
+        String userName = getUserName(defaultOAuth2User);
+
         return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole();
       } else if (principal instanceof String) {
         return manageDatabase.getHandleDbRequests().getUsersInfo((String) principal).getRole();
@@ -138,25 +143,12 @@ public class CommonUtilsService {
     }
   }
 
-  public String extractUserNameFromOAuthUser(DefaultOAuth2User defaultOAuth2User) {
-    String preferredUsername =
-        (String) defaultOAuth2User.getAttributes().get(preferredUsernameAttribute);
-    String email = (String) defaultOAuth2User.getAttributes().get(emailAttribute);
-    String userName = null;
-    if (preferredUsername != null) {
-      userName = preferredUsername;
-    } else if (email != null) {
-      userName = email;
-    }
-    return userName;
-  }
-
   public String getUserName(Object principal) {
-    return UtilMethods.getUserName(principal, preferredUsernameAttribute);
+    return UtilMethods.getUserName(principal, preferredUsernameAttribute, emailAttribute);
   }
 
   public String getCurrentUserName() {
-    return UtilMethods.getUserName(preferredUsernameAttribute);
+    return UtilMethods.getUserName(preferredUsernameAttribute, emailAttribute);
   }
 
   public boolean isNotAuthorizedUser(Object principal, PermissionType permissionType) {
