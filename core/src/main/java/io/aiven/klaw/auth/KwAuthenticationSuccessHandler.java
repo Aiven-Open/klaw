@@ -31,7 +31,7 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
   @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsernameAttribute;
 
-  @Value("${klaw.ad.email.attribute:preferred_username}")
+  @Value("${klaw.ad.email.attribute:email}")
   private String emailAttribute;
 
   @Autowired HandleDbRequestsJdbc handleDbRequests;
