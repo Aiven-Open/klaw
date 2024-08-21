@@ -109,6 +109,10 @@ public class CommonUtilsService {
     return SecurityContextHolder.getContext().getAuthentication();
   }
 
+  public ArrayList<String> getUserNameAttributes() {
+    return new ArrayList<>(List.of(preferredUsernameAttribute, emailAttribute));
+  }
+
   String getAuthority(Object principal) {
     if (enableUserAuthorizationFromAD) {
       if (principal instanceof DefaultOAuth2User) {
