@@ -17,8 +17,15 @@ With several downloads every week, many more companies which did not adopt a sol
 ### New React UI
 
 Not required but to get the latest experience we recommend also building the React UI.
-- [pnpm](https://pnpm.io/)  (>=18.0.0 <19.0.0)
-- [nodejs](https://nodejs.org/) (>=8.0.0 <9.0.0)
+Latest:
+- [pnpm](https://pnpm.io/)  (>=9.0.0 <10.0.0)
+- [nodejs](https://nodejs.org/) (>=20.0.0 <21.0.0)
+
+Pre-20th of August 2024
+- [pnpm](https://pnpm.io/)  (>=8.0.0 <9.0.0)
+- [nodejs](https://nodejs.org/) (>=18.0.0 <19.0.0)
+
+If in doubt of the version you require locally you can see the information in [here](coral/package.json) under engines.
 
 ### Formatting
 
