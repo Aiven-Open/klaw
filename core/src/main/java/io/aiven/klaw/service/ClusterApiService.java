@@ -282,8 +282,8 @@ public class ClusterApiService {
                   String.valueOf(selectedNumberOfOffsets),
                   clusterIdentification,
                   RANGE_OFFSETS,
-                  String.valueOf(Integer.MAX_VALUE),
-                  String.valueOf(Integer.MAX_VALUE));
+                  String.valueOf(-1),
+                  String.valueOf(-1));
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate(null)

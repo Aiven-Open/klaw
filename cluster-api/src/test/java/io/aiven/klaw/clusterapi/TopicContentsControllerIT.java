@@ -145,40 +145,40 @@ public class TopicContentsControllerIT {
 
   @Test
   @Order(8)
-  void getTopicContentsWhenRangeAndInvalidLowerBound() throws Exception {
+  void getTopicContentsWhenRangeAndStartOffsetNegative() throws Exception {
     int end = 7;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, Integer.MIN_VALUE, end);
+    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, end);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
-    getTopicContentsVerifyResponse(response, 8, 0, end);
+    assertThat(response).isEmpty();
   }
 
   @Test
   @Order(9)
-  void getTopicContentsWhenRangeAndInvalidUpperBound() throws Exception {
+  void getTopicContentsWhenRangeAndEndOffsetNegative() throws Exception {
     int start = 4;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, Integer.MAX_VALUE);
+    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, -1);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
-    getTopicContentsVerifyResponse(response, 6, start, 9);
+    assertThat(response).isEmpty();
   }
 
   @Test
   @Order(10)
-  void getTopicContentsWhenRangeAndInvalidUpperLowerBounds() throws Exception {
+  void getTopicContentsWhenRangeAndStartAndEndOffsetNegative() throws Exception {
     String url =
-        createUrl(RANGE_SELECTION, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, -1);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
-    getTopicContentsVerifyResponse(response, TOTAL_TEST_RECORDS, 0, TOTAL_TEST_RECORDS - 1);
+    assertThat(response).isEmpty();
   }
 
   @Test
   @Order(11)
-  void getTopicContentsWhenRangeAndLowerBoundBiggerThanUpperBound() throws Exception {
+  void getTopicContentsWhenRangeAndStartOffsetBiggerThanEndOffset() throws Exception {
     String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, 6, 3);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
@@ -188,6 +188,18 @@ public class TopicContentsControllerIT {
 
   @Test
   @Order(12)
+  void getTopicContentsWhenRangeAndStartAndEndOffsetEqual() throws Exception {
+    int start = 5;
+    String url =
+            createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, start);
+
+    Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
+
+    getTopicContentsVerifyResponse(response, 1, start, start);
+  }
+
+  @Test
+  @Order(13)
   void getTopicContentsWhenRangeAndTotalOffsetsLargerThanMax() throws Exception {
     produceRecords(200);
     String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, 20, 180);

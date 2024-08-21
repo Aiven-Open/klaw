@@ -1,5 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
+import io.aiven.klaw.clusterapi.models.enums.TopicContentType;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.time.Duration;
 import java.util.*;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TopicContentsService {
 
-  public static final String CUSTOM_OFFSET_SELECTION = "custom";
-  public static final String RANGE_OFFSET_SELECTION = "range";
   public static final int RANGE_MAX_RECORDS = 100;
   public static final int NUMBER_OF_POLLS = 3;
   final ClusterApiUtils clusterApiUtils;
@@ -65,6 +64,10 @@ public class TopicContentsService {
     Map<Long, String> eventMap = new TreeMap<>();
     KafkaConsumer<String, String> consumer;
 
+    if (offsetPosition.equals(TopicContentType.RANGE.getValue()) && (rangeOffsetsStart < 0 || rangeOffsetsEnd < 0)) {
+      return eventMap;
+    }
+
     if (consumerGroupId.equals("notdefined")) {
       consumer =
           getKafkaConsumer(
@@ -79,8 +82,8 @@ public class TopicContentsService {
     Set<TopicPartition> topicPartitionsSet = consumer.assignment();
 
     Set<TopicPartition> partitionsAssignment = new HashSet<>();
-    if (offsetPosition.equals(CUSTOM_OFFSET_SELECTION)
-        || offsetPosition.equals(RANGE_OFFSET_SELECTION)) {
+    if (offsetPosition.equals(TopicContentType.CUSTOM.getValue())
+        || offsetPosition.equals(TopicContentType.RANGE.getValue())) {
       for (TopicPartition tp : topicPartitionsSet) {
         if (tp.partition() == selectedPartitionId) {
           partitionsAssignment = Collections.singleton(tp);
@@ -92,7 +95,7 @@ public class TopicContentsService {
     }
 
     if (partitionsAssignment.isEmpty()
-        || (offsetPosition.equals(RANGE_OFFSET_SELECTION) && rangeOffsetsStart > rangeOffsetsEnd)) {
+        || (offsetPosition.equals(TopicContentType.RANGE.getValue()) && rangeOffsetsStart > rangeOffsetsEnd)) {
       consumer.close();
       return eventMap;
     }
@@ -103,9 +106,9 @@ public class TopicContentsService {
       for (TopicPartition tp : partitionsAssignment) {
         long beginningOffset = consumer.position(tp);
         long endOffset = endOffsets.get(tp);
-        if (offsetPosition.equals(CUSTOM_OFFSET_SELECTION)) {
+        if (offsetPosition.equals(TopicContentType.CUSTOM.getValue())) {
           newOffset = endOffset - selectedNumberOfOffsets;
-        } else if (offsetPosition.equals(RANGE_OFFSET_SELECTION)) {
+        } else if (offsetPosition.equals(TopicContentType.RANGE.getValue())) {
           newOffset = rangeOffsetsStart;
         } else {
           newOffset = endOffset - Integer.parseInt(offsetPosition);
@@ -124,7 +127,7 @@ public class TopicContentsService {
       ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(500));
       for (ConsumerRecord<String, String> record : consumerRecords) {
         eventMap.put(record.offset(), record.value());
-        if (offsetPosition.equals(RANGE_OFFSET_SELECTION)
+        if (offsetPosition.equals(TopicContentType.RANGE.getValue())
             && (record.offset() >= rangeOffsetsEnd || eventMap.size() >= RANGE_MAX_RECORDS)) {
           exitLoop = true;
           break;
