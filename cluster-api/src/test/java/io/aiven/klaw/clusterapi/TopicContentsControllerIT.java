@@ -168,8 +168,7 @@ public class TopicContentsControllerIT {
   @Test
   @Order(10)
   void getTopicContentsWhenRangeAndStartAndEndOffsetNegative() throws Exception {
-    String url =
-        createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, -1);
+    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, -1);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -190,8 +189,7 @@ public class TopicContentsControllerIT {
   @Order(12)
   void getTopicContentsWhenRangeAndStartAndEndOffsetEqual() throws Exception {
     int start = 5;
-    String url =
-            createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, start);
+    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, start);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 

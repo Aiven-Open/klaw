@@ -64,7 +64,8 @@ public class TopicContentsService {
     Map<Long, String> eventMap = new TreeMap<>();
     KafkaConsumer<String, String> consumer;
 
-    if (offsetPosition.equals(TopicContentType.RANGE.getValue()) && (rangeOffsetsStart < 0 || rangeOffsetsEnd < 0)) {
+    if (offsetPosition.equals(TopicContentType.RANGE.getValue())
+        && (rangeOffsetsStart < 0 || rangeOffsetsEnd < 0)) {
       return eventMap;
     }
 
@@ -95,7 +96,8 @@ public class TopicContentsService {
     }
 
     if (partitionsAssignment.isEmpty()
-        || (offsetPosition.equals(TopicContentType.RANGE.getValue()) && rangeOffsetsStart > rangeOffsetsEnd)) {
+        || (offsetPosition.equals(TopicContentType.RANGE.getValue())
+            && rangeOffsetsStart > rangeOffsetsEnd)) {
       consumer.close();
       return eventMap;
     }
