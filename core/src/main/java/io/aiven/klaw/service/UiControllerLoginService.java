@@ -225,7 +225,7 @@ public class UiControllerLoginService {
     if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
       DefaultOAuth2User defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
+      userName = commonUtilsService.getUserName(defaultOAuth2User);
     } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
       userName =
           ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
