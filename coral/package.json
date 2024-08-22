@@ -65,7 +65,7 @@
   "devDependencies": {
     "@tanstack/react-query-devtools": "^4.29.6",
     "@testing-library/dom": "^10.0.0",
-    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.2",
@@ -92,7 +92,7 @@
     "jest-transform-stub": "^2.0.0",
     "lint-staged": "^15.2.9",
     "lodash": "^4.17.21",
-    "msw": "^2.3.1",
+    "msw": "^2.3.5",
     "openapi-typescript": "^6.7.6",
     "prettier": "^3.3.3",
     "prop-types": "^15.8.1",
