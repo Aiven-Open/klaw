@@ -42,7 +42,10 @@ public class MailUtils {
   private String kwAdminMailId;
 
   @Value("${klaw.ad.username.attribute:preferred_username}")
-  private String preferredUsername;
+  private String preferredUsernameAttribute;
+
+  @Value("${klaw.ad.email.attribute:email}")
+  private String emailAttribute;
 
   private static final String TOPIC_REQ_KEY = "klaw.mail.topicrequest.content";
   private static final String TOPIC_PROMOTION_REQ_KEY = "klaw.mail.topicpromotionrequest.content";
@@ -68,11 +71,11 @@ public class MailUtils {
   @Autowired private EmailService emailService;
 
   public String getUserName(Object principal) {
-    return UtilMethods.getUserName(principal, preferredUsername);
+    return UtilMethods.getUserName(principal, preferredUsernameAttribute, emailAttribute);
   }
 
   public String getCurrentUserName() {
-    return UtilMethods.getUserName(preferredUsername);
+    return UtilMethods.getUserName(preferredUsernameAttribute, emailAttribute);
   }
 
   void sendMail(
