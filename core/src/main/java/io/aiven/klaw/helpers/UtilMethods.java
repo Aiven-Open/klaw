@@ -22,9 +22,12 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 @Slf4j
 public class UtilMethods {
-  public static String getUserName(Object principal, String preferredUsername) {
+  public static String getUserName(
+      Object principal, String preferredUserNameAttribute, String emailAttribute) {
     if (principal instanceof DefaultOAuth2User defaultOAuth2User) {
-      return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
+      return Optional.ofNullable(
+              (String) defaultOAuth2User.getAttributes().get(preferredUserNameAttribute))
+          .orElse((String) defaultOAuth2User.getAttributes().get(emailAttribute));
     } else if (principal instanceof String) {
       return (String) principal;
     } else {
@@ -32,8 +35,8 @@ public class UtilMethods {
     }
   }
 
-  public static String getUserName(String preferredUsername) {
-    return getUserName(getPrincipal(), preferredUsername);
+  public static String getUserName(String preferredUserNameAttribute, String emailAttribute) {
+    return getUserName(getPrincipal(), preferredUserNameAttribute, emailAttribute);
   }
 
   public static Object getPrincipal() {

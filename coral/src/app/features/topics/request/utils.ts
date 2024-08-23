@@ -75,13 +75,13 @@ function generateTopicNameDescription(
         );
       }
     } else {
-      if (topicPrefix && topicPrefix.length > 0) {
+      if (topicPrefix && topicPrefix.length > 0 && topicPrefix[0].length > 0) {
         desc.unshift(
           `Prefix name with: ${generateNamePatternString(topicPrefix)}.`
         );
       }
 
-      if (topicSuffix && topicSuffix.length > 0) {
+      if (topicSuffix && topicSuffix.length > 0 && topicSuffix[0].length > 0) {
         desc.unshift(
           `Suffix name with: ${generateNamePatternString(topicSuffix)}.`
         );
