@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import io.aiven.klaw.clusterapi.models.enums.TopicContentType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -42,8 +43,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
     topics = {TopicContentsControllerIT.TEST_TOPIC_NAME})
 public class TopicContentsControllerIT {
 
-  public static final String CUSTOM_SELECTION = "custom";
-  public static final String RANGE_SELECTION = "range";
   public static final String BOOTSTRAP_SERVER = "localhost:9092";
   public static final String TEST_TOPIC_NAME = "test-topic";
   public static final int TOTAL_TEST_RECORDS = 10;
@@ -103,7 +102,9 @@ public class TopicContentsControllerIT {
   @Order(4)
   void getTopicContentsWhenCustomAndOffsetsLessThanTotalRecords() throws Exception {
     int totalOffsets = 5;
-    String url = createUrl(CUSTOM_SELECTION, totalOffsets, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    String url =
+        createUrl(
+            TopicContentType.CUSTOM.getValue(), totalOffsets, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -114,7 +115,9 @@ public class TopicContentsControllerIT {
   @Order(5)
   void getTopicContentsWhenCustomAndOffsetsMoreThanTotalRecords() throws Exception {
     int totalOffsets = TOTAL_TEST_RECORDS + 10;
-    String url = createUrl(CUSTOM_SELECTION, totalOffsets, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    String url =
+        createUrl(
+            TopicContentType.CUSTOM.getValue(), totalOffsets, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -124,7 +127,8 @@ public class TopicContentsControllerIT {
   @Test
   @Order(6)
   void getTopicContentsWhenCustomAndOffsetAndOffsetIsNegative() throws Exception {
-    String url = createUrl(CUSTOM_SELECTION, -1, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    String url =
+        createUrl(TopicContentType.CUSTOM.getValue(), -1, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -136,7 +140,7 @@ public class TopicContentsControllerIT {
   void getTopicContentsWhenRangeAndValidBounds() throws Exception {
     int start = 4;
     int end = 7;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, end);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, start, end);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -147,7 +151,7 @@ public class TopicContentsControllerIT {
   @Order(8)
   void getTopicContentsWhenRangeAndStartOffsetNegative() throws Exception {
     int end = 7;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, end);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, -1, end);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -158,7 +162,7 @@ public class TopicContentsControllerIT {
   @Order(9)
   void getTopicContentsWhenRangeAndEndOffsetNegative() throws Exception {
     int start = 4;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, -1);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, start, -1);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -168,7 +172,7 @@ public class TopicContentsControllerIT {
   @Test
   @Order(10)
   void getTopicContentsWhenRangeAndStartAndEndOffsetNegative() throws Exception {
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, -1, -1);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, -1, -1);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -178,7 +182,7 @@ public class TopicContentsControllerIT {
   @Test
   @Order(11)
   void getTopicContentsWhenRangeAndStartOffsetBiggerThanEndOffset() throws Exception {
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, 6, 3);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, 6, 3);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -189,7 +193,7 @@ public class TopicContentsControllerIT {
   @Order(12)
   void getTopicContentsWhenRangeAndStartAndEndOffsetEqual() throws Exception {
     int start = 5;
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, start, start);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, start, start);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
@@ -200,7 +204,7 @@ public class TopicContentsControllerIT {
   @Order(13)
   void getTopicContentsWhenRangeAndTotalOffsetsLargerThanMax() throws Exception {
     produceRecords(200);
-    String url = createUrl(RANGE_SELECTION, Integer.MAX_VALUE, 20, 180);
+    String url = createUrl(TopicContentType.RANGE.getValue(), Integer.MAX_VALUE, 20, 180);
 
     Map<Integer, String> response = getTopicContentsPerformMockRequest(url);
 
