@@ -22,26 +22,18 @@ import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import io.aiven.klaw.clusterapi.services.SchemaService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.security.Key;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -64,7 +56,6 @@ import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -82,8 +73,6 @@ import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -95,7 +84,24 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestPropertySource(locations = "classpath:application.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-@EmbeddedKafka(kraft = false)
+@EmbeddedKafka(
+    brokerProperties = {
+      "authorizer.class.name=kafka.security.authorizer.AclAuthorizer",
+      "allow.everyone.if.no.acl.found=true",
+      "super.users=User:ANONYMOUS",
+      "ssl.truststore.location=src/test/resources/selfsignedcerts/truststore.jks",
+      "ssl.truststore.password=klaw1234",
+      "ssl.keystore.location=src/test/resources/selfsignedcerts/keystore.p12",
+      "ssl.key.password=klaw1234",
+      "ssl.keystore.password=klaw1234",
+      "ssl.keystore.type=pkcs12",
+      "listeners=PLAINTEXT://"
+          + ClusterApiControllerIT.BOOTSTRAP_SERVERS
+          + ",SSL://"
+          + ClusterApiControllerIT.BOOTSTRAP_SERVERS_SSL
+    },
+    partitions = 1,
+    adminTimeout = 100)
 @Slf4j
 public class ClusterApiControllerIT {
 
@@ -106,14 +112,15 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
+  public static final String BOOTSTRAP_SERVERS = "localhost:9092";
+  public static final String BOOTSTRAP_SERVERS_SSL = "localhost:9093";
 
-  static EmbeddedKafkaZKBroker embeddedKafkaBroker;
+  @Autowired private EmbeddedKafkaZKBroker embeddedKafkaBroker;
 
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
 
-  private static final String bootStrapServers = "localhost:9092";
-  private static final String bootStrapServersSsl = "localhost:9093";
+  private final UtilMethods utilMethods = new UtilMethods();
 
   @Autowired private MockMvc mvc;
   ObjectMapper mapper = new ObjectMapper();
@@ -124,14 +131,15 @@ public class ClusterApiControllerIT {
   @Order(1)
   public void getKafkaServerStatus() throws Exception {
     String url =
-        "/topics/getStatus/" + bootStrapServers + "/PLAINTEXT/DEV1/kafka/kafkaFlavor/Apache Kafka";
+        "/topics/getStatus/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/DEV1/kafka/kafkaFlavor/Apache Kafka";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -146,14 +154,15 @@ public class ClusterApiControllerIT {
   @Order(2)
   public void getKafkaServerStatusSSL() throws Exception {
     String url =
-        "/topics/getStatus/" + bootStrapServersSsl + "/SSL/DEV2/kafka/kafkaFlavor/Apache Kafka";
+        "/topics/getStatus/" + BOOTSTRAP_SERVERS_SSL + "/SSL/DEV2/kafka/kafkaFlavor/Apache Kafka";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -198,7 +207,8 @@ public class ClusterApiControllerIT {
                 .content(jsonReq)
                 .header(
                     AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    BEARER_PREFIX
+                        + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn()
@@ -259,7 +269,7 @@ public class ClusterApiControllerIT {
         ClusterAclRequest.builder()
             .clusterName("DEV2")
             .topicName(topicName)
-            .env(bootStrapServersSsl)
+            .env(BOOTSTRAP_SERVERS_SSL)
             .protocol(KafkaSupportedProtocol.SSL)
             .aclIp(ipHost)
             .aclNativeType(AclsNativeType.NATIVE.name())
@@ -302,7 +312,7 @@ public class ClusterApiControllerIT {
         ClusterAclRequest.builder()
             .clusterName("DEV2")
             .topicName(topicName)
-            .env(bootStrapServersSsl)
+            .env(BOOTSTRAP_SERVERS_SSL)
             .protocol(KafkaSupportedProtocol.SSL)
             .aclIp(ipHost)
             .aclNativeType(AclsNativeType.NATIVE.name())
@@ -366,7 +376,7 @@ public class ClusterApiControllerIT {
         ClusterAclRequest.builder()
             .clusterName("DEV2")
             .topicName(topicName)
-            .env(bootStrapServersSsl)
+            .env(BOOTSTRAP_SERVERS_SSL)
             .protocol(KafkaSupportedProtocol.SSL)
             .aclSsl(principle)
             .aclNativeType(AclsNativeType.NATIVE.name())
@@ -411,7 +421,7 @@ public class ClusterApiControllerIT {
         ClusterAclRequest.builder()
             .clusterName("DEV2")
             .topicName(TOPIC_NAME)
-            .env(bootStrapServersSsl)
+            .env(BOOTSTRAP_SERVERS_SSL)
             .protocol(KafkaSupportedProtocol.SSL)
             .aclSsl(principle)
             .aclNativeType(AclsNativeType.NATIVE.name())
@@ -478,7 +488,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToEarliest() throws Exception {
     produceAndConsumeRecords(true); // produce 10 records and consume all records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.EARLIEST)
@@ -494,7 +504,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -548,7 +559,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToLatest() throws Exception {
     produceAndConsumeRecords(true); // produce 10 more records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.LATEST)
@@ -564,7 +575,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -618,7 +630,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
     produceAndConsumeRecords(false); // produce 10 more records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.LATEST)
@@ -634,7 +646,8 @@ public class ClusterApiControllerIT {
                     .content(jsonReq)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -728,7 +741,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(15)
   public void resetOffsetsNonExistingTopic() throws Exception {
-    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
     String nonExistingTopic = "topicdoesnotexist";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
@@ -749,7 +762,8 @@ public class ClusterApiControllerIT {
                             .header(
                                 AUTHORIZATION,
                                 BEARER_PREFIX
-                                    + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                                    + utilMethods.generateToken(
+                                        KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -765,19 +779,20 @@ public class ClusterApiControllerIT {
     int numberOfOffsetsToRead = 2;
     String url =
         "/topics/getTopicContents/"
-            + bootStrapServersSsl
+            + BOOTSTRAP_SERVERS_SSL
             + "/"
             + "SSL/undefined/testtopic/custom/partitionId/0/"
             + "selectedNumberOfOffsets/"
             + numberOfOffsetsToRead
-            + "/DEV2";
+            + "/DEV2/rangeOffsets/0/0";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -795,21 +810,22 @@ public class ClusterApiControllerIT {
     int partitionId = 5;
     String url =
         "/topics/getTopicContents/"
-            + bootStrapServersSsl
+            + BOOTSTRAP_SERVERS_SSL
             + "/"
             + "SSL/undefined/testtopic/custom/partitionId/"
             + partitionId
             + "/"
             + "selectedNumberOfOffsets/"
             + numberOfOffsetsToRead
-            + "/DEV2";
+            + "/DEV2/rangeOffsets/0/0";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(
                         AUTHORIZATION,
-                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                        BEARER_PREFIX
+                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -824,7 +840,7 @@ public class ClusterApiControllerIT {
     String stringSerializer = "org.apache.kafka.common.serialization.StringSerializer";
     String stringDeserializer = "org.apache.kafka.common.serialization.StringDeserializer";
 
-    configProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
+    configProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
     configProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, stringSerializer);
     configProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, stringSerializer);
     Producer<String, String> producer = new KafkaProducer<>(configProperties);
@@ -838,7 +854,7 @@ public class ClusterApiControllerIT {
 
     if (consumeRecs) {
       Properties consumerConfigProperties = new Properties();
-      consumerConfigProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
+      consumerConfigProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
       consumerConfigProperties.put(
           ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, stringDeserializer);
       consumerConfigProperties.put(
@@ -869,7 +885,8 @@ public class ClusterApiControllerIT {
                 .content(jsonReq)
                 .header(
                     AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    BEARER_PREFIX
+                        + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn()
@@ -880,7 +897,7 @@ public class ClusterApiControllerIT {
     return ClusterTopicRequest.builder()
         .clusterName("DEV2")
         .topicName(topicName)
-        .env(bootStrapServersSsl)
+        .env(BOOTSTRAP_SERVERS_SSL)
         .protocol(KafkaSupportedProtocol.SSL)
         .partitions(1)
         .replicationFactor(Short.parseShort("1"))
@@ -893,59 +910,11 @@ public class ClusterApiControllerIT {
     return ClusterTopicRequest.builder()
         .clusterName("DEV2")
         .topicName(topicName)
-        .env(bootStrapServersSsl)
+        .env(BOOTSTRAP_SERVERS_SSL)
         .protocol(KafkaSupportedProtocol.SSL)
         .partitions(1)
         .replicationFactor(Short.parseShort("1"))
         .advancedTopicConfiguration(advancedConfig)
         .build();
-  }
-
-  private String generateToken(
-      String clusterApiUser, String clusterAccessSecret, long expirationTime) {
-    Key hmacKey =
-        new SecretKeySpec(
-            Base64.decodeBase64(clusterAccessSecret), SignatureAlgorithm.HS256.getJcaName());
-    Instant now = Instant.now();
-
-    return Jwts.builder()
-        .claim("name", clusterApiUser)
-        .subject(clusterApiUser)
-        .id(UUID.randomUUID().toString())
-        .issuedAt(Date.from(now))
-        .expiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
-        .signWith(hmacKey)
-        .compact();
-  }
-
-  private static Map<String, String> buildBrokerProperties() {
-    Map<String, String> brokerProperties = new HashMap<>();
-
-    brokerProperties.put("authorizer.class.name", "kafka.security.authorizer.AclAuthorizer");
-    brokerProperties.put("allow.everyone.if.no.acl.found", "true");
-    brokerProperties.put("super.users", "User:ANONYMOUS");
-    brokerProperties.put(
-        "ssl.truststore.location", "src/test/resources/selfsignedcerts/truststore.jks");
-    brokerProperties.put("ssl.truststore.password", "klaw1234");
-    brokerProperties.put(
-        "ssl.keystore.location", "src/test/resources/selfsignedcerts/keystore.p12");
-    brokerProperties.put("ssl.key.password", "klaw1234");
-    brokerProperties.put("ssl.keystore.password", "klaw1234");
-    brokerProperties.put("ssl.keystore.type", "pkcs12");
-    brokerProperties.put(
-        "listeners", "PLAINTEXT://" + bootStrapServers + ",SSL://" + bootStrapServersSsl);
-
-    return brokerProperties;
-  }
-
-  @DynamicPropertySource
-  static void registerKafkaProperties(DynamicPropertyRegistry registry) {
-    embeddedKafkaBroker = new EmbeddedKafkaZKBroker(1, false, 1);
-
-    for (Map.Entry<String, String> stringStringEntry : buildBrokerProperties().entrySet()) {
-      embeddedKafkaBroker.brokerProperty(stringStringEntry.getKey(), stringStringEntry.getValue());
-    }
-    embeddedKafkaBroker.setAdminTimeout(100);
-    embeddedKafkaBroker.afterPropertiesSet();
   }
 }

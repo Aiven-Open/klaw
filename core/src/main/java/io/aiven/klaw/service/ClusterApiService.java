@@ -104,6 +104,7 @@ public class ClusterApiService {
   public static final String TOPICS_NATIVE_TYPE = "topicsNativeType";
   public static final String RESET_CACHE = "resetCache";
   public static final String PARTITION_ID = "partitionId";
+  public static final String RANGE_OFFSETS = "rangeOffsets";
   public static final String SELECTED_NUMBER_OF_OFFSETS = "selectedNumberOfOffsets";
 
   @Autowired private ManageDatabase manageDatabase;
@@ -279,7 +280,10 @@ public class ClusterApiService {
                   String.valueOf(selectedPartitionId),
                   SELECTED_NUMBER_OF_OFFSETS,
                   String.valueOf(selectedNumberOfOffsets),
-                  clusterIdentification);
+                  clusterIdentification,
+                  RANGE_OFFSETS,
+                  String.valueOf(-1),
+                  String.valueOf(-1));
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate(null)
