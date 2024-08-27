@@ -93,7 +93,7 @@
     "lint-staged": "^15.2.9",
     "lodash": "^4.17.21",
     "msw": "^2.3.5",
-    "openapi-typescript": "^6.7.6",
+    "openapi-typescript": "^7.3.0",
     "prettier": "^3.3.3",
     "prop-types": "^15.8.1",
     "react-aria": "^3.33.1",
