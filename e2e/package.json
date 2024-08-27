@@ -42,6 +42,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.6.0"
+    "@typescript-eslint/eslint-plugin": "^6.21.0"
   }
 }
