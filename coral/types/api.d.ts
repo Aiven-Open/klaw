@@ -3,4428 +3,7944 @@
  * Do not make direct changes to the file.
  */
 
-
 export type paths = {
-  "/validate/schema": {
-    post: operations["validateSchema"];
-  };
-  "/user/updateTeam": {
-    post: operations["updateUserTeamFromSwitchTeams"];
-  };
-  "/uploadSchema": {
-    post: operations["uploadSchema"];
-  };
-  "/updateUser": {
-    post: operations["updateUser"];
-  };
-  "/updateTopics": {
-    post: operations["createTopicsUpdateRequest"];
-  };
-  "/updateTenant": {
-    post: operations["updateTenant"];
-  };
-  "/updateTeam": {
-    post: operations["updateTeam"];
-  };
-  "/updateSyncTopics": {
-    post: operations["updateSyncTopics"];
-  };
-  "/updateSyncTopicsBulk": {
-    post: operations["updateSyncTopicsBulk"];
-  };
-  "/updateSyncConnectors": {
-    post: operations["updateSyncConnectors"];
-  };
-  "/updateSyncBackTopics": {
-    post: operations["updateSyncBackTopics"];
-  };
-  "/updateSyncBackAcls": {
-    post: operations["updateSyncBackAcls"];
-  };
-  "/updateSyncAcls": {
-    post: operations["updateSyncAcls"];
-  };
-  "/updateProfile": {
-    post: operations["updateProfile"];
-  };
-  "/updatePermissions": {
-    post: operations["updatePermissions"];
-  };
-  "/updateKwCustomProperty": {
-    post: operations["updateKwCustomProperty"];
-  };
-  "/sendMessageToAdmin": {
-    post: operations["sendMessageToAdmin"];
-  };
-  "/schemas": {
-    get: operations["getSchemasOfEnvironment"];
-    post: operations["updateSyncSchemas"];
-  };
-  "/schemas/resetCache": {
-    post: operations["resetCacheClusterApi"];
-  };
-  "/saveTopicDocumentation": {
-    post: operations["saveTopicDocumentation"];
-  };
-  "/saveConnectorDocumentation": {
-    post: operations["saveConnectorDocumentation"];
-  };
-  "/resetMemoryCache": {
-    post: operations["resetMemoryCache"];
-  };
-  "/reset/token": {
-    post: operations["resetToken"];
-  };
-  "/reset/password": {
-    post: operations["resetPasswordWithToken"];
-  };
-  "/request/delete": {
-    /**
-     * Delete a Request
-     * @description Updates the Status of a request to Deleted
-     */
-    post: operations["deleteRequest"];
-  };
-  "/request/decline": {
-    /**
-     * Decline a Request
-     * @description Updates the Status of a request to Declined
-     */
-    post: operations["declineRequest"];
-  };
-  "/request/approve": {
-    /**
-     * Approve a Request
-     * @description Updates the Status of a request to Approved and provisions the request
-     */
-    post: operations["approveRequest"];
-  };
-  "/registerUser": {
-    post: operations["registerUser"];
-  };
-  "/promote/schema": {
-    post: operations["promoteSchema"];
-  };
-  "/operationalRequest/reqId/{reqId}/delete": {
-    post: operations["deleteOperationalRequest"];
-  };
-  "/operationalRequest/reqId/{reqId}/decline": {
-    post: operations["declineOperationalRequest"];
-  };
-  "/operationalRequest/reqId/{reqId}/approve": {
-    post: operations["approveOperationalRequest"];
-  };
-  "/operationalRequest/consumerOffsetsReset/create": {
-    post: operations["createConsumerOffsetsResetRequest"];
-  };
-  "/logout": {
-    post: operations["logout"];
-  };
-  "/execTopicRequests": {
-    post: operations["approveTopicRequests"];
-  };
-  "/execTopicRequestsDecline": {
-    post: operations["declineTopicRequests"];
-  };
-  "/execSchemaRequests": {
-    post: operations["execSchemaRequests"];
-  };
-  "/execSchemaRequestsDecline": {
-    post: operations["execSchemaRequestsDecline"];
-  };
-  "/execNewUserRequestDecline": {
-    post: operations["declineNewUserRequests"];
-  };
-  "/execNewUserRequestApprove": {
-    post: operations["approveNewUserRequests"];
-  };
-  "/execConnectorRequests": {
-    post: operations["approveTopicRequests_1"];
-  };
-  "/execConnectorRequestsDecline": {
-    post: operations["declineConnectorRequests"];
-  };
-  "/execAclRequest": {
-    post: operations["approveAclRequests"];
-  };
-  "/execAclRequestDecline": {
-    post: operations["declineAclRequests"];
-  };
-  "/deleteUserRequest": {
-    post: operations["deleteUser"];
-  };
-  "/deleteTopicRequests": {
-    post: operations["deleteTopicRequests"];
-  };
-  "/deleteTenant": {
-    post: operations["deleteTenant"];
-  };
-  "/deleteTeamRequest": {
-    post: operations["deleteTeam"];
-  };
-  "/deleteSchemaRequests": {
-    post: operations["deleteSchemaRequests"];
-  };
-  "/deleteRole": {
-    post: operations["deleteRole"];
-  };
-  "/deleteEnvironmentRequest": {
-    post: operations["deleteEnvironment"];
-  };
-  "/deleteConnectorRequests": {
-    post: operations["deleteConnectorRequests"];
-  };
-  "/deleteCluster": {
-    post: operations["deleteCluster"];
-  };
-  "/deleteAclRequests": {
-    post: operations["deleteAclRequests"];
-  };
-  "/createTopics": {
-    post: operations["createTopicsCreateRequest"];
-  };
-  "/createTopicDeleteRequest": {
-    post: operations["createTopicDeleteRequest"];
-  };
-  "/createDeleteAclSubscriptionRequest": {
-    post: operations["deleteAclSubscriptionRequest"];
-  };
-  "/createConnector": {
-    post: operations["createConnectorRequest"];
-  };
-  "/createConnectorDeleteRequest": {
-    post: operations["createConnectorDeleteRequest"];
-  };
-  "/createClaimTopicRequest": {
-    post: operations["createClaimTopicRequest"];
-  };
-  "/createClaimConnectorRequest": {
-    post: operations["createClaimConnectorRequest"];
-  };
-  "/createAcl": {
-    post: operations["createAcl"];
-  };
-  "/connector/restart": {
-    post: operations["restartConnector"];
-  };
-  "/chPwd": {
-    post: operations["changePwd"];
-  };
-  "/cache/tenant/{tenantId}/entityType/environment": {
-    post: operations["addEnvToCache"];
-  };
-  "/addTenantId": {
-    post: operations["addTenantId"];
-  };
-  "/addRoleId": {
-    post: operations["addRoleId"];
-  };
-  "/addNewUser": {
-    post: operations["addNewUser"];
-  };
-  "/addNewTeam": {
-    post: operations["addNewTeam"];
-  };
-  "/addNewEnv": {
-    post: operations["addNewEnv"];
-  };
-  "/addNewCluster": {
-    post: operations["addNewCluster"];
-  };
-  "/acl/claim/{aclId}": {
-    post: operations["claimAcl"];
-  };
-  "/user/{userId}/switchTeamsList": {
-    get: operations["getSwitchTeams"];
-  };
-  "/topic/request/{topicReqId}": {
-    get: operations["getTopicRequest"];
-  };
-  "/testClusterApiConnection": {
-    get: operations["testClusterApiConnection"];
-  };
-  "/shutdownContext": {
-    get: operations["shutdownApp"];
-  };
-  "/showUserList": {
-    get: operations["showUsers"];
-  };
-  "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
-    get: operations["getSchemaOfTopicFromSource"];
-  };
-  "/schema/request/{schemaReqId}": {
-    get: operations["getSchemaRequest"];
-  };
-  "/resetCache": {
-    get: operations["resetCache"];
-  };
-  "/requests/statistics": {
-    /** Get counts of all request entity types for different status,operation types */
-    get: operations["getRequestStatistics"];
-  };
-  "/operationalRequests/requestsFor/{requestsFor}": {
-    get: operations["getOperationalRequests"];
-  };
-  "/operationalRequest/consumerOffsetsReset/validate": {
-    get: operations["validateOffsetRequestDetails"];
-  };
-  "/getUserInfoFromRegistrationId": {
-    get: operations["getRegistrationInfoFromId"];
-  };
-  "/getUserDetails": {
-    get: operations["getUserDetails"];
-  };
-  "/getUpdateEnvStatus": {
-    get: operations["getUpdateEnvStatus"];
-  };
-  "/getTopics": {
-    get: operations["getTopics"];
-  };
-  "/getTopicsRowView": {
-    get: operations["getTopicsRowView"];
-  };
-  "/getTopicsOnly": {
-    get: operations["getTopicsOnly"];
-  };
-  "/getTopicsCountPerEnv": {
-    get: operations["getTopicsCountPerEnv"];
-  };
-  "/getTopicTeam": {
-    get: operations["getTopicTeam"];
-  };
-  "/getTopicRequests": {
-    get: operations["getTopicRequests"];
-  };
-  "/getTopicRequestsForApprover": {
-    get: operations["getTopicRequestsForApprover"];
-  };
-  "/getTopicOverview": {
-    get: operations["getTopicOverview"];
-  };
-  "/getTopicEvents": {
-    get: operations["getTopicEvents"];
-  };
-  "/getTopicDetailsPerEnv": {
-    get: operations["getTopicDetailsPerEnv"];
-  };
-  "/getTenants": {
-    get: operations["getTenants"];
-  };
-  "/getTenantsInfo": {
-    get: operations["getTenantsInfo"];
-  };
-  "/getTeamsOverview": {
-    get: operations["getTeamsOverview"];
-  };
-  "/getTeamDetails": {
-    get: operations["getTeamDetails"];
-  };
-  "/getSyncTopics": {
-    get: operations["getSyncTopics"];
-  };
-  "/getSyncEnv": {
-    get: operations["getSyncEnv"];
-  };
-  "/getSyncConnectors": {
-    get: operations["getSyncConnectors"];
-  };
-  "/getSyncConnectorsEnv": {
-    get: operations["getSyncConnectorsEnv"];
-  };
-  "/getSyncBackAcls": {
-    get: operations["getSyncBackAcls"];
-  };
-  "/getSyncAcls": {
-    get: operations["getSyncAcls"];
-  };
-  "/getStandardEnvNames": {
-    get: operations["getStandardEnvNames"];
-  };
-  "/getSchemaRequests": {
-    get: operations["getSchemaRequests"];
-  };
-  "/getSchemaRequestsForApprover": {
-    get: operations["getSchemaRequestsForApprover"];
-  };
-  "/getSchemaRegEnvs": {
-    get: operations["getSchemaRegEnvs"];
-  };
-  "/getSchemaOfTopic": {
-    get: operations["getSchemaOfTopic"];
-  };
-  "/getRoles": {
-    get: operations["getRoles"];
-  };
-  "/getRolesFromDb": {
-    get: operations["getRolesFromDb"];
-  };
-  "/getRequestTypeStatuses": {
-    get: operations["getRequestTypeStatuses"];
-  };
-  "/getPermissions": {
-    get: operations["getPermissions"];
-  };
-  "/getPermissionDescriptions": {
-    get: operations["getPermissionDescriptions"];
-  };
-  "/getNewUserRequests": {
-    get: operations["getNewUserRequests"];
-  };
-  "/getMyTenantInfo": {
-    get: operations["getMyTenantInfo"];
-  };
-  "/getMyProfileInfo": {
-    get: operations["getMyProfileInfo"];
-  };
-  "/getKwReport": {
-    get: operations["getKwReport"];
-  };
-  "/getKafkaProtocols": {
-    get: operations["getSupportedKafkaProtocols"];
-  };
-  "/getKafkaConnectEnvs": {
-    get: operations["getKafkaConnectEnvs"];
-  };
-  "/getEnvs": {
-    get: operations["getEnvs"];
-  };
-  "/getEnvsPaginated": {
-    get: operations["getEnvsPaginated"];
-  };
-  "/getEnvsBaseCluster": {
-    get: operations["getEnvsBaseCluster"];
-  };
-  "/getEnvsBaseClusterFilteredForTeam": {
-    get: operations["getEnvsBaseClusterFilteredForTeam"];
-  };
-  "/getEnvParams": {
-    get: operations["getEnvParams"];
-  };
-  "/getEnvDetails": {
-    get: operations["getEnvDetails"];
-  };
-  "/getDbAuth": {
-    get: operations["getDbAuth"];
-  };
-  "/getDashboardStats": {
-    get: operations["getDashboardStats"];
-  };
-  "/getConsumerOffsets": {
-    get: operations["getConsumerOffsets"];
-  };
-  "/getConnectors": {
-    get: operations["getConnectors"];
-  };
-  "/getConnectorsToManage": {
-    get: operations["getConnectorsToManage"];
-  };
-  "/getConnectorRequests": {
-    get: operations["getConnectorRequests"];
-  };
-  "/getConnectorRequestsForApprover": {
-    get: operations["getCreatedConnectorRequests"];
-  };
-  "/getConnectorOverview": {
-    get: operations["getConnectorOverview"];
-  };
-  "/getConnectorDetails": {
-    get: operations["getConnectorDetails"];
-  };
-  "/getConnectorDetailsPerEnv": {
-    get: operations["getConnectorDetailsPerEnv"];
-  };
-  "/getClusters": {
-    get: operations["getClusters"];
-  };
-  "/getClustersPaginated": {
-    get: operations["getClustersPaginated"];
-  };
-  "/getClusterInfoFromEnv": {
-    get: operations["getClusterInfoFromEnv"];
-  };
-  "/getClusterDetails": {
-    get: operations["getClusterDetails"];
-  };
-  "/getBrokerTopMetrics": {
-    get: operations["getBrokerTopMetrics"];
-  };
-  "/getBasicInfo": {
-    get: operations["getBasicInfo"];
-  };
-  "/getAuth": {
-    get: operations["getAuth"];
-  };
-  "/getAllTeamsSU": {
-    get: operations["getAllTeamsSU"];
-  };
-  "/getAllTeamsSUOnly": {
-    get: operations["getAllTeamsSUOnly"];
-  };
-  "/getAllTeamsSUFromRegisterUsers": {
-    get: operations["getAllTeamsSUFromRegisterUsers"];
-  };
-  "/getAllServerEditableConfig": {
-    get: operations["getAllEditableProps"];
-  };
-  "/getAllServerConfig": {
-    get: operations["getAllProperties"];
-  };
-  "/getAivenServiceAccounts": {
-    get: operations["getAivenServiceAccounts"];
-  };
-  "/getAivenServiceAccount": {
-    get: operations["getAivenServiceAccountDetails"];
-  };
-  "/getAdvancedTopicConfigs": {
-    get: operations["getAdvancedTopicConfigs"];
-  };
-  "/getActivityLogPerEnv": {
-    get: operations["showActivityLog"];
-  };
-  "/getActivityLogForTeamOverview": {
-    get: operations["getActivityLogForTeamOverview"];
-  };
-  "/getAclsCountPerEnv": {
-    get: operations["getAclsCountPerEnv"];
-  };
-  "/getAclRequests": {
-    get: operations["getAclRequests"];
-  };
-  "/getAclRequestsForApprover": {
-    get: operations["getAclRequestsForApprover"];
-  };
-  "/environments/schemaRegistry": {
-    get: operations["getSchemaRegEnvsPaginated"];
-  };
-  "/environments/schemaRegistry/{envId}": {
-    get: operations["getSchemaRegEnv"];
-  };
-  "/environments/kafkaconnect": {
-    get: operations["getKafkaConnectEnvsPaginated"];
-  };
-  "/environments/kafkaconnect/{envId}": {
-    get: operations["getKafkaConnectEnv"];
-  };
-  "/environments/kafka": {
-    get: operations["getKafkaEnvsPaginated"];
-  };
-  "/environments/kafka/{envId}": {
-    get: operations["getKafkaEnv"];
-  };
-  "/acl/request/{aclRequestId}": {
-    get: operations["getAclRequest"];
-  };
-  "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
-    delete: operations["removeEnvFromCache"];
-  };
+    "/validate/schema": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["validateSchema"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user/updateTeam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateUserTeamFromSwitchTeams"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/uploadSchema": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["uploadSchema"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createTopicsUpdateRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateTenant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateTenant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateTeam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncTopics"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncTopicsBulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncTopicsBulk"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncConnectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncConnectors"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncBackTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncBackTopics"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncBackAcls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncBackAcls"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateSyncAcls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateSyncAcls"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateProfile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updatePermissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updatePermissions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/updateKwCustomProperty": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateKwCustomProperty"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sendMessageToAdmin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sendMessageToAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/schemas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemasOfEnvironment"];
+        put?: never;
+        post: operations["updateSyncSchemas"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/schemas/resetCache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetCacheClusterApi"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/saveTopicDocumentation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["saveTopicDocumentation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/saveConnectorDocumentation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["saveConnectorDocumentation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/resetMemoryCache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetMemoryCache"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reset/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reset/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetPasswordWithToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/request/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete a Request
+         * @description Updates the Status of a request to Deleted
+         */
+        post: operations["deleteRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/request/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decline a Request
+         * @description Updates the Status of a request to Declined
+         */
+        post: operations["declineRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/request/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a Request
+         * @description Updates the Status of a request to Approved and provisions the request
+         */
+        post: operations["approveRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/registerUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registerUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/promote/schema": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["promoteSchema"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequest/reqId/{reqId}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteOperationalRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequest/reqId/{reqId}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineOperationalRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequest/reqId/{reqId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approveOperationalRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequest/consumerOffsetsReset/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createConsumerOffsetsResetRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execTopicRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approveTopicRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execTopicRequestsDecline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineTopicRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execSchemaRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["execSchemaRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execSchemaRequestsDecline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["execSchemaRequestsDecline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execNewUserRequestDecline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineNewUserRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execNewUserRequestApprove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approveNewUserRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execConnectorRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approveTopicRequests_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execConnectorRequestsDecline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineConnectorRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execAclRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approveAclRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execAclRequestDecline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineAclRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteUserRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteTopicRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteTopicRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteTenant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteTenant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteTeamRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteSchemaRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteSchemaRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteRole": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteRole"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteEnvironmentRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteEnvironment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteConnectorRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteConnectorRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteCluster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteCluster"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deleteAclRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteAclRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createTopicsCreateRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createTopicDeleteRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createTopicDeleteRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createDeleteAclSubscriptionRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteAclSubscriptionRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createConnector": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createConnectorRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createConnectorDeleteRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createConnectorDeleteRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createClaimTopicRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createClaimTopicRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createClaimConnectorRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createClaimConnectorRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/createAcl": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createAcl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/connector/restart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["restartConnector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chPwd": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["changePwd"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cache/tenant/{tenantId}/entityType/environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addEnvToCache"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addTenantId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addTenantId"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addRoleId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addRoleId"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addNewUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addNewUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addNewTeam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addNewTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addNewEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addNewEnv"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/addNewCluster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addNewCluster"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/acl/claim/{aclId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["claimAcl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user/{userId}/switchTeamsList": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSwitchTeams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/topic/request/{topicReqId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicRequest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/testClusterApiConnection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["testClusterApiConnection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shutdownContext": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["shutdownApp"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/showUserList": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["showUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaOfTopicFromSource"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/schema/request/{schemaReqId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRequest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/resetCache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["resetCache"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/requests/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get counts of all request entity types for different status,operation types */
+        get: operations["getRequestStatistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequests/requestsFor/{requestsFor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOperationalRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/operationalRequest/consumerOffsetsReset/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["validateOffsetRequestDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getUserInfoFromRegistrationId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRegistrationInfoFromId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getUserDetails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getUserDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getUpdateEnvStatus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getUpdateEnvStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicsRowView": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicsRowView"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicsOnly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicsOnly"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicsCountPerEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicsCountPerEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicTeam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicTeam"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicRequestsForApprover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicRequestsForApprover"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicOverview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicEvents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTopicDetailsPerEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTopicDetailsPerEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTenants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTenantsInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTenantsInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTeamsOverview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTeamsOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getTeamDetails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getTeamDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncTopics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncTopics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncConnectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncConnectors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncConnectorsEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncConnectorsEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncBackAcls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncBackAcls"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSyncAcls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSyncAcls"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getStandardEnvNames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getStandardEnvNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSchemaRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSchemaRequestsForApprover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRequestsForApprover"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSchemaRegEnvs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRegEnvs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getSchemaOfTopic": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaOfTopic"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getRoles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getRolesFromDb": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRolesFromDb"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getRequestTypeStatuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRequestTypeStatuses"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getPermissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPermissions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getPermissionDescriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPermissionDescriptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getNewUserRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getNewUserRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getMyTenantInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getMyTenantInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getMyProfileInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getMyProfileInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getKwReport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKwReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getKafkaProtocols": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSupportedKafkaProtocols"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getKafkaConnectEnvs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKafkaConnectEnvs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvsPaginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvsPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvsBaseCluster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvsBaseCluster"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvsBaseClusterFilteredForTeam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvsBaseClusterFilteredForTeam"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvParams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvParams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getEnvDetails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEnvDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getDbAuth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDbAuth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getDashboardStats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDashboardStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConsumerOffsets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConsumerOffsets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorsToManage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectorsToManage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectorRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorRequestsForApprover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getCreatedConnectorRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorOverview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectorOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorDetails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectorDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getConnectorDetailsPerEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConnectorDetailsPerEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getClusters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getClusters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getClustersPaginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getClustersPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getClusterInfoFromEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getClusterInfoFromEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getClusterDetails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getClusterDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getBrokerTopMetrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBrokerTopMetrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getBasicInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBasicInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAuth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAuth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAllTeamsSU": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllTeamsSU"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAllTeamsSUOnly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllTeamsSUOnly"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAllTeamsSUFromRegisterUsers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllTeamsSUFromRegisterUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAllServerEditableConfig": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllEditableProps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAllServerConfig": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllProperties"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAivenServiceAccounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAivenServiceAccounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAivenServiceAccount": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAivenServiceAccountDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAdvancedTopicConfigs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAdvancedTopicConfigs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getActivityLogPerEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["showActivityLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getActivityLogForTeamOverview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getActivityLogForTeamOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAclsCountPerEnv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAclsCountPerEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAclRequests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAclRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/getAclRequestsForApprover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAclRequestsForApprover"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/schemaRegistry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRegEnvsPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/schemaRegistry/{envId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSchemaRegEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/kafkaconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKafkaConnectEnvsPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/kafkaconnect/{envId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKafkaConnectEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/kafka": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKafkaEnvsPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environments/kafka/{envId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getKafkaEnv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/acl/request/{aclRequestId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAclRequest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cache/tenant/{tenantId}/entityType/environment/id/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["removeEnvFromCache"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 };
-
 export type webhooks = Record<string, never>;
-
 export type components = {
-  schemas: {
-    SchemaRequestModel: {
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      environment: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      topicname: string;
-      schemafull: string;
-      /** @enum {string} */
-      schemaType: "AVRO" | "JSON";
-      schemaversion?: string;
-      forceRegister?: boolean;
-      /** Format: int32 */
-      teamId?: number;
-    };
-    ApiResponse: {
-      success: boolean;
-      errCode?: string;
-      message: string;
-      debugMessage?: string;
-      data?: unknown;
-      /** Format: date-time */
-      timestamp?: string;
-    };
-    UserInfoModel: {
-      fullname: string;
-      mailid?: string;
-      username: string;
-      role: string;
-      userPassword: string;
-      /** Format: int32 */
-      teamId: number;
-      switchTeams: boolean;
-      switchAllowedTeamIds?: number[];
-      switchAllowedTeamNames?: string[];
-      /** Format: int32 */
-      tenantId?: number;
-    };
-    TopicConfigEntry: {
-      configKey?: string;
-      configValue?: string;
-    };
-    TopicUpdateRequestModel: {
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      environment: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
-      /** Format: int32 */
-      teamId?: number;
-      approvingTeamId?: string;
-      deleteAssociatedSchema?: boolean;
-      otherParams?: string;
-    };
-    KwTenantModel: {
-      tenantName: string;
-      tenantDesc: string;
-      contactPerson: string;
-      orgName: string;
-      emailId?: string;
-      /** Format: int32 */
-      tenantId?: number;
-      authorizedToDelete?: boolean;
-      activeTenant?: boolean;
-    };
-    TeamModel: {
-      teamname: string;
-      teammail?: string;
-      teamphone: string;
-      contactperson: string;
-      /** Format: int32 */
-      tenantId?: number;
-      /** Format: int32 */
-      teamId?: number;
-      app?: string;
-      showDeleteTeam?: boolean;
-      tenantName?: string;
-      envList?: string[];
-    };
-    SyncTopicUpdates: {
-      sequence?: string;
-      req_no?: string;
-      topicName?: string;
-      /** Format: int32 */
-      partitions?: number;
-      replicationFactor?: string;
-      teamSelected?: string;
-      envSelected?: string;
-    };
-    SyncTopicsBulk: {
-      topicNames?: string[];
-      sourceEnv?: string;
-      selectedTeam?: string;
-      typeOfSync?: string;
-      topicDetails?: unknown[];
-      topicSearchFilter?: string;
-    };
-    SyncConnectorUpdates: {
-      sequence?: string;
-      connectorId?: string;
-      req_no?: string;
-      connectorName?: string;
-      teamSelected?: string;
-      envSelected?: string;
-    };
-    SyncBackTopics: {
-      topicIds?: string[];
-      sourceEnv?: string;
-      targetEnv?: string;
-      typeOfSync?: string;
-    };
-    SyncBackAcls: {
-      aclIds?: string[];
-      sourceEnv?: string;
-      targetEnv?: string;
-      typeOfSync?: string;
-    };
-    SyncAclUpdates: {
-      sequence?: string;
-      req_no?: string;
-      topicName?: string;
-      teamSelected?: string;
-      consumerGroup?: string;
-      aclIp?: string;
-      aclSsl?: string;
-      aclType?: string;
-      envSelected?: string;
-      aclId?: string;
-    };
-    ProfileModel: {
-      fullname: string;
-      mailid?: string;
-    };
-    KwRolesPermissionsModel: {
-      /** Format: int32 */
-      id?: number;
-      roleId?: string;
-      permission?: string;
-      description?: string;
-      rolePermission?: string;
-      permissionEnabled?: string;
-    };
-    KwPropertiesModel: {
-      kwKey?: string;
-      kwValue?: string;
-      kwDesc?: string;
-    };
-    SyncSchemaUpdates: {
-      topicList?: string[];
-      topicListForRemoval?: string[];
-      sourceKafkaEnvSelected?: string;
-      targetKafkaEnvSelected?: string;
-      topicsSelectionType?: string;
-      typeOfSync?: string;
-      forceRegisterSchema?: boolean;
-    };
-    SchemaResetCache: {
-      kafkaEnvId?: string;
-    };
-    EnvIdInfo: {
-      id: string;
-      name: string;
-    };
-    TopicInfo: {
-      topicName: string;
-      /** Format: int32 */
-      noOfPartitions: number;
-      noOfReplicas: string;
-      description: string;
-      advancedTopicConfiguration?: {
-        [key: string]: string;
-      };
-      teamname: string;
-      /** Format: int32 */
-      teamId: number;
-      envId: string;
-      envName: string;
-      showEditTopic: boolean;
-      showDeleteTopic: boolean;
-      topicDeletable: boolean;
-      /** Format: int32 */
-      topicid: number;
-      sequence: string;
-      environmentsList: components["schemas"]["EnvIdInfo"][];
-      totalNoPages: string;
-      currentPage: string;
-      allPageNos: string[];
-      documentation?: string;
-    };
-    KafkaConnectorModel: {
-      /** Format: int32 */
-      connectorId: number;
-      connectorName: string;
-      documentation: string;
-    };
-    ResetEntityCache: {
-      /** Format: int32 */
-      tenantId?: number;
-      entityType?: string;
-      entityValue?: string;
-      operationType?: string;
-    };
-    ResetPasswordInfo: {
-      tokenSent: boolean;
-      userFound: boolean;
-    };
-    RequestVerdict: {
-      reason?: string;
-      /** @enum {string} */
-      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      reqIds: string[];
-    };
-    RegisterUserInfoModel: {
-      username: string;
-      pwd?: string;
-      team?: string;
-      /** Format: int32 */
-      teamId?: number;
-      role?: string;
-      fullname: string;
-      mailid?: string;
-      status?: string;
-      /** Format: date-time */
-      registeredTime?: string;
-      approver?: string;
-      registrationId?: string;
-      /** Format: int32 */
-      tenantId?: number;
-      tenantName?: string;
-    };
-    SchemaPromotion: {
-      targetEnvironment: string;
-      sourceEnvironment: string;
-      topicName: string;
-      schemaVersion: string;
-      forceRegister?: boolean;
-      appName: string;
-      remarks: string;
-    };
-    ConsumerOffsetResetRequestModel: {
-      /** @enum {string} */
-      operationalRequestType: "RESET_CONSUMER_OFFSETS";
-      environment: string;
-      /** Format: int32 */
-      requestingTeamId?: number;
-      approvingTeamId?: string;
-      otherParams?: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      topicname: string;
-      consumerGroup: string;
-      /** @enum {string} */
-      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
-      resetTimeStampStr?: string;
-    };
-    TopicCreateRequestModel: {
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      environment: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
-      /** Format: int32 */
-      teamId?: number;
-      approvingTeamId?: string;
-      deleteAssociatedSchema?: boolean;
-      otherParams?: string;
-    };
-    TopicDeleteRequestModel: {
-      topicName: string;
-      env: string;
-      deleteAssociatedSchema: boolean;
-    };
-    DeleteAclRequestModel: {
-      requestId: string;
-    };
-    KafkaConnectorRequestModel: {
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      environment: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      connectorName: string;
-      connectorConfig: string;
-      description: string;
-      /** Format: int32 */
-      teamId?: number;
-      otherParams?: string;
-    };
-    KafkaConnectorDeleteRequestModel: {
-      connectorName: string;
-      envId: string;
-    };
-    TopicClaimRequestModel: {
-      topicName: string;
-      env: string;
-    };
-    ConnectorClaimRequestModel: {
-      connectorName: string;
-      env: string;
-    };
-    AclApproval: {
-      /** Format: int32 */
-      approvalId?: number;
-      /** @enum {string} */
-      approvalType?: "TOPIC_TEAM_OWNER" | "CONNECTOR_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
-      requiredApprover?: string;
-      approverName?: string;
-      /** Format: int32 */
-      approverTeamId?: number;
-      approverTeamName?: string;
-      parent?: components["schemas"]["AclRequests"];
-    };
-    AclRequests: {
-      /** Format: int32 */
-      req_no?: number;
-      /** Format: int32 */
-      tenantId?: number;
-      topicname?: string;
-      environment?: string;
-      environmentName?: string;
-      /** Format: int32 */
-      teamId?: number;
-      /** Format: int32 */
-      requestingteam?: number;
-      appname?: string;
-      aclType?: string;
-      consumergroup?: string;
-      requestor?: string;
-      /** Format: date-time */
-      requesttime?: string;
-      requesttimestring?: string;
-      requestStatus?: string;
-      remarks?: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      requestOperationType?: string;
-      aclPatternType?: string;
-      aclResourceType?: string;
-      transactionalId?: string;
-      otherParams?: string;
-      jsonParams?: {
-        [key: string]: string;
-      };
-      /** @enum {string} */
-      aclIpPrincipleType?: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /** Format: int32 */
-      associatedAclId?: number;
-      totalNoPages?: string;
-      currentPage?: string;
-      allPageNos?: string[];
-    };
-    AclRequestsModel: {
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      environment: string;
-      appname?: string;
-      remarks?: string;
-      requestor?: string;
-      /** Format: int32 */
-      requestId?: number;
-      topicname: string;
-      consumergroup?: string;
-      acl_ip?: string[];
-      acl_ssl?: string[];
-      aclPatternType: string;
-      transactionalId?: string;
-      /** Format: int32 */
-      teamId: number;
-      /** @enum {string} */
-      aclType: "PRODUCER" | "CONSUMER";
-      /** @enum {string} */
-      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /** Format: int32 */
-      requestingteam?: number;
-      aclResourceType?: string;
-      otherParams?: string;
-      approvals?: components["schemas"]["AclApproval"][];
-    };
-    KafkaConnectorRestartModel: {
-      connectorName: string;
-      envId: string;
-      includeOnlyFailedTasks: boolean;
-    };
-    ChangePasswordRequestModel: {
-      pwd: string;
-      repeatPwd: string;
-    };
-    Env: {
-      id?: string;
-      /** Format: int32 */
-      tenantId?: number;
-      name?: string;
-      stretchCode?: string;
-      /** Format: int32 */
-      clusterId?: number;
-      type?: string;
-      otherParams?: string;
-      envExists?: string;
-      /** @enum {string} */
-      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
-      /** Format: date-time */
-      envStatusTime?: string;
-      envStatusTimeString?: string;
-      associatedEnv?: components["schemas"]["EnvTag"];
-      params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: string[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: string[];
-      topicPrefix?: string[];
-      topicSuffix?: string[];
-      topicRegex?: string[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
-    };
-    EnvModel: {
-      name: string;
-      type: string;
-      /** Format: int32 */
-      clusterId: number;
-      otherParams?: string;
-      id?: string;
-      associatedEnv?: components["schemas"]["EnvTag"];
-      /** Format: int32 */
-      tenantId?: number;
-      params?: components["schemas"]["EnvParams"];
-    };
-    KwClustersModel: {
-      /** Format: int32 */
-      clusterId?: number;
-      clusterName: string;
-      bootstrapServers: string;
-      /** @enum {string} */
-      protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
-      /** @enum {string} */
-      clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
-      /** @enum {string} */
-      kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
-      associatedServers?: string;
-      projectName?: string;
-      serviceName?: string;
-    };
-    ServiceAccounts: {
-      /** Format: int32 */
-      numberOfAllowedAccounts?: number;
-      serviceAccountsList?: string[];
-    };
-    TeamModelResponse: {
-      teamname: string;
-      teamphone: string;
-      contactperson: string;
-      /** Format: int32 */
-      teamId: number;
-      /** Format: int32 */
-      tenantId: number;
-      showDeleteTeam: boolean;
-      tenantName: string;
-      serviceAccounts?: components["schemas"]["ServiceAccounts"];
-      app?: string;
-      teammail?: string;
-      envList?: string[];
-    };
-    TopicRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      /** Format: int32 */
-      topicid: number;
-      deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
-      approvingTeamId?: string;
-      sequence?: string;
-      possibleTeams?: string[];
-      deletable?: boolean;
-      editable?: boolean;
-    };
-    ConnectivityStatus: {
-      clusterType?: string;
-      connectionStatus?: string;
-    };
-    UserInfoModelResponse: {
-      username: string;
-      fullname: string;
-      mailid: string;
-      role: string;
-      switchTeams: boolean;
-      team: string;
-      /** Format: int32 */
-      teamId: number;
-      /** Format: int32 */
-      tenantId: number;
-      userPassword?: string;
-      switchAllowedTeamIds?: number[];
-      switchAllowedTeamNames?: string[];
-      totalNoPages?: string;
-      allPageNos?: string[];
-    };
-    SchemaSubjectInfoResponse: {
-      topic?: string;
-      schemaVersions?: number[];
-      teamname?: string;
-      /** Format: int32 */
-      teamId?: number;
-      possibleTeams?: string[];
-      remarks?: string;
-      envId?: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-    };
-    SyncSchemasList: {
-      schemaSubjectInfoResponseList?: components["schemas"]["SchemaSubjectInfoResponse"][];
-      /** Format: int32 */
-      allTopicsCount?: number;
-    };
-    SchemaDetailsResponse: {
-      schemaContent?: string;
-      topicName?: string;
-      schemaVersion?: string;
-      envName?: string;
-    };
-    SchemaRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      schemafull: string;
-      /** Format: int32 */
-      req_no: number;
-      forceRegister: boolean;
-      /** @enum {string} */
-      schemaType: "AVRO" | "JSON";
-      schemaversion?: string;
-      deletable?: boolean;
-      editable?: boolean;
-    };
-    RequestEntityStatusCount: {
-      /** @enum {string} */
-      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
-      requestStatusCountSet: components["schemas"]["RequestStatusCount"][];
-      requestsOperationTypeCountSet: components["schemas"]["RequestsOperationTypeCount"][];
-    };
-    RequestStatusCount: {
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: int64 */
-      count: number;
-    };
-    RequestsCountOverview: {
-      requestEntityStatistics: components["schemas"]["RequestEntityStatusCount"][];
-    };
-    RequestsOperationTypeCount: {
-      /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** Format: int64 */
-      count?: number;
-    };
-    OperationalRequestsResponseModel: {
-      topicname: string;
-      consumerGroup: string;
-      /** @enum {string} */
-      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
-      resetTimeStampStr?: string;
-      description: string;
-      /** Format: int32 */
-      reqId: number;
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      operationalRequestType: "RESET_CONSUMER_OFFSETS";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      approvingTeamId?: string;
-      sequence?: string;
-      possibleTeams?: string[];
-      deletable?: boolean;
-      editable?: boolean;
-    };
-    RegisterUserInfoModelResponse: {
-      username: string;
-      fullname: string;
-      mailid?: string;
-      pwd?: string;
-      team?: string;
-      /** Format: int32 */
-      teamId?: number;
-      role?: string;
-      status?: string;
-      /** Format: date-time */
-      registeredTime?: string;
-      approver?: string;
-      registrationId?: string;
-      /** Format: int32 */
-      tenantId?: number;
-      tenantName?: string;
-    };
-    EnvUpdatedStatus: {
-      result: string;
-      /** @enum {string} */
-      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
-      /** Format: date-time */
-      envStatusTime: string;
-      envStatusTimeString: string;
-    };
-    TopicsCountPerEnv: {
-      status?: string;
-      topicsCount?: string;
-    };
-    TopicTeamResponse: {
-      team?: string;
-      /** Format: int32 */
-      teamId?: number;
-      error?: string;
-      status: boolean;
-    };
-    AclOverviewInfo: {
-      req_no: string;
-      aclPatternType: string;
-      environment: string;
-      environmentName: string;
-      /** @enum {string} */
-      kafkaFlavorType: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
-      showDeleteAcl: boolean;
-      showClaimAcl: boolean;
-      /** Format: int32 */
-      teamid: number;
-      teamname: string;
-      topicname: string;
-      topictype: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      acl_ips?: string[];
-      acl_ssls?: string[];
-      consumergroup?: string;
-      transactionalId?: string;
-    };
-    PromotionStatus: {
-      /** @enum {string} */
-      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
-      sourceEnv?: string;
-      targetEnv?: string;
-      targetEnvId?: string;
-      error?: string;
-      topicName?: string;
-    };
-    ResourceHistory: {
-      environmentName: string;
-      teamName: string;
-      requestedBy: string;
-      requestedTime: string;
-      approvedBy: string;
-      approvedTime: string;
-      remarks: string;
-    };
-    TopicOverview: {
-      topicExists: boolean;
-      schemaExists: boolean;
-      prefixAclsExists: boolean;
-      txnAclsExists: boolean;
-      createSchemaAllowed: boolean;
-      topicInfoList: components["schemas"]["TopicOverviewInfo"][];
-      aclInfoList?: components["schemas"]["AclOverviewInfo"][];
-      prefixedAclInfoList?: components["schemas"]["AclOverviewInfo"][];
-      transactionalAclInfoList?: components["schemas"]["AclOverviewInfo"][];
-      topicHistoryList?: components["schemas"]["ResourceHistory"][];
-      topicPromotionDetails: components["schemas"]["PromotionStatus"];
-      availableEnvironments: components["schemas"]["EnvIdInfo"][];
-      topicDocumentation?: string;
-      /** Format: int32 */
-      topicIdForDocumentation: number;
-    };
-    TopicOverviewInfo: {
-      topicName: string;
-      /** Format: int32 */
-      noOfPartitions: number;
-      noOfReplicas: string;
-      description: string;
-      advancedTopicConfiguration?: {
-        [key: string]: string;
-      };
-      teamname: string;
-      /** Format: int32 */
-      teamId: number;
-      envId: string;
-      envName: string;
-      showEditTopic: boolean;
-      showDeleteTopic: boolean;
-      topicDeletable: boolean;
-      topicOwner: boolean;
-      highestEnv: boolean;
-      hasOpenRequest: boolean;
-      hasOpenTopicRequest: boolean;
-      hasOpenACLRequest: boolean;
-      hasOpenSchemaRequest: boolean;
-      hasOpenClaimRequest: boolean;
-      hasOpenRequestOnAnyEnv: boolean;
-      hasACL: boolean;
-      hasSchema: boolean;
-      /** Format: int32 */
-      clusterId: number;
-    };
-    TopicBaseConfig: {
-      topicName: string;
-      /** Format: int32 */
-      noOfPartitions: number;
-      noOfReplicas: string;
-      description: string;
-      advancedTopicConfiguration?: {
-        [key: string]: string;
-      };
-    };
-    TopicDetailsPerEnv: {
-      topicExists: boolean;
-      error?: string;
-      topicId?: string;
-      topicContents?: components["schemas"]["TopicBaseConfig"];
-    };
-    TenantInfo: {
-      /** Format: int32 */
-      tenants?: number;
-      /** Format: int32 */
-      teams?: number;
-      /** Format: int32 */
-      clusters?: number;
-      /** Format: int32 */
-      topics?: number;
-    };
-    ChartsJsOverview: {
-      data?: number[];
-      labels?: string[];
-      colors?: string[];
-      options?: components["schemas"]["Options"];
-      series?: string[];
-      titleForReport?: string;
-      xaxisLabel?: string;
-      yaxisLabel?: string;
-    };
-    Options: {
-      title?: components["schemas"]["Title"];
-      scales?: components["schemas"]["Scales"];
-    };
-    Scales: {
-      yaxes?: components["schemas"]["YAx"][];
-      xaxes?: components["schemas"]["YAx"][];
-    };
-    TeamOverview: {
-      producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
-      consumerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
-      aclsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
-      topicsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
-      topicsPerTeamPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
-      topicsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
-      partitionsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
-      activityLogOverview?: components["schemas"]["ChartsJsOverview"];
-      tenantName?: string;
-    };
-    Title: {
-      display?: boolean;
-      text?: string;
-      position?: string;
-      fontColor?: string;
-      fontFamily?: string;
-      fontStyle?: string;
-    };
-    YAx: {
-      id?: string;
-      type?: string;
-      display?: boolean;
-      position?: string;
-    };
-    SyncTopicsList: {
-      resultSet?: components["schemas"]["TopicSyncResponseModel"][];
-      /** Format: int32 */
-      allTopicsCount?: number;
-      /** Format: int32 */
-      allTopicWarningsCount?: number;
-      topicsLoadingStatus?: boolean;
-    };
-    TopicSyncResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      /** Format: int32 */
-      topicid: number;
-      deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
-      approvingTeamId?: string;
-      sequence?: string;
-      possibleTeams?: string[];
-      validationStatus?: string;
-      validatedTopic?: boolean;
-      deletable?: boolean;
-      editable?: boolean;
-    };
-    KafkaConnectorModelResponse: {
-      /** Format: int32 */
-      sequence?: number;
-      /** Format: int32 */
-      connectorId: number;
-      connectorName: string;
-      connectorStatus: string;
-      /** Format: int64 */
-      runningTasks: number;
-      /** Format: int64 */
-      failedTasks: number;
-      environmentId: string;
-      teamName: string;
-      /** Format: int32 */
-      teamId: number;
-      showEditConnector: boolean;
-      showDeleteConnector: boolean;
-      connectorDeletable: boolean;
-      connectorOwner: boolean;
-      highestEnv: boolean;
-      hasOpenRequest: boolean;
-      hasOpenClaimRequest: boolean;
-      hasOpenRequestOnAnyEnv: boolean;
-      allPageNos?: string[];
-      totalNoPages?: string;
-      currentPage?: string;
-      environmentsList?: components["schemas"]["EnvIdInfo"][];
-      possibleTeams?: string[];
-      connectorConfig?: string;
-      environmentName?: string;
-      remarks?: string;
-      documentation?: string;
-      description?: string;
-    };
-    EnvModelResponse: {
-      id: string;
-      name: string;
-      type: string;
-      /** Format: int32 */
-      tenantId: number;
-      /** Format: int32 */
-      clusterId: number;
-      tenantName: string;
-      clusterName: string;
-      /** @enum {string} */
-      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
-      /** Format: date-time */
-      envStatusTime: string;
-      envStatusTimeString: string;
-      otherParams: string;
-      showDeleteEnv: boolean;
-      totalNoPages: string;
-      currentPage: string;
-      allPageNos: string[];
-      /** Format: int32 */
-      totalRecs: number;
-      associatedEnv?: components["schemas"]["EnvTag"];
-      params: components["schemas"]["EnvParams"];
-      /** @enum {string} */
-      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
-    };
-    AclInfo: {
-      sequence?: string;
-      req_no?: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      acl_ips?: string[];
-      acl_ssls?: string[];
-      topicname?: string;
-      topictype?: string;
-      consumergroup?: string;
-      environment?: string;
-      environmentName?: string;
-      teamname?: string;
-      /** Format: int32 */
-      teamid?: number;
-      operation?: string;
-      permission?: string;
-      transactionalId?: string;
-      aclPatternType?: string;
-      aclId?: string;
-      totalNoPages?: string;
-      allPageNos?: string[];
-      possibleTeams?: string[];
-      currentPage?: string;
-      showDeleteAcl?: boolean;
-      /** @enum {string} */
-      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
-      remarks?: string;
-    };
-    SchemaDetailsPerEnv: {
-      /** Format: int32 */
-      id: number;
-      /** Format: int32 */
-      version: number;
-      /** Format: int32 */
-      nextVersion: number;
-      /** Format: int32 */
-      prevVersion: number;
-      compatibility: string;
-      /** @enum {string} */
-      schemaType: "AVRO" | "JSON";
-      content: string;
-      env: string;
-      showNext: boolean;
-      showPrev: boolean;
-      latest: boolean;
-    };
-    SchemaOverview: {
-      topicExists: boolean;
-      schemaExists: boolean;
-      prefixAclsExists: boolean;
-      txnAclsExists: boolean;
-      createSchemaAllowed: boolean;
-      allSchemaVersions?: number[];
-      /** Format: int32 */
-      latestVersion?: number;
-      schemaPromotionDetails: components["schemas"]["PromotionStatus"];
-      schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
-    };
-    KwReport: {
-      data?: string;
-      filename?: string;
-    };
-    SupportedProtocolInfo: {
-      name?: string;
-      value?: string;
-    };
-    DbAuthInfo: {
-      dbauth: string;
-    };
-    DashboardStats: {
-      /** Format: int32 */
-      producerCount?: number;
-      /** Format: int32 */
-      consumerCount?: number;
-      /** Format: int32 */
-      teamMembersCount?: number;
-    };
-    OffsetDetails: {
-      topicPartitionId: string;
-      currentOffset: string;
-      endOffset: string;
-      lag: string;
-    };
-    KafkaConnectorRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      connectorName: string;
-      description: string;
-      connectorConfig: string;
-      /** Format: int32 */
-      connectorId: number;
-      possibleTeams?: string[];
-      approvingTeamId?: string;
-      deletable?: boolean;
-      editable?: boolean;
-    };
-    ConnectorOverview: {
-      connectorInfoList: components["schemas"]["KafkaConnectorModelResponse"][];
-      connectorHistoryList?: components["schemas"]["ResourceHistory"][];
-      promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
-      connectorExists: boolean;
-      availableEnvironments: components["schemas"]["EnvIdInfo"][];
-      connectorDocumentation?: string;
-      /** Format: int32 */
-      connectorIdForDocumentation: number;
-    };
-    ConnectorPromotionStatus: {
-      /** @enum {string} */
-      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
-      sourceEnv?: string;
-      targetEnv?: string;
-      targetEnvId?: string;
-      error?: string;
-      connectorName?: string;
-      sourceConnectorConfig?: string;
-    };
-    ConnectorOverviewPerEnv: {
-      connectorExists?: boolean;
-      error?: string;
-      /** Format: int32 */
-      connectorId?: number;
-      connectorContents?: components["schemas"]["KafkaConnectorModelResponse"];
-    };
-    KwClustersModelResponse: {
-      /** Format: int32 */
-      clusterId: number;
-      clusterName: string;
-      bootstrapServers: string;
-      /** @enum {string} */
-      protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
-      /** @enum {string} */
-      clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
-      /** @enum {string} */
-      kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
-      showDeleteCluster: boolean;
-      totalNoPages: string;
-      allPageNos: string[];
-      /** @enum {string} */
-      clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
-      currentPage: string;
-      associatedServers?: string;
-      projectName?: string;
-      serviceName?: string;
-    };
-    ClusterInfo: {
-      aivenCluster: boolean;
-    };
-    JmxOverview: {
-      brokerTopMetricsOverview?: components["schemas"]["ChartsJsOverview"];
-    };
-    AuthenticationInfo: {
-      contextPath: string;
-      teamsize: string;
-      schema_clusters_count: string;
-      kafka_clusters_count: string;
-      kafkaconnect_clusters_count: string;
-      canSwitchTeams: string;
-      broadcastText: string;
-      tenantActiveStatus: string;
-      username: string;
-      authenticationType: string;
-      teamname: string;
-      teamId: string;
-      tenantName: string;
-      userrole: string;
-      companyinfo: string;
-      klawversion: string;
-      notifications: string;
-      notificationsAcls: string;
-      notificationsSchemas: string;
-      notificationsUsers: string;
-      notificationsConnectors: string;
-      canShutdownKw: string;
-      canUpdatePermissions: string;
-      addEditRoles: string;
-      viewTopics: string;
-      requestItems: string;
-      viewKafkaConnect: string;
-      syncBackTopics: string;
-      syncBackSchemas: string;
-      syncBackAcls: string;
-      updateServerConfig: string;
-      showServerConfigEnvProperties: string;
-      addUser: string;
-      addTeams: string;
-      syncTopicsAcls: string;
-      syncConnectors: string;
-      manageConnectors: string;
-      syncSchemas: string;
-      approveAtleastOneRequest: string;
-      approveDeclineTopics: string;
-      approveDeclineOperationalReqs: string;
-      approveDeclineSubscriptions: string;
-      approveDeclineSchemas: string;
-      approveDeclineConnectors: string;
-      pendingApprovalsRedirectionPage: string;
-      showAddDeleteTenants: string;
-      addDeleteEditClusters: string;
-      addDeleteEditEnvs: string;
-      coralEnabled: string;
-      coralAvailableForUser: string;
-      adAuthRoleEnabled: string;
-      supportlink: string;
-      myteamtopics: string;
-      myOrgTopics: string;
-      googleFeedbackFormLink: string;
-      klawOptionalPermissionNewTopicCreationEnabled: string;
-      klawOptionalPermissionNewTopicCreation: string;
-    };
-    KwPropertiesResponse: {
-      result?: string;
-      kwkey?: string;
-      kwvalue?: string;
-      kwdesc?: string;
-    };
-    ServerConfigProperties: {
-      id?: string;
-      key?: string;
-      value?: string;
-    };
-    ServiceAccountDetails: {
-      username?: string;
-      password?: string;
-      accountFound?: boolean;
-    };
-    ActivityLogModel: {
-      /** Format: int32 */
-      req_no: number;
-      activityName: string;
-      activityType: string;
-      /** Format: date-time */
-      activityTime: string;
-      activityTimeString: string;
-      details: string;
-      user: string;
-      team: string;
-      /** Format: int32 */
-      teamId: number;
-      env: string;
-      /** Format: int32 */
-      tenantId: number;
-      envName: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      currentPage: string;
-    };
-    AclsCountPerEnv: {
-      status?: string;
-      aclsCount?: string;
-    };
-    AclRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: string[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      aclPatternType: string;
-      /** @enum {string} */
-      aclType: "PRODUCER" | "CONSUMER";
-      /** @enum {string} */
-      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /** Format: int32 */
-      req_no: number;
-      /** Format: int32 */
-      requestingteam: number;
-      requestingTeamName: string;
-      consumergroup: string;
-      acl_ip: string[];
-      acl_ssl: string[];
-      approvals?: components["schemas"]["AclApproval"][];
-      transactionalId?: string;
-      aclResourceType?: string;
-      deletable?: boolean;
-      editable?: boolean;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    schemas: {
+        SchemaRequestModel: {
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            environment: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            topicname: string;
+            schemafull: string;
+            /** @enum {string} */
+            schemaType: "AVRO" | "JSON";
+            schemaversion?: string;
+            forceRegister?: boolean;
+            /** Format: int32 */
+            teamId?: number;
+        };
+        ApiResponse: {
+            success: boolean;
+            errCode?: string;
+            message: string;
+            debugMessage?: string;
+            data?: unknown;
+            /** Format: date-time */
+            timestamp?: string;
+        };
+        UserInfoModel: {
+            fullname: string;
+            mailid?: string;
+            username: string;
+            role: string;
+            userPassword: string;
+            /** Format: int32 */
+            teamId: number;
+            switchTeams: boolean;
+            switchAllowedTeamIds?: number[];
+            switchAllowedTeamNames?: string[];
+            /** Format: int32 */
+            tenantId?: number;
+        };
+        TopicConfigEntry: {
+            configKey?: string;
+            configValue?: string;
+        };
+        TopicUpdateRequestModel: {
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            environment: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            topicname: string;
+            /** Format: int32 */
+            topicpartitions: number;
+            replicationfactor: string;
+            description: string;
+            advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
+            /** Format: int32 */
+            teamId?: number;
+            approvingTeamId?: string;
+            deleteAssociatedSchema?: boolean;
+            otherParams?: string;
+        };
+        KwTenantModel: {
+            tenantName: string;
+            tenantDesc: string;
+            contactPerson: string;
+            orgName: string;
+            emailId?: string;
+            /** Format: int32 */
+            tenantId?: number;
+            authorizedToDelete?: boolean;
+            activeTenant?: boolean;
+        };
+        TeamModel: {
+            teamname: string;
+            teammail?: string;
+            teamphone: string;
+            contactperson: string;
+            /** Format: int32 */
+            tenantId?: number;
+            /** Format: int32 */
+            teamId?: number;
+            app?: string;
+            showDeleteTeam?: boolean;
+            tenantName?: string;
+            envList?: string[];
+        };
+        SyncTopicUpdates: {
+            sequence?: string;
+            req_no?: string;
+            topicName?: string;
+            /** Format: int32 */
+            partitions?: number;
+            replicationFactor?: string;
+            teamSelected?: string;
+            envSelected?: string;
+        };
+        SyncTopicsBulk: {
+            topicNames?: string[];
+            sourceEnv?: string;
+            selectedTeam?: string;
+            typeOfSync?: string;
+            topicDetails?: unknown[];
+            topicSearchFilter?: string;
+        };
+        SyncConnectorUpdates: {
+            sequence?: string;
+            connectorId?: string;
+            req_no?: string;
+            connectorName?: string;
+            teamSelected?: string;
+            envSelected?: string;
+        };
+        SyncBackTopics: {
+            topicIds?: string[];
+            sourceEnv?: string;
+            targetEnv?: string;
+            typeOfSync?: string;
+        };
+        SyncBackAcls: {
+            aclIds?: string[];
+            sourceEnv?: string;
+            targetEnv?: string;
+            typeOfSync?: string;
+        };
+        SyncAclUpdates: {
+            sequence?: string;
+            req_no?: string;
+            topicName?: string;
+            teamSelected?: string;
+            consumerGroup?: string;
+            aclIp?: string;
+            aclSsl?: string;
+            aclType?: string;
+            envSelected?: string;
+            aclId?: string;
+        };
+        ProfileModel: {
+            fullname: string;
+            mailid?: string;
+        };
+        KwRolesPermissionsModel: {
+            /** Format: int32 */
+            id?: number;
+            roleId?: string;
+            permission?: string;
+            description?: string;
+            rolePermission?: string;
+            permissionEnabled?: string;
+        };
+        KwPropertiesModel: {
+            kwKey?: string;
+            kwValue?: string;
+            kwDesc?: string;
+        };
+        SyncSchemaUpdates: {
+            topicList?: string[];
+            topicListForRemoval?: string[];
+            sourceKafkaEnvSelected?: string;
+            targetKafkaEnvSelected?: string;
+            topicsSelectionType?: string;
+            typeOfSync?: string;
+            forceRegisterSchema?: boolean;
+        };
+        SchemaResetCache: {
+            kafkaEnvId?: string;
+        };
+        EnvIdInfo: {
+            id: string;
+            name: string;
+        };
+        TopicInfo: {
+            topicName: string;
+            /** Format: int32 */
+            noOfPartitions: number;
+            noOfReplicas: string;
+            description: string;
+            advancedTopicConfiguration?: {
+                [key: string]: string;
+            };
+            teamname: string;
+            /** Format: int32 */
+            teamId: number;
+            envId: string;
+            envName: string;
+            showEditTopic: boolean;
+            showDeleteTopic: boolean;
+            topicDeletable: boolean;
+            /** Format: int32 */
+            topicid: number;
+            sequence: string;
+            environmentsList: components["schemas"]["EnvIdInfo"][];
+            totalNoPages: string;
+            currentPage: string;
+            allPageNos: string[];
+            documentation?: string;
+        };
+        KafkaConnectorModel: {
+            /** Format: int32 */
+            connectorId: number;
+            connectorName: string;
+            documentation: string;
+        };
+        ResetEntityCache: {
+            /** Format: int32 */
+            tenantId?: number;
+            entityType?: string;
+            entityValue?: string;
+            operationType?: string;
+        };
+        ResetPasswordInfo: {
+            tokenSent: boolean;
+            userFound: boolean;
+        };
+        RequestVerdict: {
+            reason?: string;
+            /** @enum {string} */
+            requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
+            reqIds: string[];
+        };
+        RegisterUserInfoModel: {
+            username: string;
+            pwd?: string;
+            team?: string;
+            /** Format: int32 */
+            teamId?: number;
+            role?: string;
+            fullname: string;
+            mailid?: string;
+            status?: string;
+            /** Format: date-time */
+            registeredTime?: string;
+            approver?: string;
+            registrationId?: string;
+            /** Format: int32 */
+            tenantId?: number;
+            tenantName?: string;
+        };
+        SchemaPromotion: {
+            targetEnvironment: string;
+            sourceEnvironment: string;
+            topicName: string;
+            schemaVersion: string;
+            forceRegister?: boolean;
+            appName: string;
+            remarks: string;
+        };
+        ConsumerOffsetResetRequestModel: {
+            /** @enum {string} */
+            operationalRequestType: "RESET_CONSUMER_OFFSETS";
+            environment: string;
+            /** Format: int32 */
+            requestingTeamId?: number;
+            approvingTeamId?: string;
+            otherParams?: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            topicname: string;
+            consumerGroup: string;
+            /** @enum {string} */
+            offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+            resetTimeStampStr?: string;
+        };
+        TopicCreateRequestModel: {
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            environment: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            topicname: string;
+            /** Format: int32 */
+            topicpartitions: number;
+            replicationfactor: string;
+            description: string;
+            advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
+            /** Format: int32 */
+            teamId?: number;
+            approvingTeamId?: string;
+            deleteAssociatedSchema?: boolean;
+            otherParams?: string;
+        };
+        TopicDeleteRequestModel: {
+            topicName: string;
+            env: string;
+            deleteAssociatedSchema: boolean;
+        };
+        DeleteAclRequestModel: {
+            requestId: string;
+        };
+        KafkaConnectorRequestModel: {
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            environment: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            connectorName: string;
+            connectorConfig: string;
+            description: string;
+            /** Format: int32 */
+            teamId?: number;
+            otherParams?: string;
+        };
+        KafkaConnectorDeleteRequestModel: {
+            connectorName: string;
+            envId: string;
+        };
+        TopicClaimRequestModel: {
+            topicName: string;
+            env: string;
+        };
+        ConnectorClaimRequestModel: {
+            connectorName: string;
+            env: string;
+        };
+        AclApproval: {
+            /** Format: int32 */
+            approvalId?: number;
+            /** @enum {string} */
+            approvalType?: "TOPIC_TEAM_OWNER" | "CONNECTOR_TEAM_OWNER" | "ACL_TEAM_OWNER" | "TEAM";
+            requiredApprover?: string;
+            approverName?: string;
+            /** Format: int32 */
+            approverTeamId?: number;
+            approverTeamName?: string;
+            parent?: components["schemas"]["AclRequests"];
+        };
+        AclRequests: {
+            /** Format: int32 */
+            req_no?: number;
+            /** Format: int32 */
+            tenantId?: number;
+            topicname?: string;
+            environment?: string;
+            environmentName?: string;
+            /** Format: int32 */
+            teamId?: number;
+            /** Format: int32 */
+            requestingteam?: number;
+            appname?: string;
+            aclType?: string;
+            consumergroup?: string;
+            requestor?: string;
+            /** Format: date-time */
+            requesttime?: string;
+            requesttimestring?: string;
+            requestStatus?: string;
+            remarks?: string;
+            acl_ip?: string;
+            acl_ssl?: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            requestOperationType?: string;
+            aclPatternType?: string;
+            aclResourceType?: string;
+            transactionalId?: string;
+            otherParams?: string;
+            jsonParams?: {
+                [key: string]: string;
+            };
+            /** @enum {string} */
+            aclIpPrincipleType?: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+            /** Format: int32 */
+            associatedAclId?: number;
+            totalNoPages?: string;
+            currentPage?: string;
+            allPageNos?: string[];
+        };
+        AclRequestsModel: {
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            environment: string;
+            appname?: string;
+            remarks?: string;
+            requestor?: string;
+            /** Format: int32 */
+            requestId?: number;
+            topicname: string;
+            consumergroup?: string;
+            acl_ip?: string[];
+            acl_ssl?: string[];
+            aclPatternType: string;
+            transactionalId?: string;
+            /** Format: int32 */
+            teamId: number;
+            /** @enum {string} */
+            aclType: "PRODUCER" | "CONSUMER";
+            /** @enum {string} */
+            aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+            /** Format: int32 */
+            requestingteam?: number;
+            aclResourceType?: string;
+            otherParams?: string;
+            approvals?: components["schemas"]["AclApproval"][];
+        };
+        KafkaConnectorRestartModel: {
+            connectorName: string;
+            envId: string;
+            includeOnlyFailedTasks: boolean;
+        };
+        ChangePasswordRequestModel: {
+            pwd: string;
+            repeatPwd: string;
+        };
+        Env: {
+            id?: string;
+            /** Format: int32 */
+            tenantId?: number;
+            name?: string;
+            stretchCode?: string;
+            /** Format: int32 */
+            clusterId?: number;
+            type?: string;
+            otherParams?: string;
+            envExists?: string;
+            /** @enum {string} */
+            envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+            /** Format: date-time */
+            envStatusTime?: string;
+            envStatusTimeString?: string;
+            associatedEnv?: components["schemas"]["EnvTag"];
+            params?: components["schemas"]["EnvParams"];
+        };
+        EnvParams: {
+            defaultPartitions?: string;
+            maxPartitions?: string;
+            partitionsList?: string[];
+            defaultRepFactor?: string;
+            maxRepFactor?: string;
+            replicationFactorList?: string[];
+            topicPrefix?: string[];
+            topicSuffix?: string[];
+            topicRegex?: string[];
+            applyRegex?: boolean;
+        };
+        EnvTag: {
+            id?: string;
+            name?: string;
+        };
+        EnvModel: {
+            name: string;
+            type: string;
+            /** Format: int32 */
+            clusterId: number;
+            otherParams?: string;
+            id?: string;
+            associatedEnv?: components["schemas"]["EnvTag"];
+            /** Format: int32 */
+            tenantId?: number;
+            params?: components["schemas"]["EnvParams"];
+        };
+        KwClustersModel: {
+            /** Format: int32 */
+            clusterId?: number;
+            clusterName: string;
+            bootstrapServers: string;
+            /** @enum {string} */
+            protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+            /** @enum {string} */
+            clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+            /** @enum {string} */
+            kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+            associatedServers?: string;
+            projectName?: string;
+            serviceName?: string;
+        };
+        ServiceAccounts: {
+            /** Format: int32 */
+            numberOfAllowedAccounts?: number;
+            serviceAccountsList?: string[];
+        };
+        TeamModelResponse: {
+            teamname: string;
+            teamphone: string;
+            contactperson: string;
+            /** Format: int32 */
+            teamId: number;
+            /** Format: int32 */
+            tenantId: number;
+            showDeleteTeam: boolean;
+            tenantName: string;
+            serviceAccounts?: components["schemas"]["ServiceAccounts"];
+            app?: string;
+            teammail?: string;
+            envList?: string[];
+        };
+        TopicRequestsResponseModel: {
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            topicname: string;
+            /** Format: int32 */
+            topicpartitions: number;
+            replicationfactor: string;
+            description: string;
+            /** Format: int32 */
+            topicid: number;
+            deleteAssociatedSchema: boolean;
+            advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
+            approvingTeamId?: string;
+            sequence?: string;
+            possibleTeams?: string[];
+            deletable?: boolean;
+            editable?: boolean;
+        };
+        ConnectivityStatus: {
+            clusterType?: string;
+            connectionStatus?: string;
+        };
+        UserInfoModelResponse: {
+            username: string;
+            fullname: string;
+            mailid: string;
+            role: string;
+            switchTeams: boolean;
+            team: string;
+            /** Format: int32 */
+            teamId: number;
+            /** Format: int32 */
+            tenantId: number;
+            userPassword?: string;
+            switchAllowedTeamIds?: number[];
+            switchAllowedTeamNames?: string[];
+            totalNoPages?: string;
+            allPageNos?: string[];
+        };
+        SchemaSubjectInfoResponse: {
+            topic?: string;
+            schemaVersions?: number[];
+            teamname?: string;
+            /** Format: int32 */
+            teamId?: number;
+            possibleTeams?: string[];
+            remarks?: string;
+            envId?: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+        };
+        SyncSchemasList: {
+            schemaSubjectInfoResponseList?: components["schemas"]["SchemaSubjectInfoResponse"][];
+            /** Format: int32 */
+            allTopicsCount?: number;
+        };
+        SchemaDetailsResponse: {
+            schemaContent?: string;
+            topicName?: string;
+            schemaVersion?: string;
+            envName?: string;
+        };
+        SchemaRequestsResponseModel: {
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            topicname: string;
+            schemafull: string;
+            /** Format: int32 */
+            req_no: number;
+            forceRegister: boolean;
+            /** @enum {string} */
+            schemaType: "AVRO" | "JSON";
+            schemaversion?: string;
+            deletable?: boolean;
+            editable?: boolean;
+        };
+        RequestEntityStatusCount: {
+            /** @enum {string} */
+            requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
+            requestStatusCountSet: components["schemas"]["RequestStatusCount"][];
+            requestsOperationTypeCountSet: components["schemas"]["RequestsOperationTypeCount"][];
+        };
+        RequestStatusCount: {
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: int64 */
+            count: number;
+        };
+        RequestsCountOverview: {
+            requestEntityStatistics: components["schemas"]["RequestEntityStatusCount"][];
+        };
+        RequestsOperationTypeCount: {
+            /** @enum {string} */
+            requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** Format: int64 */
+            count?: number;
+        };
+        OperationalRequestsResponseModel: {
+            topicname: string;
+            consumerGroup: string;
+            /** @enum {string} */
+            offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+            resetTimeStampStr?: string;
+            description: string;
+            /** Format: int32 */
+            reqId: number;
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            operationalRequestType: "RESET_CONSUMER_OFFSETS";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            approvingTeamId?: string;
+            sequence?: string;
+            possibleTeams?: string[];
+            deletable?: boolean;
+            editable?: boolean;
+        };
+        RegisterUserInfoModelResponse: {
+            username: string;
+            fullname: string;
+            mailid?: string;
+            pwd?: string;
+            team?: string;
+            /** Format: int32 */
+            teamId?: number;
+            role?: string;
+            status?: string;
+            /** Format: date-time */
+            registeredTime?: string;
+            approver?: string;
+            registrationId?: string;
+            /** Format: int32 */
+            tenantId?: number;
+            tenantName?: string;
+        };
+        EnvUpdatedStatus: {
+            result: string;
+            /** @enum {string} */
+            envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+            /** Format: date-time */
+            envStatusTime: string;
+            envStatusTimeString: string;
+        };
+        TopicsCountPerEnv: {
+            status?: string;
+            topicsCount?: string;
+        };
+        TopicTeamResponse: {
+            team?: string;
+            /** Format: int32 */
+            teamId?: number;
+            error?: string;
+            status: boolean;
+        };
+        AclOverviewInfo: {
+            req_no: string;
+            aclPatternType: string;
+            environment: string;
+            environmentName: string;
+            /** @enum {string} */
+            kafkaFlavorType: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+            showDeleteAcl: boolean;
+            showClaimAcl: boolean;
+            /** Format: int32 */
+            teamid: number;
+            teamname: string;
+            topicname: string;
+            topictype: string;
+            acl_ip?: string;
+            acl_ssl?: string;
+            acl_ips?: string[];
+            acl_ssls?: string[];
+            consumergroup?: string;
+            transactionalId?: string;
+        };
+        PromotionStatus: {
+            /** @enum {string} */
+            status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+            sourceEnv?: string;
+            targetEnv?: string;
+            targetEnvId?: string;
+            error?: string;
+            topicName?: string;
+        };
+        ResourceHistory: {
+            environmentName: string;
+            teamName: string;
+            requestedBy: string;
+            requestedTime: string;
+            approvedBy: string;
+            approvedTime: string;
+            remarks: string;
+        };
+        TopicOverview: {
+            topicExists: boolean;
+            schemaExists: boolean;
+            prefixAclsExists: boolean;
+            txnAclsExists: boolean;
+            createSchemaAllowed: boolean;
+            topicInfoList: components["schemas"]["TopicOverviewInfo"][];
+            aclInfoList?: components["schemas"]["AclOverviewInfo"][];
+            prefixedAclInfoList?: components["schemas"]["AclOverviewInfo"][];
+            transactionalAclInfoList?: components["schemas"]["AclOverviewInfo"][];
+            topicHistoryList?: components["schemas"]["ResourceHistory"][];
+            topicPromotionDetails: components["schemas"]["PromotionStatus"];
+            availableEnvironments: components["schemas"]["EnvIdInfo"][];
+            topicDocumentation?: string;
+            /** Format: int32 */
+            topicIdForDocumentation: number;
+        };
+        TopicOverviewInfo: {
+            topicName: string;
+            /** Format: int32 */
+            noOfPartitions: number;
+            noOfReplicas: string;
+            description: string;
+            advancedTopicConfiguration?: {
+                [key: string]: string;
+            };
+            teamname: string;
+            /** Format: int32 */
+            teamId: number;
+            envId: string;
+            envName: string;
+            showEditTopic: boolean;
+            showDeleteTopic: boolean;
+            topicDeletable: boolean;
+            topicOwner: boolean;
+            highestEnv: boolean;
+            hasOpenRequest: boolean;
+            hasOpenTopicRequest: boolean;
+            hasOpenACLRequest: boolean;
+            hasOpenSchemaRequest: boolean;
+            hasOpenClaimRequest: boolean;
+            hasOpenRequestOnAnyEnv: boolean;
+            hasACL: boolean;
+            hasSchema: boolean;
+            /** Format: int32 */
+            clusterId: number;
+        };
+        TopicBaseConfig: {
+            topicName: string;
+            /** Format: int32 */
+            noOfPartitions: number;
+            noOfReplicas: string;
+            description: string;
+            advancedTopicConfiguration?: {
+                [key: string]: string;
+            };
+        };
+        TopicDetailsPerEnv: {
+            topicExists: boolean;
+            error?: string;
+            topicId?: string;
+            topicContents?: components["schemas"]["TopicBaseConfig"];
+        };
+        TenantInfo: {
+            /** Format: int32 */
+            tenants?: number;
+            /** Format: int32 */
+            teams?: number;
+            /** Format: int32 */
+            clusters?: number;
+            /** Format: int32 */
+            topics?: number;
+        };
+        ChartsJsOverview: {
+            data?: number[];
+            labels?: string[];
+            colors?: string[];
+            options?: components["schemas"]["Options"];
+            series?: string[];
+            titleForReport?: string;
+            xaxisLabel?: string;
+            yaxisLabel?: string;
+        };
+        Options: {
+            title?: components["schemas"]["Title"];
+            scales?: components["schemas"]["Scales"];
+        };
+        Scales: {
+            yaxes?: components["schemas"]["YAx"][];
+            xaxes?: components["schemas"]["YAx"][];
+        };
+        TeamOverview: {
+            producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+            consumerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+            aclsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+            topicsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+            topicsPerTeamPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+            topicsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+            partitionsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+            activityLogOverview?: components["schemas"]["ChartsJsOverview"];
+            tenantName?: string;
+        };
+        Title: {
+            display?: boolean;
+            text?: string;
+            position?: string;
+            fontColor?: string;
+            fontFamily?: string;
+            fontStyle?: string;
+        };
+        YAx: {
+            id?: string;
+            type?: string;
+            display?: boolean;
+            position?: string;
+        };
+        SyncTopicsList: {
+            resultSet?: components["schemas"]["TopicSyncResponseModel"][];
+            /** Format: int32 */
+            allTopicsCount?: number;
+            /** Format: int32 */
+            allTopicWarningsCount?: number;
+            topicsLoadingStatus?: boolean;
+        };
+        TopicSyncResponseModel: {
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            topicname: string;
+            /** Format: int32 */
+            topicpartitions: number;
+            replicationfactor: string;
+            description: string;
+            /** Format: int32 */
+            topicid: number;
+            deleteAssociatedSchema: boolean;
+            advancedTopicConfigEntries: components["schemas"]["TopicConfigEntry"][];
+            approvingTeamId?: string;
+            sequence?: string;
+            possibleTeams?: string[];
+            validationStatus?: string;
+            validatedTopic?: boolean;
+            deletable?: boolean;
+            editable?: boolean;
+        };
+        KafkaConnectorModelResponse: {
+            /** Format: int32 */
+            sequence?: number;
+            /** Format: int32 */
+            connectorId: number;
+            connectorName: string;
+            connectorStatus: string;
+            /** Format: int64 */
+            runningTasks: number;
+            /** Format: int64 */
+            failedTasks: number;
+            environmentId: string;
+            teamName: string;
+            /** Format: int32 */
+            teamId: number;
+            showEditConnector: boolean;
+            showDeleteConnector: boolean;
+            connectorDeletable: boolean;
+            connectorOwner: boolean;
+            highestEnv: boolean;
+            hasOpenRequest: boolean;
+            hasOpenClaimRequest: boolean;
+            hasOpenRequestOnAnyEnv: boolean;
+            allPageNos?: string[];
+            totalNoPages?: string;
+            currentPage?: string;
+            environmentsList?: components["schemas"]["EnvIdInfo"][];
+            possibleTeams?: string[];
+            connectorConfig?: string;
+            environmentName?: string;
+            remarks?: string;
+            documentation?: string;
+            description?: string;
+        };
+        EnvModelResponse: {
+            id: string;
+            name: string;
+            type: string;
+            /** Format: int32 */
+            tenantId: number;
+            /** Format: int32 */
+            clusterId: number;
+            tenantName: string;
+            clusterName: string;
+            /** @enum {string} */
+            envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+            /** Format: date-time */
+            envStatusTime: string;
+            envStatusTimeString: string;
+            otherParams: string;
+            showDeleteEnv: boolean;
+            totalNoPages: string;
+            currentPage: string;
+            allPageNos: string[];
+            /** Format: int32 */
+            totalRecs: number;
+            associatedEnv?: components["schemas"]["EnvTag"];
+            params: components["schemas"]["EnvParams"];
+            /** @enum {string} */
+            clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+        };
+        AclInfo: {
+            sequence?: string;
+            req_no?: string;
+            acl_ip?: string;
+            acl_ssl?: string;
+            acl_ips?: string[];
+            acl_ssls?: string[];
+            topicname?: string;
+            topictype?: string;
+            consumergroup?: string;
+            environment?: string;
+            environmentName?: string;
+            teamname?: string;
+            /** Format: int32 */
+            teamid?: number;
+            operation?: string;
+            permission?: string;
+            transactionalId?: string;
+            aclPatternType?: string;
+            aclId?: string;
+            totalNoPages?: string;
+            allPageNos?: string[];
+            possibleTeams?: string[];
+            currentPage?: string;
+            showDeleteAcl?: boolean;
+            /** @enum {string} */
+            kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+            remarks?: string;
+        };
+        SchemaDetailsPerEnv: {
+            /** Format: int32 */
+            id: number;
+            /** Format: int32 */
+            version: number;
+            /** Format: int32 */
+            nextVersion: number;
+            /** Format: int32 */
+            prevVersion: number;
+            compatibility: string;
+            /** @enum {string} */
+            schemaType: "AVRO" | "JSON";
+            content: string;
+            env: string;
+            showNext: boolean;
+            showPrev: boolean;
+            latest: boolean;
+        };
+        SchemaOverview: {
+            topicExists: boolean;
+            schemaExists: boolean;
+            prefixAclsExists: boolean;
+            txnAclsExists: boolean;
+            createSchemaAllowed: boolean;
+            allSchemaVersions?: number[];
+            /** Format: int32 */
+            latestVersion?: number;
+            schemaPromotionDetails: components["schemas"]["PromotionStatus"];
+            schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
+        };
+        KwReport: {
+            data?: string;
+            filename?: string;
+        };
+        SupportedProtocolInfo: {
+            name?: string;
+            value?: string;
+        };
+        DbAuthInfo: {
+            dbauth: string;
+        };
+        DashboardStats: {
+            /** Format: int32 */
+            producerCount?: number;
+            /** Format: int32 */
+            consumerCount?: number;
+            /** Format: int32 */
+            teamMembersCount?: number;
+        };
+        OffsetDetails: {
+            topicPartitionId: string;
+            currentOffset: string;
+            endOffset: string;
+            lag: string;
+        };
+        KafkaConnectorRequestsResponseModel: {
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            connectorName: string;
+            description: string;
+            connectorConfig: string;
+            /** Format: int32 */
+            connectorId: number;
+            possibleTeams?: string[];
+            approvingTeamId?: string;
+            deletable?: boolean;
+            editable?: boolean;
+        };
+        ConnectorOverview: {
+            connectorInfoList: components["schemas"]["KafkaConnectorModelResponse"][];
+            connectorHistoryList?: components["schemas"]["ResourceHistory"][];
+            promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
+            connectorExists: boolean;
+            availableEnvironments: components["schemas"]["EnvIdInfo"][];
+            connectorDocumentation?: string;
+            /** Format: int32 */
+            connectorIdForDocumentation: number;
+        };
+        ConnectorPromotionStatus: {
+            /** @enum {string} */
+            status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+            sourceEnv?: string;
+            targetEnv?: string;
+            targetEnvId?: string;
+            error?: string;
+            connectorName?: string;
+            sourceConnectorConfig?: string;
+        };
+        ConnectorOverviewPerEnv: {
+            connectorExists?: boolean;
+            error?: string;
+            /** Format: int32 */
+            connectorId?: number;
+            connectorContents?: components["schemas"]["KafkaConnectorModelResponse"];
+        };
+        KwClustersModelResponse: {
+            /** Format: int32 */
+            clusterId: number;
+            clusterName: string;
+            bootstrapServers: string;
+            /** @enum {string} */
+            protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+            /** @enum {string} */
+            clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+            /** @enum {string} */
+            kafkaFlavor: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+            showDeleteCluster: boolean;
+            totalNoPages: string;
+            allPageNos: string[];
+            /** @enum {string} */
+            clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+            currentPage: string;
+            associatedServers?: string;
+            projectName?: string;
+            serviceName?: string;
+        };
+        ClusterInfo: {
+            aivenCluster: boolean;
+        };
+        JmxOverview: {
+            brokerTopMetricsOverview?: components["schemas"]["ChartsJsOverview"];
+        };
+        AuthenticationInfo: {
+            contextPath: string;
+            teamsize: string;
+            schema_clusters_count: string;
+            kafka_clusters_count: string;
+            kafkaconnect_clusters_count: string;
+            canSwitchTeams: string;
+            broadcastText: string;
+            tenantActiveStatus: string;
+            username: string;
+            authenticationType: string;
+            teamname: string;
+            teamId: string;
+            tenantName: string;
+            userrole: string;
+            companyinfo: string;
+            klawversion: string;
+            notifications: string;
+            notificationsAcls: string;
+            notificationsSchemas: string;
+            notificationsUsers: string;
+            notificationsConnectors: string;
+            canShutdownKw: string;
+            canUpdatePermissions: string;
+            addEditRoles: string;
+            viewTopics: string;
+            requestItems: string;
+            viewKafkaConnect: string;
+            syncBackTopics: string;
+            syncBackSchemas: string;
+            syncBackAcls: string;
+            updateServerConfig: string;
+            showServerConfigEnvProperties: string;
+            addUser: string;
+            addTeams: string;
+            syncTopicsAcls: string;
+            syncConnectors: string;
+            manageConnectors: string;
+            syncSchemas: string;
+            approveAtleastOneRequest: string;
+            approveDeclineTopics: string;
+            approveDeclineOperationalReqs: string;
+            approveDeclineSubscriptions: string;
+            approveDeclineSchemas: string;
+            approveDeclineConnectors: string;
+            pendingApprovalsRedirectionPage: string;
+            showAddDeleteTenants: string;
+            addDeleteEditClusters: string;
+            addDeleteEditEnvs: string;
+            coralEnabled: string;
+            coralAvailableForUser: string;
+            adAuthRoleEnabled: string;
+            supportlink: string;
+            myteamtopics: string;
+            myOrgTopics: string;
+            googleFeedbackFormLink: string;
+            klawOptionalPermissionNewTopicCreationEnabled: string;
+            klawOptionalPermissionNewTopicCreation: string;
+        };
+        KwPropertiesResponse: {
+            result?: string;
+            kwkey?: string;
+            kwvalue?: string;
+            kwdesc?: string;
+        };
+        ServerConfigProperties: {
+            id?: string;
+            key?: string;
+            value?: string;
+        };
+        ServiceAccountDetails: {
+            username?: string;
+            password?: string;
+            accountFound?: boolean;
+        };
+        ActivityLogModel: {
+            /** Format: int32 */
+            req_no: number;
+            activityName: string;
+            activityType: string;
+            /** Format: date-time */
+            activityTime: string;
+            activityTimeString: string;
+            details: string;
+            user: string;
+            team: string;
+            /** Format: int32 */
+            teamId: number;
+            env: string;
+            /** Format: int32 */
+            tenantId: number;
+            envName: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            currentPage: string;
+        };
+        AclsCountPerEnv: {
+            status?: string;
+            aclsCount?: string;
+        };
+        AclRequestsResponseModel: {
+            environment: string;
+            environmentName: string;
+            requestor: string;
+            /** Format: int32 */
+            teamId: number;
+            teamname: string;
+            /** @enum {string} */
+            requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+            /** @enum {string} */
+            requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+            /** Format: date-time */
+            requesttime: string;
+            requesttimestring: string;
+            currentPage: string;
+            totalNoPages: string;
+            allPageNos: string[];
+            approvingTeamDetails: string;
+            approver?: string;
+            /** Format: date-time */
+            approvingtime?: string;
+            remarks?: string;
+            appname?: string;
+            otherParams?: string;
+            topicname: string;
+            aclPatternType: string;
+            /** @enum {string} */
+            aclType: "PRODUCER" | "CONSUMER";
+            /** @enum {string} */
+            aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+            /** Format: int32 */
+            req_no: number;
+            /** Format: int32 */
+            requestingteam: number;
+            requestingTeamName: string;
+            consumergroup: string;
+            acl_ip: string[];
+            acl_ssl: string[];
+            approvals?: components["schemas"]["AclApproval"][];
+            transactionalId?: string;
+            aclResourceType?: string;
+            deletable?: boolean;
+            editable?: boolean;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 };
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
-export type operations = {
-
-  validateSchema: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SchemaRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateUserTeamFromSwitchTeams: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  uploadSchema: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SchemaRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateUser: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createTopicsUpdateRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TopicUpdateRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateTenant: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KwTenantModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateTeam: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TeamModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncTopics: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncTopicUpdates"][];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncTopicsBulk: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncTopicsBulk"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncConnectors: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncConnectorUpdates"][];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncBackTopics: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncBackTopics"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncBackAcls: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncBackAcls"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateSyncAcls: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncAclUpdates"][];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateProfile: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ProfileModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updatePermissions: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KwRolesPermissionsModel"][];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  updateKwCustomProperty: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KwPropertiesModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  sendMessageToAdmin: {
-    parameters: {
-      query: {
-        contactFormSubject: string;
-        contactFormMessage: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "*/*": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  getSchemasOfEnvironment: {
-    parameters: {
-      query: {
-        envId: string;
-        pageNo: string;
-        showAllTopics?: boolean;
-        currentPage?: string;
-        topicnamesearch?: string;
-        source?: string;
-        teamId?: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SyncSchemasList"];
-        };
-      };
-    };
-  };
-  updateSyncSchemas: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SyncSchemaUpdates"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  resetCacheClusterApi: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SchemaResetCache"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  saveTopicDocumentation: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TopicInfo"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  saveConnectorDocumentation: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KafkaConnectorModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  resetMemoryCache: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ResetEntityCache"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  resetToken: {
-    parameters: {
-      query: {
-        username: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ResetPasswordInfo"];
-        };
-      };
-    };
-  };
-  resetPasswordWithToken: {
-    parameters: {
-      query: {
-        token: string;
-        password: string;
-        username: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ResetPasswordInfo"];
-        };
-      };
-    };
-  };
-  /**
-   * Delete a Request
-   * @description Updates the Status of a request to Deleted
-   */
-  deleteRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Multi Status */
-      207: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      405: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Internal Server Error */
-      500: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /**
-   * Decline a Request
-   * @description Updates the Status of a request to Declined
-   */
-  declineRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Multi Status */
-      207: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      405: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Internal Server Error */
-      500: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /**
-   * Approve a Request
-   * @description Updates the Status of a request to Approved and provisions the request
-   */
-  approveRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Multi Status */
-      207: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      405: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Internal Server Error */
-      500: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  registerUser: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisterUserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  promoteSchema: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SchemaPromotion"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteOperationalRequest: {
-    parameters: {
-      path: {
-        reqId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  declineOperationalRequest: {
-    parameters: {
-      query: {
-        reasonForDecline: string;
-      };
-      path: {
-        reqId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  approveOperationalRequest: {
-    parameters: {
-      path: {
-        reqId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createConsumerOffsetsResetRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  logout: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string;
-          };
-        };
-      };
-    };
-  };
-  approveTopicRequests: {
-    parameters: {
-      query: {
-        topicId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  declineTopicRequests: {
-    parameters: {
-      query: {
-        topicId: string;
-        reasonForDecline: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  execSchemaRequests: {
-    parameters: {
-      query: {
-        avroSchemaReqId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  execSchemaRequestsDecline: {
-    parameters: {
-      query: {
-        avroSchemaReqId: string;
-        reasonForDecline: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  declineNewUserRequests: {
-    parameters: {
-      query: {
-        username: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  approveNewUserRequests: {
-    parameters: {
-      query: {
-        username: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  approveTopicRequests_1: {
-    parameters: {
-      query: {
-        connectorId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  declineConnectorRequests: {
-    parameters: {
-      query: {
-        connectorId: string;
-        reasonForDecline: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  approveAclRequests: {
-    parameters: {
-      query: {
-        req_no: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  declineAclRequests: {
-    parameters: {
-      query: {
-        req_no: string;
-        reasonForDecline: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteUser: {
-    parameters: {
-      query: {
-        userId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteTopicRequests: {
-    parameters: {
-      query: {
-        topicId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteTenant: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteTeam: {
-    parameters: {
-      query: {
-        teamId: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteSchemaRequests: {
-    parameters: {
-      query: {
-        req_no: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteRole: {
-    parameters: {
-      query: {
-        roleId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteEnvironment: {
-    parameters: {
-      query: {
-        envId: string;
-        envType: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteConnectorRequests: {
-    parameters: {
-      query: {
-        connectorId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteCluster: {
-    parameters: {
-      query: {
-        clusterId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteAclRequests: {
-    parameters: {
-      query: {
-        req_no: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createTopicsCreateRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TopicCreateRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createTopicDeleteRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TopicDeleteRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  deleteAclSubscriptionRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["DeleteAclRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createConnectorRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KafkaConnectorRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createConnectorDeleteRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KafkaConnectorDeleteRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createClaimTopicRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TopicClaimRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createClaimConnectorRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ConnectorClaimRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  createAcl: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AclRequestsModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  restartConnector: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KafkaConnectorRestartModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  changePwd: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ChangePasswordRequestModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addEnvToCache: {
-    parameters: {
-      header: {
-        Authorization: string;
-      };
-      path: {
-        tenantId: number;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Env"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addTenantId: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KwTenantModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addRoleId: {
-    parameters: {
-      query: {
-        roleId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addNewUser: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserInfoModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addNewTeam: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TeamModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addNewEnv: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["EnvModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  addNewCluster: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["KwClustersModel"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  claimAcl: {
-    parameters: {
-      path: {
-        aclId: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  getSwitchTeams: {
-    parameters: {
-      path: {
-        userId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamModelResponse"][];
-        };
-      };
-    };
-  };
-  getTopicRequest: {
-    parameters: {
-      path: {
-        topicReqId: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicRequestsResponseModel"];
-        };
-      };
-    };
-  };
-  testClusterApiConnection: {
-    parameters: {
-      query: {
-        clusterApiUrl: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ConnectivityStatus"];
-        };
-      };
-    };
-  };
-  shutdownApp: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: never;
-      };
-    };
-  };
-  showUsers: {
-    parameters: {
-      query?: {
-        teamId?: number;
-        pageNo?: string;
-        searchUserParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserInfoModelResponse"][];
-        };
-      };
-    };
-  };
-  getSchemaOfTopicFromSource: {
-    parameters: {
-      path: {
-        source: string;
-        topicName: string;
-        schemaVersion: number;
-        kafkaEnvId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SchemaDetailsResponse"];
-        };
-      };
-    };
-  };
-  getSchemaRequest: {
-    parameters: {
-      path: {
-        schemaReqId: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SchemaRequestsResponseModel"];
-        };
-      };
-    };
-  };
-  resetCache: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string;
-          };
-        };
-      };
-    };
-  };
-  /** Get counts of all request entity types for different status,operation types */
-  getRequestStatistics: {
-    parameters: {
-      query: {
-        requestMode: "TO_APPROVE" | "MY_APPROVALS" | "MY_REQUESTS";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RequestsCountOverview"];
-        };
-      };
-    };
-  };
-  getOperationalRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        env?: string;
-        topicName?: string;
-        consumerGroup?: string;
-        operationType?: "RESET_CONSUMER_OFFSETS";
-        search?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        isMyRequest?: boolean;
-      };
-      path: {
-        requestsFor: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["OperationalRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  validateOffsetRequestDetails: {
-    parameters: {
-      query: {
-        envId: string;
-        topicName: string;
-        consumerGroup: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvIdInfo"];
-        };
-      };
-    };
-  };
-  getRegistrationInfoFromId: {
-    parameters: {
-      query: {
-        userRegistrationId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisterUserInfoModelResponse"];
-        };
-      };
-    };
-  };
-  getUserDetails: {
-    parameters: {
-      query: {
-        userId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserInfoModelResponse"];
-        };
-      };
-    };
-  };
-  getUpdateEnvStatus: {
-    parameters: {
-      query: {
-        envId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvUpdatedStatus"];
-        };
-      };
-    };
-  };
-  getTopics: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        teamId?: number;
-        topicType?: "PRODUCER" | "CONSUMER";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicInfo"][][];
-        };
-      };
-    };
-  };
-  getTopicsRowView: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        teamId?: number;
-        topicType?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicInfo"][];
-        };
-      };
-    };
-  };
-  getTopicsOnly: {
-    parameters: {
-      query?: {
-        isMyTeamTopics?: string;
-        envSelected?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getTopicsCountPerEnv: {
-    parameters: {
-      query: {
-        sourceEnvSelected: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicsCountPerEnv"];
-        };
-      };
-    };
-  };
-  getTopicTeam: {
-    parameters: {
-      query: {
-        topicName: string;
-        patternType?: "PREFIXED" | "LITERAL";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicTeamResponse"];
-        };
-      };
-    };
-  };
-  getTopicRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        search?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        isMyRequest?: boolean;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getTopicRequestsForApprover: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        teamId?: number;
-        env?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        search?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getTopicOverview: {
-    parameters: {
-      query: {
-        topicName: string;
-        environmentId?: string;
-        groupBy?: "NONE" | "TEAM";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicOverview"];
-        };
-      };
-    };
-  };
-  getTopicEvents: {
-    parameters: {
-      query: {
-        envId: string;
-        topicName: string;
-        consumerGroupId: string;
-        offsetId: string;
-        selectedPartitionId: number;
-        selectedNumberOfOffsets: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string;
-          };
-        };
-      };
-    };
-  };
-  getTopicDetailsPerEnv: {
-    parameters: {
-      query: {
-        envSelected: string;
-        topicname: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicDetailsPerEnv"];
-        };
-      };
-    };
-  };
-  getTenants: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwTenantModel"][];
-        };
-      };
-    };
-  };
-  getTenantsInfo: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TenantInfo"];
-        };
-      };
-    };
-  };
-  getTeamsOverview: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamOverview"][];
-        };
-      };
-    };
-  };
-  getTeamDetails: {
-    parameters: {
-      query: {
-        teamId: number;
-        tenantName: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamModelResponse"];
-        };
-      };
-    };
-  };
-  getSyncTopics: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        showAllTopics?: string;
-        resetTopicsCache?: boolean;
-        isBulkOption?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SyncTopicsList"];
-        };
-      };
-    };
-  };
-  getSyncEnv: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvIdInfo"][];
-        };
-      };
-    };
-  };
-  getSyncConnectors: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        connectornamesearch?: string;
-        isBulkOption?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
-        };
-      };
-    };
-  };
-  getSyncConnectorsEnv: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getSyncBackAcls: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        teamName?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclInfo"][];
-        };
-      };
-    };
-  };
-  getSyncAcls: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        showAllAcls?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclInfo"][];
-        };
-      };
-    };
-  };
-  getStandardEnvNames: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getSchemaRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        topic?: string;
-        env?: string;
-        search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        isMyRequest?: boolean;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getSchemaRequestsForApprover: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        topic?: string;
-        env?: string;
-        search?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getSchemaRegEnvs: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getSchemaOfTopic: {
-    parameters: {
-      query: {
-        topicName: string;
-        schemaVersionSearch?: number;
-        kafkaEnvId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SchemaOverview"];
-        };
-      };
-    };
-  };
-  getRoles: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getRolesFromDb: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getRequestTypeStatuses: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getPermissions: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: {
-                [key: string]: boolean;
-              }[];
-          };
-        };
-      };
-    };
-  };
-  getPermissionDescriptions: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string;
-          };
-        };
-      };
-    };
-  };
-  getNewUserRequests: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisterUserInfoModelResponse"][];
-        };
-      };
-    };
-  };
-  getMyTenantInfo: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwTenantModel"];
-        };
-      };
-    };
-  };
-  getMyProfileInfo: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserInfoModelResponse"];
-        };
-      };
-    };
-  };
-  getKwReport: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwReport"];
-        };
-      };
-    };
-  };
-  getSupportedKafkaProtocols: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SupportedProtocolInfo"][];
-        };
-      };
-    };
-  };
-  getKafkaConnectEnvs: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getEnvs: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getEnvsPaginated: {
-    parameters: {
-      query: {
-        pageNo: string;
-        envId?: string;
-        searchEnvParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getEnvsBaseCluster: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getEnvsBaseClusterFilteredForTeam: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getEnvParams: {
-    parameters: {
-      query: {
-        envSelected: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvParams"];
-        };
-      };
-    };
-  };
-  getEnvDetails: {
-    parameters: {
-      query: {
-        envSelected: string;
-        envType: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"];
-        };
-      };
-    };
-  };
-  getDbAuth: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DbAuthInfo"];
-        };
-      };
-    };
-  };
-  getDashboardStats: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DashboardStats"];
-        };
-      };
-    };
-  };
-  getConsumerOffsets: {
-    parameters: {
-      query: {
-        env: string;
-        topicName: string;
-        consumerGroupId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["OffsetDetails"][];
-        };
-      };
-    };
-  };
-  getConnectors: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        connectornamesearch?: string;
-        teamId?: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KafkaConnectorModelResponse"][][];
-        };
-      };
-    };
-  };
-  getConnectorsToManage: {
-    parameters: {
-      query: {
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        connectornamesearch?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
-        };
-      };
-    };
-  };
-  getConnectorRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        env?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        search?: string;
-        isMyRequest?: boolean;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getCreatedConnectorRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        env?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        search?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getConnectorOverview: {
-    parameters: {
-      query: {
-        connectornamesearch: string;
-        environmentId?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ConnectorOverview"];
-        };
-      };
-    };
-  };
-  getConnectorDetails: {
-    parameters: {
-      query: {
-        env: string;
-        connectorName: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  getConnectorDetailsPerEnv: {
-    parameters: {
-      query: {
-        envSelected: string;
-        connectorName: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ConnectorOverviewPerEnv"];
-        };
-      };
-    };
-  };
-  getClusters: {
-    parameters: {
-      query: {
-        clusterType: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwClustersModelResponse"][];
-        };
-      };
-    };
-  };
-  getClustersPaginated: {
-    parameters: {
-      query: {
-        clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
-        pageNo: string;
-        clusterId?: string;
-        searchClusterParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwClustersModelResponse"][];
-        };
-      };
-    };
-  };
-  getClusterInfoFromEnv: {
-    parameters: {
-      query: {
-        envSelected: string;
-        envType: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ClusterInfo"];
-        };
-      };
-    };
-  };
-  getClusterDetails: {
-    parameters: {
-      query: {
-        clusterId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwClustersModelResponse"];
-        };
-      };
-    };
-  };
-  getBrokerTopMetrics: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["JmxOverview"];
-        };
-      };
-    };
-  };
-  getBasicInfo: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: unknown;
-          };
-        };
-      };
-    };
-  };
-  getAuth: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthenticationInfo"];
-        };
-      };
-    };
-  };
-  getAllTeamsSU: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamModelResponse"][];
-        };
-      };
-    };
-  };
-  getAllTeamsSUOnly: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getAllTeamsSUFromRegisterUsers: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamModelResponse"][];
-        };
-      };
-    };
-  };
-  getAllEditableProps: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["KwPropertiesResponse"][];
-        };
-      };
-    };
-  };
-  getAllProperties: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServerConfigProperties"][];
-        };
-      };
-    };
-  };
-  getAivenServiceAccounts: {
-    parameters: {
-      query: {
-        env: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  getAivenServiceAccountDetails: {
-    parameters: {
-      query: {
-        env: string;
-        topicName: string;
-        userName: string;
-        aclReqNo: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServiceAccountDetails"];
-        };
-      };
-    };
-  };
-  getAdvancedTopicConfigs: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string;
-          };
-        };
-      };
-    };
-  };
-  showActivityLog: {
-    parameters: {
-      query: {
-        env?: string;
-        pageNo: string;
-        ordering?: "ASC" | "DESC";
-        currentPage?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ActivityLogModel"][];
-        };
-      };
-    };
-  };
-  getActivityLogForTeamOverview: {
-    parameters: {
-      query: {
-        activityLogForTeam: string;
-        numberOfDays?: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamOverview"];
-        };
-      };
-    };
-  };
-  getAclsCountPerEnv: {
-    parameters: {
-      query: {
-        sourceEnvSelected: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclsCountPerEnv"];
-        };
-      };
-    };
-  };
-  getAclRequests: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        topic?: string;
-        env?: string;
-        search?: string;
-        aclType?: "PRODUCER" | "CONSUMER";
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        isMyRequest?: boolean;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getAclRequestsForApprover: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        topic?: string;
-        env?: string;
-        search?: string;
-        aclType?: "PRODUCER" | "CONSUMER";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclRequestsResponseModel"][];
-        };
-      };
-    };
-  };
-  getSchemaRegEnvsPaginated: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getSchemaRegEnv: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-      path: {
-        envId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getKafkaConnectEnvsPaginated: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getKafkaConnectEnv: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-      path: {
-        envId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getKafkaEnvsPaginated: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getKafkaEnv: {
-    parameters: {
-      query: {
-        pageNo: string;
-        searchEnvParam?: string;
-      };
-      path: {
-        envId: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EnvModelResponse"][];
-        };
-      };
-    };
-  };
-  getAclRequest: {
-    parameters: {
-      path: {
-        aclRequestId: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AclRequestsResponseModel"];
-        };
-      };
-    };
-  };
-  removeEnvFromCache: {
-    parameters: {
-      header: {
-        Authorization: string;
-      };
-      path: {
-        tenantId: number;
-        id: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-};
+export interface operations {
+    validateSchema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchemaRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateUserTeamFromSwitchTeams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserInfoModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    uploadSchema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchemaRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserInfoModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createTopicsUpdateRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicUpdateRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateTenant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwTenantModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeamModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncTopics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncTopicUpdates"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncTopicsBulk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncTopicsBulk"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncConnectors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncConnectorUpdates"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncBackTopics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncBackTopics"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncBackAcls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncBackAcls"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateSyncAcls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncAclUpdates"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updatePermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwRolesPermissionsModel"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    updateKwCustomProperty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwPropertiesModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    sendMessageToAdmin: {
+        parameters: {
+            query: {
+                contactFormSubject: string;
+                contactFormMessage: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    getSchemasOfEnvironment: {
+        parameters: {
+            query: {
+                envId: string;
+                pageNo: string;
+                showAllTopics?: boolean;
+                currentPage?: string;
+                topicnamesearch?: string;
+                source?: string;
+                teamId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncSchemasList"];
+                };
+            };
+        };
+    };
+    updateSyncSchemas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncSchemaUpdates"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    resetCacheClusterApi: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchemaResetCache"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    saveTopicDocumentation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicInfo"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    saveConnectorDocumentation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KafkaConnectorModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    resetMemoryCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetEntityCache"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    resetToken: {
+        parameters: {
+            query: {
+                username: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetPasswordInfo"];
+                };
+            };
+        };
+    };
+    resetPasswordWithToken: {
+        parameters: {
+            query: {
+                token: string;
+                password: string;
+                username: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetPasswordInfo"];
+                };
+            };
+        };
+    };
+    deleteRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestVerdict"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Multi Status */
+            207: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    declineRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestVerdict"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Multi Status */
+            207: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    approveRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestVerdict"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Multi Status */
+            207: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    registerUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterUserInfoModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    promoteSchema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchemaPromotion"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteOperationalRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reqId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    declineOperationalRequest: {
+        parameters: {
+            query: {
+                reasonForDecline: string;
+            };
+            header?: never;
+            path: {
+                reqId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    approveOperationalRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reqId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createConsumerOffsetsResetRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    approveTopicRequests: {
+        parameters: {
+            query: {
+                topicId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    declineTopicRequests: {
+        parameters: {
+            query: {
+                topicId: string;
+                reasonForDecline: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    execSchemaRequests: {
+        parameters: {
+            query: {
+                avroSchemaReqId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    execSchemaRequestsDecline: {
+        parameters: {
+            query: {
+                avroSchemaReqId: string;
+                reasonForDecline: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    declineNewUserRequests: {
+        parameters: {
+            query: {
+                username: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    approveNewUserRequests: {
+        parameters: {
+            query: {
+                username: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    approveTopicRequests_1: {
+        parameters: {
+            query: {
+                connectorId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    declineConnectorRequests: {
+        parameters: {
+            query: {
+                connectorId: string;
+                reasonForDecline: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    approveAclRequests: {
+        parameters: {
+            query: {
+                req_no: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    declineAclRequests: {
+        parameters: {
+            query: {
+                req_no: string;
+                reasonForDecline: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteUser: {
+        parameters: {
+            query: {
+                userId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteTopicRequests: {
+        parameters: {
+            query: {
+                topicId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteTenant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteTeam: {
+        parameters: {
+            query: {
+                teamId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteSchemaRequests: {
+        parameters: {
+            query: {
+                req_no: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteRole: {
+        parameters: {
+            query: {
+                roleId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteEnvironment: {
+        parameters: {
+            query: {
+                envId: string;
+                envType: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteConnectorRequests: {
+        parameters: {
+            query: {
+                connectorId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteCluster: {
+        parameters: {
+            query: {
+                clusterId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteAclRequests: {
+        parameters: {
+            query: {
+                req_no: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createTopicsCreateRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicCreateRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createTopicDeleteRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicDeleteRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    deleteAclSubscriptionRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAclRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createConnectorRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KafkaConnectorRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createConnectorDeleteRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KafkaConnectorDeleteRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createClaimTopicRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicClaimRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createClaimConnectorRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectorClaimRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    createAcl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AclRequestsModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    restartConnector: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KafkaConnectorRestartModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    changePwd: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordRequestModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addEnvToCache: {
+        parameters: {
+            query?: never;
+            header: {
+                Authorization: string;
+            };
+            path: {
+                tenantId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Env"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addTenantId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwTenantModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addRoleId: {
+        parameters: {
+            query: {
+                roleId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addNewUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserInfoModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addNewTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeamModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addNewEnv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnvModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    addNewCluster: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwClustersModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    claimAcl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                aclId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    getSwitchTeams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamModelResponse"][];
+                };
+            };
+        };
+    };
+    getTopicRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                topicReqId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicRequestsResponseModel"];
+                };
+            };
+        };
+    };
+    testClusterApiConnection: {
+        parameters: {
+            query: {
+                clusterApiUrl: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectivityStatus"];
+                };
+            };
+        };
+    };
+    shutdownApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    showUsers: {
+        parameters: {
+            query?: {
+                teamId?: number;
+                pageNo?: string;
+                searchUserParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfoModelResponse"][];
+                };
+            };
+        };
+    };
+    getSchemaOfTopicFromSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source: string;
+                topicName: string;
+                schemaVersion: number;
+                kafkaEnvId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchemaDetailsResponse"];
+                };
+            };
+        };
+    };
+    getSchemaRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                schemaReqId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchemaRequestsResponseModel"];
+                };
+            };
+        };
+    };
+    resetCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    getRequestStatistics: {
+        parameters: {
+            query: {
+                requestMode: "TO_APPROVE" | "MY_APPROVALS" | "MY_REQUESTS";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestsCountOverview"];
+                };
+            };
+        };
+    };
+    getOperationalRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                env?: string;
+                topicName?: string;
+                consumerGroup?: string;
+                operationType?: "RESET_CONSUMER_OFFSETS";
+                search?: string;
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                isMyRequest?: boolean;
+            };
+            header?: never;
+            path: {
+                requestsFor: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationalRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    validateOffsetRequestDetails: {
+        parameters: {
+            query: {
+                envId: string;
+                topicName: string;
+                consumerGroup: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvIdInfo"];
+                };
+            };
+        };
+    };
+    getRegistrationInfoFromId: {
+        parameters: {
+            query: {
+                userRegistrationId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterUserInfoModelResponse"];
+                };
+            };
+        };
+    };
+    getUserDetails: {
+        parameters: {
+            query: {
+                userId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfoModelResponse"];
+                };
+            };
+        };
+    };
+    getUpdateEnvStatus: {
+        parameters: {
+            query: {
+                envId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvUpdatedStatus"];
+                };
+            };
+        };
+    };
+    getTopics: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                topicnamesearch?: string;
+                teamId?: number;
+                topicType?: "PRODUCER" | "CONSUMER";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicInfo"][][];
+                };
+            };
+        };
+    };
+    getTopicsRowView: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                topicnamesearch?: string;
+                teamId?: number;
+                topicType?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicInfo"][];
+                };
+            };
+        };
+    };
+    getTopicsOnly: {
+        parameters: {
+            query?: {
+                isMyTeamTopics?: string;
+                envSelected?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getTopicsCountPerEnv: {
+        parameters: {
+            query: {
+                sourceEnvSelected: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicsCountPerEnv"];
+                };
+            };
+        };
+    };
+    getTopicTeam: {
+        parameters: {
+            query: {
+                topicName: string;
+                patternType?: "PREFIXED" | "LITERAL";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicTeamResponse"];
+                };
+            };
+        };
+    };
+    getTopicRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                env?: string;
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                search?: string;
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                isMyRequest?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getTopicRequestsForApprover: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                teamId?: number;
+                env?: string;
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                search?: string;
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getTopicOverview: {
+        parameters: {
+            query: {
+                topicName: string;
+                environmentId?: string;
+                groupBy?: "NONE" | "TEAM";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicOverview"];
+                };
+            };
+        };
+    };
+    getTopicEvents: {
+        parameters: {
+            query: {
+                envId: string;
+                topicName: string;
+                consumerGroupId: string;
+                offsetId: string;
+                selectedPartitionId: number;
+                selectedNumberOfOffsets: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    getTopicDetailsPerEnv: {
+        parameters: {
+            query: {
+                envSelected: string;
+                topicname: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicDetailsPerEnv"];
+                };
+            };
+        };
+    };
+    getTenants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwTenantModel"][];
+                };
+            };
+        };
+    };
+    getTenantsInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantInfo"];
+                };
+            };
+        };
+    };
+    getTeamsOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamOverview"][];
+                };
+            };
+        };
+    };
+    getTeamDetails: {
+        parameters: {
+            query: {
+                teamId: number;
+                tenantName: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamModelResponse"];
+                };
+            };
+        };
+    };
+    getSyncTopics: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                topicnamesearch?: string;
+                showAllTopics?: string;
+                resetTopicsCache?: boolean;
+                isBulkOption?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncTopicsList"];
+                };
+            };
+        };
+    };
+    getSyncEnv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvIdInfo"][];
+                };
+            };
+        };
+    };
+    getSyncConnectors: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                connectornamesearch?: string;
+                isBulkOption?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
+                };
+            };
+        };
+    };
+    getSyncConnectorsEnv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getSyncBackAcls: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                topicnamesearch?: string;
+                teamName?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclInfo"][];
+                };
+            };
+        };
+    };
+    getSyncAcls: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                topicnamesearch?: string;
+                showAllAcls?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclInfo"][];
+                };
+            };
+        };
+    };
+    getStandardEnvNames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getSchemaRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                topic?: string;
+                env?: string;
+                search?: string;
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                isMyRequest?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getSchemaRequestsForApprover: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                topic?: string;
+                env?: string;
+                search?: string;
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchemaRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getSchemaRegEnvs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getSchemaOfTopic: {
+        parameters: {
+            query: {
+                topicName: string;
+                schemaVersionSearch?: number;
+                kafkaEnvId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchemaOverview"];
+                };
+            };
+        };
+    };
+    getRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getRolesFromDb: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getRequestTypeStatuses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getPermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: boolean;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getPermissionDescriptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    getNewUserRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterUserInfoModelResponse"][];
+                };
+            };
+        };
+    };
+    getMyTenantInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwTenantModel"];
+                };
+            };
+        };
+    };
+    getMyProfileInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfoModelResponse"];
+                };
+            };
+        };
+    };
+    getKwReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwReport"];
+                };
+            };
+        };
+    };
+    getSupportedKafkaProtocols: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportedProtocolInfo"][];
+                };
+            };
+        };
+    };
+    getKafkaConnectEnvs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getEnvs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getEnvsPaginated: {
+        parameters: {
+            query: {
+                pageNo: string;
+                envId?: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getEnvsBaseCluster: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getEnvsBaseClusterFilteredForTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getEnvParams: {
+        parameters: {
+            query: {
+                envSelected: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvParams"];
+                };
+            };
+        };
+    };
+    getEnvDetails: {
+        parameters: {
+            query: {
+                envSelected: string;
+                envType: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"];
+                };
+            };
+        };
+    };
+    getDbAuth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DbAuthInfo"];
+                };
+            };
+        };
+    };
+    getDashboardStats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardStats"];
+                };
+            };
+        };
+    };
+    getConsumerOffsets: {
+        parameters: {
+            query: {
+                env: string;
+                topicName: string;
+                consumerGroupId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OffsetDetails"][];
+                };
+            };
+        };
+    };
+    getConnectors: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                connectornamesearch?: string;
+                teamId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KafkaConnectorModelResponse"][][];
+                };
+            };
+        };
+    };
+    getConnectorsToManage: {
+        parameters: {
+            query: {
+                env: string;
+                pageNo: string;
+                currentPage?: string;
+                connectornamesearch?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KafkaConnectorModelResponse"][];
+                };
+            };
+        };
+    };
+    getConnectorRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                env?: string;
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                search?: string;
+                isMyRequest?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getCreatedConnectorRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                env?: string;
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KafkaConnectorRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getConnectorOverview: {
+        parameters: {
+            query: {
+                connectornamesearch: string;
+                environmentId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectorOverview"];
+                };
+            };
+        };
+    };
+    getConnectorDetails: {
+        parameters: {
+            query: {
+                env: string;
+                connectorName: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+    getConnectorDetailsPerEnv: {
+        parameters: {
+            query: {
+                envSelected: string;
+                connectorName: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectorOverviewPerEnv"];
+                };
+            };
+        };
+    };
+    getClusters: {
+        parameters: {
+            query: {
+                clusterType: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwClustersModelResponse"][];
+                };
+            };
+        };
+    };
+    getClustersPaginated: {
+        parameters: {
+            query: {
+                clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+                pageNo: string;
+                clusterId?: string;
+                searchClusterParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwClustersModelResponse"][];
+                };
+            };
+        };
+    };
+    getClusterInfoFromEnv: {
+        parameters: {
+            query: {
+                envSelected: string;
+                envType: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClusterInfo"];
+                };
+            };
+        };
+    };
+    getClusterDetails: {
+        parameters: {
+            query: {
+                clusterId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwClustersModelResponse"];
+                };
+            };
+        };
+    };
+    getBrokerTopMetrics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JmxOverview"];
+                };
+            };
+        };
+    };
+    getBasicInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    getAuth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthenticationInfo"];
+                };
+            };
+        };
+    };
+    getAllTeamsSU: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamModelResponse"][];
+                };
+            };
+        };
+    };
+    getAllTeamsSUOnly: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getAllTeamsSUFromRegisterUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamModelResponse"][];
+                };
+            };
+        };
+    };
+    getAllEditableProps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KwPropertiesResponse"][];
+                };
+            };
+        };
+    };
+    getAllProperties: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerConfigProperties"][];
+                };
+            };
+        };
+    };
+    getAivenServiceAccounts: {
+        parameters: {
+            query: {
+                env: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    getAivenServiceAccountDetails: {
+        parameters: {
+            query: {
+                env: string;
+                topicName: string;
+                userName: string;
+                aclReqNo: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceAccountDetails"];
+                };
+            };
+        };
+    };
+    getAdvancedTopicConfigs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    showActivityLog: {
+        parameters: {
+            query: {
+                env?: string;
+                pageNo: string;
+                ordering?: "ASC" | "DESC";
+                currentPage?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityLogModel"][];
+                };
+            };
+        };
+    };
+    getActivityLogForTeamOverview: {
+        parameters: {
+            query: {
+                activityLogForTeam: string;
+                numberOfDays?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamOverview"];
+                };
+            };
+        };
+    };
+    getAclsCountPerEnv: {
+        parameters: {
+            query: {
+                sourceEnvSelected: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclsCountPerEnv"];
+                };
+            };
+        };
+    };
+    getAclRequests: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                topic?: string;
+                env?: string;
+                search?: string;
+                aclType?: "PRODUCER" | "CONSUMER";
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+                isMyRequest?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getAclRequestsForApprover: {
+        parameters: {
+            query: {
+                pageNo: string;
+                currentPage?: string;
+                requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+                topic?: string;
+                env?: string;
+                search?: string;
+                aclType?: "PRODUCER" | "CONSUMER";
+                operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE" | "ALL";
+                order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclRequestsResponseModel"][];
+                };
+            };
+        };
+    };
+    getSchemaRegEnvsPaginated: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getSchemaRegEnv: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path: {
+                envId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getKafkaConnectEnvsPaginated: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getKafkaConnectEnv: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path: {
+                envId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getKafkaEnvsPaginated: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getKafkaEnv: {
+        parameters: {
+            query: {
+                pageNo: string;
+                searchEnvParam?: string;
+            };
+            header?: never;
+            path: {
+                envId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvModelResponse"][];
+                };
+            };
+        };
+    };
+    getAclRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                aclRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AclRequestsResponseModel"];
+                };
+            };
+        };
+    };
+    removeEnvFromCache: {
+        parameters: {
+            query?: never;
+            header: {
+                Authorization: string;
+            };
+            path: {
+                tenantId: number;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponse"];
+                };
+            };
+        };
+    };
+}
