@@ -38,7 +38,7 @@
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "lint-staged": "^15.2.9",
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {
