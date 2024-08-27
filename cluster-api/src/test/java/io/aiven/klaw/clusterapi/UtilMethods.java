@@ -22,12 +22,19 @@ import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import io.aiven.klaw.clusterapi.models.enums.SchemaType;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.kafka.common.acl.AccessControlEntry;
 import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePattern;
 import org.apache.kafka.common.resource.ResourceType;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -338,5 +345,22 @@ public class UtilMethods {
     responseMap.put("conn1", statusMap);
     responseMap.put("conn2", statusMap);
     return responseMap;
+  }
+
+  public String generateToken(
+      String clusterApiUser, String clusterAccessSecret, long expirationTime) {
+    Key hmacKey =
+        new SecretKeySpec(
+            Base64.decodeBase64(clusterAccessSecret), SignatureAlgorithm.HS256.getJcaName());
+    Instant now = Instant.now();
+
+    return Jwts.builder()
+        .claim("name", clusterApiUser)
+        .subject(clusterApiUser)
+        .id(UUID.randomUUID().toString())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plus(expirationTime, ChronoUnit.MINUTES)))
+        .signWith(hmacKey)
+        .compact();
   }
 }
