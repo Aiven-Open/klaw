@@ -12,3 +12,11 @@ updates:
     directory: "/coral"
     schedule:
       interval: "weekly"
+  - package-ecosystem: npm # for whatever reason, the YAML value for pnpm is npm
+    directory: "/coral/proxy"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: npm # for whatever reason, the YAML value for pnpm is npm
+    directory: "/e2e"
+    schedule:
+      interval: "weekly"
