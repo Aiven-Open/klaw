@@ -34,6 +34,29 @@ test("user can login with default superadmin user", async ({ page }) => {
   await expect(profileForSuperAdmin).toBeVisible();
 });
 
+test("Klaw is build", async ({ page }) => {
+  await page.goto("/");
+  const loader = page.locator(".preloader");
+  await expect(loader).not.toBeVisible();
+
+  await page.getByPlaceholder("Username").fill(superAdminUserName);
+  await page.getByPlaceholder("Password").fill(superAdminPassword);
+  await page.getByRole("button", { name: "Continue" }).click();
+
+  const profileForSuperAdmin = await page.getByRole("button", {
+    name: "superadmin",
+    exact: true,
+  });
+
+  await expect(profileForSuperAdmin).toBeVisible();
+
+  const klawConfigurationWizard = await page.getByRole("heading", {
+    name: /configure klaw wizard/i,
+  });
+
+  await expect(klawConfigurationWizard).toBeVisible();
+});
+
 test("coral is build", async ({ page }) => {
   await page.goto("/");
   const loader = page.locator(".preloader");
@@ -52,9 +75,13 @@ test("coral is build", async ({ page }) => {
 
   await page.goto("/coral/");
 
-  const coralSuperAdminDialog = await page.getByRole("dialog", {
-    name: /you're currently logged in as superadmin\./i,
+  const coralPreviewBanner = await page.getByRole("region", {
+    name: /preview disclaimer/i,
+  });
+  const coralDashboardPage = await page.getByRole("heading", {
+    name: /dashboard/i,
   });
 
-  await expect(coralSuperAdminDialog).toBeVisible();
+  await expect(coralPreviewBanner).toBeVisible();
+  await expect(coralDashboardPage).toBeVisible();
 });
