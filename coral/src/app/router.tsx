@@ -70,8 +70,6 @@ import {
   SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
 
-const superAdminAccessCoralEnabled = true;
-
 const routes: Array<RouteObject> = [
   {
     path: "/",
