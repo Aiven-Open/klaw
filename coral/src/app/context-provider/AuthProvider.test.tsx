@@ -7,7 +7,6 @@ import {
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
-
 const getAuthMock = jest.fn();
 jest.mock("src/domain/auth-user", () => ({
   ...jest.requireActual("src/domain/auth-user"),
@@ -82,37 +81,4 @@ describe("AuthProvider.tsx", () => {
       expect(authUserFromContext).toBeVisible();
     });
   });
-
-  //   describe("renders an auth provider with given children when auth user is SUPERADMIN", () => {
-  //     beforeEach(async () => {
-  //       getAuthMock.mockReturnValue({ mockAuthUser, userrole: "SUPERADMIN" });
-  //       customRender(
-  //         <AuthProvider>
-  //           <ChildComponent />
-  //         </AuthProvider>,
-  //         {
-  //           queryClient: true,
-  //         }
-  //       );
-  //
-  //       await waitForElementToBeRemoved(screen.getByText("Loading Klaw"));
-  //     });
-  //
-  //     afterEach(() => {
-  //       jest.resetAllMocks();
-  //       cleanup();
-  //     });
-  //
-  //     it("returns an context provider with given children when user", () => {
-  //       const childElement = screen.getByTestId("auth-provider-child");
-  //       expect(childElement).toBeVisible();
-  //     });
-  //
-  //     it("makes context available in child element", () => {
-  //       const childElement = screen.getByTestId("auth-provider-child");
-  //       const authUserFromContext = within(childElement).getByText("Jon Snow");
-  //
-  //       expect(authUserFromContext).toBeVisible();
-  //     });
-  //   });
 });
