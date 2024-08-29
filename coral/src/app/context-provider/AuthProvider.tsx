@@ -4,9 +4,6 @@ import { AuthUser, getAuth, isSuperAdmin } from "src/domain/auth-user";
 import { BasePage } from "src/app/layout/page/BasePage";
 import { Box, Icon } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
-import { NoCoralAccessSuperadmin } from "src/app/components/NoCoralAccessSuperadmin";
-import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
-import { FeatureFlag } from "src/services/feature-flags/types";
 
 /** We don't do Authentication on Corals side
  * at the moment, so we only have a AuthUser
@@ -50,30 +47,21 @@ const AuthContext = createContext<AuthUser>({
   },
 });
 
-const useAuthContext = () => useContext(AuthContext);
+type UseAuthContext = AuthUser & { isSuperAdminUser: boolean };
+
+const useAuthContext = (): UseAuthContext => {
+  const authUser = useContext(AuthContext);
+
+  const isSuperAdminUser = isSuperAdmin(authUser);
+
+  return { ...authUser, isSuperAdminUser };
+};
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { data: authUser, isLoading } = useQuery<AuthUser | undefined>(
     ["user-getAuth-data"],
     getAuth
   );
-
-  const superAdminAccessCoralEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
-  );
-
-  // SUPERADMIN does not have access to coral, so we show a reduced page with
-  // information about that and nothing else.
-  if (
-    !isLoading &&
-    authUser &&
-    isSuperAdmin(authUser) &&
-    !superAdminAccessCoralEnabled
-  ) {
-    return (
-      <BasePage headerContent={<></>} content={<NoCoralAccessSuperadmin />} />
-    );
-  }
 
   if (!isLoading && authUser) {
     return (
@@ -94,3 +82,4 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export { useAuthContext, AuthProvider };
+export type { UseAuthContext };

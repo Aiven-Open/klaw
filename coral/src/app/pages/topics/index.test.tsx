@@ -14,11 +14,21 @@ import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockedNavigator,
+}));
+
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUserContext,
 }));
 
 jest.mock("src/domain/team/team-api.ts");
@@ -39,8 +49,9 @@ describe("Topics", () => {
     mockIntersectionObserver();
   });
 
-  describe("renders default view with data from API", () => {
+  describe("renders default view with data from API for users", () => {
     beforeAll(async () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
@@ -74,7 +85,7 @@ describe("Topics", () => {
       expect(button).toBeEnabled();
     });
 
-    it("navigates to '/requestTopics' when user clicks the button 'Request new topic'", async () => {
+    it("navigates to '/topics/request' when user clicks the button 'Request new topic'", async () => {
       const button = screen.getByRole("button", {
         name: "Request new topic",
       });
@@ -84,7 +95,7 @@ describe("Topics", () => {
       expect(mockedNavigator).toHaveBeenCalledWith("/topics/request");
     });
 
-    it("navigates to '/requestTopics' when user presses Enter while 'Request new topic' button is focused", async () => {
+    it("navigates to '/topics/request' when user presses Enter while 'Request new topic' button is focused", async () => {
       const button = screen.getByRole("button", {
         name: "Request new topic",
       });
@@ -108,6 +119,46 @@ describe("Topics", () => {
 
       // Adding one row for the table headers
       expect(row).toHaveLength(mockedResponseTransformed.entries.length + 1);
+    });
+  });
+
+  describe("does not render the button to request a new topic for superadmin", () => {
+    beforeAll(async () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
+
+      customRender(<Topics />, {
+        memoryRouter: true,
+        queryClient: true,
+        aquariumContext: true,
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterAll(() => {
+      cleanup();
+    });
+
+    it("shows the same headline", async () => {
+      const headline = screen.getByRole("heading", {
+        name: "Topics",
+      });
+
+      expect(headline).toBeVisible();
+    });
+
+    it("shows the table with topics", async () => {
+      const table = screen.getByRole("table", { name: /Topics overview/ });
+
+      expect(table).toBeVisible();
+    });
+
+    it("does not renders 'Request new topic' button", async () => {
+      const button = screen.queryByText("Request new topic");
+
+      expect(button).not.toBeInTheDocument();
     });
   });
 });

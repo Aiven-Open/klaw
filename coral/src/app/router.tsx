@@ -69,11 +69,6 @@ import {
   filteredRoutesForSuperAdmin,
   SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
-import { isFeatureFlagActive } from "src/services/feature-flags/utils";
-
-const superAdminAccessCoralEnabled = isFeatureFlagActive(
-  FeatureFlag.FEATURE_FLAG_SUPER_ADMIN_ACCESS_CORAL
-);
 
 const routes: Array<RouteObject> = [
   {
@@ -461,15 +456,11 @@ const superadminRouteMap: SuperadminRouteMap = {
   },
 };
 
-// until we have permission in place like planned,
-// we are filtering the `routes` object and handling
-// routing based on role
-const routeToUse = superAdminAccessCoralEnabled
-  ? filteredRoutesForSuperAdmin(routes, superadminRouteMap)
-  : routes;
-
-const router = createBrowserRouter(routeToUse, {
-  basename: getRouterBasename(),
-});
+const router = createBrowserRouter(
+  filteredRoutesForSuperAdmin(routes, superadminRouteMap),
+  {
+    basename: getRouterBasename(),
+  }
+);
 
 export default router;
