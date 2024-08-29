@@ -368,10 +368,6 @@ const superadminRouteMap: SuperadminRouteMap = {
     route: Routes.CONNECTOR_OVERVIEW,
     redirect: "/connectorOverview?connectorName=:connectorName",
   },
-  [Routes.ENVIRONMENTS]: {
-    route: Routes.ENVIRONMENTS,
-    redirect: "/envs",
-  },
   [Routes.TEAMS]: {
     route: Routes.TEAMS,
     redirect: "/teams",
