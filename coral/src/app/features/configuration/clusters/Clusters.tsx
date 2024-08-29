@@ -212,6 +212,7 @@ function Clusters() {
                 ? handleShowDeleteModal
                 : undefined
             }
+            showEdit={permissions.addDeleteEditClusters}
             ariaLabel={`Cluster overview, page ${clusters?.currentPage ?? 0} of ${
               clusters?.totalPages ?? 0
             }`}
