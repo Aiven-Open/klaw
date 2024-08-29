@@ -15,6 +15,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -22,9 +23,12 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-let mockAuthUser = testAuthUser;
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
 jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => mockAuthUser,
+  useAuthContext: () => mockAuthUserContext,
 }));
 
 jest.mock("src/domain/team/team-api.ts");
@@ -47,7 +51,7 @@ describe("Topics", () => {
 
   describe("renders default view with data from API for users", () => {
     beforeAll(async () => {
-      mockAuthUser = { ...testAuthUser, userrole: "USER" };
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
@@ -120,7 +124,7 @@ describe("Topics", () => {
 
   describe("does not render the button to request a new topic for superadmin", () => {
     beforeAll(async () => {
-      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockGetTopicsResponse);

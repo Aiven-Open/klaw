@@ -7,9 +7,7 @@ import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 const Topics = () => {
   const navigate = useNavigate();
-  const { userrole } = useAuthContext();
-
-  const userIsSuperAdmin = userrole === "SUPERADMIN";
+  const { isSuperAdminUser } = useAuthContext();
 
   return (
     <>
@@ -17,7 +15,7 @@ const Topics = () => {
       <PageHeader
         title={"Topics"}
         primaryAction={
-          !userIsSuperAdmin
+          !isSuperAdminUser
             ? {
                 text: "Request new topic",
                 onClick: () => navigate("/topics/request"),

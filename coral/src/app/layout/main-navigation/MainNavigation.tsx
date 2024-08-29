@@ -20,12 +20,12 @@ import { Routes } from "src/services/router-utils/types";
 function MainNavigation() {
   const { pathname } = useLocation();
   const { TOTAL_NOTIFICATIONS } = usePendingRequests();
-  const { userrole } = useAuthContext();
+  const { isSuperAdminUser } = useAuthContext();
   const [hideFeedbackForm, setHideFeedbackForm] = useState(
     Boolean(localStorage.getItem("hideFeedbackForm"))
   );
 
-  const showNavigationForSuperAdmin = userrole === "SUPERADMIN";
+  const showNavigationForSuperAdmin = isSuperAdminUser;
 
   return (
     <Box

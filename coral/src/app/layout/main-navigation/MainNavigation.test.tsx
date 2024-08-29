@@ -8,6 +8,7 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
 
 jest.mock("src/domain/team/team-api.ts");
 
@@ -18,9 +19,12 @@ jest.mock("src/domain/requests/requests-api.ts", () => ({
   getRequestsWaitingForApproval: () => mockGetRequestsWaitingForApproval(),
 }));
 
-let mockAuthUser = testAuthUser;
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
 jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => mockAuthUser,
+  useAuthContext: () => mockAuthUserContext,
 }));
 
 const mockedUseToast = jest.fn();
@@ -297,7 +301,7 @@ describe("MainNavigation.tsx", () => {
     ];
 
     beforeAll(() => {
-      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
       mockGetRequestsStatistics.mockResolvedValue([]);
       mockGetRequestsWaitingForApproval.mockResolvedValue([]);
       customRender(<MainNavigation />, {
@@ -309,7 +313,7 @@ describe("MainNavigation.tsx", () => {
 
     afterAll(() => {
       cleanup();
-      mockAuthUser = testAuthUser;
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
     });
 
     it("renders the main navigation", () => {

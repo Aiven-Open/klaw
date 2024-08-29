@@ -20,9 +20,9 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-let mockAuthUser = testAuthUser;
+let mockAuthContext = { ...testAuthUser, isSuperAdminUser: false };
 jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => mockAuthUser,
+  useAuthContext: () => mockAuthContext,
 }));
 
 describe("Connectors", () => {
@@ -32,7 +32,7 @@ describe("Connectors", () => {
 
   describe("renders default view with data for users", () => {
     beforeAll(() => {
-      mockAuthUser = { ...testAuthUser, userrole: "USER" };
+      mockAuthContext = { ...testAuthUser, isSuperAdminUser: false };
 
       customRender(<Connectors />, {
         memoryRouter: true,
@@ -93,7 +93,7 @@ describe("Connectors", () => {
 
   describe("does not render the button to request a new topic for superadmin", () => {
     beforeAll(() => {
-      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      mockAuthContext = { ...testAuthUser, isSuperAdminUser: true };
 
       customRender(<Connectors />, {
         memoryRouter: true,
@@ -113,6 +113,7 @@ describe("Connectors", () => {
 
       expect(headline).toBeVisible();
     });
+
     it("renders the BrowserConnectors component rendering the table", async () => {
       const component = screen.getByTestId("mocked-BrowseConnectors");
 

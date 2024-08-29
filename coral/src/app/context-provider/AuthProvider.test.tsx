@@ -1,17 +1,31 @@
-import { cleanup, screen, within } from "@testing-library/react";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
+import {
+  cleanup,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import {
   AuthProvider,
   useAuthContext,
 } from "src/app/context-provider/AuthProvider";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
 const getAuthMock = jest.fn();
 jest.mock("src/domain/auth-user", () => ({
   ...jest.requireActual("src/domain/auth-user"),
   getAuth: () => getAuthMock(),
 }));
+
+const AllProviders = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={getQueryClientForTests()}>
+    <AuthProvider>{children}</AuthProvider>
+  </QueryClientProvider>
+);
 
 const ChildComponent = () => {
   const authUser = useAuthContext();
@@ -20,17 +34,20 @@ const ChildComponent = () => {
 };
 
 const mockAuthUser = { ...testAuthUser, username: "Jon Snow" };
+const mockAuthSuperAdminUser = {
+  ...testAuthUser,
+  username: "Arya Stark",
+  userrole: "SUPERADMIN",
+};
+
 describe("AuthProvider.tsx", () => {
   describe("gets the auth user", () => {
     beforeEach(() => {
       getAuthMock.mockReturnValue({});
-      customRender(
-        <AuthProvider>
+      render(
+        <AllProviders>
           <ChildComponent />
-        </AuthProvider>,
-        {
-          queryClient: true,
-        }
+        </AllProviders>
       );
     });
 
@@ -52,13 +69,10 @@ describe("AuthProvider.tsx", () => {
   describe("renders an auth provider with given children when auth user is available", () => {
     beforeEach(async () => {
       getAuthMock.mockReturnValue(mockAuthUser);
-      customRender(
-        <AuthProvider>
+      render(
+        <AllProviders>
           <ChildComponent />
-        </AuthProvider>,
-        {
-          queryClient: true,
-        }
+        </AllProviders>
       );
 
       await waitForElementToBeRemoved(screen.getByText("Loading Klaw"));
@@ -79,6 +93,38 @@ describe("AuthProvider.tsx", () => {
       const authUserFromContext = within(childElement).getByText("Jon Snow");
 
       expect(authUserFromContext).toBeVisible();
+    });
+  });
+
+  describe("useAuthContext hook", () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("returns the correct user data and identifies a SUPERADMIN user", async () => {
+      getAuthMock.mockResolvedValue(mockAuthSuperAdminUser);
+
+      const { result } = renderHook(() => useAuthContext(), {
+        wrapper: AllProviders,
+      });
+
+      await waitFor(() => {
+        expect(result.current.username).toEqual("Arya Stark");
+        expect(result.current.isSuperAdminUser).toBe(true);
+      });
+    });
+
+    it("returns the correct user data and identifies a non-SUPERADMIN user", async () => {
+      getAuthMock.mockResolvedValue(mockAuthUser);
+      const { result } = renderHook(() => useAuthContext(), {
+        wrapper: AllProviders,
+      });
+
+      await waitFor(() => {
+        expect(result.current.username).toEqual("Jon Snow");
+        expect(result.current.isSuperAdminUser).toBe(false);
+      });
     });
   });
 });

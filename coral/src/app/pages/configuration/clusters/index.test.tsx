@@ -19,6 +19,7 @@ describe("ClustersPage", () => {
   it('renders "Add new cluster" button when addDeleteEditClusters permission is true', () => {
     mockUseAuthContext.mockReturnValue({
       ...testAuthUser,
+      isSuperAdminUser: false,
       permissions: { ...testAuthUser.permissions, addDeleteEditClusters: true },
     });
 
@@ -35,6 +36,7 @@ describe("ClustersPage", () => {
   it('does not render "Add new cluster" button when addDeleteEditClusters permission is false', () => {
     mockUseAuthContext.mockReturnValue({
       ...testAuthUser,
+      isSuperAdminUser: false,
       permissions: {
         ...testAuthUser.permissions,
         addDeleteEditClusters: false,

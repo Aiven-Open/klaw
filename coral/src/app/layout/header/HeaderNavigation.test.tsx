@@ -7,6 +7,7 @@ import {
 } from "src/services/test-utils/tabbing";
 import * as hook from "src/app/hooks/usePendingRequests";
 import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
 
 const mockToast = jest.fn();
 const mockDismiss = jest.fn();
@@ -36,9 +37,12 @@ const mockedPendingRequests = {
   TOTAL_NOTIFICATIONS: 6,
 };
 
-let mockAuthUser = testAuthUser;
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
 jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => mockAuthUser,
+  useAuthContext: () => mockAuthUserContext,
 }));
 
 describe("HeaderNavigation.tsx", () => {
@@ -109,7 +113,7 @@ describe("HeaderNavigation.tsx", () => {
 
   describe("removes specific elements if user is superadmin", () => {
     beforeAll(() => {
-      mockAuthUser = { ...testAuthUser, userrole: "SUPERADMIN" };
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
       jest
         .spyOn(hook, "usePendingRequests")
         .mockImplementation(() => mockedNoPendingRequests);
@@ -118,7 +122,7 @@ describe("HeaderNavigation.tsx", () => {
     });
 
     afterAll(() => {
-      mockAuthUser = testAuthUser;
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
       cleanup();
       jest.clearAllMocks();
     });

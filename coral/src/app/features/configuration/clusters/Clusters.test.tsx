@@ -11,45 +11,16 @@ import { KlawApiError } from "src/services/api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { userEvent } from "@testing-library/user-event";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { AuthUser } from "src/domain/auth-user";
+import {
+  UseAuthContext,
+  useAuthContext,
+} from "src/app/context-provider/AuthProvider";
 
-const INITIAL_AUTH_DATA: AuthUser = {
-  username: "",
-  userrole: "",
-  teamname: "",
-  teamId: "",
-  canSwitchTeams: "",
-  totalTeamTopics: 0,
-  totalOrgTopics: 0,
-  permissions: {
-    addDeleteEditClusters: false,
-    canShutdownKw: false,
-    canUpdatePermissions: false,
-    addEditRoles: false,
-    viewTopics: false,
-    requestItems: false,
-    viewKafkaConnect: false,
-    syncBackTopics: false,
-    syncBackSchemas: false,
-    syncBackAcls: false,
-    updateServerConfig: false,
-    showServerConfigEnvProperties: false,
-    addUser: false,
-    addTeams: false,
-    syncTopicsAcls: false,
-    syncConnectors: false,
-    manageConnectors: false,
-    syncSchemas: false,
-    approveAtleastOneRequest: false,
-    approveDeclineTopics: false,
-    approveDeclineOperationalReqs: false,
-    approveDeclineSubscriptions: false,
-    approveDeclineSchemas: false,
-    approveDeclineConnectors: false,
-    showAddDeleteTenants: false,
-    addDeleteEditEnvs: false,
-  },
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
+
+const INITIAL_AUTH_USER_CONTEXT_DATA: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
 };
 
 jest.mock("src/domain/cluster/cluster-api.ts");
@@ -114,7 +85,7 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [],
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
     });
@@ -137,7 +108,7 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [],
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -168,7 +139,7 @@ describe("Clusters.tsx", () => {
     beforeAll(async () => {
       jest.spyOn(console, "error").mockImplementation((error) => error);
       mockGetClustersPaginated.mockRejectedValue(testError);
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -201,7 +172,7 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: testCluster,
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -271,7 +242,7 @@ describe("Clusters.tsx", () => {
         totalPages: 3,
         entries: testCluster,
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -307,7 +278,7 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -350,7 +321,7 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -390,7 +361,7 @@ describe("Clusters.tsx", () => {
         totalPages: 5,
         entries: testCluster,
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, { queryClient: true, memoryRouter: true });
 
@@ -432,7 +403,7 @@ describe("Clusters.tsx", () => {
         totalPages: 1,
         entries: [testCluster[0]],
       });
-      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_DATA);
+      mockUseAuthContext.mockReturnValue(INITIAL_AUTH_USER_CONTEXT_DATA);
 
       customRender(<Clusters />, {
         queryClient: true,
@@ -475,9 +446,9 @@ describe("Clusters.tsx", () => {
       });
 
       mockUseAuthContext.mockReturnValue({
-        ...INITIAL_AUTH_DATA,
+        ...INITIAL_AUTH_USER_CONTEXT_DATA,
         permissions: {
-          ...INITIAL_AUTH_DATA.permissions,
+          ...INITIAL_AUTH_USER_CONTEXT_DATA.permissions,
           addDeleteEditClusters: true,
         },
       });
@@ -541,9 +512,9 @@ describe("Clusters.tsx", () => {
       });
 
       mockUseAuthContext.mockReturnValue({
-        ...INITIAL_AUTH_DATA,
+        ...INITIAL_AUTH_USER_CONTEXT_DATA,
         permissions: {
-          ...INITIAL_AUTH_DATA.permissions,
+          ...INITIAL_AUTH_USER_CONTEXT_DATA.permissions,
           addDeleteEditClusters: false,
         },
       });

@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AuthUser, getAuth } from "src/domain/auth-user";
+import { AuthUser, getAuth, isSuperAdmin } from "src/domain/auth-user";
 import { BasePage } from "src/app/layout/page/BasePage";
 import { Box, Icon } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
@@ -47,7 +47,15 @@ const AuthContext = createContext<AuthUser>({
   },
 });
 
-const useAuthContext = () => useContext(AuthContext);
+type UseAuthContext = AuthUser & { isSuperAdminUser: boolean };
+
+const useAuthContext = (): UseAuthContext => {
+  const authUser = useContext(AuthContext);
+
+  const isSuperAdminUser = isSuperAdmin(authUser);
+
+  return { ...authUser, isSuperAdminUser };
+};
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { data: authUser, isLoading } = useQuery<AuthUser | undefined>(
@@ -74,3 +82,4 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export { useAuthContext, AuthProvider };
+export type { UseAuthContext };

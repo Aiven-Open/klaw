@@ -19,14 +19,12 @@ const requestNewEntityPaths: { [key: string]: string } = {
 };
 
 function HeaderNavigation() {
-  const { userrole } = useAuthContext();
+  const { isSuperAdminUser } = useAuthContext();
   const navigate = useNavigate();
-
-  const userIsSuperAdmin = userrole === "SUPERADMIN";
 
   return (
     <Box display={"flex"} colGap={"l1"} alignItems="center">
-      {!userIsSuperAdmin && (
+      {!isSuperAdminUser && (
         <DropdownMenu
           onAction={(key) => {
             if (requestNewEntityPaths[key.toString()] !== undefined) {
@@ -67,7 +65,7 @@ function HeaderNavigation() {
           colGap={"l2"}
           alignItems={"baseline"}
         >
-          {!userIsSuperAdmin && (
+          {!isSuperAdminUser && (
             <li>
               <RequestsDropdown />
             </li>

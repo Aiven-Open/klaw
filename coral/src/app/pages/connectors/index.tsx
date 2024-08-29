@@ -7,9 +7,7 @@ import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 const ConnectorsPage = () => {
   const navigate = useNavigate();
-  const { userrole } = useAuthContext();
-
-  const userIsSuperAdmin = userrole === "SUPERADMIN";
+  const { isSuperAdminUser } = useAuthContext();
 
   return (
     <>
@@ -17,7 +15,7 @@ const ConnectorsPage = () => {
       <PageHeader
         title={"Connectors"}
         primaryAction={
-          !userIsSuperAdmin
+          !isSuperAdminUser
             ? {
                 text: "Request new connector",
                 onClick: () => navigate("/connectors/request"),

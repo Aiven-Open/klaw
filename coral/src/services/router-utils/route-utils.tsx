@@ -181,7 +181,7 @@ const SuperadminRoute = ({
   showNotFound?: boolean;
   removeChildren?: boolean;
 }) => {
-  const { userrole } = useAuthContext();
+  const { isSuperAdminUser } = useAuthContext();
   const routeParams = useParams();
 
   const redirectStaticPart = redirectSuperAdmin.split(":")[0];
@@ -189,23 +189,21 @@ const SuperadminRoute = ({
   const redirectParam = routeParams[param] ? routeParams[param] : "";
   const redirectPath = `${redirectStaticPart}${redirectParam}`;
 
-  const isSuperadmin = userrole === "SUPERADMIN";
-
   useEffect(() => {
-    if (isSuperadmin && !showNotFound) {
+    if (isSuperAdminUser && !showNotFound) {
       window.location.replace(`${window.location.origin}${redirectPath}`);
     }
   });
 
-  if (!isSuperadmin) {
+  if (!isSuperAdminUser) {
     return children;
   }
 
-  if (isSuperadmin && showNotFound) {
+  if (isSuperAdminUser && showNotFound) {
     return <NotFound />;
   }
 
-  if (isSuperadmin && removeChildren) {
+  if (isSuperAdminUser && removeChildren) {
     return [];
   }
 
