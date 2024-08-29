@@ -3,6 +3,7 @@ import {
   DataTable,
   DataTableColumn,
   EmptyState,
+  Link,
   StatusChip,
 } from "@aivenio/aquarium";
 import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
@@ -11,10 +12,12 @@ import { Environment } from "src/domain/environment";
 type KafkaEnvironmentsTableProps = {
   environments: Environment[];
   ariaLabel: string;
+  isSuperAdminUser?: boolean;
 };
 
 interface KafkaEnvironmentsTableRow {
   id: Environment["id"];
+  type: Environment["type"];
   environmentName: Environment["name"];
   clusterName: Environment["clusterName"];
   tenantName: Environment["tenantName"];
@@ -26,6 +29,17 @@ interface KafkaEnvironmentsTableRow {
 
 const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
   const { environments, ariaLabel } = props;
+
+  const isSuperAdminUser =
+    props.isSuperAdminUser !== undefined ? props.isSuperAdminUser : false;
+
+  const optionalColumnSuperAdmin: DataTableColumn<KafkaEnvironmentsTableRow> = {
+    type: "custom",
+    headerName: "Manage",
+    UNSAFE_render: ({ type, id }: KafkaEnvironmentsTableRow) => {
+      return <Link href={`/modifyEnv?envId=${id}&envType=${type}`}>Edit</Link>;
+    },
+  };
 
   const columns: Array<DataTableColumn<KafkaEnvironmentsTableRow>> = [
     {
@@ -109,11 +123,13 @@ const KafkaEnvironmentsTable = (props: KafkaEnvironmentsTableProps) => {
         );
       },
     },
+    ...(isSuperAdminUser ? [optionalColumnSuperAdmin] : []),
   ];
 
   const rows: KafkaEnvironmentsTableRow[] = environments.map((env) => {
     return {
       id: env.id,
+      type: env.type,
       environmentName: env.name,
       clusterName: env.clusterName,
       tenantName: env.tenantName,
