@@ -161,4 +161,58 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
       });
     });
   });
+
+  describe("shows additional colum with edit link for superadmin user", () => {
+    beforeAll(() => {
+      mockIntersectionObserver();
+    });
+
+    afterEach(cleanup);
+
+    const additionalRowSuperAdmin = "Manage";
+    const tableRowHeaderSuperAdmin = [
+      ...tableRowHeader,
+      additionalRowSuperAdmin,
+    ];
+
+    it("shows a row with edit link for superadmin user", () => {
+      customRender(
+        <KafkaConnectEnvironmentsTable
+          environments={mockEnvironments}
+          ariaLabel={"Kafka Connect Environments overview, page 0 of 0"}
+          isSuperAdminUser={true}
+        />,
+        { queryClient: true }
+      );
+
+      const table = screen.getByRole("table", {
+        name: "Kafka Connect Environments overview, page 0 of 0",
+      });
+
+      const columns = within(table).getAllByRole("columnheader");
+
+      expect(columns).toHaveLength(tableRowHeaderSuperAdmin.length);
+      expect(columns[tableRowHeaderSuperAdmin.length - 1]).toHaveTextContent(
+        additionalRowSuperAdmin
+      );
+    });
+
+    it("does not show the colum for user", () => {
+      customRender(
+        <KafkaConnectEnvironmentsTable
+          environments={mockEnvironments}
+          ariaLabel={"Kafka Connect Environments overview, page 0 of 0"}
+          isSuperAdminUser={false}
+        />,
+        { queryClient: true }
+      );
+
+      const table = screen.getByRole("table", {
+        name: "Kafka Connect Environments overview, page 0 of 0",
+      });
+
+      const columns = within(table).getAllByRole("columnheader");
+      expect(columns).toHaveLength(tableRowHeader.length);
+    });
+  });
 });
