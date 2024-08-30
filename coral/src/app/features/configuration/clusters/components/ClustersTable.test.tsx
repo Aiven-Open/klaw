@@ -264,12 +264,20 @@ describe("ClusterTable.tsx", () => {
   describe("shows all clusters as a table (user with permissions.addDeleteEditClusters)", () => {
     const tableLabel = "Cluster overview";
     beforeAll(() => {
+      Object.defineProperty(window, "location", {
+        value: {
+          assign: jest.fn(),
+        },
+        writable: true,
+      });
+
       customRender(
         <ClustersTable
           clusters={testCluster}
           ariaLabel={tableLabel}
           handleShowConnectModal={mockHandleShowConnectModal}
           handleShowDeleteModal={mockHandleShowDeleteModal}
+          showEdit={true}
         />,
         { queryClient: true }
       );
@@ -277,7 +285,7 @@ describe("ClusterTable.tsx", () => {
 
     afterAll(cleanup);
 
-    it("renders a table with an acessible name", async () => {
+    it("renders a table with an accessible name", async () => {
       const table = screen.getByRole("table", {
         name: tableLabel,
       });
@@ -489,6 +497,30 @@ describe("ClusterTable.tsx", () => {
             canDeleteCluster: cluster.showDeleteCluster,
           },
         });
+      });
+
+      it(`displays an edit button that redirects to Klaw for ${cluster.clusterName}`, async () => {
+        const table = screen.getByRole("table", {
+          name: tableLabel,
+        });
+        const row = within(table).getByRole("row", {
+          name: new RegExp(`${cluster.clusterName}`),
+        });
+        const menuButton = within(row).getByRole("button", {
+          name: "Context menu",
+        });
+
+        await userEvent.click(menuButton);
+
+        const editButton = screen.getByRole("menuitem", {
+          name: "Edit",
+        });
+
+        await userEvent.click(editButton);
+
+        expect(window.location.assign).toHaveBeenCalledWith(
+          "http://localhost/modifyCluster?clusterId=1&clusterType=kafka"
+        );
       });
     });
   });

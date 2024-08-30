@@ -368,10 +368,6 @@ const superadminRouteMap: SuperadminRouteMap = {
     route: Routes.CONNECTOR_OVERVIEW,
     redirect: "/connectorOverview?connectorName=:connectorName",
   },
-  [Routes.ENVIRONMENTS]: {
-    route: Routes.ENVIRONMENTS,
-    redirect: "/envs",
-  },
   [Routes.TEAMS]: {
     route: Routes.TEAMS,
     redirect: "/teams",
@@ -380,11 +376,6 @@ const superadminRouteMap: SuperadminRouteMap = {
     route: Routes.USERS,
     redirect: "/users",
   },
-  [Routes.CLUSTERS]: {
-    route: Routes.CLUSTERS,
-    redirect: "/clusters",
-  },
-
   // These are all routes that don't have an
   // equivalent in Klaw for SUPERADMIN
   // and are also unlikely for a superadmin

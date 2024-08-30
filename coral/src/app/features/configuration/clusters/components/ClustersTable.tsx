@@ -13,16 +13,20 @@ import { ClusterDetails } from "src/domain/cluster";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
+import editIcon from "@aivenio/aquarium/dist/src/icons/edit";
+import camelCase from "lodash/camelCase";
 
 type ClustersTableProps = {
   clusters: ClusterDetails[];
   ariaLabel: string;
   handleShowConnectModal?: ({ show, data }: ClusterConnectModalState) => void;
   handleShowDeleteModal?: ({ show, data }: ClusterDeleteModalState) => void;
+  showEdit?: boolean;
 };
 
 interface ClustersTableRow {
   id: ClusterDetails["clusterId"];
+  type: ClusterDetails["clusterType"];
   clusterName: ClusterDetails["clusterName"];
   bootstrapServers: ClusterDetails["bootstrapServers"];
   protocol: ClusterDetails["protocol"];
@@ -37,11 +41,18 @@ interface ClustersTableRow {
 }
 
 const ClustersTable = (props: ClustersTableProps) => {
-  const { clusters, ariaLabel, handleShowConnectModal, handleShowDeleteModal } =
-    props;
+  const {
+    clusters,
+    ariaLabel,
+    showEdit,
+    handleShowConnectModal,
+    handleShowDeleteModal,
+  } = props;
 
   const isAdminUser =
-    handleShowConnectModal !== undefined && handleShowDeleteModal !== undefined;
+    handleShowConnectModal !== undefined &&
+    handleShowDeleteModal !== undefined &&
+    showEdit === true;
 
   const columns: Array<DataTableColumn<ClustersTableRow>> = [
     {
@@ -129,6 +140,7 @@ const ClustersTable = (props: ClustersTableProps) => {
   const rows: ClustersTableRow[] = clusters.map((cluster) => {
     return {
       id: cluster.clusterId,
+      type: cluster.clusterType,
       clusterName: cluster.clusterName,
       bootstrapServers: cluster.bootstrapServers,
       protocol: cluster.protocol,
@@ -155,6 +167,9 @@ const ClustersTable = (props: ClustersTableProps) => {
       noWrap={false}
       menu={
         <DropdownMenu.Items>
+          <DropdownMenu.Item icon={editIcon} key="edit">
+            Edit
+          </DropdownMenu.Item>
           <DropdownMenu.Item icon={deleteIcon} key="delete">
             Remove
           </DropdownMenu.Item>
@@ -170,6 +185,13 @@ const ClustersTable = (props: ClustersTableProps) => {
               canDeleteCluster: data.canDeleteCluster,
             },
           });
+        }
+        if (action === "edit") {
+          const { id, type } = data;
+          const typeForUrl = camelCase(type).toLowerCase();
+          window.location.assign(
+            `${window.origin}/modifyCluster?clusterId=${id}&clusterType=${typeForUrl}`
+          );
         }
       }}
     />

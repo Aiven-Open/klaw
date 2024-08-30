@@ -4,6 +4,8 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const TEST_UPDATE_TIME = "14-Sep-2023 12:30:38 UTC";
 
@@ -41,6 +43,14 @@ const mockEnvironments: Environment[] = [
 ];
 
 const tableRowHeader = ["Environment", "Cluster", "Tenant", "Status"];
+
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUserContext,
+}));
 
 describe("KafkaConnectEnvironmentsTable.tsx", () => {
   describe("shows empty state correctly", () => {
@@ -159,6 +169,60 @@ describe("KafkaConnectEnvironmentsTable.tsx", () => {
 
         expect(status).toBeVisible();
       });
+    });
+  });
+
+  describe("shows additional colum with edit link for superadmin user", () => {
+    beforeAll(() => {
+      mockIntersectionObserver();
+    });
+
+    afterEach(cleanup);
+
+    const additionalRowSuperAdmin = "Manage";
+    const tableRowHeaderSuperAdmin = [
+      ...tableRowHeader,
+      additionalRowSuperAdmin,
+    ];
+
+    it("shows a row with edit link for superadmin user", () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
+      customRender(
+        <KafkaConnectEnvironmentsTable
+          environments={mockEnvironments}
+          ariaLabel={"Kafka Connect Environments overview, page 0 of 0"}
+        />,
+        { queryClient: true }
+      );
+
+      const table = screen.getByRole("table", {
+        name: "Kafka Connect Environments overview, page 0 of 0",
+      });
+
+      const columns = within(table).getAllByRole("columnheader");
+
+      expect(columns).toHaveLength(tableRowHeaderSuperAdmin.length);
+      expect(columns[tableRowHeaderSuperAdmin.length - 1]).toHaveTextContent(
+        additionalRowSuperAdmin
+      );
+    });
+
+    it("does not show the colum for user", () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
+      customRender(
+        <KafkaConnectEnvironmentsTable
+          environments={mockEnvironments}
+          ariaLabel={"Kafka Connect Environments overview, page 0 of 0"}
+        />,
+        { queryClient: true }
+      );
+
+      const table = screen.getByRole("table", {
+        name: "Kafka Connect Environments overview, page 0 of 0",
+      });
+
+      const columns = within(table).getAllByRole("columnheader");
+      expect(columns).toHaveLength(tableRowHeader.length);
     });
   });
 });
