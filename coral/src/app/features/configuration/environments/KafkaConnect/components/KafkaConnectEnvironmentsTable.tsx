@@ -6,11 +6,11 @@ import {
 } from "@aivenio/aquarium";
 import EnvironmentStatus from "src/app/features/configuration/environments/components/EnvironmentStatus";
 import { Environment } from "src/domain/environment";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 type KafkaConnectEnvironmentsTableProps = {
   environments: Environment[];
   ariaLabel: string;
-  isSuperAdminUser?: boolean;
 };
 
 interface KafkaConnectEnvironmentsTableRow {
@@ -27,8 +27,7 @@ const KafkaConnectEnvironmentsTable = (
   props: KafkaConnectEnvironmentsTableProps
 ) => {
   const { environments, ariaLabel } = props;
-  const isSuperAdminUser =
-    props.isSuperAdminUser !== undefined ? props.isSuperAdminUser : false;
+  const { isSuperAdminUser } = useAuthContext();
 
   const optionalColumnSuperAdmin: DataTableColumn<KafkaConnectEnvironmentsTableRow> =
     {

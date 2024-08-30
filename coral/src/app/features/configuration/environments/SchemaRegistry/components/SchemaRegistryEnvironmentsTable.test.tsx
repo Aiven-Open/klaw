@@ -4,6 +4,8 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { Environment } from "src/domain/environment/environment-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { UseAuthContext } from "src/app/context-provider/AuthProvider";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const TEST_UPDATE_TIME = "14-Sep-2023 12:30:38 UTC";
 
@@ -50,6 +52,14 @@ const tableRowHeader = [
   "Associated Kafka Environment",
   "Status",
 ];
+
+let mockAuthUserContext: UseAuthContext = {
+  ...testAuthUser,
+  isSuperAdminUser: false,
+};
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUserContext,
+}));
 
 describe("SchemaRegistryEnvironmentsTable.tsx", () => {
   describe("shows empty state correctly", () => {
@@ -199,11 +209,11 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
     ];
 
     it("shows a row with edit link for superadmin user", () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: true };
       customRender(
         <SchemaRegistryEnvironmentsTable
           environments={mockEnvironments}
           ariaLabel={"Schema Registry Environments overview, page 1 of 10"}
-          isSuperAdminUser={true}
         />,
         { queryClient: true }
       );
@@ -221,11 +231,11 @@ describe("SchemaRegistryEnvironmentsTable.tsx", () => {
     });
 
     it("does not show the colum for user", () => {
+      mockAuthUserContext = { ...testAuthUser, isSuperAdminUser: false };
       customRender(
         <SchemaRegistryEnvironmentsTable
           environments={mockEnvironments}
           ariaLabel={"Schema Registry Environments overview, page 1 of 10"}
-          isSuperAdminUser={false}
         />,
         { queryClient: true }
       );
