@@ -164,6 +164,9 @@ function MainNavigation() {
               active={pathname.startsWith(Routes.TEAMS)}
             />
             {showNavigationForSuperAdmin && (
+              <MainNavigationLink linkText={"Tenants"} to={"/tenants"} />
+            )}
+            {showNavigationForSuperAdmin && (
               <MainNavigationLink
                 linkText={"Approve user request"}
                 to={"/execUsers"}

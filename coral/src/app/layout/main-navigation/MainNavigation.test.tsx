@@ -260,6 +260,10 @@ describe("MainNavigation.tsx", () => {
             linkTo: `/configuration/teams`,
           },
           {
+            name: "Tenants",
+            linkTo: "/tenants",
+          },
+          {
             name: "Environments",
             linkTo: "/configuration/environments",
           },
