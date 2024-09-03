@@ -34,7 +34,7 @@
   "devDependencies": {
     "@playwright/test": "^1.46.1",
     "@types/node": "^20.5.9",
-    "@typescript-eslint/parser": "^6.6.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "lint-staged": "^15.2.9",
