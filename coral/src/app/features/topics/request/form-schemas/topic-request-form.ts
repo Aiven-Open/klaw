@@ -140,8 +140,14 @@ function validateTopicName(
     const topicPrefix = environment.params?.topicPrefix;
     const topicSuffix = environment.params?.topicSuffix;
 
-    const hasPrefix = topicPrefix !== undefined && topicPrefix.length > 0;
-    const hasSuffix = topicSuffix !== undefined && topicSuffix.length > 0;
+    const hasPrefix =
+      topicPrefix !== undefined &&
+      topicPrefix.length > 0 &&
+      topicPrefix[0].length > 0;
+    const hasSuffix =
+      topicSuffix !== undefined &&
+      topicSuffix.length > 0 &&
+      topicSuffix[0].length > 0;
 
     if (
       hasPrefix &&
