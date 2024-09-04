@@ -22,6 +22,7 @@ import { getTopicMessages } from "src/domain/topic/topic-api";
 import {
   type NoContent,
   type TopicMessages as TopicMessagesType,
+  TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID,
 } from "src/domain/topic/topic-types";
 
 function isNoContentResult(
@@ -60,7 +61,7 @@ function TopicMessages() {
     queryFn: () =>
       getTopicMessages({
         topicName,
-        consumerGroupId: "notdefined",
+        consumerGroupId: TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID,
         envId: environmentId,
         offsetId: defaultOffsetFilters.defaultOffset,
         selectedPartitionId: Number(partitionIdFilters.partitionId),
