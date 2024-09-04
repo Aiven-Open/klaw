@@ -31,7 +31,7 @@ function isNoContentResult(
 }
 
 function TopicMessages() {
-  const { topicName } = useTopicDetails();
+  const { topicName, environmentId } = useTopicDetails();
 
   const {
     validateFilters,
@@ -61,7 +61,7 @@ function TopicMessages() {
       getTopicMessages({
         topicName,
         consumerGroupId: "notdefined",
-        envId: "2",
+        envId: environmentId,
         offsetId: defaultOffsetFilters.defaultOffset,
         selectedPartitionId: Number(partitionIdFilters.partitionId),
         selectedNumberOfOffsets: Number(customOffsetFilters.customOffset),
