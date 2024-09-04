@@ -23,6 +23,7 @@ import {
   TopicSchemaOverview,
   TopicTeam,
   TopicType,
+  TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID,
 } from "src/domain/topic/topic-types";
 
 export {
@@ -36,6 +37,7 @@ export {
   getTopics,
   requestTopicPromotion,
   updateTopicDocumentation,
+  TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID,
 };
 export type {
   DeleteTopicPayload,

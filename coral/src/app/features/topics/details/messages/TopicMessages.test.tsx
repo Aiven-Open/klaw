@@ -22,7 +22,7 @@ const mockGetTopicMessagesNoContentResponse = {
 };
 
 function DummyParent() {
-  return <Outlet context={{ topicName: "test" }} />;
+  return <Outlet context={{ topicName: "test", environmentId: "2" }} />;
 }
 
 describe("TopicMessages", () => {

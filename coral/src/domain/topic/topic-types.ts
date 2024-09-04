@@ -92,6 +92,8 @@ type TopicClaimPayload = ResolveIntersectionTypes<
 
 type TopicDetailsPerEnv = KlawApiModel<"TopicDetailsPerEnv">;
 
+const TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID = "notdefined";
+
 export type {
   AclOverviewInfo,
   DeleteTopicPayload,
@@ -114,3 +116,5 @@ export type {
   TopicType,
   GetTopicsQueryParameter,
 };
+
+export { TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID };
