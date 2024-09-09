@@ -12,7 +12,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
         class="flex flex-col gap-4"
       >
         <div
-          class="typography-default-strong text-black"
+          class="typography-default-strong text-intense"
         >
           Topics
         </div>
@@ -125,7 +125,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
         class="flex flex-col gap-4"
       >
         <div
-          class="typography-default-strong text-black"
+          class="typography-default-strong text-intense"
         >
           My team's pending requests
         </div>
@@ -238,7 +238,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
         class="flex flex-col gap-4"
       >
         <div
-          class="typography-default-strong text-black"
+          class="typography-default-strong text-intense"
         >
           My team's approved requests
         </div>
@@ -338,7 +338,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
         class="flex flex-col gap-4"
       >
         <div
-          class="typography-default-strong text-black"
+          class="typography-default-strong text-intense"
         >
           My team's topics per environment
         </div>
