@@ -910,9 +910,54 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         $scope.showAlertToast();
                         return;
                     }
-                }else{
+
+                    $scope.selectedOffsetRangeStart = 0;
+                    $scope.selectedOffsetRangeEnd = 0;
+
+                }else if($scope.topicOffsetsVal === 'range'){
+                     if($scope.selectedPartitionId === ""){
+                         $scope.alert = "Please fill in a partition id.";
+                         $scope.showAlertToast();
+                         return;
+                     }
+
+                     if($scope.selectedPartitionId < 0 || isNaN($scope.selectedPartitionId))
+                     {
+                         $scope.alert = "Please fill in a valid partition id.";
+                         $scope.showAlertToast();
+                         return;
+                     }
+
+                     if(!$scope.selectedOffsetRangeStart || $scope.selectedOffsetRangeStart === "" ||
+                        !$scope.selectedOffsetRangeEnd || $scope.selectedOffsetRangeEnd === ""
+                     ){
+                         $scope.alert = "Please fill how many offsets range start and end.";
+                         $scope.showAlertToast();
+                         return;
+                     }
+
+                     if($scope.selectedOffsetRangeStart <= 0 || isNaN($scope.selectedOffsetRangeStart) ||
+                     $scope.selectedOffsetRangeEnd <= 0 || isNaN($scope.selectedOffsetRangeEnd))
+                     {
+                         $scope.alert = "Please fill in a valid number topic offsets start and end.";
+                         $scope.showAlertToast();
+                         return;
+                     }
+
+                     if($scope.selectedOffsetRangeEnd < $scope.selectedOffsetRangeStart)
+                     {
+                         $scope.alert = "Offset range end cannot be less than offset range start.";
+                         $scope.showAlertToast();
+                         return;
+                     }
+
+                     $scope.selectedNumberOfOffsets = 0;
+                 }
+                 else{
                     $scope.selectedPartitionId = 0;
                     $scope.selectedNumberOfOffsets = 0;
+                    $scope.selectedOffsetRangeStart = 0;
+                    $scope.selectedOffsetRangeEnd = 0;
                 }
 
                 $scope.ShowSpinnerStatus = true;
@@ -925,6 +970,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         'offsetId' : $scope.topicOffsetsVal,
                         'selectedPartitionId' : $scope.selectedPartitionId,
                         'selectedNumberOfOffsets' : $scope.selectedNumberOfOffsets,
+                        'selectedOffsetRangeStart' : $scope.selectedOffsetRangeStart,
+                        'selectedOffsetRangeEnd' : $scope.selectedOffsetRangeEnd,
                         'envId' : $scope.topicOverview[0].envId,
                         'consumerGroupId': "notdefined"
                     }

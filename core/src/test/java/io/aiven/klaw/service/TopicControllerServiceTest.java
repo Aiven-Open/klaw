@@ -41,19 +41,17 @@ import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
 import java.sql.SQLDataException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -1098,12 +1096,15 @@ public class TopicControllerServiceTest {
             anyString(),
             anyInt(),
             anyInt(),
+            anyInt(),
+            anyInt(),
             anyString(),
             anyInt()))
         .thenReturn(eventsMap);
 
     Map<String, String> topicEventsMap =
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
+        topicControllerService.getTopicEvents(
+            envId, consumerGroupId, topicName, offsetId, 0, 0, 0, 0);
     assertThat(topicEventsMap).hasSize(2);
   }
 
@@ -1554,12 +1555,15 @@ public class TopicControllerServiceTest {
             anyString(),
             anyInt(),
             anyInt(),
+            anyInt(),
+            anyInt(),
             anyString(),
             anyInt()))
         .thenReturn(eventsMap);
 
     Map<String, String> topicEventsMap =
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 3);
+        topicControllerService.getTopicEvents(
+            envId, consumerGroupId, topicName, offsetId, 0, 3, 0, 0);
     assertThat(topicEventsMap).hasSize(3);
   }
 
@@ -1589,17 +1593,80 @@ public class TopicControllerServiceTest {
             anyString(),
             anyInt(),
             anyInt(),
+            anyInt(),
+            anyInt(),
             anyString(),
             anyInt()))
         .thenReturn(eventsMap);
 
     Map<String, String> topicEventsMap =
-        topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId, 0, 0);
+        topicControllerService.getTopicEvents(
+            envId, consumerGroupId, topicName, offsetId, 0, 0, 0, 0);
     assertThat(topicEventsMap.get("status")).isEqualTo("false");
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("getTopicEventsForCustomRange")
   @Order(59)
+  public void getTopicEventsForCustomRange(
+      Integer partitionId, Integer start, Integer end, boolean success) throws KlawException {
+    String envId = "1",
+        consumerGroupId = "consuemrgroup",
+        topicName = "testtopic",
+        offsetId = "range";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    Map<String, String> eventsMap = new HashMap<>();
+    eventsMap.put("1", "hello world1");
+    when(clusterApiService.getTopicEvents(
+            anyString(),
+            any(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyInt()))
+        .thenReturn(eventsMap);
+
+    Map<String, String> topicEventsMap =
+        topicControllerService.getTopicEvents(
+            envId, consumerGroupId, topicName, offsetId, partitionId, -1, start, end);
+
+    assertThat(topicEventsMap.size()).isEqualTo(1);
+    if (success) {
+      assertThat(topicEventsMap.get("1")).isEqualTo("hello world1");
+    } else {
+      assertThat(topicEventsMap.get("status")).isEqualTo("false");
+    }
+  }
+
+  private static Stream<Arguments> getTopicEventsForCustomRange() {
+    return Stream.of(
+        Arguments.of(0, 1, 3, true), // standard
+        Arguments.of(0, 1, 1, true), // start and end equal
+        Arguments.of(0, 2, 1, false), // end greater than start
+        Arguments.of(0, 0, 1, true), // start is 0
+        Arguments.of(0, 0, 0, true), // end is o
+        Arguments.of(0, -1, 1, false), // start is negative
+        Arguments.of(0, -2, -1, false), // end is negative
+        Arguments.of(0, null, 3, false), // start is null
+        Arguments.of(0, 1, null, false), // end is null
+        Arguments.of(-1, 1, 3, false), // partition ID less than 0
+        Arguments.of(null, 1, 3, false) // partition null
+        );
+  }
+
+  @Test
+  @Order(60)
   public void getTopicsWithProducerFilterAndEnv() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1";
 
@@ -1629,7 +1696,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(60)
+  @Order(61)
   public void getTopicsWithConsumerFilterNoResults() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
@@ -1659,7 +1726,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(61)
+  @Order(62)
   public void getTopicsWithPatternFilterOneResult() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "2";
 
@@ -1694,7 +1761,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(59)
+  @Order(63)
   public void approvePromoteTopicRequests() throws KlawException {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(TOPIC_1);
