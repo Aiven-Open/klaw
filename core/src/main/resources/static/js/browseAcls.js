@@ -952,8 +952,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                      }
 
                      $scope.selectedNumberOfOffsets = 0;
-                 }
-                 else{
+                 }else{
                     $scope.selectedPartitionId = 0;
                     $scope.selectedNumberOfOffsets = 0;
                     $scope.selectedOffsetRangeStart = 0;
