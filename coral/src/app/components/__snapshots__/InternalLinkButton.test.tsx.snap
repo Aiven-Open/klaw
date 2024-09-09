@@ -3,7 +3,7 @@
 exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a primary button by default 1`] = `
 <div>
   <a
-    class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-intense focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
     href="/test/url"
   >
     My nice link
@@ -14,7 +14,7 @@ exports[`InternalLinkButton renders different styles based on selected Aquarium'
 exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a secondary button based on props 1`] = `
 <div>
   <a
-    class="Aquarium-Button Aquarium-Button.Secondary text-primary-intense bg-body ring-1 ring-primary-80 ring-inset active:bg-primary-active active:ring-primary-90 active:text-primary-intense focus-visible:ring-2 focus-visible:ring-primary-90 focus-visible:text-primary-intense hover:bg-primary-hover hover:ring-primary-90 hover:text-primary-intense disabled:bg-body disabled:text-primary-inactive disabled:ring-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    class="Aquarium-Button Aquarium-Button.Secondary text-primary-intense bg-transparent ring-1 ring-primary-default ring-inset active:bg-primary-active active:ring-primary-default active:text-primary-intense focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:text-primary-intense hover:bg-primary-hover hover:ring-primary-default hover:text-primary-intense disabled:bg-body disabled:text-primary-inactive disabled:ring-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
     href="/test/url"
   >
     My nice link

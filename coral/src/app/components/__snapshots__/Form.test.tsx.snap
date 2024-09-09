@@ -26,7 +26,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         >
           <input
             aria-required="false"
-            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 bg-body border border-default hover:border-intense focus:border-info-default"
             id="test-id"
             name="password"
             type="password"
@@ -40,7 +40,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
       </p>
     </div>
     <button
-      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-intense focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
@@ -74,7 +74,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
         >
           <input
             aria-required="false"
-            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 border border-default hover:border-intense focus:border-info-default"
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-default disabled:bg-default typography-small text-default disabled:text-inactive placeholder:text-inactive focus:outline-none px-3 py-3 bg-body border border-default hover:border-intense focus:border-info-default"
             id="test-id"
             name="formFieldsCustomName"
             type="text"
@@ -88,7 +88,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
       </p>
     </div>
     <button
-      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-intense focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
