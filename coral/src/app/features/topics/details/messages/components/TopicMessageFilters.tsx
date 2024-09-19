@@ -111,6 +111,12 @@ function TopicMessageFilters({
         valid={filterErrors.partitionIdFilters === null}
         required
       />
+      <>
+        {
+          //Empty node prevents stale value of custom's 'Number of messages'
+          //being populated into range's 'Start Offset' and vice versa
+        }
+      </>
       <Input
         value={values.rangeOffsetStart || undefined}
         labelText="Start Offset"
