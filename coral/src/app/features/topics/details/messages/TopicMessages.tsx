@@ -15,6 +15,7 @@ import { TopicMessageFilters } from "src/app/features/topics/details/messages/co
 import { TopicMessageList } from "src/app/features/topics/details/messages/components/TopicMessageList";
 import {
   DefaultOffset,
+  TopicMessagesFetchModeTypes,
   useMessagesFilters,
 } from "src/app/features/topics/details/messages/useMessagesFilters";
 import { getTopicMessages } from "src/domain/topic/topic-api";
@@ -22,7 +23,6 @@ import {
   type NoContent,
   type TopicMessages as TopicMessagesType,
   TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID,
-  TopicMessagesFetchModeTypes,
 } from "src/domain/topic/topic-types";
 
 function isNoContentResult(

@@ -6,13 +6,11 @@ import {
   RadioButtonGroupProps,
 } from "@aivenio/aquarium";
 import {
+  defaultOffsets,
+  TopicMessagesFetchModeTypes,
   type DefaultOffset,
   type FilterErrors,
 } from "src/app/features/topics/details/messages/useMessagesFilters";
-import {
-  defaultOffsets,
-  TopicMessagesFetchModeTypes,
-} from "src/domain/topic/topic-types";
 
 type Props = {
   values: {

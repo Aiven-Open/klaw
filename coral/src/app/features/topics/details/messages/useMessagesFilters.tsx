@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  DefaultOffset,
-  defaultOffsets,
-  TopicMessagesFetchModeTypes,
-} from "src/domain/topic/topic-types";
 
 interface FilterErrors {
   partitionIdFilters: string | null;
@@ -13,6 +8,12 @@ interface FilterErrors {
   rangeOffsetEndFilters: string | null;
 }
 
+const defaultOffsets = ["5", "25", "50", "custom", "range"] as const;
+type DefaultOffset = (typeof defaultOffsets)[number];
+
+const fetchModeTypes = ["default", "custom", "range"] as const;
+type TopicMessagesFetchModeTypes = (typeof fetchModeTypes)[number];
+
 const NAMES = {
   defaultOffset: "defaultOffset",
   customOffset: "customOffset",
@@ -20,7 +21,7 @@ const NAMES = {
   rangeOffsetEnd: "rangeOffsetEnd",
   partitionId: "partitionId",
 };
-const initialDefaultOffset = "5" as DefaultOffset;
+const initialDefaultOffset: (typeof defaultOffsets)[0] = "5";
 
 interface OffsetFilters {
   validateFilters: () => boolean;
@@ -348,4 +349,11 @@ function useMessagesFilters(): OffsetFilters {
   };
 }
 
-export { useMessagesFilters, type DefaultOffset, type FilterErrors };
+export {
+  defaultOffsets,
+  isDefaultOffset,
+  useMessagesFilters,
+  type DefaultOffset,
+  type FilterErrors,
+  type TopicMessagesFetchModeTypes,
+};
