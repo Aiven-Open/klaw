@@ -1,4 +1,4 @@
-import { cleanup, renderHook, act } from "@testing-library/react";
+import { act, cleanup, renderHook } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { useMessagesFilters } from "src/app/features/topics/details/messages/useMessagesFilters";
 
@@ -196,6 +196,8 @@ describe("useMessagesFilters.tsx", () => {
       expect(result.current.filterErrors).toStrictEqual({
         customOffsetFilters: null,
         partitionIdFilters: null,
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
       });
     });
     it("validateFilters returns false (missing partitionId)", () => {
@@ -220,6 +222,8 @@ describe("useMessagesFilters.tsx", () => {
       expect(result.current.filterErrors).toStrictEqual({
         customOffsetFilters: null,
         partitionIdFilters: "Please enter a partition ID",
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
       });
     });
 
@@ -246,6 +250,8 @@ describe("useMessagesFilters.tsx", () => {
         customOffsetFilters:
           "Please enter the number of recent offsets you want to view",
         partitionIdFilters: null,
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
       });
     });
     it("validateFilters returns false (too high customOffset)", () => {
@@ -273,6 +279,8 @@ describe("useMessagesFilters.tsx", () => {
         customOffsetFilters:
           "Entered value exceeds the view limit for offsets: 100",
         partitionIdFilters: null,
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
       });
     });
     it("getFetchingMode returns Custom", () => {
@@ -289,7 +297,7 @@ describe("useMessagesFilters.tsx", () => {
           </MemoryRouter>
         ),
       });
-      expect(current.getFetchingMode()).toBe("Custom");
+      expect(current.getFetchingMode()).toBe("custom");
     });
     it("getFetchingMode returns Default", () => {
       const {
@@ -301,7 +309,250 @@ describe("useMessagesFilters.tsx", () => {
           </MemoryRouter>
         ),
       });
-      expect(current.getFetchingMode()).toBe("Default");
+      expect(current.getFetchingMode()).toBe("default");
+    });
+    it("partitionId not deleted when changing from custom to range", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=custom&customOffset=10&partitionId=2",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+      expect(current.getFetchingMode()).toBe("custom");
+      expect(current.partitionIdFilters.partitionId).toBe("2");
+
+      current.defaultOffsetFilters.setDefaultOffset("range");
+      expect(current.getFetchingMode()).toBe("range");
+      expect(current.partitionIdFilters.partitionId).toBe("2");
+    });
+    it("partitionId not deleted when changing from range to custom", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=range&rangeOffsetStart=5&rangeOffsetEnd=10&partitionId=2",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+      expect(current.getFetchingMode()).toBe("range");
+      expect(current.partitionIdFilters.partitionId).toBe("2");
+
+      current.defaultOffsetFilters.setDefaultOffset("custom");
+      expect(current.getFetchingMode()).toBe("custom");
+      expect(current.partitionIdFilters.partitionId).toBe("2");
+    });
+  });
+
+  describe("rangeOffsetFilters", () => {
+    afterEach(cleanup);
+    it("returns null as the default offset value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+      });
+
+      expect(current.rangeOffsetFilters.rangeOffsetStart).toBe(null);
+      expect(current.rangeOffsetFilters.rangeOffsetEnd).toBe(null);
+    });
+    it("gets the start and end offset from search params", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={["/?rangeOffsetStart=20&rangeOffsetEnd=40"]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+      const startOffset = current.rangeOffsetFilters.rangeOffsetStart;
+      const endOffset = current.rangeOffsetFilters.rangeOffsetEnd;
+      expect(startOffset).toEqual("20");
+      expect(endOffset).toEqual("40");
+    });
+    it("sets the offset to search params", async () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+      const setRangeOffsetStart =
+        current.rangeOffsetFilters.setRangeOffsetStart;
+      const setRangeOffsetEnd = current.rangeOffsetFilters.setRangeOffsetEnd;
+      setRangeOffsetStart("25");
+      setRangeOffsetEnd("50");
+      expect(window.location.search).toBe(
+        "?defaultOffset=range&rangeOffsetStart=25&rangeOffsetEnd=50"
+      );
+    });
+    it("deletes the offset from search params", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={["/?rangeOffsetStart=25&rangeOffsetEnd=50"]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      expect(current.rangeOffsetFilters.rangeOffsetStart).toEqual("25");
+      expect(current.rangeOffsetFilters.rangeOffsetEnd).toEqual("50");
+      current.rangeOffsetFilters.deleteRangeOffsetStart();
+      current.rangeOffsetFilters.deleteRangeOffsetEnd();
+      expect(window.location.search).toBe("");
+    });
+    it("validateFilters returns true", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=range&partitionId=1&rangeOffsetStart=10&rangeOffsetEnd=20",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters();
+      });
+
+      expect(isValid).toBe(true);
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: null,
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
+      });
+    });
+    it("validateFilters returns false (missing partitionId)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=range&rangeOffsetStart=10&rangeOffsetEnd=20",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters();
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: "Please enter a partition ID",
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
+      });
+    });
+    it("validateFilters returns false (missing rangeOffsetStart and rangeOffsetEnd)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={["/?defaultOffset=range&partitionId=1"]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters();
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: null,
+        rangeOffsetStartFilters: "Please enter the start offset",
+        rangeOffsetEndFilters: "Please enter the end offset",
+      });
+    });
+    it("validateFilters returns false (negative rangeOffsetStart and rangeOffsetEnd)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=range&partitionId=1&rangeOffsetStart=-10&rangeOffsetEnd=-20",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters();
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: null,
+        rangeOffsetStartFilters: "Start offset cannot be negative.",
+        rangeOffsetEndFilters: "End offset cannot be negative.",
+      });
+    });
+    it("validateFilters returns false (rangeOffsetStart bigger than rangeOffsetEnd)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=range&partitionId=1&rangeOffsetStart=100&rangeOffsetEnd=20",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters();
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: null,
+        rangeOffsetStartFilters: "Start must me less than end.",
+        rangeOffsetEndFilters: null,
+      });
     });
   });
 });

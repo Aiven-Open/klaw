@@ -4,6 +4,7 @@ import { AclType } from "src/domain/acl/acl-types";
 import { ClusterType } from "src/domain/cluster";
 import { RequestOperationType, RequestStatus } from "src/domain/requests";
 import { TopicType } from "src/domain/topic";
+import { TopicMessagesFetchModeTypes } from "src/domain/topic/topic-types";
 
 type SetFiltersParams =
   | { name: "environment"; value: string }
@@ -15,7 +16,8 @@ type SetFiltersParams =
   | { name: "search"; value: string }
   | { name: "teamName"; value: string }
   | { name: "topicType"; value: TopicType | "ALL" }
-  | { name: "clusterType"; value: ClusterType };
+  | { name: "clusterType"; value: ClusterType }
+  | { name: "defaultOffset"; value: TopicMessagesFetchModeTypes };
 
 interface UseFiltersDefaultValues {
   environment: string;
@@ -29,6 +31,7 @@ interface UseFiltersDefaultValues {
   teamName: string;
   topicType: TopicType | "ALL";
   clusterType: ClusterType;
+  defaultOffset: TopicMessagesFetchModeTypes;
 }
 
 interface UseFiltersReturnedValues
@@ -48,6 +51,7 @@ const emptyValues: UseFiltersDefaultValues = {
   paginated: true,
   topicType: "ALL",
   clusterType: "ALL",
+  defaultOffset: "default",
 };
 
 const FiltersContext = createContext<UseFiltersReturnedValues>({
@@ -87,6 +91,9 @@ const FiltersProvider = ({
   const clusterType =
     (searchParams.get("clusterType") as ClusterType) ??
     initialValues.clusterType;
+  const defaultOffset =
+    (searchParams.get("defaultOffset") as TopicMessagesFetchModeTypes) ??
+    initialValues.defaultOffset;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     const parsedValue = typeof value === "boolean" ? String(value) : value;
@@ -114,6 +121,7 @@ const FiltersProvider = ({
     search,
     topicType,
     clusterType,
+    defaultOffset,
     setFilterValue,
   };
 

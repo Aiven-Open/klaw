@@ -39,6 +39,20 @@ describe("useFiltersValues.tsx", () => {
       expect(current.aclType).toBe("PRODUCER");
     });
 
+    it("gets the correct defaultOffset filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={["/?defaultOffset=custom"]}>
+            <FiltersProvider>{children}</FiltersProvider>
+          </MemoryRouter>
+        ),
+      });
+
+      expect(current.defaultOffset).toBe("custom");
+    });
+
     it("gets the correct status filter value", () => {
       const {
         result: { current },
@@ -300,6 +314,25 @@ describe("useFiltersValues.tsx", () => {
       });
 
       expect(window.location.search).toBe("?aclType=PRODUCER&page=1");
+    });
+
+    it("sets the correct defaultOffset filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
+      });
+
+      current.setFilterValue({
+        name: "defaultOffset",
+        value: "custom",
+      });
+
+      expect(window.location.search).toBe("?defaultOffset=custom&page=1");
     });
 
     it("sets the correct status filter value", () => {

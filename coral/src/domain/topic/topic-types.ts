@@ -92,11 +92,19 @@ type TopicClaimPayload = ResolveIntersectionTypes<
 
 type TopicDetailsPerEnv = KlawApiModel<"TopicDetailsPerEnv">;
 
+const fetchModeTypes = ["default", "custom", "range"] as const;
+type TopicMessagesFetchModeTypes = (typeof fetchModeTypes)[number];
+
+const defaultOffsets = ["5", "25", "50", "custom", "range"] as const;
+type DefaultOffset = (typeof defaultOffsets)[number];
+
 const TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID = "notdefined";
 
 export type {
   AclOverviewInfo,
+  DefaultOffset,
   DeleteTopicPayload,
+  GetTopicsQueryParameter,
   NoContent,
   Topic,
   TopicAdvancedConfigurationOptions,
@@ -105,6 +113,7 @@ export type {
   TopicDetailsPerEnv,
   TopicDocumentationMarkdown,
   TopicMessages,
+  TopicMessagesFetchModeTypes,
   TopicNames,
   TopicOverview,
   TopicRequest,
@@ -114,7 +123,6 @@ export type {
   TopicSchemaOverview,
   TopicTeam,
   TopicType,
-  GetTopicsQueryParameter,
 };
 
-export { TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID };
+export { defaultOffsets, TOPIC_MESSAGE_DEFAULT_USER_GROUP_ID };
