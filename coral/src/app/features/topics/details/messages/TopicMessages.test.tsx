@@ -1,8 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { Outlet, Route, Routes } from "react-router-dom";
-import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
-import TopicMessages from "src/app/features/topics/details/messages/TopicMessages";
+import { TopicMessages } from "src/app/features/topics/details/messages/TopicMessages";
 import { getTopicMessages } from "src/domain/topic/topic-api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -23,10 +22,6 @@ const mockGetTopicMessagesNoContentResponse = {
 };
 
 const selectModeOptions = ["Default", "Custom", "Range"];
-const WrappedTopicMessages = withFiltersContext({
-  defaultValues: { paginated: false },
-  element: <TopicMessages />,
-});
 
 function DummyParent() {
   return <Outlet context={{ topicName: "test", environmentId: "2" }} />;
@@ -47,7 +42,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -77,7 +72,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -99,7 +94,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -129,7 +124,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/?" element={<WrappedTopicMessages />} />
+          <Route path="/?" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -149,7 +144,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -182,7 +177,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -216,7 +211,7 @@ describe("TopicMessages", () => {
     customRender(
       <Routes>
         <Route path="/" element={<DummyParent />}>
-          <Route path="/" element={<WrappedTopicMessages />} />
+          <Route path="/" element={<TopicMessages />} />
         </Route>
       </Routes>,
       {
@@ -248,7 +243,7 @@ describe("TopicMessages", () => {
       customRender(
         <Routes>
           <Route path="/" element={<DummyParent />}>
-            <Route path="/" element={<WrappedTopicMessages />} />
+            <Route path="/" element={<TopicMessages />} />
           </Route>
         </Routes>,
         {
@@ -279,7 +274,7 @@ describe("TopicMessages", () => {
       customRender(
         <Routes>
           <Route path="/" element={<DummyParent />}>
-            <Route path="/" element={<WrappedTopicMessages />} />
+            <Route path="/" element={<TopicMessages />} />
           </Route>
         </Routes>,
         {
@@ -311,7 +306,7 @@ describe("TopicMessages", () => {
       customRender(
         <Routes>
           <Route path="/" element={<DummyParent />}>
-            <Route path="/" element={<WrappedTopicMessages />} />
+            <Route path="/" element={<TopicMessages />} />
           </Route>
         </Routes>,
         {
@@ -342,7 +337,7 @@ describe("TopicMessages", () => {
       customRender(
         <Routes>
           <Route path="/" element={<DummyParent />}>
-            <Route path="/" element={<WrappedTopicMessages />} />
+            <Route path="/" element={<TopicMessages />} />
           </Route>
         </Routes>,
         {

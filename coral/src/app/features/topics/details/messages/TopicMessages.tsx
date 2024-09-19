@@ -9,10 +9,6 @@ import {
 import refreshIcon from "@aivenio/aquarium/dist/src/icons/refresh";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  useFiltersContext,
-  withFiltersContext,
-} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicMessageFilters } from "src/app/features/topics/details/messages/components/TopicMessageFilters";
@@ -36,7 +32,6 @@ function isNoContentResult(
 }
 
 function TopicMessages() {
-  const { defaultOffset, setFilterValue } = useFiltersContext();
   const { topicName, environmentId } = useTopicDetails();
 
   const {
@@ -116,6 +111,8 @@ function TopicMessages() {
     }
     if (selectedFetchMode === "default") {
       defaultOffsetFilters.setDefaultOffset("5");
+    } else {
+      defaultOffsetFilters.setDefaultOffset(selectedFetchMode);
     }
     setFetchingMode(selectedFetchMode);
   }
@@ -178,16 +175,11 @@ function TopicMessages() {
                 labelText={"Select mode"}
                 description={"Choose mode to fetch messages"}
                 key={"filter-fetch-mode-type"}
-                defaultValue={defaultOffset}
+                defaultValue={getFetchingMode()}
                 onChange={(event) => {
                   handleFetchModeChange(
                     event.target.value as TopicMessagesFetchModeTypes
                   );
-
-                  return setFilterValue({
-                    name: "defaultOffset",
-                    value: event.target.value as TopicMessagesFetchModeTypes,
-                  });
                 }}
               >
                 <option key={"default"} value={"default"}>
@@ -243,7 +235,4 @@ function TopicMessages() {
   );
 }
 
-export default withFiltersContext({
-  defaultValues: { paginated: false },
-  element: <TopicMessages />,
-});
+export { TopicMessages };
