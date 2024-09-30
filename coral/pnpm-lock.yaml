@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@aivenio/aquarium':
-        specifier: 1.76.3
-        version: 1.76.3(lodash@4.17.21)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 1.77.1
+        version: 1.77.1(lodash@4.17.21)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.53.0(react@18.3.1))
@@ -214,8 +214,8 @@ packages:
   '@adobe/css-tools@4.4.0':
     resolution: {integrity: sha512-Ff9+ksdQQB3rMncgqDK78uLznstjyfIf2Arnh22pW8kBpLs6rpKDwgnZT46hin5Hl1WzazzK64DOrhSwYpS7bQ==}
 
-  '@aivenio/aquarium@1.76.3':
-    resolution: {integrity: sha512-5fXV4AoiFY4r4XtmNw9Ol9IrH8cRup8S/Q7Xegh8Nab7mtdt8aL3B/XiFWnyeBKUJfXimzZFdc6b4MT+0chJAQ==}
+  '@aivenio/aquarium@1.77.1':
+    resolution: {integrity: sha512-6CVRR+CEFMLXBcBzNLqEcjkePfcM7Wd32Zqb6/wGNwzZ3Qw5Yib3YZ92ztnfLcNTQqPS3SRdC5+LXpm/sp4rEg==}
     peerDependencies:
       lodash: 4.x
       react: 16.x || 17.x || 18.x
@@ -4962,7 +4962,7 @@ snapshots:
 
   '@adobe/css-tools@4.4.0': {}
 
-  '@aivenio/aquarium@1.76.3(lodash@4.17.21)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@aivenio/aquarium@1.77.1(lodash@4.17.21)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@iconify/react': 3.2.2(react@18.3.1)
       '@iconify/types': 1.1.0
