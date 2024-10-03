@@ -898,6 +898,13 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         return;
                     }
 
+                    if($scope.selectedPartitionId >= $scope.topicOverview[0].noOfPartitions)
+                    {
+                        $scope.alert = "Please fill in a valid partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
                     if(!$scope.selectedNumberOfOffsets || $scope.selectedNumberOfOffsets === ""){
                         $scope.alert = "Please fill how many events/offsets to be displayed";
                         $scope.showAlertToast();
@@ -928,16 +935,22 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                          return;
                      }
 
-                     if(!$scope.selectedOffsetRangeStart || $scope.selectedOffsetRangeStart === "" ||
-                        !$scope.selectedOffsetRangeEnd || $scope.selectedOffsetRangeEnd === ""
+                    if($scope.selectedPartitionId >= $scope.topicOverview[0].noOfPartitions)
+                    {
+                        $scope.alert = "Please fill in a valid partition id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                     if($scope.selectedOffsetRangeStart === "" || $scope.selectedOffsetRangeEnd === ""
                      ){
                          $scope.alert = "Please fill how many offsets range start and end.";
                          $scope.showAlertToast();
                          return;
                      }
 
-                     if($scope.selectedOffsetRangeStart <= 0 || isNaN($scope.selectedOffsetRangeStart) ||
-                     $scope.selectedOffsetRangeEnd <= 0 || isNaN($scope.selectedOffsetRangeEnd))
+                     if($scope.selectedOffsetRangeStart < 0 || isNaN($scope.selectedOffsetRangeStart) ||
+                     $scope.selectedOffsetRangeEnd < 0 || isNaN($scope.selectedOffsetRangeEnd))
                      {
                          $scope.alert = "Please fill in a valid number topic offsets start and end.";
                          $scope.showAlertToast();

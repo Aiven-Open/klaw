@@ -12,6 +12,12 @@ const mockGetTopicMessages = getTopicMessages as jest.MockedFunction<
   typeof getTopicMessages
 >;
 
+const mockTopicOverview = {
+  topicInfo: {
+    noOfPartitions: 5,
+  },
+};
+
 const mockGetTopicMessagesResponse = {
   0: "HELLO",
   1: "WORLD",
@@ -24,7 +30,15 @@ const mockGetTopicMessagesNoContentResponse = {
 const selectModeOptions = ["Default", "Custom", "Range"];
 
 function DummyParent() {
-  return <Outlet context={{ topicName: "test", environmentId: "2" }} />;
+  return (
+    <Outlet
+      context={{
+        topicName: "test",
+        environmentId: "2",
+        topicOverview: mockTopicOverview,
+      }}
+    />
+  );
 }
 
 describe("TopicMessages", () => {

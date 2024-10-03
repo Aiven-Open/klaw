@@ -189,7 +189,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(true);
@@ -214,7 +214,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -226,12 +226,13 @@ describe("useMessagesFilters.tsx", () => {
         rangeOffsetEndFilters: null,
       });
     });
-
-    it("validateFilters returns false (missing customOffset)", () => {
+    it("validateFilters returns false (negative partitionId)", () => {
       const { result } = renderHook(() => useMessagesFilters(), {
         wrapper: ({ children }) => (
           <MemoryRouter
-            initialEntries={["/?defaultOffset=custom&partitionId=100"]}
+            initialEntries={[
+              "/?defaultOffset=custom&customOffset=100&partitionId=-1",
+            ]}
           >
             {children}
           </MemoryRouter>
@@ -241,7 +242,61 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: "Partition ID cannot be negative",
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
+      });
+    });
+    it("validateFilters returns false (invalid partitionId)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={[
+              "/?defaultOffset=custom&customOffset=100&partitionId=6",
+            ]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters(5);
+      });
+
+      expect(isValid).toBe(false);
+
+      expect(result.current.filterErrors).toStrictEqual({
+        customOffsetFilters: null,
+        partitionIdFilters: "Invalid partition ID",
+        rangeOffsetStartFilters: null,
+        rangeOffsetEndFilters: null,
+      });
+    });
+    it("validateFilters returns false (missing customOffset)", () => {
+      const { result } = renderHook(() => useMessagesFilters(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={["/?defaultOffset=custom&partitionId=1"]}
+          >
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      let isValid;
+
+      act(() => {
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -259,7 +314,7 @@ describe("useMessagesFilters.tsx", () => {
         wrapper: ({ children }) => (
           <MemoryRouter
             initialEntries={[
-              "/?defaultOffset=custom&customOffset=9999&partitionId=100",
+              "/?defaultOffset=custom&customOffset=9999&partitionId=1",
             ]}
           >
             {children}
@@ -270,7 +325,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -433,7 +488,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(true);
@@ -460,7 +515,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -486,7 +541,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -514,7 +569,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);
@@ -542,7 +597,7 @@ describe("useMessagesFilters.tsx", () => {
       let isValid;
 
       act(() => {
-        isValid = result.current.validateFilters();
+        isValid = result.current.validateFilters(5);
       });
 
       expect(isValid).toBe(false);

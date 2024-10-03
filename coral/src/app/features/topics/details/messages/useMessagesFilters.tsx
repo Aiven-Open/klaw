@@ -24,7 +24,7 @@ const NAMES = {
 const initialDefaultOffset: (typeof defaultOffsets)[0] = "5";
 
 interface OffsetFilters {
-  validateFilters: () => boolean;
+  validateFilters: (totalNumberOfPartitions: number) => boolean;
   filterErrors: FilterErrors;
   getFetchingMode: () => TopicMessagesFetchModeTypes;
   defaultOffsetFilters: {
@@ -70,7 +70,7 @@ function useMessagesFilters(): OffsetFilters {
     rangeOffsetEndFilters: null,
   });
 
-  function validateFilters() {
+  function validateFilters(totalNumberOfPartitions: number) {
     if (getFetchingMode() === "default") {
       return true;
     }
@@ -78,7 +78,11 @@ function useMessagesFilters(): OffsetFilters {
     const partitionIdFiltersError =
       getPartitionId() === "" || getPartitionId() === null
         ? "Please enter a partition ID"
-        : null;
+        : Number(getPartitionId()) < 0
+          ? "Partition ID cannot be negative"
+          : Number(getPartitionId()) >= totalNumberOfPartitions
+            ? "Invalid partition ID"
+            : null;
 
     let customOffsetFiltersError = null;
     let rangeOffsetStartFiltersError = null;
@@ -269,7 +273,7 @@ function useMessagesFilters(): OffsetFilters {
   }
 
   function setPartitionId(partitionId: string): void {
-    if (getDefaultOffset() !== "custom") {
+    if (getDefaultOffset() !== "custom" && getDefaultOffset() !== "range") {
       setDefaultOffset("custom");
     }
     if (partitionId.length === 0) {

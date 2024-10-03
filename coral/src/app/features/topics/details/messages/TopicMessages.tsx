@@ -32,7 +32,8 @@ function isNoContentResult(
 }
 
 function TopicMessages() {
-  const { topicName, environmentId } = useTopicDetails();
+  const { topicName, environmentId, topicOverview } = useTopicDetails();
+  const numberOfPartitions = topicOverview.topicInfo.noOfPartitions;
 
   const {
     validateFilters,
@@ -76,7 +77,7 @@ function TopicMessages() {
   const isConsuming = isInitialLoading || isRefetching;
 
   function handleUpdateResultClick(): void {
-    const isValid = validateFilters();
+    const isValid = validateFilters(numberOfPartitions);
 
     if (isValid) {
       updateResults();
