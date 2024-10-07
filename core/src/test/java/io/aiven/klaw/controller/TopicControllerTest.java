@@ -27,6 +27,7 @@ import io.aiven.klaw.model.response.TopicTeamResponse;
 import io.aiven.klaw.service.TopicControllerService;
 import io.aiven.klaw.service.TopicSyncControllerService;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
@@ -314,5 +316,37 @@ public class TopicControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  @Order(13)
+  public void getTopicEvents() throws Exception {
+    when(topicControllerService.getTopicEvents(
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyInt(),
+            anyInt(),
+            anyInt()))
+        .thenReturn(Collections.emptyMap());
+
+    MvcResult mvcResult =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getTopicEvents")
+                    .param("envId", "1")
+                    .param("topicName", "test")
+                    .param("consumerGroupId", "1")
+                    .param("offsetId", "0")
+                    .param("selectedPartitionId", "0")
+                    .param("selectedNumberOfOffsets", "0")
+                    .param("selectedOffsetRangeStart", "0")
+                    .param("selectedOffsetRangeEnd", "0")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+    assertThat(mvcResult.getResponse().getContentAsString()).isEqualTo("{}");
   }
 }

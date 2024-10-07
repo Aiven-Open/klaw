@@ -21,7 +21,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <!-- the list is sorted-->
-        <apache.commons.lang.version>3.16.0</apache.commons.lang.version>
+        <apache.commons.lang.version>3.17.0</apache.commons.lang.version>
         <kafka.version>3.7.0</kafka.version>
         <mockserver.version>5.15.0</mockserver.version>
         <spring-kafka-test.version>3.2.3</spring-kafka-test.version>
