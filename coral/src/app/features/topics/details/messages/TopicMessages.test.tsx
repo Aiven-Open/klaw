@@ -1,16 +1,22 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { Outlet, Route, Routes } from "react-router-dom";
+import { TopicMessages } from "src/app/features/topics/details/messages/TopicMessages";
 import { getTopicMessages } from "src/domain/topic/topic-api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { TopicMessages } from "src/app/features/topics/details/messages/TopicMessages";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { Outlet, Route, Routes } from "react-router-dom";
-import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/topic/topic-api.ts");
 
 const mockGetTopicMessages = getTopicMessages as jest.MockedFunction<
   typeof getTopicMessages
 >;
+
+const mockTopicOverview = {
+  topicInfo: {
+    noOfPartitions: 5,
+  },
+};
 
 const mockGetTopicMessagesResponse = {
   0: "HELLO",
@@ -21,8 +27,18 @@ const mockGetTopicMessagesNoContentResponse = {
   status: "failed",
 };
 
+const selectModeOptions = ["Default", "Custom", "Range"];
+
 function DummyParent() {
-  return <Outlet context={{ topicName: "test", environmentId: "2" }} />;
+  return (
+    <Outlet
+      context={{
+        topicName: "test",
+        environmentId: "2",
+        topicOverview: mockTopicOverview,
+      }}
+    />
+  );
 }
 
 describe("TopicMessages", () => {
@@ -33,7 +49,7 @@ describe("TopicMessages", () => {
     cleanup();
     jest.resetAllMocks();
   });
-  it("allows to switch between Default and Custom modes", async () => {
+  it("allows to select between Default, Custom and Range modes", async () => {
     mockGetTopicMessages.mockResolvedValue(
       mockGetTopicMessagesNoContentResponse
     );
@@ -49,26 +65,21 @@ describe("TopicMessages", () => {
       }
     );
 
-    const switchInput = screen.getByRole("checkbox");
-
-    const switchGroupDefault = screen.getByRole("group", {
-      name: "Fetching mode Select message offset",
+    const select = screen.getByRole("combobox", {
+      name: "Select mode Choose mode to fetch messages",
     });
 
-    expect(switchGroupDefault).toBeVisible();
-    expect(switchInput).not.toBeChecked();
+    expect(select).toBeEnabled();
 
-    await userEvent.click(switchInput);
-
-    const switchGroupCustom = screen.getByRole("group", {
-      name: "Fetching mode Specify message offset",
+    selectModeOptions.forEach((selectMode) => {
+      const option = screen.getByRole("option", {
+        name: selectMode,
+      });
+      expect(option).toBeEnabled();
     });
-
-    expect(switchGroupCustom).toBeVisible();
-    expect(switchInput).toBeChecked();
   });
 
-  it("shows switch as Default mode according to URL search params", async () => {
+  it("shows selection as Default mode according to URL search params", async () => {
     mockGetTopicMessages.mockResolvedValue(
       mockGetTopicMessagesNoContentResponse
     );
@@ -85,17 +96,12 @@ describe("TopicMessages", () => {
       }
     );
 
-    const switchInput = screen.getByRole("checkbox");
+    const select = screen.getByRole("combobox");
 
-    const switchGroupDefault = screen.getByRole("group", {
-      name: "Fetching mode Select message offset",
-    });
-
-    expect(switchGroupDefault).toBeVisible();
-    expect(switchInput).not.toBeChecked();
+    expect(select).toHaveValue("default");
   });
 
-  it("shows switch as Custom mode according to URL search params", async () => {
+  it("shows selection as Custom mode according to URL search params", async () => {
     mockGetTopicMessages.mockResolvedValue(
       mockGetTopicMessagesNoContentResponse
     );
@@ -112,14 +118,17 @@ describe("TopicMessages", () => {
       }
     );
 
-    const switchInput = screen.getByRole("checkbox");
-
-    const switchGroupCustom = screen.getByRole("group", {
-      name: "Fetching mode Specify message offset",
-    });
-
-    expect(switchGroupCustom).toBeVisible();
-    expect(switchInput).toBeChecked();
+    expect(screen.getByRole("combobox")).toHaveValue("custom");
+    expect(
+      screen.getByRole("spinbutton", {
+        name: "Partition ID * Enter partition ID to retrieve last messages",
+      })
+    ).toBeVisible();
+    expect(
+      screen.getByRole("spinbutton", {
+        name: "Number of messages * Set the number of recent messages to display from this partition",
+      })
+    ).toBeVisible();
   });
 
   it("informs user to specify offset and fetch topic messages", async () => {
@@ -141,6 +150,42 @@ describe("TopicMessages", () => {
       "To view messages in this topic, select the number of messages you'd like to view and select Fetch messages."
     );
   });
+
+  it("shows selection as Range mode according to URL search params", async () => {
+    mockGetTopicMessages.mockResolvedValue(
+      mockGetTopicMessagesNoContentResponse
+    );
+    customRender(
+      <Routes>
+        <Route path="/" element={<DummyParent />}>
+          <Route path="/" element={<TopicMessages />} />
+        </Route>
+      </Routes>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: "/?defaultOffset=range",
+      }
+    );
+
+    expect(screen.getByRole("combobox")).toHaveValue("range");
+    expect(
+      screen.getByRole("spinbutton", {
+        name: "Partition ID * Enter partition ID to retrieve last messages",
+      })
+    ).toBeVisible();
+    expect(
+      screen.getByRole("spinbutton", {
+        name: "Start Offset * Set the start offset",
+      })
+    ).toBeVisible();
+    expect(
+      screen.getByRole("spinbutton", {
+        name: "End Offset * Set the end offset",
+      })
+    ).toBeVisible();
+  });
+
   it("requests and displays all messages when Update results is pressed", async () => {
     mockGetTopicMessages.mockResolvedValue(mockGetTopicMessagesResponse);
     customRender(
@@ -167,6 +212,8 @@ describe("TopicMessages", () => {
       offsetId: "5",
       selectedNumberOfOffsets: 0,
       selectedPartitionId: 0,
+      selectedOffsetRangeStart: 0,
+      selectedOffsetRangeEnd: 0,
     });
     screen.getByText("HELLO");
     screen.getByText("WORLD");
@@ -232,6 +279,8 @@ describe("TopicMessages", () => {
           offsetId: "25",
           selectedNumberOfOffsets: 0,
           selectedPartitionId: 0,
+          selectedOffsetRangeStart: 0,
+          selectedOffsetRangeEnd: 0,
         });
       });
     });
@@ -262,6 +311,8 @@ describe("TopicMessages", () => {
           offsetId: "custom",
           selectedNumberOfOffsets: 20,
           selectedPartitionId: 1,
+          selectedOffsetRangeStart: 0,
+          selectedOffsetRangeEnd: 0,
         });
       });
     });
@@ -291,6 +342,41 @@ describe("TopicMessages", () => {
           offsetId: "50",
           selectedNumberOfOffsets: 0,
           selectedPartitionId: 0,
+          selectedOffsetRangeStart: 0,
+          selectedOffsetRangeEnd: 0,
+        });
+      });
+    });
+    it("populates the filter from the url search parameters (partitionId, rangeOffsetStart and rangeOffsetEnd)", async () => {
+      customRender(
+        <Routes>
+          <Route path="/" element={<DummyParent />}>
+            <Route path="/" element={<TopicMessages />} />
+          </Route>
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath:
+            "/?defaultOffset=range&partitionId=1&rangeOffsetStart=5&rangeOffsetEnd=10",
+        }
+      );
+
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: "Fetch and display the messages from offset 5 to offset 10 from partiton 1 of topic test",
+        })
+      );
+      await waitFor(() => {
+        expect(getTopicMessages).toHaveBeenNthCalledWith(1, {
+          topicName: "test",
+          consumerGroupId: "notdefined",
+          envId: "2",
+          offsetId: "range",
+          selectedNumberOfOffsets: 0,
+          selectedPartitionId: 1,
+          selectedOffsetRangeStart: 5,
+          selectedOffsetRangeEnd: 10,
         });
       });
     });

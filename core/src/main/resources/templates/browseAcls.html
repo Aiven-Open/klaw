@@ -1019,24 +1019,33 @@
 									<div ng-show="topicOverview[0].teamname == teamname" class="row" ng-init="getEnvs();loadTeams();">
 										<div class="col-md-3">
 											<div class="form-group has-info">
-												<label class="control-label">Last Offsets of Topic Partitions</label>
+												<label class="control-label">Offsets</label>
 												<select class="form-control custom-select" ng-model="topicOffsetsVal">
 													<option value="" selected="selected">
 														Select Offsets</option>
-													<option value="5">5</option>
-													<option value="25">25</option>
-													<option value="50">50</option>
-													<option value="custom">Custom</option>
+													<option value="5">Last 5</option>
+													<option value="25">Last 25</option>
+													<option value="50">Last 50</option>
+													<option value="custom">Last Custom</option>
+													<option value="range">Range</option>
 												</select>
 											</div>
 										</div>
-										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom' || topicOffsetsVal == 'range'">
 											<label class="control-label">Partition id</label>
 											<input type="text" class="form-control" ng-model="selectedPartitionId" placeholder="0">
 										</div>
 										<div class="col-md-3" ng-show="topicOffsetsVal == 'custom'">
 											<label class="control-label">Number of Offsets</label>
 											<input type="text" class="form-control" ng-model="selectedNumberOfOffsets" placeholder="100">
+										</div>
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'range'">
+											<label class="control-label">Start Offset ID</label>
+											<input type="text" class="form-control" ng-model="selectedOffsetRangeStart" placeholder="0">
+										</div>
+										<div class="col-md-3" ng-show="topicOffsetsVal == 'range'">
+											<label class="control-label">End Offset ID</label>
+											<input type="text" class="form-control" ng-model="selectedOffsetRangeEnd" placeholder="100">
 										</div>
 										<div class="col-md-3">
 											<div class="form-group has-success">

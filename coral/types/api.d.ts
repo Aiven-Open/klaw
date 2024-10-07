@@ -6307,6 +6307,8 @@ export interface operations {
                 offsetId: string;
                 selectedPartitionId: number;
                 selectedNumberOfOffsets: number;
+                selectedOffsetRangeStart: number;
+                selectedOffsetRangeEnd: number;
             };
             header?: never;
             path?: never;

@@ -3232,6 +3232,22 @@
             "type" : "integer",
             "format" : "int32"
           }
+        }, {
+          "name" : "selectedOffsetRangeStart",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "selectedOffsetRangeEnd",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
         } ],
         "responses" : {
           "200" : {
