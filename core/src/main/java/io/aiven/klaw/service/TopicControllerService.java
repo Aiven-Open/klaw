@@ -16,6 +16,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_125;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_126;
@@ -89,7 +90,6 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final String CUSTOM_OFFSET_SELECTION = "custom";
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -1322,7 +1322,9 @@ public class TopicControllerService {
       String topicName,
       String offsetId,
       Integer selectedPartitionId,
-      Integer selectedNumberOfOffsets) {
+      Integer selectedNumberOfOffsets,
+      Integer selectedOffsetRangeStart,
+      Integer selectedOffsetRangeEnd) {
     Map<String, String> topicEvents = new TreeMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
@@ -1330,12 +1332,23 @@ public class TopicControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId).getClusterId());
-      if (offsetId != null && offsetId.equals(CUSTOM_OFFSET_SELECTION)) {
-        if (selectedPartitionId == null
-            || selectedNumberOfOffsets == null
-            || selectedPartitionId < 0
-            || selectedNumberOfOffsets <= 0) {
+      if (offsetId != null) {
+        if (offsetId.equals(TopicContentType.CUSTOM.getValue())
+            && (selectedPartitionId == null
+                || selectedNumberOfOffsets == null
+                || selectedPartitionId < 0
+                || selectedNumberOfOffsets <= 0)) {
           throw new KlawException(TOPICS_ERR_115);
+        }
+        if (offsetId.equals(TopicContentType.RANGE.getValue())
+            && (selectedPartitionId == null
+                || selectedPartitionId < 0
+                || selectedOffsetRangeStart == null
+                || selectedOffsetRangeEnd == null
+                || selectedOffsetRangeStart < 0
+                || selectedOffsetRangeEnd < 0
+                || selectedOffsetRangeEnd < selectedOffsetRangeStart)) {
+          throw new KlawException(TOPICS_ERR_117);
         }
       }
       topicEvents =
@@ -1347,6 +1360,8 @@ public class TopicControllerService {
               offsetId,
               selectedPartitionId,
               selectedNumberOfOffsets,
+              selectedOffsetRangeStart,
+              selectedOffsetRangeEnd,
               consumerGroupId,
               tenantId);
     } catch (Exception e) {

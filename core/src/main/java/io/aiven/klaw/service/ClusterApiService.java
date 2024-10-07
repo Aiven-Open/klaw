@@ -258,6 +258,8 @@ public class ClusterApiService {
       String offsetId,
       Integer selectedPartitionId,
       Integer selectedNumberOfOffsets,
+      Integer selectedOffsetRangeStart,
+      Integer selectedOffsetRangeEnd,
       String consumerGroupId,
       int tenantId)
       throws KlawException {
@@ -282,8 +284,8 @@ public class ClusterApiService {
                   String.valueOf(selectedNumberOfOffsets),
                   clusterIdentification,
                   RANGE_OFFSETS,
-                  String.valueOf(-1),
-                  String.valueOf(-1));
+                  String.valueOf(selectedOffsetRangeStart),
+                  String.valueOf(selectedOffsetRangeEnd));
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate(null)
