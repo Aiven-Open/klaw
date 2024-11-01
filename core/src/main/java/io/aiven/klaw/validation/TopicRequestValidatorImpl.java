@@ -85,6 +85,15 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
+    if (RequestOperationType.CREATE.equals(topicRequestModel.getRequestOperationType())
+        && (topicRequestModel.getDescription() == null
+            || topicRequestModel.getDescription().length() < 1
+            || topicRequestModel.getDescription().length() > 100)) {
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_127);
+
+      return false;
+    }
+
     // verify tenant config exists
     int tenantId = commonUtilsService.getTenantId(userName);
     String syncCluster;

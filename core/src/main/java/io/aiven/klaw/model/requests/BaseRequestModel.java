@@ -13,9 +13,11 @@ import lombok.ToString;
 public class BaseRequestModel implements Serializable {
 
   // CREATE / DELETE / ..
-  @NotNull private RequestOperationType requestOperationType;
+  @NotNull(message = "Request operation type must not be null")
+  private RequestOperationType requestOperationType;
 
-  @NotNull private String environment;
+  @NotNull(message = "The environment must not be null")
+  private String environment;
 
   private String appname;
 
