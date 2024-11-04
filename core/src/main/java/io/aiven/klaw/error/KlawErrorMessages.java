@@ -414,6 +414,9 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_VLD_ERR_126 = "Failure. Data integrity violation: ";
 
+  public static final String TOPICS_VLD_ERR_127 =
+      "Description must be a minimum of 1 character and a maximum of 100, this can be less if multibyte encoding is being used.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 

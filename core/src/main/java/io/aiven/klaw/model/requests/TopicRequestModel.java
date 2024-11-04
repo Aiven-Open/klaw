@@ -14,20 +14,20 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TopicRequestModel extends BaseRequestModel implements Serializable {
-
-  @NotNull
+  // Validation is overridden by TopicRequestValidatorImpl on TopicCreateRequests.
+  @NotNull(message = "Topic name must not be null")
   @Pattern(message = "Invalid topic name", regexp = "^[a-zA-Z0-9._-]{3,}$")
   private String topicname;
 
-  @NotNull
-  @Min(value = 1, message = "TopicPartitions must be greater than zero")
+  @NotNull(message = "Topic partitions must not be null")
+  @Min(value = 1, message = "Topic Partitions must be greater than zero")
   private Integer topicpartitions;
 
-  @NotNull
+  @NotNull(message = "Topic replication must not be null")
   @Min(value = 1, message = "Replication factor must be greater than zero")
   private String replicationfactor;
 
-  @NotNull private String description;
+  private String description;
 
   private List<TopicConfigEntry> advancedTopicConfigEntries;
 
