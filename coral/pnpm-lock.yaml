@@ -169,8 +169,8 @@ importers:
         specifier: ^2.6.4
         version: 2.6.4(@types/node@20.12.12)(typescript@5.7.2)
       openapi-typescript:
-        specifier: ^7.4.1
-        version: 7.4.1(typescript@5.7.2)
+        specifier: ^7.4.3
+        version: 7.4.3(typescript@5.7.2)
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
@@ -1832,11 +1832,11 @@ packages:
   '@redocly/ajv@8.11.2':
     resolution: {integrity: sha512-io1JpnwtIcvojV7QKDUSIuMN/ikdOUd1ReEnUnMKGfDVridQZ31J0MmIuqwuRjWDZfmvr+Q0MqCcfHM2gTivOg==}
 
-  '@redocly/config@0.11.0':
-    resolution: {integrity: sha512-vAc77vCuWsVgLx2LN02P6jqLBhHuot6O1LsSJEAAkWEvXARSGSQVon50QW7jlbCMg9OFTYYYRPN4W6K/YmnM3w==}
+  '@redocly/config@0.16.0':
+    resolution: {integrity: sha512-t9jnODbUcuANRSl/K4L9nb12V+U5acIHnVSl26NWrtSdDZVtoqUXk2yGFPZzohYf62cCfEQUT8ouJ3bhPfpnJg==}
 
-  '@redocly/openapi-core@1.25.3':
-    resolution: {integrity: sha512-dqJkyydgagW3FXX5cjtSUAnabsld4K6yq7RFgQ+ngI1m43PkEoSQt8pp+SfQDszSEoMbc7QKj8afbe7mZw17TA==}
+  '@redocly/openapi-core@1.25.14':
+    resolution: {integrity: sha512-B9ewI0KVC1yqyeoQzErVnV4kdnxaYfwRMctxk/YwJxZZc/nVZ3VOVE+r2kXIFaGbUgc4ZHFn+aE2qvzCRXTXHw==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
 
   '@remix-run/router@1.20.0':
@@ -4271,8 +4271,8 @@ packages:
     resolution: {integrity: sha512-XgFPPM+B28FtCCgSb9I+s9szOC1vZRSwgWsRUA5ylIxRTgKozqjOCrVOqGsYABPYK5qnfqClxZTFBa8PKt2v6Q==}
     engines: {node: '>=12'}
 
-  openapi-typescript@7.4.1:
-    resolution: {integrity: sha512-HrRoWveViADezHCNgQqZmPKmQ74q7nuH/yg9ursFucZaYQNUqsX38fE/V2sKBHVM+pws4tAHpuh/ext2UJ/AoQ==}
+  openapi-typescript@7.4.3:
+    resolution: {integrity: sha512-xTIjMIIOv9kNhsr8JxaC00ucbIY/6ZwuJPJBZMSh5FA2dicZN5uM805DWVJojXdom8YI4AQTavPDPHMx/3g0vQ==}
     hasBin: true
     peerDependencies:
       typescript: ^5.x
@@ -8003,12 +8003,12 @@ snapshots:
       require-from-string: 2.0.2
       uri-js-replace: 1.0.1
 
-  '@redocly/config@0.11.0': {}
+  '@redocly/config@0.16.0': {}
 
-  '@redocly/openapi-core@1.25.3(supports-color@9.4.0)':
+  '@redocly/openapi-core@1.25.14(supports-color@9.4.0)':
     dependencies:
       '@redocly/ajv': 8.11.2
-      '@redocly/config': 0.11.0
+      '@redocly/config': 0.16.0
       colorette: 1.4.0
       https-proxy-agent: 7.0.5(supports-color@9.4.0)
       js-levenshtein: 1.1.6
@@ -11067,9 +11067,9 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openapi-typescript@7.4.1(typescript@5.7.2):
+  openapi-typescript@7.4.3(typescript@5.7.2):
     dependencies:
-      '@redocly/openapi-core': 1.25.3(supports-color@9.4.0)
+      '@redocly/openapi-core': 1.25.14(supports-color@9.4.0)
       ansi-colors: 4.1.3
       change-case: 5.4.4
       parse-json: 8.1.0
