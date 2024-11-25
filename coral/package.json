@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@aivenio/aquarium": "1.79.0",
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^3.9.1",
     "@monaco-editor/react": "^4.6.0",
     "@tanstack/react-query": "^4.29.5",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -57,7 +57,7 @@
     "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "^10.0.1",
     "remark-parse": "^11.0.0",
-    "remark-rehype": "^11.1.0",
+    "remark-rehype": "^11.1.1",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5",
     "zod": "^3.23.8"
@@ -93,7 +93,7 @@
     "lint-staged": "^15.2.10",
     "lodash": "^4.17.21",
     "msw": "^2.6.4",
-    "openapi-typescript": "^7.4.1",
+    "openapi-typescript": "^7.4.3",
     "prettier": "^3.3.3",
     "prop-types": "^15.8.1",
     "react-aria": "^3.34.3",
@@ -101,7 +101,7 @@
     "rollup-plugin-visualizer": "^5.12.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3",
+    "typescript": "^5.7.2",
     "vite": "^4.5.3",
     "vite-plugin-svgr": "^4.3.0",
     "whatwg-fetch": "^3.6.20"
