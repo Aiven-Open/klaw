@@ -41,10 +41,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -94,15 +90,8 @@ public class OperationalRequestsServiceTest {
     env.setName("DEV");
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -110,7 +99,8 @@ public class OperationalRequestsServiceTest {
   public void createConsumerOffsetsResetRequestDoesNotOwnGroup() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
         .thenReturn(false);
 
     ApiResponse apiResponse =
@@ -125,7 +115,8 @@ public class OperationalRequestsServiceTest {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
     consumerOffsetResetRequestModel.setOffsetResetType(OffsetResetType.TO_DATE_TIME);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
         .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
@@ -141,7 +132,8 @@ public class OperationalRequestsServiceTest {
   public void createRequestWhichAlreadyExists() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
         .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
@@ -169,7 +161,8 @@ public class OperationalRequestsServiceTest {
   public void createRequestSuccess() throws KlawNotAuthorizedException {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest(1001);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
         .thenReturn(false);
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
@@ -203,7 +196,8 @@ public class OperationalRequestsServiceTest {
         UtilMethods.getOffsetsTimingMapMap();
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_OPERATIONAL_CHANGES))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getCurrentUserName()).thenReturn("testuser");
@@ -220,7 +214,8 @@ public class OperationalRequestsServiceTest {
   @Order(6)
   public void approveOperationalRequestsFailure() throws KlawException {
     ApiResponse apiResponse = ApiResponse.builder().success(false).build();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_OPERATIONAL_CHANGES))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getCurrentUserName()).thenReturn("testuser");
