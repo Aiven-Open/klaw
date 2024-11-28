@@ -36,7 +36,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -343,7 +342,8 @@ public class AnalyticsControllerService {
     final String currentUserName = getCurrentUserName();
     Integer userTeamId = commonUtilsService.getTeamId(currentUserName);
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       int tenantId = commonUtilsService.getTenantId(currentUserName);
 
       teamOverview.setProducerAclsPerTeamsOverview(
@@ -593,7 +593,8 @@ public class AnalyticsControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> topicsPerEnv = new HashMap<>();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
       Integer userTeamId = commonUtilsService.getTeamId(getCurrentUserName());
       List<Topic> topics =
@@ -630,7 +631,8 @@ public class AnalyticsControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> aclsPerEnv = new HashMap<>();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
       Integer userTeamId = commonUtilsService.getTeamId(getCurrentUserName());
       List<Acl> acls =
@@ -664,9 +666,5 @@ public class AnalyticsControllerService {
     }
 
     return aclsPerEnv;
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

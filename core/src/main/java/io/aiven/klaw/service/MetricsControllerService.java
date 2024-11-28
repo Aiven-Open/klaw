@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +30,7 @@ public class MetricsControllerService {
   @Autowired private CommonUtilsService commonUtilsService;
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   // default 1 min
@@ -108,9 +107,5 @@ public class MetricsControllerService {
         "DateTime",
         "Messages",
         commonUtilsService.getTenantId(getUserName()));
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -82,7 +81,8 @@ public class AclSyncControllerService {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -179,7 +179,7 @@ public class AclSyncControllerService {
     logArray.add("Type of Sync " + syncBackAcls.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -395,7 +395,8 @@ public class AclSyncControllerService {
       topicNameSearch = topicNameSearch.trim();
     }
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
       return null;
     }
 
@@ -440,7 +441,7 @@ public class AclSyncControllerService {
 
     int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
       return null;
     }
 
@@ -698,7 +699,7 @@ public class AclSyncControllerService {
 
   private List<String> tenantFiltering(List<String> teamList) {
     if (!commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(),
+        commonUtilsService.getPrincipal(),
         Set.of(
             PermissionType.SYNC_BACK_SUBSCRIPTIONS,
             PermissionType.SYNC_TOPICS,
@@ -726,7 +727,7 @@ public class AclSyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
@@ -736,9 +737,5 @@ public class AclSyncControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

@@ -57,7 +57,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -425,7 +424,7 @@ public class UsersTeamsControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -469,7 +468,7 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -484,7 +483,7 @@ public class UsersTeamsControllerService {
       // user to be deleted has superuser permissions.
       // check if you (logged in user who is deleting) have superuser permissions to delete user
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES)) {
+          commonUtilsService.getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES)) {
         return ApiResponse.notOk(TEAMS_ERR_106);
       }
     }
@@ -574,7 +573,7 @@ public class UsersTeamsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+            commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -662,7 +661,7 @@ public class UsersTeamsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
+            commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -707,7 +706,7 @@ public class UsersTeamsControllerService {
     log.info("updateTeam {}", updatedTeam);
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -836,7 +835,7 @@ public class UsersTeamsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   Map<String, String> addTwoDefaultTeams(
@@ -977,7 +976,7 @@ public class UsersTeamsControllerService {
   public List<RegisterUserInfoModelResponse> getNewUserRequests()
       throws KlawNotAuthorizedException {
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       throw new KlawNotAuthorizedException("You are not authorized to view this information.");
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1008,7 +1007,7 @@ public class UsersTeamsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+            commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1050,7 +1049,7 @@ public class UsersTeamsControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1084,10 +1083,6 @@ public class UsersTeamsControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   private boolean userNamePatternValidation(String userName) {

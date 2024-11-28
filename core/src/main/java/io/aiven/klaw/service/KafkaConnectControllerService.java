@@ -72,7 +72,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -111,7 +110,7 @@ public class KafkaConnectControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -504,7 +503,7 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.MANAGE_CONNECTORS)) {
+          commonUtilsService.getPrincipal(), PermissionType.MANAGE_CONNECTORS)) {
         return ApiResponse.NOT_AUTHORIZED;
       }
       return clusterApiService.restartConnector(kafkaConnectorRestartModel, tenantId);
@@ -528,7 +527,7 @@ public class KafkaConnectControllerService {
 
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
@@ -637,7 +636,8 @@ public class KafkaConnectControllerService {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -788,7 +788,8 @@ public class KafkaConnectControllerService {
       throws KlawException {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);
     String userDetails = getUserName();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -837,7 +838,7 @@ public class KafkaConnectControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1553,11 +1554,7 @@ public class KafkaConnectControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public Env getKafkaConnectEnvDetails(String envId) {

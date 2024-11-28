@@ -25,10 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -81,15 +77,7 @@ public class UiConfigControllerServiceTest {
     ReflectionTestUtils.setField(
         envsClustersTenantsControllerService, "commonUtilsService", commonUtilsService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -99,7 +87,7 @@ public class UiConfigControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(getAllEnvs());
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
     when(tenantMap.get(anyInt())).thenReturn("1");
@@ -117,7 +105,7 @@ public class UiConfigControllerServiceTest {
   @Order(4)
   public void getSchemaRegEnvs() {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());

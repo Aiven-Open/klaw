@@ -60,7 +60,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -100,7 +99,7 @@ public class AclControllerService {
     aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -454,7 +453,7 @@ public class AclControllerService {
 
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
@@ -521,7 +520,7 @@ public class AclControllerService {
   public ApiResponse deleteAclRequests(String req_no) throws KlawException {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
+          commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
         return ApiResponse.NOT_AUTHORIZED;
       }
       String userName = getCurrentUserName();
@@ -544,7 +543,7 @@ public class AclControllerService {
     log.info("claimAcl {}", aclId);
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -619,7 +618,7 @@ public class AclControllerService {
     log.info("createDeleteAclSubscriptionRequest {}", req_no);
     final String userName = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -677,7 +676,7 @@ public class AclControllerService {
     final String userDetails = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1033,7 +1032,7 @@ public class AclControllerService {
 
     String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1109,10 +1108,6 @@ public class AclControllerService {
       log.error("Ignoring error while retrieving consumer offsets {} ", e.toString());
     }
     return consumerOffsetInfoList;
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   public ServiceAccountDetails getAivenServiceAccountDetails(

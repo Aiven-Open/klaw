@@ -69,6 +69,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -79,6 +80,7 @@ class EnvsClustersTenantsControllerServiceTest {
 
   private EnvsClustersTenantsControllerService service;
   @Mock private MailUtils mailService;
+  @Mock private UserDetails userDetails;
 
   @Mock private CommonUtilsService commonUtilsService;
 
@@ -102,10 +104,12 @@ class EnvsClustersTenantsControllerServiceTest {
     ReflectionTestUtils.setField(
         service, "usersTeamsControllerService", usersTeamsControllerService);
     ReflectionTestUtils.setField(service, "defaultDataService", defaultDataService);
-    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(mailService.getUserName(userDetails)).thenReturn("testuser");
     when(handleDbRequestsJdbc.getUsersInfo(any())).thenReturn(buildUserInfo());
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -117,6 +121,8 @@ class EnvsClustersTenantsControllerServiceTest {
     Env SchemaEnv = generateKafkaEnv("9", "Schema");
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequestsJdbc.getEnvDetails(anyString(), anyInt())).thenReturn(SchemaEnv);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
     assertThat(response.getMessage()).contains("success");
   }
@@ -134,6 +140,8 @@ class EnvsClustersTenantsControllerServiceTest {
                 buildEnv("5", 101, "TST", KafkaClustersType.SCHEMA_REGISTRY, 5)));
     when(manageDatabase.getKafkaEnvList(anyInt()))
         .thenReturn(List.of(buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA, 4)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
     assertThat(response.getMessage())
         .contains("Failure. Please choose a different name. This environment name already exists.");
@@ -150,6 +158,8 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101)))
         .thenReturn(kafkaEnv)
         .thenReturn(null);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
@@ -180,6 +190,8 @@ class EnvsClustersTenantsControllerServiceTest {
         .thenReturn(generateKafkaEnv("2", "Kafka"));
     when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
         .thenReturn(1);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
@@ -203,6 +215,8 @@ class EnvsClustersTenantsControllerServiceTest {
     Env kafkaEnv = generateKafkaEnv("1", "Kafka");
     kafkaEnv.setAssociatedEnv(new EnvTag("2", "TST_SCH"));
     when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(kafkaEnv);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
 
     assertThatExceptionOfType(KlawValidationException.class)
         .isThrownBy(
@@ -222,6 +236,8 @@ class EnvsClustersTenantsControllerServiceTest {
 
     when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(env1).thenReturn(null);
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
 
     assertThat(response.getMessage()).contains("success");
@@ -243,6 +259,8 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
         .thenReturn(1);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
 
     assertThat(response.getMessage()).contains("success");
@@ -264,6 +282,8 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
         .thenReturn(1);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
     ApiResponse response = service.addNewEnv(env);
 
     assertThat(response.getMessage()).contains("success");
@@ -308,7 +328,7 @@ class EnvsClustersTenantsControllerServiceTest {
                 put(101, "");
               }
             });
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     List<EnvModelResponse> response = service.getEnvsPaginated(type, "", pageNo, searchBy);
@@ -321,7 +341,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void deleteTenantUnauthorizedUser1() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse response = service.deleteTenant();
 
     assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
@@ -332,7 +351,8 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void deleteTenantUnauthorizedUser2() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.UPDATE_DELETE_MY_TENANT))
         .thenReturn(false);
     ApiResponse response = service.deleteTenant();
 
@@ -345,7 +365,8 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void deleteTenantFailed() throws KlawException {
     int tenantId = 102;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.UPDATE_DELETE_MY_TENANT))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(manageDatabase.getTenantMap())
@@ -374,7 +395,8 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void deleteTenant() throws KlawException {
     int tenantId = 102;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.UPDATE_DELETE_MY_TENANT))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(manageDatabase.getTenantMap())
@@ -425,7 +447,6 @@ class EnvsClustersTenantsControllerServiceTest {
   void addTenantIdUnauthorized() throws KlawException {
     when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(new KwTenants(), new KwTenants()));
     ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse response = service.addTenantId(new KwTenantModel(), true);
 
     assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
@@ -446,7 +467,7 @@ class EnvsClustersTenantsControllerServiceTest {
     kwTenant2.setTenantId(102);
     when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(kwTenant1, kwTenant2));
     ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_TENANT))
         .thenReturn(false);
     when(handleDbRequestsJdbc.addNewTenant(any())).thenReturn("add new tenant");
     ApiResponse response = service.addTenantId(kwTenantModel, false);
@@ -474,7 +495,7 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.getTenants()).thenReturn(List.of(kwTenant1, kwTenant2));
     ReflectionTestUtils.setField(service, "maxNumberOfTenantsCanBeCreated", 100);
     ReflectionTestUtils.setField(service, "kwInstallationType", "kwInstallationType");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_TENANT))
         .thenReturn(false);
     when(handleDbRequestsJdbc.addNewTenant(any())).thenReturn("add new tenant");
     List kwProperties = List.of(new KwProperties());
@@ -552,7 +573,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void deleteEnvironmentUnauthorized() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse response = service.deleteEnvironment("envId", "envType");
 
     assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
@@ -565,7 +585,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void deleteEnvironmentExistKafkaComponents() throws KlawException {
     int tenantId = 101;
     String envId = "20";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(true);
@@ -581,7 +601,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void deleteEnvironmentExistKafkaConnectComponents() throws KlawException {
     int tenantId = 101;
     String envId = "20";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.existsConnectorComponentsForEnv(envId, tenantId)).thenReturn(true);
@@ -597,7 +617,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void deleteEnvironmentExistSchemaRegistryComponents() throws KlawException {
     int tenantId = 101;
     String envId = "20";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.existsSchemaComponentsForEnv(envId, tenantId)).thenReturn(true);
@@ -614,7 +634,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void deleteEnvironmentWithAssociatedEnv() throws KlawException {
     int tenantId = 101;
     String envId = "20";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(false);
@@ -643,7 +663,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void deleteEnvironmentFailed() throws KlawException {
     int tenantId = 101;
     String envId = "20";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.existsKafkaComponentsForEnv(envId, tenantId)).thenReturn(false);
@@ -662,7 +682,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void addNewClusterUnauthorized() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse response = service.addNewCluster(new KwClustersModel());
 
     assertThat(response).isEqualTo(ApiResponse.NOT_AUTHORIZED);
@@ -674,7 +693,8 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void addNewCluster() {
     int tenantId = 101;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.addNewCluster(any(KwClusters.class)))
@@ -698,7 +718,8 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void addNewClusterFailed() {
     int tenantId = 101;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.addNewCluster(any(KwClusters.class)))
@@ -720,7 +741,8 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void addNewClusterNameExists() {
     int tenantId = 101;
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
 
     when(manageDatabase.getClusters(KafkaClustersType.ALL, tenantId))
@@ -805,7 +827,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void getEnvDetailsUnauthorized() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString())).thenReturn(new HashSet<>());
     EnvModelResponse result = service.getEnvDetails("env id", "cluster type");
     assertThat(result).isNull();
@@ -818,7 +839,7 @@ class EnvsClustersTenantsControllerServiceTest {
   void getEnvDetails() {
     int tenantId = 101;
     String envId = "1";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
 
     when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId))
@@ -857,7 +878,8 @@ class EnvsClustersTenantsControllerServiceTest {
             List.of(
                 buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1),
                 buildEnv("2", tenantId, "env2", KafkaClustersType.KAFKA, 2)));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
 
     List<KwClustersModelResponse> result = service.getClusters(KafkaClustersType.KAFKA.value);
@@ -879,7 +901,6 @@ class EnvsClustersTenantsControllerServiceTest {
 
     KwTenants tenant = buildTenants(tenantId);
     when(handleDbRequestsJdbc.getMyTenants(tenantId)).thenReturn(Optional.of(tenant));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     KwTenantModel result = service.getMyTenantInfo();
     assertThat(result.getTenantName()).isEqualTo(tenant.getTenantName());
     assertThat(result.getContactPerson()).isEqualTo(tenant.getContactPerson());
@@ -980,7 +1001,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void updateTenantUnauthorized() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse result = service.updateTenant(new KwTenantModel());
     assertThat(result).isEqualTo(ApiResponse.NOT_AUTHORIZED);
   }
@@ -992,7 +1012,8 @@ class EnvsClustersTenantsControllerServiceTest {
   void updateTenantFailed() throws KlawException {
     int tenantId = 101;
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.UPDATE_DELETE_MY_TENANT))
         .thenReturn(false);
     when(handleDbRequestsJdbc.addNewTenant(any(KwTenants.class)))
         .thenReturn("failed to add new tenant");
@@ -1008,7 +1029,8 @@ class EnvsClustersTenantsControllerServiceTest {
   void updateTenant() throws KlawException {
     int tenantId = 101;
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.UPDATE_DELETE_MY_TENANT))
         .thenReturn(false);
     when(handleDbRequestsJdbc.addNewTenant(any(KwTenants.class)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
@@ -1026,7 +1048,6 @@ class EnvsClustersTenantsControllerServiceTest {
   void getClusterInfoFromEnvUnauthorized() {
     int tenantId = 101;
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString())).thenReturn(new HashSet<>());
     ClusterInfo result = service.getClusterInfoFromEnv("1", KafkaClustersType.KAFKA.value);
     assertThat(result).isNull();
@@ -1040,7 +1061,7 @@ class EnvsClustersTenantsControllerServiceTest {
     int tenantId = 101;
     String envId = "1";
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
         .thenReturn(false);
     when(handleDbRequestsJdbc.getEnvDetails(envId, tenantId))
         .thenReturn(buildEnv(envId, tenantId, "env1", KafkaClustersType.KAFKA, 1));
@@ -1055,7 +1076,6 @@ class EnvsClustersTenantsControllerServiceTest {
       username = "james",
       authorities = {"ADMIN", "USER"})
   void deleteClusterUnauthorized() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse result = service.deleteCluster("cluster id");
     assertThat(result).isEqualTo(ApiResponse.NOT_AUTHORIZED);
   }
@@ -1068,7 +1088,8 @@ class EnvsClustersTenantsControllerServiceTest {
     int tenantId = 101;
     String clusterId = "1";
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
     when(manageDatabase.getAllEnvList(tenantId))
         .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));
@@ -1085,7 +1106,8 @@ class EnvsClustersTenantsControllerServiceTest {
     int tenantId = 101;
     String clusterId = "2";
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
     when(manageDatabase.getAllEnvList(tenantId))
         .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));
@@ -1103,7 +1125,8 @@ class EnvsClustersTenantsControllerServiceTest {
     int tenantId = 101;
     String clusterId = "2";
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         .thenReturn(false);
     when(manageDatabase.getAllEnvList(tenantId))
         .thenReturn(List.of(buildEnv("1", tenantId, "env1", KafkaClustersType.KAFKA, 1)));

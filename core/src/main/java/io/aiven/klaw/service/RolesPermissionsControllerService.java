@@ -13,7 +13,6 @@ import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -37,14 +36,14 @@ public class RolesPermissionsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public List<String> getRoles() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
+          commonUtilsService.getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
         return Arrays.asList(
             manageDatabase.getKwPropertyValue("klaw.adduser.roles", tenantId).split(","));
       else {
@@ -68,7 +67,7 @@ public class RolesPermissionsControllerService {
 
     if (isExternalCall
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
+            commonUtilsService.getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
       return null;
     }
 
@@ -110,7 +109,8 @@ public class RolesPermissionsControllerService {
 
   public ApiResponse updatePermissions(KwRolesPermissionsModel[] permissionsSet)
       throws KlawException {
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -166,7 +166,7 @@ public class RolesPermissionsControllerService {
 
   public ApiResponse deleteRole(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -191,7 +191,7 @@ public class RolesPermissionsControllerService {
 
   public ApiResponse addRoleId(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -214,10 +214,6 @@ public class RolesPermissionsControllerService {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());
     }
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   protected Set<String> getApproverRoles(String requestType, int tenantId) {

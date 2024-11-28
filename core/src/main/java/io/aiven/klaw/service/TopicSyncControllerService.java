@@ -68,7 +68,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @EnableScheduling
@@ -287,7 +286,8 @@ public class TopicSyncControllerService {
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
     if (!"-1".equals(pageNo)) { // ignore check for scheduler
-      if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
+      if (commonUtilsService.isNotAuthorizedUser(
+          commonUtilsService.getPrincipal(), PermissionType.SYNC_TOPICS)) {
         return null;
       }
     }
@@ -586,7 +586,7 @@ public class TopicSyncControllerService {
   private List<String> tenantFilterTeams(Integer tenantId, boolean scheduledThread) {
     if (!scheduledThread
         && (!commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(),
+            commonUtilsService.getPrincipal(),
             Set.of(
                 PermissionType.SYNC_BACK_SUBSCRIPTIONS,
                 PermissionType.SYNC_TOPICS,
@@ -619,7 +619,8 @@ public class TopicSyncControllerService {
         "Target Environment " + getEnvDetails(syncBackTopics.getTargetEnv(), tenantId).getName());
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -914,7 +915,8 @@ public class TopicSyncControllerService {
     logArray.add("Assigned to Team " + syncTopicsBulk.getSelectedTeam());
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_TOPICS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1055,7 +1057,8 @@ public class TopicSyncControllerService {
     log.info("updateSyncTopics {}", updatedSyncTopics);
     String userDetails = getUserName();
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_TOPICS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1244,11 +1247,7 @@ public class TopicSyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public Env getEnvDetails(String envId, Integer tenantId) {

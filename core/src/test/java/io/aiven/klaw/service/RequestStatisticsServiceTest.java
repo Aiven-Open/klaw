@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,10 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -56,7 +51,7 @@ public class RequestStatisticsServiceTest {
         requestStatisticsService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(requestStatisticsService, "mailService", mailService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
   }
 
   @Test
@@ -124,18 +119,10 @@ public class RequestStatisticsServiceTest {
         .hasSize(2);
   }
 
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
-  }
-
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn("kwusera");
+    when(mailService.getUserName(userDetails)).thenReturn("kwusera");
     when(mailService.getCurrentUserName()).thenReturn("kwusera");
   }
 }

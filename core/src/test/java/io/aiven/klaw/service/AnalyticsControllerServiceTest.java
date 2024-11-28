@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
@@ -30,19 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
 class AnalyticsControllerServiceTest {
   public static final int NUMBER_OF_DAYS = 30;
   @Mock private ManageDatabase manageDatabase;
@@ -52,12 +49,11 @@ class AnalyticsControllerServiceTest {
   @Mock private HandleDbRequestsJdbc handleDbRequestsJdbc;
   @Mock private UserDetails userDetails;
 
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    Mockito.when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+        .thenReturn(true);
   }
 
   @Test
@@ -460,13 +456,9 @@ class AnalyticsControllerServiceTest {
     teamOverview.setTopicsPerTeamsOverview(chartsJsOverview);
     List<TeamOverview> expected = List.of(teamOverview);
 
-    loginMock();
     Mockito.when(commonUtilsService.getCurrentUserName()).thenReturn(TestConstants.USERNAME);
     Mockito.when(commonUtilsService.getTeamId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TEAM_ID);
-    Mockito.when(
-            commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
-        .thenReturn(true);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TENANT_ID);
     Mockito.doReturn(chartsJsOverview)
@@ -509,12 +501,11 @@ class AnalyticsControllerServiceTest {
     teamOverview.setTopicsPerTeamsOverview(chartsJsOverview);
     List<TeamOverview> expected = List.of(teamOverview);
 
-    loginMock();
     Mockito.when(commonUtilsService.getCurrentUserName()).thenReturn(TestConstants.USERNAME);
     Mockito.when(commonUtilsService.getTeamId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TEAM_ID);
     Mockito.when(
-            commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
+            commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ALL_TEAMS_REPORTS))
         .thenReturn(false);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TENANT_ID);
@@ -577,7 +568,6 @@ class AnalyticsControllerServiceTest {
     Topic topic = UtilMethods.getDummyTopic();
     Acl acl = UtilMethods.getDummyAcl();
 
-    loginMock();
     Mockito.when(commonUtilsService.getCurrentUserName()).thenReturn(TestConstants.USERNAME);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TENANT_ID);
@@ -593,9 +583,6 @@ class AnalyticsControllerServiceTest {
     Mockito.doReturn(TestConstants.ENV_NAME)
         .when(analyticsControllerService)
         .getEnvName(TestConstants.ENV_ID);
-    Mockito.when(
-            commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
-        .thenReturn(true);
     Mockito.when(commonUtilsService.getTeamId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TEAM_ID);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
@@ -620,7 +607,6 @@ class AnalyticsControllerServiceTest {
     Topic topic = UtilMethods.getDummyTopic();
     Acl acl = UtilMethods.getDummyAcl();
 
-    loginMock();
     Mockito.when(commonUtilsService.getCurrentUserName()).thenReturn(TestConstants.USERNAME);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
         .thenReturn(TestConstants.TENANT_ID);
@@ -637,7 +623,7 @@ class AnalyticsControllerServiceTest {
         .when(analyticsControllerService)
         .getEnvName(TestConstants.ENV_ID);
     Mockito.when(
-            commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
+            commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ALL_TEAMS_REPORTS))
         .thenReturn(false);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getAllTopics(TestConstants.TENANT_ID))

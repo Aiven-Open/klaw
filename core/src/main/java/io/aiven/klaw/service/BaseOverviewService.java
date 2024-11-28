@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -333,11 +332,7 @@ public abstract class BaseOverviewService {
   }
 
   protected String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  protected Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   protected Env getEnvDetails(String envId, int tenantId) {

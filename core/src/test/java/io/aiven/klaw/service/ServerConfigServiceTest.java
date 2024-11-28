@@ -38,12 +38,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -70,15 +66,15 @@ public class ServerConfigServiceTest {
   public void setUp() {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     this.env = context.getEnvironment();
-    loginMock();
 
     serverConfigService = new ServerConfigService(env, commonUtilsService, mailService, managedb);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
   @Order(1)
   public void getAllPropsNotAuthorized() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     serverConfigService.getAllProperties();
     Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
     assertThat(collection).isEmpty(); // filtering for spring. and klaw.
@@ -87,19 +83,11 @@ public class ServerConfigServiceTest {
   @Test
   @Order(2)
   public void getAllProps() {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
         .thenReturn(false);
     serverConfigService.getAllProperties();
     Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
     assertThat(collection).isEmpty(); // filtering for spring. and klaw.
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
   }
 
   @Test
@@ -129,6 +117,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -167,6 +158,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -212,6 +206,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -246,6 +243,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -261,6 +261,9 @@ public class ServerConfigServiceTest {
   public void givenInvalidJson_returnFailure() throws KlawException {
     stubValidateTests();
     KwPropertiesModel request = createKwPropertiesModel(KLAW_TENANT_CONFIG, "{}");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -289,6 +292,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -304,6 +310,8 @@ public class ServerConfigServiceTest {
     stubValidateTests();
 
     when(managedb.getKwPropertiesMap(101)).thenReturn(buildFullDbObject());
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
 
     // Execute
     List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
@@ -350,6 +358,8 @@ public class ServerConfigServiceTest {
     dbObject.put(KLAW_TENANT_CONFIG, map);
 
     when(managedb.getKwPropertiesMap(101)).thenReturn(dbObject);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
 
     // Execute
     List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
@@ -373,6 +383,9 @@ public class ServerConfigServiceTest {
     config.setTenantModel(prop);
     KwPropertiesModel request =
         createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.UPDATE_SERVERCONFIG))
+        .thenReturn(false);
+
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 

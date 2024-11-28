@@ -107,7 +107,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   private boolean isAuthorizedFor(PermissionType type) {
-    return !commonUtilsService.isNotAuthorizedUser(getPrincipal(), type);
+    return !commonUtilsService.isNotAuthorizedUser(commonUtilsService.getPrincipal(), type);
   }
 
   public synchronized EnvModelResponse getEnvDetails(String envSelected, String clusterType) {
@@ -392,7 +392,8 @@ public class EnvsClustersTenantsControllerService {
     int tenantId = getUserDetails(userName).getTenantId();
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), ADD_EDIT_DELETE_ENVS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), ADD_EDIT_DELETE_ENVS)) {
       final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
       listEnvs =
           listEnvs.stream().filter(env -> allowedEnvIdSet.contains(env.getId())).collect(toList());
@@ -730,7 +731,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   private Boolean isUserSuperAdmin() {
@@ -858,10 +859,6 @@ public class EnvsClustersTenantsControllerService {
     return kwTenantModel;
   }
 
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
   public ApiResponse deleteTenant() throws KlawException {
     if (!isAuthorizedFor(UPDATE_DELETE_MY_TENANT)) {
       return ApiResponse.NOT_AUTHORIZED;
@@ -907,7 +904,7 @@ public class EnvsClustersTenantsControllerService {
 
   public ApiResponse updateTenant(KwTenantModel kwTenantModel) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
+        commonUtilsService.getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 

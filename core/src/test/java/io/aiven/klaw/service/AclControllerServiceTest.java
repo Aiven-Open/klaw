@@ -68,12 +68,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -119,7 +115,8 @@ public class AclControllerServiceTest {
         rolesPermissionsControllerService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    loginMock();
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   private void mockKafkaFlavor() {
@@ -146,14 +143,6 @@ public class AclControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
   }
 
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
-  }
-
   @Test
   @Order(1)
   public void createAclProducer() throws KlawException {
@@ -168,6 +157,9 @@ public class AclControllerServiceTest {
     Env env = new Env();
     env.setClusterId(1);
     when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     stubUserInfo();
     mockKafkaFlavor();
 
@@ -186,6 +178,9 @@ public class AclControllerServiceTest {
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     mockKafkaFlavor();
     stubUserInfo();
@@ -206,6 +201,9 @@ public class AclControllerServiceTest {
         .thenThrow(new RuntimeException("Failure in creating request"));
     stubUserInfo();
     mockKafkaFlavor();
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     KlawException thrown =
         Assertions.assertThrows(
@@ -219,7 +217,9 @@ public class AclControllerServiceTest {
     AclRequests aclRequestsDao = new AclRequests();
     AclRequestsModel aclRequests = getAclRequestProducer();
     copyProperties(aclRequests, aclRequestsDao);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(true);
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
@@ -233,6 +233,9 @@ public class AclControllerServiceTest {
     AclRequestsModel aclRequests = getAclRequestProducer();
     copyProperties(aclRequests, aclRequestsDao);
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(Collections.emptyList());
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
@@ -249,6 +252,9 @@ public class AclControllerServiceTest {
     List<Topic> topicList = utilMethods.getTopics();
     copyProperties(aclRequestsModel, aclRequestsDao);
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     stubUserInfo();
     mockKafkaFlavor();
 
@@ -270,6 +276,9 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.validateIfConsumerGroupUsedByAnotherTeam(anyInt(), anyInt(), anyString()))
         .thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     stubUserInfo();
     mockKafkaFlavor();
 
@@ -293,6 +302,9 @@ public class AclControllerServiceTest {
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     stubUserInfo();
     mockKafkaFlavor();
 
@@ -438,7 +450,9 @@ public class AclControllerServiceTest {
             any(),
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        .thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
@@ -465,6 +479,9 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(handleDbRequests.deleteAclRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -473,16 +490,6 @@ public class AclControllerServiceTest {
   @Order(14)
   public void deleteAclRequestsNotAuthorized() throws KlawException {
     String req_no = "1001";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
-    ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
-  }
-
-  @Test
-  @Order(14)
-  public void deleteAclRequestsNotRequestOwner() throws KlawException {
-    String req_no = "1001";
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -494,6 +501,9 @@ public class AclControllerServiceTest {
     when(mailService.getCurrentUserName()).thenReturn("testuser");
     when(handleDbRequests.deleteAclRequest(anyInt(), anyString(), anyInt()))
         .thenThrow(new RuntimeException("failure in deleting request"));
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     KlawException thrown =
         Assertions.assertThrows(
             KlawException.class, () -> aclControllerService.deleteAclRequests(req_no));
@@ -515,6 +525,8 @@ public class AclControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
     Topic t1 = new Topic();
     t1.setTopicname("testtopic");
     t1.setEnvironment("1");
@@ -548,6 +560,8 @@ public class AclControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
     Topic t1 = new Topic();
     t1.setTopicname("testtopic");
     t1.setEnvironment("1");
@@ -561,7 +575,6 @@ public class AclControllerServiceTest {
   @Order(18)
   public void approveAclRequestsNotAuthorized() throws KlawException, KlawBadRequestException {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -573,6 +586,8 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestor("kwusera");
     when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getMessage())
         .isEqualTo("You are not allowed to approve your own subscription requests.");
@@ -591,6 +606,8 @@ public class AclControllerServiceTest {
     t1.setTopicname("testtopic");
     t1.setEnvironment("1");
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResponse = ApiResponse.notOk("failure");
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -621,6 +638,8 @@ public class AclControllerServiceTest {
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
         .thenThrow(new RuntimeException("Error"));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
     assertThat(apiResp.getMessage()).isEqualTo("failure");
@@ -637,6 +656,8 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
     assertThat(apiResp.getMessage()).isEqualTo("This request does not exist anymore.");
@@ -654,6 +675,8 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.declineAclRequest(any(), any()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse resultResp = aclControllerService.declineAclRequests(req_no, "");
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -669,6 +692,8 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     when(handleDbRequests.declineAclRequest(any(), anyString()))
         .thenThrow(new RuntimeException("failure in declining request"));
@@ -693,6 +718,9 @@ public class AclControllerServiceTest {
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_DELETE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -1006,6 +1034,9 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        .thenReturn(false);
 
     List<AclRequestsResponseModel> listReqs =
         aclControllerService.getAclRequestsForApprover(
@@ -1047,6 +1078,9 @@ public class AclControllerServiceTest {
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_DELETE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     when(handleDbRequests.getAllAclRequests(
             anyBoolean(),
@@ -1083,6 +1117,8 @@ public class AclControllerServiceTest {
     t1.setTopicname("testtopic1"); // non-existing topic
     t1.setEnvironment("1");
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
     assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_101);
@@ -1095,10 +1131,6 @@ public class AclControllerServiceTest {
     int aclId = 224;
 
     stubUserInfo();
-
-    when(commonUtilsService.isNotAuthorizedUser(
-            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
-        .thenReturn(true);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
 
     assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
@@ -1110,11 +1142,11 @@ public class AclControllerServiceTest {
   public void claimAcl_AclDoesNotExist() throws KlawException {
     int aclId = 224;
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(
-            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.empty());
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
 
     assertThat(apiResp.getMessage()).isEqualTo("Acl does not exist.");
@@ -1127,13 +1159,13 @@ public class AclControllerServiceTest {
     int aclId = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(
-            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
     when(handleDbRequests.getTopics(eq(acl.getTopicname()), eq(TENANT_ID)))
         .thenReturn(new ArrayList<>());
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
 
     assertThat(apiResp.getMessage()).isEqualTo("Unable to find the topic related to this ACL.");
@@ -1146,9 +1178,6 @@ public class AclControllerServiceTest {
     int aclId = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(
-            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
     ArrayList<Topic> topics = new ArrayList<>();
@@ -1163,6 +1192,9 @@ public class AclControllerServiceTest {
                 eq(TENANT_ID),
                 eq(aclId)))
         .thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
 
     assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_108);
@@ -1175,9 +1207,6 @@ public class AclControllerServiceTest {
     int aclId = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(
-            any(), eq(PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getAcl(eq(aclId), anyInt())).thenReturn(Optional.of(acl));
     ArrayList<Topic> topics = new ArrayList<>();
@@ -1207,6 +1236,9 @@ public class AclControllerServiceTest {
                 put("result", ApiResultStatus.SUCCESS.value);
               }
             });
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
     ApiResponse apiResp = aclControllerService.claimAcl(aclId);
     verify(approvalService, times(1))
         .sendEmailToApprovers(
@@ -1227,8 +1259,6 @@ public class AclControllerServiceTest {
   public void claimAcl_approveClaim_NotAuthorized() throws KlawException, KlawBadRequestException {
     String reqNum = "224";
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(true);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(reqNum);
     assertThat(apiResp.isSuccess()).isFalse();
@@ -1242,8 +1272,6 @@ public class AclControllerServiceTest {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     AclRequests aclReq = getAclClaimRequestDao(reqNum);
     when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
@@ -1261,6 +1289,8 @@ public class AclControllerServiceTest {
         .thenReturn(false);
     when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID)))
         .thenReturn(getTeamsListWithServiceAccounts(aclReq));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
@@ -1299,8 +1329,6 @@ public class AclControllerServiceTest {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     AclRequests aclReq = getAclClaimRequestDao(reqNum);
     when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
@@ -1318,6 +1346,8 @@ public class AclControllerServiceTest {
         .thenReturn(true);
     when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID)))
         .thenReturn(getTeamsListWithServiceAccounts(aclReq));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
@@ -1342,8 +1372,6 @@ public class AclControllerServiceTest {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     AclRequests aclReq = getAclClaimRequestDao(reqNum);
     when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
@@ -1354,6 +1382,8 @@ public class AclControllerServiceTest {
     topics.add(createTopic());
     when(manageDatabase.getTopicsForTenant(TENANT_ID)).thenReturn(topics);
     when(approvalService.isRequestFullyApproved(any())).thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
@@ -1380,8 +1410,6 @@ public class AclControllerServiceTest {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     AclRequests aclReq = getAclClaimRequestDao(reqNum);
     when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
@@ -1404,6 +1432,8 @@ public class AclControllerServiceTest {
             .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
         .thenReturn(false);
     when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID))).thenReturn(existingTeams);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
@@ -1443,8 +1473,6 @@ public class AclControllerServiceTest {
     int reqNum = 224;
     stubUserInfo();
     Acl acl = createAcl();
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.APPROVE_SUBSCRIPTIONS)))
-        .thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     AclRequests aclReq = getAclClaimRequestDao(reqNum);
     when(handleDbRequests.getAclRequest(eq(reqNum), eq(TENANT_ID)))
@@ -1466,6 +1494,8 @@ public class AclControllerServiceTest {
             .existsAclSslInTeam(aclReq.getTeamId(), aclReq.getTenantId(), aclReq.getAcl_ssl()))
         .thenReturn(false);
     when(manageDatabase.getTeamObjForTenant(eq(TENANT_ID))).thenReturn(existingTeams);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(String.valueOf(reqNum));
 
@@ -1516,6 +1546,9 @@ public class AclControllerServiceTest {
         .thenReturn(true);
     stubUserInfo();
     mockKafkaFlavor();
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
     assertThat(resultResp.getMessage()).isEqualTo("Subscription already exists.");
@@ -1541,6 +1574,10 @@ public class AclControllerServiceTest {
 
     mockKafkaFlavor();
     stubUserInfo();
+
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
     assertThat(resultResp.getMessage()).isEqualTo("Subscription already exists.");

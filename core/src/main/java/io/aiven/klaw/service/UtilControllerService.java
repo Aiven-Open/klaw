@@ -47,7 +47,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
@@ -112,7 +111,7 @@ public class UtilControllerService implements InitializingBean {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public String getTenantNameFromUser(String userId, UserInfo userInfo) {
@@ -135,11 +134,11 @@ public class UtilControllerService implements InitializingBean {
     Map<String, String> countList = new HashMap<>();
     String roleToSet = "";
     if (!commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
       roleToSet = APPROVER_SUBSCRIPTIONS;
     }
     if (!commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
       roleToSet = REQUESTOR_SUBSCRIPTIONS;
     }
     List<SchemaRequest> allSchemaReqs =
@@ -153,7 +152,7 @@ public class UtilControllerService implements InitializingBean {
             null,
             null,
             !commonUtilsService.isNotAuthorizedUser(
-                getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
+                commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
             false);
 
     List<AclRequests> allAclReqs;
@@ -161,7 +160,7 @@ public class UtilControllerService implements InitializingBean {
     List<KafkaConnectorRequest> allConnectorReqs;
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       allAclReqs =
           reqsHandle.getAllAclRequests(
               true,
@@ -244,7 +243,7 @@ public class UtilControllerService implements InitializingBean {
     countList.put("connectors", allConnectorReqs.size() + "");
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+        commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       countList.put("users", "0");
     } else {
       countList.put("users", reqsHandle.getCountRegisterUsersInfoForTenant(tenantId) + "");
@@ -260,7 +259,7 @@ public class UtilControllerService implements InitializingBean {
     if (userName != null) {
       String teamName =
           manageDatabase.getTeamNameFromTeamId(tenantId, commonUtilsService.getTeamId(userName));
-      String authority = commonUtilsService.getAuthority(getPrincipal());
+      String authority = commonUtilsService.getAuthority(commonUtilsService.getPrincipal());
       Map<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
       String outstandingTopicReqs = outstanding.get("topics");
@@ -318,7 +317,8 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setKafkaconnect_clusters_count(
           "" + manageDatabase.getKafkaConnectEnvList(tenantId).size());
 
-      final Set<String> permissions = commonUtilsService.getPermissions(getPrincipal());
+      final Set<String> permissions =
+          commonUtilsService.getPermissions(commonUtilsService.getPrincipal());
       final String canUpdatePermissions =
           getPermission(permissions, PermissionType.UPDATE_PERMISSIONS);
       final String addEditRoles = getPermission(permissions, PermissionType.ADD_EDIT_DELETE_ROLES);
@@ -464,7 +464,7 @@ public class UtilControllerService implements InitializingBean {
           isOptionalExtraPermissionForTopicCreateEnabled);
 
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
+          commonUtilsService.getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
         authenticationInfo.setKlawOptionalPermissionNewTopicCreation("false");
       } else {
         authenticationInfo.setKlawOptionalPermissionNewTopicCreation("true");
@@ -550,14 +550,11 @@ public class UtilControllerService implements InitializingBean {
       return;
     }
 
-    if (!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SHUTDOWN_KLAW)) {
+    if (!commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SHUTDOWN_KLAW)) {
       log.info("Klaw Shutdown requested by {}", getUserName());
       context.close();
     }
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   public Map<String, Object> getBasicInfo() {
@@ -613,7 +610,7 @@ public class UtilControllerService implements InitializingBean {
       // resources
     } else if (entityType.equals(EntityType.USERS.name())
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+            commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     log.debug("Reset cache triggered on the instance {}", resetEntityCache);

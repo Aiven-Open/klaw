@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,7 +44,7 @@ public class UiConfigControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public List<ActivityLogModel> showActivityLog(
@@ -55,7 +54,8 @@ public class UiConfigControllerService {
     List<ActivityLog> origActivityList;
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
@@ -123,9 +123,5 @@ public class UiConfigControllerService {
 
   public List<String> getRequestTypeStatuses() {
     return manageDatabase.getRequestStatusList();
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

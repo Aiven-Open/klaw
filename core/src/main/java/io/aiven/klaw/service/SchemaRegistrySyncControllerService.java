@@ -42,7 +42,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -106,7 +105,8 @@ public class SchemaRegistrySyncControllerService {
       Integer teamId) {
     SyncSchemasList syncSchemasList = new SyncSchemasList();
     List<SchemaSubjectInfoResponse> schemaInfoList;
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
       return syncSchemasList;
     }
 
@@ -229,7 +229,8 @@ public class SchemaRegistrySyncControllerService {
       boolean showAllTopics)
       throws KlawException {
     SyncSchemasList syncSchemasList = new SyncSchemasList();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
       return syncSchemasList;
     }
 
@@ -440,7 +441,8 @@ public class SchemaRegistrySyncControllerService {
   private ApiResponse updateSyncSchemasToCluster(SyncSchemaUpdates syncSchemaUpdates)
       throws KlawException {
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     List<String> logArray = new ArrayList<>();
@@ -546,7 +548,8 @@ public class SchemaRegistrySyncControllerService {
   private ApiResponse updateSyncSchemasToMetadata(SyncSchemaUpdates syncSchemaUpdates)
       throws Exception {
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     String userDetails = getUserName();
@@ -705,11 +708,7 @@ public class SchemaRegistrySyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public ApiResponse resetCacheClusterApi(SchemaResetCache schemaResetCache) throws KlawException {
