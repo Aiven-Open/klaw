@@ -77,8 +77,7 @@ public class AclSyncControllerServiceTest {
         aclSyncControllerService, "commonUtilsService", commonUtilsService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
-        .thenReturn(true);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -178,7 +177,7 @@ public class AclSyncControllerServiceTest {
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
-            .thenReturn(false);
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -210,7 +209,7 @@ public class AclSyncControllerServiceTest {
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
-            .thenReturn(false);
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -258,7 +257,7 @@ public class AclSyncControllerServiceTest {
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
-            .thenReturn(false);
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -288,7 +287,7 @@ public class AclSyncControllerServiceTest {
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
-            .thenReturn(false);
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
