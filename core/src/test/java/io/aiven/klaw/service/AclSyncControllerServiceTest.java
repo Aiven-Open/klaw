@@ -42,12 +42,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -80,15 +76,8 @@ public class AclSyncControllerServiceTest {
     ReflectionTestUtils.setField(
         aclSyncControllerService, "commonUtilsService", commonUtilsService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -96,7 +85,7 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAcls() throws KlawException {
     stubUserInfo();
     when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
         .thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -110,7 +99,7 @@ public class AclSyncControllerServiceTest {
   @Order(2)
   public void updateSyncAclsFailure1() throws KlawException {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
         .thenReturn(false);
 
     ApiResponse resultResp =
@@ -122,7 +111,7 @@ public class AclSyncControllerServiceTest {
   @Order(3)
   public void updateSyncAclsFailure2() {
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
         .thenReturn(false);
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
@@ -140,7 +129,7 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAclsFailure3() throws KlawException {
     List<SyncAclUpdates> updates = new ArrayList<>();
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
         .thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -153,7 +142,7 @@ public class AclSyncControllerServiceTest {
   public void updateSyncAclsFailure4() {
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
         .thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -187,6 +176,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -217,6 +208,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -263,6 +256,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -291,6 +286,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SUBSCRIPTIONS))
+        .thenReturn(false);
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
@@ -324,7 +321,8 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getKafkaFlavor()).thenReturn(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.SYNC_BACK_SUBSCRIPTIONS))
         .thenReturn(false);
     when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt()))
         .thenReturn(getAclsSOT0().get(0));
@@ -407,6 +405,6 @@ public class AclSyncControllerServiceTest {
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn("kwusera");
+    when(mailService.getUserName(userDetails)).thenReturn("kwusera");
   }
 }

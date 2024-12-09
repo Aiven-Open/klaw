@@ -45,12 +45,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -108,19 +104,12 @@ public class SchemaRegistryControllerServiceTest {
         rolesPermissionsControllerService);
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
     Boolean validateOnSave = true;
     ReflectionTestUtils.setField(
         schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
     utilMethods = new UtilMethods();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -147,6 +136,9 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        .thenReturn(false);
 
     List<SchemaRequestsResponseModel> listReqs =
         schemaRegistryControllerService.getSchemaRequests(
@@ -171,6 +163,8 @@ public class SchemaRegistryControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_DELETE_SCHEMAS))
+        .thenReturn(false);
     ApiResponse resultResp = schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -183,11 +177,14 @@ public class SchemaRegistryControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenThrow(new RuntimeException("Error from Schema upload"));
-    try {
-      schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId);
-    } catch (KlawException e) {
-      assertThat(e.getMessage()).contains("Error from Schema upload");
-    }
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_DELETE_SCHEMAS))
+        .thenReturn(false);
+
+    KlawException ex =
+        assertThrows(
+            KlawException.class,
+            () -> schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId));
+    assertThat(ex.getMessage()).contains("Error from Schema upload");
   }
 
   @Test
@@ -223,7 +220,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SCHEMAS))
         .thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
@@ -252,7 +249,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SCHEMAS))
         .thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
@@ -286,7 +283,7 @@ public class SchemaRegistryControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SCHEMAS))
         .thenReturn(false);
 
     try {
@@ -310,7 +307,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -331,7 +328,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(false);
     when(handleDbRequests.requestForSchema(any()))
         .thenThrow(new RuntimeException("Error from schema upload"));
@@ -351,7 +348,7 @@ public class SchemaRegistryControllerServiceTest {
   @Order(9)
   public void promoteSchemaNotAuthorized() throws Exception {
     // Make user unauthorized
-    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_CREATE_SCHEMAS)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(true);
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -368,6 +365,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTeamId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getMessage())
@@ -384,6 +383,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -403,6 +404,8 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -425,6 +428,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "2"));
@@ -447,6 +452,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "3"));
@@ -470,6 +477,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
@@ -492,6 +501,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(false));
     mockSchemaCreation();
     when(manageDatabase.getEnv(eq(101), eq(8))).thenReturn(Optional.of(createEnv(8)));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
+        .thenReturn(false);
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
@@ -514,7 +525,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(false);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
@@ -619,7 +630,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -650,7 +661,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.REQUEST_CREATE_SCHEMAS))
         .thenReturn(false);
     mockGetEnvironment();
     when(manageDatabase.getEnv(eq(101), eq(1))).thenReturn(Optional.of(createEnv(1)));
@@ -689,6 +700,9 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        .thenReturn(false);
 
     List<SchemaRequestsResponseModel> ordered_response =
         schemaRegistryControllerService.getSchemaRequests(
@@ -736,6 +750,9 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        .thenReturn(false);
 
     List<SchemaRequestsResponseModel> ordered_response =
         schemaRegistryControllerService.getSchemaRequests(
@@ -969,6 +986,6 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
     when(userInfo.getRole()).thenReturn("USER");
-    when(mailService.getUserName(any())).thenReturn("kwusera");
+    when(mailService.getUserName(userDetails)).thenReturn("kwusera");
   }
 }

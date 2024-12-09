@@ -51,12 +51,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -98,15 +94,8 @@ public class SchemaRegistrySyncControllerServiceTest {
         schemaRegistrySyncControllerService, "commonUtilsService", commonUtilsService);
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -124,7 +113,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -159,7 +148,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -220,7 +209,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     List<Topic> topics = utilMethods.generateTopics(14);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -252,7 +241,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     List<Topic> topics = utilMethods.generateTopics(14);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -287,7 +276,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
@@ -330,7 +319,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_SCHEMAS))
         .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
@@ -388,7 +377,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
@@ -416,7 +405,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_SCHEMAS))
         .thenReturn(false);
     MessageSchema schema = utilMethods.getMSchemas().get(0);
     schema.setTopicname(topicName);
@@ -453,7 +442,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
@@ -492,7 +481,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -537,7 +526,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
@@ -589,7 +578,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     clusterResp.setSchemaInfoOfTopicList(new ArrayList<>());
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
@@ -642,7 +631,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     SchemasInfoOfClusterResponse clusterResp = new SchemasInfoOfClusterResponse();
     clusterResp.setSchemaInfoOfTopicList(new ArrayList<>());
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_SCHEMAS))
         .thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
