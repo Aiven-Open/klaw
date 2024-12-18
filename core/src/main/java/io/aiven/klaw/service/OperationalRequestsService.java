@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -264,7 +263,7 @@ public class OperationalRequestsService {
     int tenantId = commonUtilsService.getTenantId(userName);
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       operationalRequestList =
           manageDatabase
               .getHandleDbRequests()
@@ -400,7 +399,7 @@ public class OperationalRequestsService {
     final String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -477,17 +476,13 @@ public class OperationalRequestsService {
   }
 
   private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), permission)) {
+    if (commonUtilsService.isNotAuthorizedUser(commonUtilsService.getPrincipal(), permission)) {
       throw new KlawNotAuthorizedException(TOPICS_ERR_101);
     }
   }
 
   private String getUserName() {
     return mailService.getCurrentUserName();
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   public EnvIdInfo validateOffsetRequestDetails(
@@ -520,7 +515,7 @@ public class OperationalRequestsService {
     log.info("deleteOperationalRequest {}", operationalRequestId);
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     String userName = getUserName();
@@ -546,7 +541,7 @@ public class OperationalRequestsService {
       throws KlawException {
     log.debug("declineOperationalRequest {} {}", reqId, reasonForDecline);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 

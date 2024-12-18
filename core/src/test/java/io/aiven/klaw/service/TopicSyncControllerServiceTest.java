@@ -55,12 +55,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -124,7 +120,8 @@ public class TopicSyncControllerServiceTest {
         topicSyncControllerService, "clusterApiService", clusterApiService);
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   private void environmentSetUp() {
@@ -184,14 +181,6 @@ public class TopicSyncControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
   }
 
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
-  }
-
   @Test
   @Order(1)
   public void updateSyncTopicsSuccess() throws KlawException {
@@ -199,7 +188,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
         .thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -221,7 +210,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
         .thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -262,6 +251,8 @@ public class TopicSyncControllerServiceTest {
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(kwClusters.getClusterId()).thenReturn(1);
     when(kwClusters.getKafkaFlavor()).thenReturn("");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList topicRequests =
         topicSyncControllerService.getSyncTopics(
@@ -297,6 +288,9 @@ public class TopicSyncControllerServiceTest {
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_TOPICS))
+        .thenReturn(false);
+
     // execute
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -347,6 +341,8 @@ public class TopicSyncControllerServiceTest {
                 .build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_TOPICS))
+        .thenReturn(false);
 
     // execute
     ApiResponse retval =
@@ -401,6 +397,8 @@ public class TopicSyncControllerServiceTest {
                 .build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_TOPICS))
+        .thenReturn(false);
 
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -452,6 +450,8 @@ public class TopicSyncControllerServiceTest {
                 .build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_TOPICS))
+        .thenReturn(false);
 
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -505,6 +505,8 @@ public class TopicSyncControllerServiceTest {
                 .build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic(1, TOPIC_NAME_1, env.getId())));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_BACK_TOPICS))
+        .thenReturn(false);
 
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -551,6 +553,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -587,6 +591,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
@@ -619,6 +625,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -656,6 +664,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
@@ -692,6 +702,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -729,6 +741,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
@@ -765,6 +779,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -833,6 +849,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     Integer tenantId = 101;
     SyncTopicsList syncTopics =
@@ -911,6 +929,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getReconTopics(
@@ -988,6 +1008,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -1067,6 +1089,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -1116,6 +1140,8 @@ public class TopicSyncControllerServiceTest {
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
+        .thenReturn(false);
 
     SyncTopicsList syncTopics =
         topicSyncControllerService.getSyncTopics(
@@ -1202,7 +1228,7 @@ public class TopicSyncControllerServiceTest {
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn(USERNAME);
+    when(mailService.getUserName(userDetails)).thenReturn(USERNAME);
     when(commonUtilsService.getTenantId(eq(USERNAME))).thenReturn(TENANT_ID);
     when(handleDbRequests.getAllTeams(eq(101))).thenReturn(getAvailableTeams());
     /// added

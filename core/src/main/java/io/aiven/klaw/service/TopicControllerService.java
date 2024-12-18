@@ -82,7 +82,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -525,7 +524,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
@@ -717,10 +716,10 @@ public class TopicControllerService {
     if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)
         && Boolean.parseBoolean(isOptionalExtraPermissionForPromote)
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
+            commonUtilsService.getPrincipal(), PermissionType.APPROVE_TOPICS_CREATE)) {
       return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value + ". " + TOPICS_ERR_116);
     } else if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_TOPICS)) {
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_TOPICS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -882,7 +881,8 @@ public class TopicControllerService {
   public ApiResponse declineTopicRequests(String topicId, String reasonForDecline)
       throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_TOPICS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -1301,11 +1301,7 @@ public class TopicControllerService {
   }
 
   public String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  public Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public Env getEnvDetails(String envId) {
