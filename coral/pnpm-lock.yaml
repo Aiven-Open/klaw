@@ -119,7 +119,7 @@ importers:
         version: 5.62.0(eslint@8.57.0)(typescript@5.7.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.3
-        version: 4.3.3(vite@4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))
+        version: 4.3.3(vite@4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -196,11 +196,11 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
       vite:
-        specifier: ^4.5.3
-        version: 4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
+        specifier: ^4.5.5
+        version: 4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@3.29.5)(typescript@5.7.2)(vite@4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))
+        version: 4.3.0(rollup@3.29.5)(typescript@5.7.2)(vite@4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))
       whatwg-fetch:
         specifier: ^3.6.20
         version: 3.6.20
@@ -4371,9 +4371,6 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  picocolors@1.0.0:
-    resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
-
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
 
@@ -5253,8 +5250,8 @@ packages:
     peerDependencies:
       vite: '>=2.6.0'
 
-  vite@4.5.3:
-    resolution: {integrity: sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==}
+  vite@4.5.5:
+    resolution: {integrity: sha512-ifW3Lb2sMdX+WU91s3R0FyQlAyLxOzCSCP37ujw0+r5POeHPwe6udWVIElKQq8gk3t7b8rkmvqC6IHBpCff4GQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -8373,14 +8370,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.3.3(vite@4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))':
+  '@vitejs/plugin-react@4.3.3(vite@4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.25.2)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.25.2)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
+      vite: 4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -11137,8 +11134,6 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  picocolors@1.0.0: {}
-
   picocolors@1.0.1: {}
 
   picomatch@2.3.1: {}
@@ -11197,7 +11192,7 @@ snapshots:
   postcss@8.4.31:
     dependencies:
       nanoid: 3.3.6
-      picocolors: 1.0.0
+      picocolors: 1.0.1
       source-map-js: 1.0.2
 
   prelude-ls@1.1.2: {}
@@ -12231,18 +12226,18 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite-plugin-svgr@4.3.0(rollup@3.29.5)(typescript@5.7.2)(vite@4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)):
+  vite-plugin-svgr@4.3.0(rollup@3.29.5)(typescript@5.7.2)(vite@4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)):
     dependencies:
       '@rollup/pluginutils': 5.1.3(rollup@3.29.5)
       '@svgr/core': 8.1.0(typescript@5.7.2)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.7.2))
-      vite: 4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
+      vite: 4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@4.5.3(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6):
+  vite@4.5.5(@types/node@20.12.12)(less@4.2.0)(terser@5.31.6):
     dependencies:
       esbuild: 0.18.17
       postcss: 8.4.31
