@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.util.Collection;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,7 +46,8 @@ public class UtilControllerServiceTest {
     ReflectionTestUtils.setField(utilControllerService, "mailService", mailService);
     userInfo = utilMethods.getUserInfoMockDao();
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
-    loginMock();
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -57,6 +55,8 @@ public class UtilControllerServiceTest {
     ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("anonymousUser");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
     ApiResponse apiResponse = utilControllerService.resetCache(resetEntityCache);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -66,16 +66,10 @@ public class UtilControllerServiceTest {
     ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(mailService.getUserName(any())).thenReturn("testuser");
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
     ApiResponse apiResponse = utilControllerService.resetCache(resetEntityCache);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
   }
 
   public UserDetails userDetails(String username, String password) {

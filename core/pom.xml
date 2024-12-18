@@ -24,7 +24,7 @@
         <apachecommons.version>2.16.1</apachecommons.version>
         <apachepoi.version>5.3.0</apachepoi.version>
         <commons-text.version>1.12.0</commons-text.version>
-        <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
         <clean-maven-plugin.version>3.4.0</clean-maven-plugin.version>
         <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
         <h2.version>2.1.214</h2.version>
@@ -33,7 +33,7 @@
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>8.7.1</pnpm.version>
-        <shedlock.version>5.16.0</shedlock.version>
+        <shedlock.version>6.0.2</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.6.0</springdoc-openapi-ui.version>

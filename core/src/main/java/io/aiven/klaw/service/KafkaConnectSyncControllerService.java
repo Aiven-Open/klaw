@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -81,7 +80,8 @@ public class KafkaConnectSyncControllerService {
     log.info("updateSyncConnectors {}", updatedSyncTopics);
     String userName = getUserName();
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -477,7 +477,8 @@ public class KafkaConnectSyncControllerService {
   }
 
   private List<String> tenantFilterTeams(List<String> teamList) {
-    if (!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
+    if (!commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
       List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
@@ -492,11 +493,7 @@ public class KafkaConnectSyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 
   public Env getKafkaConnectorEnvDetails(String envId) {
