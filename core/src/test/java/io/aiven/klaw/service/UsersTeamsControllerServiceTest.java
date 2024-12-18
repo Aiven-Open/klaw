@@ -75,11 +75,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.StringUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -138,7 +134,8 @@ public class UsersTeamsControllerServiceTest {
         usersTeamsControllerService, "encryptorSecretKey", ENCRYPTOR_SECRET_KEY);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     userInfo = utilMethods.getUserInfoMockDao();
-    loginMock();
+    when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
   }
 
   @Test
@@ -178,19 +175,19 @@ public class UsersTeamsControllerServiceTest {
   @Test
   public void updateUserNotAuthorized() throws KlawException {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
   public void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
+    final String userName = "testUser";
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(mailService.getUserName(userDetails)).thenReturn(userName);
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
@@ -643,11 +640,12 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void deleteUserFailureHasRequests() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    String userName = "testuser";
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
-    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(mailService.getUserName(userDetails)).thenReturn(userName);
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
     when(handleDbRequests.existsComponentsCountForUser("testuser", TEST_TENANT_ID))
         .thenReturn(true);
@@ -659,7 +657,10 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void deleteUserFailureisAdmin() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails, PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
@@ -673,7 +674,7 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void deleteUserSuccessNormalUser() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
         .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
@@ -687,8 +688,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void deleteUserFailureNoSuperUserPermission() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class)))
-        .thenReturn(false, true);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
@@ -700,7 +701,6 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void deleteUserFailureNoDeletionPermission() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
     when(mailService.getUserName(any())).thenReturn("testuser");
@@ -805,8 +805,6 @@ public class UsersTeamsControllerServiceTest {
   public void addNewTeamFailureWithUnAuthorizedUser() throws KlawException {
     TeamModel teamModel = utilMethods.getTeamModelMock();
 
-    when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
-
     ApiResponse apiResponse = usersTeamsControllerService.addNewTeam(teamModel, true);
     assertThat(apiResponse).isSameAs(ApiResponse.NOT_AUTHORIZED);
   }
@@ -832,8 +830,6 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void updateTeamWhenUnAuthorizedUser() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_TEAMS))
-        .thenReturn(true);
     TeamModel teamModel = utilMethods.getTeamModelMock();
 
     ApiResponse apiResponse = usersTeamsControllerService.updateTeam(teamModel);
@@ -1366,6 +1362,8 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
     when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME))
         .thenReturn(authenticatedUserTenantId);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
     when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(regUserList);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMapMock);
 
@@ -1397,6 +1395,8 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void getNewUserRequestsWithNoRequestsInDBNullPointerException() {
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
     when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
     when(commonUtilsService.getTenantId(TEST_AUTHENTICATED_USER_UNAME)).thenReturn(TEST_TENANT_ID);
     when(handleDbRequests.getAllRegisterUsersInformation()).thenReturn(null);
@@ -1410,9 +1410,6 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void getNewUserRequestsWithUnAuthorizedUser() {
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
-        .thenReturn(true);
-
     assertThatExceptionOfType(KlawNotAuthorizedException.class)
         .isThrownBy(() -> usersTeamsControllerService.getNewUserRequests())
         .withMessage("You are not authorized to view this information.");
@@ -1513,9 +1510,6 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void approveNewUserRequestsFailureWithUnAuthorizedUser() throws KlawException {
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
-        .thenReturn(true);
-
     ApiResponse response =
         usersTeamsControllerService.approveNewUserRequests(
             testNewRegUser.getUsername(), true, Integer.MIN_VALUE, null);
@@ -1641,8 +1635,6 @@ public class UsersTeamsControllerServiceTest {
   @Test
   public void declineNewUserRequestsAuthenticationFailure() throws KlawException {
     when(mailService.getUserName(userDetails)).thenReturn(TEST_AUTHENTICATED_USER_UNAME);
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
-        .thenReturn(true);
 
     ApiResponse response = usersTeamsControllerService.declineNewUserRequests(TEST_NEW_USER_UNAME);
 
@@ -1680,14 +1672,6 @@ public class UsersTeamsControllerServiceTest {
         usersTeamsControllerService.getRegistrationInfoFromId(testRegId, testStatus);
 
     assertThat(response).isNull();
-  }
-
-  private void loginMock() {
-    Authentication authentication = Mockito.mock(Authentication.class);
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
   }
 
   public UserDetails userDetails(String username, String password) {
@@ -1824,6 +1808,8 @@ public class UsersTeamsControllerServiceTest {
   private void addNewTeamSetupTest(String userName, String existingTeamName) {
     when(mailService.getUserName(any())).thenReturn(userName);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(TEST_TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_TEAMS))
+        .thenReturn(false);
     when(manageDatabase.getTeamNamesForTenant(TEST_TENANT_ID))
         .thenReturn(List.of(existingTeamName));
   }

@@ -45,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -102,7 +101,8 @@ public class SchemaRegistryControllerService {
                 search,
                 isApproval
                     && !commonUtilsService.isNotAuthorizedUser(
-                        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
+                        commonUtilsService.getPrincipal(),
+                        PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
                 isMyRequest);
 
     // tenant filtering
@@ -205,7 +205,7 @@ public class SchemaRegistryControllerService {
     log.info("deleteSchemaRequests {}", avroSchemaId);
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     String userName = getUserName();
@@ -231,7 +231,8 @@ public class SchemaRegistryControllerService {
     log.info("execSchemaRequests {}", avroSchemaId);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -415,7 +416,8 @@ public class SchemaRegistryControllerService {
       throws KlawException {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);
     String userDetails = getUserName();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
+    if (commonUtilsService.isNotAuthorizedUser(
+        commonUtilsService.getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -452,7 +454,7 @@ public class SchemaRegistryControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -542,7 +544,7 @@ public class SchemaRegistryControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
+        commonUtilsService.getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     schemaRequest.setRequestor(userName);
@@ -732,10 +734,6 @@ public class SchemaRegistryControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 }

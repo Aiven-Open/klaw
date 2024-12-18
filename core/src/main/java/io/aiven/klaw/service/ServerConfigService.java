@@ -50,7 +50,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -125,7 +124,7 @@ public class ServerConfigService {
 
   public Collection<ServerConfigProperties> getAllProps() {
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
+        commonUtilsService.getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
       return new ArrayList<>();
     }
     return key2Props.values();
@@ -136,7 +135,7 @@ public class ServerConfigService {
     KwPropertiesResponse propertiesResponse = new KwPropertiesResponse();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
+        commonUtilsService.getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
       propertiesResponse.setResult(ApiResultStatus.NOT_AUTHORIZED.value);
       listMap.add(propertiesResponse);
       return listMap;
@@ -194,7 +193,7 @@ public class ServerConfigService {
     String kwVal = kwPropertiesModel.getKwValue().trim();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
+        commonUtilsService.getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -552,10 +551,6 @@ public class ServerConfigService {
     return connectivityStatus;
   }
 
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
   private Integer getTenantIdFromName(String tenantName) {
     return manageDatabase.getTenantMap().entrySet().stream()
         .filter(obj -> Objects.equals(obj.getValue(), tenantName))
@@ -565,6 +560,6 @@ public class ServerConfigService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(getPrincipal());
+    return mailService.getUserName(commonUtilsService.getPrincipal());
   }
 }
