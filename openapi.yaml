@@ -6004,7 +6004,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
+        "required" : [ "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
       "KwTenantModel" : {
         "properties" : {
@@ -6658,7 +6658,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
+        "required" : [ "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
       "TopicDeleteRequestModel" : {
         "properties" : {
@@ -6713,6 +6713,8 @@
           },
           "description" : {
             "type" : "string",
+            "maxLength" : 100,
+            "minLength" : 1,
             "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
           },
           "teamId" : {

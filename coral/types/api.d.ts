@@ -2735,7 +2735,7 @@ export type components = {
             /** Format: int32 */
             topicpartitions: number;
             replicationfactor: string;
-            description: string;
+            description?: string;
             advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
             /** Format: int32 */
             teamId?: number;
@@ -2960,7 +2960,7 @@ export type components = {
             /** Format: int32 */
             topicpartitions: number;
             replicationfactor: string;
-            description: string;
+            description?: string;
             advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
             /** Format: int32 */
             teamId?: number;
