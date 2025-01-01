@@ -62,7 +62,7 @@
         <snakeyaml.version>2.2</snakeyaml.version>
         <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
-        <swagger-annotations.version>2.2.23</swagger-annotations.version>
+        <swagger-annotations.version>2.2.27</swagger-annotations.version>
     </properties>
 
     <modules>
