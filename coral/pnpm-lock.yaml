@@ -39,8 +39,8 @@ importers:
         specifier: ^7.53.2
         version: 7.53.2(react@18.3.1)
       react-markdown:
-        specifier: ^9.0.1
-        version: 9.0.1(@types/react@18.3.8)(react@18.3.1)
+        specifier: ^9.0.3
+        version: 9.0.3(@types/react@18.3.8)(react@18.3.1)
       react-router-dom:
         specifier: ^6.27.0
         version: 6.27.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4816,8 +4816,8 @@ packages:
   react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
 
-  react-markdown@9.0.1:
-    resolution: {integrity: sha512-186Gw/vF1uRkydbsOIkcGXw7aHq0sZOCRFFjGrr7b9+nVZg4UfA4enXCaxm4fUzecU38sWfrNDitGhshuU7rdg==}
+  react-markdown@9.0.3:
+    resolution: {integrity: sha512-Yk7Z94dbgYTOrdk41Z74GoKA7rThnsbbqBTRYuxoe08qvfQ9tJVhmAKw6BJS/ZORG7kTy/s1QvYzSuaoBA1qfw==}
     peerDependencies:
       '@types/react': '>=18'
       react: '>=18'
@@ -12082,7 +12082,7 @@ snapshots:
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-markdown@9.0.1(@types/react@18.3.8)(react@18.3.1):
+  react-markdown@9.0.3(@types/react@18.3.8)(react@18.3.1):
     dependencies:
       '@types/hast': 3.0.2
       '@types/react': 18.3.8
