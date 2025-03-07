@@ -390,9 +390,11 @@ describe("<TopicAclRequest />", () => {
     });
 
     afterAll(() => {
-      global.window.location = originalLocation;
+      Object.defineProperty(global.window, "location", {
+        writable: true,
+        value: originalLocation,
+      });
     });
-
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
@@ -1045,7 +1047,10 @@ describe("<TopicAclRequest />", () => {
     });
 
     afterAll(() => {
-      global.window.location = originalLocation;
+      Object.defineProperty(global.window, "location", {
+        writable: true,
+        value: originalLocation,
+      });
     });
 
     beforeEach(async () => {
