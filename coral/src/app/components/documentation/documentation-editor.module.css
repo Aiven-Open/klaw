@@ -38,7 +38,8 @@ textarea.markdownTextarea {
   resize: none;
   overflow: hidden;
   /*matches style for <code> element based on tailwind (aquarium)*/
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   font-size: 1em;
 }
