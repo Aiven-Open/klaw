@@ -42,7 +42,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
     - Login (❗️The correct redirect for login and authentication is **not** working in the proxy yet):
       - Go to your [local Klaw](http://localhost:9097/login)
-      - Login as superadmin with: `superadmin`, password `welcometoklaw` (see [application.properties](../../core/src/main/resources/application.properties))
+      - Login as superadmin with: `superadmin`, password based on configuration (klaw.superadmin.default.password) (see [application.properties](../../core/src/main/resources/application.properties))
       - Go back to the [proxy](http://localhost:1337)
 11. As superadmin, create one or more users [proxy](http://localhost:1337/users)
     "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating
