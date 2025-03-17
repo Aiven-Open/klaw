@@ -100,8 +100,8 @@ describe("<ChangePasswordForm />", () => {
         name: "Update password",
       });
 
-      await userEvent.type(passwordField, "newPassword");
-      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.type(passwordField, "newPassword321@#");
+      await userEvent.type(confirmPasswordField, "newPassword321@#");
       await userEvent.tab();
       await userEvent.click(submitButton);
 
@@ -241,7 +241,7 @@ describe("<ChangePasswordForm />", () => {
         name: "Update password",
       });
 
-      await userEvent.type(passwordField, "newPassword");
+      await userEvent.type(passwordField, "newPassword321@#");
       await userEvent.type(confirmPasswordField, "NOTTHESAME");
       await userEvent.tab();
 
