@@ -1,6 +1,9 @@
 package io.aiven.klaw.model.requests;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX;
+
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
@@ -19,8 +22,10 @@ public class UserInfoModel extends ProfileModel implements Serializable {
 
   @NotNull private String role;
 
-  @Size(min = 8, message = "Password must be atleast 8 characters")
-  @NotNull
+  @Pattern(
+      regexp = PASSWORD_REGEX,
+      message =
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.")
   private String userPassword;
 
   @NotNull private Integer teamId;

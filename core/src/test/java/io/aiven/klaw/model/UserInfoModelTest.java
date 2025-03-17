@@ -27,6 +27,22 @@ public class UserInfoModelTest {
   }
 
   @Test
+  public void validatePasswordRegex() {
+    UserInfoModel model = getUserInfoModelForTeamContactValidation();
+    model.setUserPassword("testpassword");
+    model.setFullname("Test User");
+    Set<ConstraintViolation<UserInfoModel>> violations = validator.validate(model);
+    violations.forEach(
+        vio ->
+            assertThat(vio.getMessage())
+                .contains("Password must be at least 8 characters long and include at least"));
+    assertThat(violations.isEmpty()).isFalse();
+    model.setUserPassword("testpassworS3@");
+    violations = validator.validate(model);
+    assertThat(violations.isEmpty()).isTrue();
+  }
+
+  @Test
   public void validateAccentsAllowed() {
     UserInfoModel model = getUserInfoModelForTeamContactValidation();
     model.setFullname("Aindriú");
@@ -83,7 +99,7 @@ public class UserInfoModelTest {
     model.setTeamId(1001);
     model.setRole("USER");
     model.setSwitchTeams(false);
-    model.setUserPassword("password");
+    model.setUserPassword("passworD32@");
     return model;
   }
 }

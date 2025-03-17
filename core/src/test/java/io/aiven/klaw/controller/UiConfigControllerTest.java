@@ -338,7 +338,7 @@ public class UiConfigControllerTest {
 
   @Test
   @Order(17)
-  public void changePwd() throws Exception {
+  public void changePwdFailure() throws Exception {
     ApiResponse apiResponse = ApiResponse.SUCCESS;
     ChangePasswordRequestModel changePasswordRequestModel = new ChangePasswordRequestModel();
     changePasswordRequestModel.setPwd("newpasswd");
@@ -352,8 +352,7 @@ public class UiConfigControllerTest {
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(status().is4xxClientError());
   }
 
   @Test
@@ -403,5 +402,25 @@ public class UiConfigControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
+  }
+
+  @Test
+  @Order(21)
+  public void changePwdSuccess() throws Exception {
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
+    ChangePasswordRequestModel changePasswordRequestModel = new ChangePasswordRequestModel();
+    changePasswordRequestModel.setPwd("newPasswd324@");
+    changePasswordRequestModel.setRepeatPwd("newPasswd324@");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(changePasswordRequestModel);
+    when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
+
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/chPwd")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 }

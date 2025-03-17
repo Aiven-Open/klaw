@@ -38,7 +38,7 @@ public class RolesPermissionsControllerIT {
   private static MockMethods mockMethods;
   @Autowired private MockMvc mvc;
   private static final String superAdmin = "superadmin";
-  private static final String superAdminPwd = "welcometoklaw";
+  private static final String superAdminPwd = "WelcomeToKlaw321@";
 
   @BeforeAll
   public static void setup() {

@@ -50,6 +50,10 @@ import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -97,6 +101,8 @@ public class UsersTeamsControllerServiceTest {
   private static final String TEST_LOGIN_URL = "http://klaw.com/login";
   private UtilMethods utilMethods;
 
+  private static Validator validator;
+
   @Mock InMemoryUserDetailsManager inMemoryUserDetailsManager;
   @Mock private MailUtils mailService;
 
@@ -116,6 +122,8 @@ public class UsersTeamsControllerServiceTest {
   @BeforeEach
   public void setUp() {
     utilMethods = new UtilMethods();
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
     usersTeamsControllerService = new UsersTeamsControllerService();
     teamCaptor = ArgumentCaptor.forClass(Team.class);
     userDetailsArgCaptor = ArgumentCaptor.forClass(UserDetails.class);
@@ -890,6 +898,23 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
+  public void changePwdRegex() {
+    ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
+    changePwdRequestModel.setPwd("invalidpwd");
+    Set<ConstraintViolation<ChangePasswordRequestModel>> violations =
+        validator.validate(changePwdRequestModel);
+    violations.forEach(
+        vio ->
+            assertThat(vio.getMessage())
+                .contains("Password must be at least 8 characters long and include at least"));
+    assertThat(violations.isEmpty()).isFalse();
+
+    changePwdRequestModel.setPwd("invalidpwD3@");
+    violations = validator.validate(changePwdRequestModel);
+    assertThat(violations.isEmpty()).isTrue();
+  }
+
+  @Test
   public void changePwdWhenDbApiFailure() throws KlawException {
     UserDetails updatePwdUserDetails = mock(UserDetails.class);
     ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
@@ -1315,7 +1340,7 @@ public class UsersTeamsControllerServiceTest {
     RegisterUserInfoModel model = new RegisterUserInfoModel();
     model.setTeam("Octopus");
     model.setRole("USER");
-    model.setPwd("XXXXXXX");
+    model.setPwd("XXXXXXX12@");
     model.setFullname(userName);
     model.setUsername(userName);
     model.setMailid(mailId);

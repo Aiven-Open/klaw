@@ -426,7 +426,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewUser",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewUser' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New User Request : "+output.message;
@@ -497,7 +496,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "addNewUser",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'addNewUser' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "New User Request : "+output.message;

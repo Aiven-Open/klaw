@@ -154,4 +154,6 @@ public class KwConstants {
   public static final String USER_DELETION_TEXT = "User deletion : %s by user : %s";
 
   public static final String USER_DELETION_MAIL_TEXT = "Hello, user %s deleted by user %s.";
+
+  public static final String PASSWORD_REGEX = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}";
 }

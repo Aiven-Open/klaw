@@ -204,7 +204,6 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "updateUser",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updateUserObj' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "User update request : "+output.message;
