@@ -114,6 +114,12 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['pwd'] = $scope.chPwd.pwd;
             serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
 
+            if(!$scope.chPwd.pwd) {
+                $scope.alertnote = "Please enter a suggested password.";
+                $scope.showAlertToast();
+                return;
+            }
+
             if(!$scope.chPwd.pwd || ($scope.chPwd.pwd !== $scope.chPwd.repeatpwd))
             {
                 $scope.alertnote = "Passwords are not equal.";
@@ -336,7 +342,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.addNewUser.pwd)
             {
-                $scope.alertnote = "Please enter a password.";
+                $scope.alertnote = "Please enter a suggested password.";
                 $scope.showAlertToast();
                 return;
             }

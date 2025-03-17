@@ -504,7 +504,12 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Password</label>
-												<input type="password" class="form-control" minlength="8" required ng-model="addNewUser.pwd">
+												<input type="password" class="form-control"
+													   minlength="8"
+													   required ng-model="addNewUser.pwd"
+													   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}"
+													   title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+												/>
 											</div>
 										</div>
 										<!--/span-->

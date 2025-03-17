@@ -122,8 +122,8 @@ describe("<ChangePasswordForm />", () => {
       await userEvent.click(continueButton);
 
       expect(mockChangePassword).toHaveBeenCalledWith({
-        pwd: "newPassword",
-        repeatPwd: "newPassword",
+        pwd: "newPassword321@#",
+        repeatPwd: "newPassword321@#",
       });
 
       expect(confirmModal).not.toBeInTheDocument();
@@ -148,8 +148,8 @@ describe("<ChangePasswordForm />", () => {
         name: "Update password",
       });
 
-      await userEvent.type(passwordField, "newPassword");
-      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.type(passwordField, "newPassword321@#");
+      await userEvent.type(confirmPasswordField, "newPassword321@#");
       await userEvent.click(submitButton);
 
       const confirmModal = screen.getByRole("dialog", {
@@ -171,8 +171,8 @@ describe("<ChangePasswordForm />", () => {
       expect(confirmModal).not.toBeInTheDocument();
 
       expect(mockChangePassword).not.toHaveBeenCalledWith({
-        pwd: "newPassword",
-        repeatPwd: "newPassword",
+        pwd: "newPassword321@#",
+        repeatPwd: "newPassword321@#",
       });
     });
   });
@@ -276,8 +276,8 @@ describe("<ChangePasswordForm />", () => {
         name: "Update password",
       });
 
-      await userEvent.type(passwordField, "newPassword");
-      await userEvent.type(confirmPasswordField, "newPassword");
+      await userEvent.type(passwordField, "newPassword321@#");
+      await userEvent.type(confirmPasswordField, "newPassword321@#");
       await userEvent.tab();
       await userEvent.click(submitButton);
 
@@ -298,8 +298,8 @@ describe("<ChangePasswordForm />", () => {
       await userEvent.click(continueButton);
 
       expect(mockChangePassword).toHaveBeenCalledWith({
-        pwd: "newPassword",
-        repeatPwd: "newPassword",
+        pwd: "newPassword321@#",
+        repeatPwd: "newPassword321@#",
       });
 
       expect(confirmModal).not.toBeInTheDocument();
