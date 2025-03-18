@@ -669,7 +669,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Yes !",
+                                confirmButtonText: "Yes!",
                                 cancelButtonText: "No, cancel please!",
                                 closeOnConfirm: true,
                                 closeOnCancel: true,
