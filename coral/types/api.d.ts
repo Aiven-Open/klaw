@@ -2709,7 +2709,7 @@ export type components = {
             mailid?: string;
             username: string;
             role: string;
-            userPassword?: string;
+            userPassword: string;
             /** Format: int32 */
             teamId: number;
             switchTeams: boolean;
@@ -2903,7 +2903,7 @@ export type components = {
         };
         RegisterUserInfoModel: {
             username: string;
-            pwd?: string;
+            pwd: string;
             team?: string;
             /** Format: int32 */
             teamId?: number;
@@ -3091,8 +3091,8 @@ export type components = {
             includeOnlyFailedTasks: boolean;
         };
         ChangePasswordRequestModel: {
-            pwd?: string;
-            repeatPwd?: string;
+            pwd: string;
+            repeatPwd: string;
         };
         Env: {
             id?: string;
@@ -3147,7 +3147,7 @@ export type components = {
             clusterName: string;
             bootstrapServers: string;
             /** @enum {string} */
-            protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+            protocol: "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
             /** @enum {string} */
             clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
             /** @enum {string} */
@@ -3807,7 +3807,7 @@ export type components = {
             clusterName: string;
             bootstrapServers: string;
             /** @enum {string} */
-            protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+            protocol: "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
             /** @enum {string} */
             clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
             /** @enum {string} */

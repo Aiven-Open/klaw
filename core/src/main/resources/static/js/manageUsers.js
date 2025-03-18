@@ -109,11 +109,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         $scope.chPwd = function() {
 
-            var serviceInput = {};
-
-            serviceInput['pwd'] = $scope.chPwd.pwd;
-            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
-
             if(!$scope.chPwd.pwd) {
                 $scope.alertnote = "Please enter a suggested password.";
                 $scope.showAlertToast();
@@ -133,6 +128,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.showAlertToast();
                 return;
             }
+
+            var serviceInput = {};
+
+            serviceInput['pwd'] = $scope.chPwd.pwd;
+            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
 
             swal({
             		title: "Are you sure?",

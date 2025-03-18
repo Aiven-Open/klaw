@@ -156,4 +156,7 @@ public class KwConstants {
   public static final String USER_DELETION_MAIL_TEXT = "Hello, user %s deleted by user %s.";
 
   public static final String PASSWORD_REGEX = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}";
+
+  public static final String PASSWORD_REGEX_VALIDATION_STR =
+      "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
 }
