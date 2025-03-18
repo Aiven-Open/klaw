@@ -664,8 +664,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                         if($scope.addNewCluster.protocol === "PLAINTEXT"){
                             swal({
-                                title: "PLAINTEXT protocol is unsecure !",
-                                text: "Would you like to proceed anyways ?",
+                                title: "PLAINTEXT protocol is unsecure!",
+                                text: "Would you like to proceed anyways?",
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#DD6B55",
@@ -691,23 +691,24 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                         method: "POST",
                                         url: "addNewCluster",
                                         headers : { 'Content-Type' : 'application/json' },
-                                        params: {'addNewCluster' : serviceInput },
                                         data: serviceInput
                                     }).success(function(output) {
-                                        $scope.alert = "New cluster added : "+output.message;
+                                        $scope.alert = "New cluster added : " + output.message;
                                         $scope.addNewCluster.envname = "";
                                         $scope.addNewCluster.host = "";
                                         $scope.addNewCluster.pubKeyFile = "";
                                         if(output.success){
                                             swal({
                                                 title: "",
-                                                text: "New cluster added : "+output.message,
+                                                text: "New cluster added : " + output.message,
                                                 timer: 2000,
                                                 showConfirmButton: true
                                             }).then(function(isConfirm){
                                                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
                                             });
-                                        }else $scope.showSubmitFailed('','');
+                                        }else {
+                                            $scope.showSubmitFailed('','');
+                                        }
                                     }).error(
                                         function(error)
                                         {

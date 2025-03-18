@@ -75,9 +75,9 @@ const AddNewClusterForm = () => {
   const onSubmitForm = (userInput: AddNewClusterFormSchema) => {
     const formattedBootstrapServers = userInput.bootstrapServers.join(",");
     const formattedAssociatedServers = userInput.associatedServers?.join(",");
-    if (userInput.protocol == "PLAINTEXT") {
+    if (userInput.protocol === "PLAINTEXT") {
       toast({
-        message: `PLAINTEXT protocol is unsecure !`,
+        message: "PLAINTEXT protocol is unsecure!",
         position: "bottom-left",
         variant: "danger",
       });
