@@ -162,7 +162,6 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                     method: "POST",
                     url: "/operationalRequest/consumerOffsetsReset/create",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'consumerOffsetResetRequestModel' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     if(output.success){

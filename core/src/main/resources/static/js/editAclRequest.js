@@ -561,7 +561,6 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                 method: "POST",
                 url: "createAcl",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'addAclRequest' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 if(output.success){

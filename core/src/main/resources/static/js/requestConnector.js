@@ -188,7 +188,6 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                     method: "POST",
                     url: "createConnector",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addConnectorRequest' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     if(output.success){

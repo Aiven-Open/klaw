@@ -305,7 +305,6 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                     method: "POST",
                     url: "createTopics",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addTopicRequest' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     if(output.success){

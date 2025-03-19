@@ -339,7 +339,6 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                             method: "POST",
                             url: "updateSyncConnectors",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'updatedSyncConnectors' : $scope.updatedSyncArray},
                             data:  $scope.updatedSyncArray
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;

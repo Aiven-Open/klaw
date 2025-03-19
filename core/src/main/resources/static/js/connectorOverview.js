@@ -368,7 +368,6 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                     method: "POST",
                                     url: "createConnector",
                                     headers : { 'Content-Type' : 'application/json' },
-                                    params: {'addTopicRequest' : serviceInput },
                                     data: serviceInput
                                 }).success(function(output) {
                                     if(output.success){
