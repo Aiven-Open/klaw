@@ -909,6 +909,14 @@ public class UsersTeamsControllerServiceTest {
                 .contains("Password must be at least 8 characters long and include at least"));
     assertThat(violations.isEmpty()).isFalse();
 
+    changePwdRequestModel.setPwd("INVALID3@");
+    violations = validator.validate(changePwdRequestModel);
+    violations.forEach(
+        vio ->
+            assertThat(vio.getMessage())
+                .contains("Password must be at least 8 characters long and include at least"));
+    assertThat(violations.isEmpty()).isFalse();
+
     changePwdRequestModel.setPwd("invalidpwD3@");
     violations = validator.validate(changePwdRequestModel);
     assertThat(violations.isEmpty()).isTrue();
@@ -1340,7 +1348,7 @@ public class UsersTeamsControllerServiceTest {
     RegisterUserInfoModel model = new RegisterUserInfoModel();
     model.setTeam("Octopus");
     model.setRole("USER");
-    model.setPwd("XXXXXXX12@");
+    model.setPwd("xXXXXXXX12@");
     model.setFullname(userName);
     model.setUsername(userName);
     model.setMailid(mailId);
