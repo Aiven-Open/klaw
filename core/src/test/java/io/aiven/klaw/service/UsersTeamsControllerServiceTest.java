@@ -8,6 +8,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_120;
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,6 +76,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.StringUtils;
 import org.mockito.ArgumentCaptor;
@@ -897,29 +899,29 @@ public class UsersTeamsControllerServiceTest {
     changePwdEncodedParams(updatePwdUserDetails, changePwdRequestModel);
   }
 
-  @Test
-  public void changePwdRegex() {
+  @ParameterizedTest
+  @CsvSource({
+    "invalidpwd, false",
+    "INVALID3@, false",
+    "IaVALID3, false",
+    "validpwD3@, true",
+    "validpwD3@$, true",
+    "validpwD3#%^&*()!~@$, true"
+  })
+  public void changePwdRegex(String password, boolean isValid) {
     ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
-    changePwdRequestModel.setPwd("invalidpwd");
+    changePwdRequestModel.setPwd(password);
+
     Set<ConstraintViolation<ChangePasswordRequestModel>> violations =
         validator.validate(changePwdRequestModel);
-    violations.forEach(
-        vio ->
-            assertThat(vio.getMessage())
-                .contains("Password must be at least 8 characters long and include at least"));
-    assertThat(violations.isEmpty()).isFalse();
 
-    changePwdRequestModel.setPwd("INVALID3@");
-    violations = validator.validate(changePwdRequestModel);
-    violations.forEach(
-        vio ->
-            assertThat(vio.getMessage())
-                .contains("Password must be at least 8 characters long and include at least"));
-    assertThat(violations.isEmpty()).isFalse();
-
-    changePwdRequestModel.setPwd("invalidpwD3@");
-    violations = validator.validate(changePwdRequestModel);
-    assertThat(violations.isEmpty()).isTrue();
+    if (isValid) {
+      assertThat(violations.isEmpty()).isTrue();
+    } else {
+      violations.forEach(
+          vio -> assertThat(vio.getMessage()).isEqualTo(PASSWORD_REGEX_VALIDATION_STR));
+      assertThat(violations.isEmpty()).isFalse();
+    }
   }
 
   @Test

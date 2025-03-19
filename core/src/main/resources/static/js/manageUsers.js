@@ -110,7 +110,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         $scope.chPwd = function() {
 
             if(!$scope.chPwd.pwd) {
-                $scope.alertnote = "Please enter a suggested password.";
+                $scope.alertnote = "Please enter a valid password.";
                 $scope.showAlertToast();
                 return;
             }
@@ -342,7 +342,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.addNewUser.pwd)
             {
-                $scope.alertnote = "Please enter a suggested password.";
+                $scope.alertnote = "Please enter a valid password.";
                 $scope.showAlertToast();
                 return;
             }

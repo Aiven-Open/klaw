@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -33,9 +34,7 @@ public class UserInfoModelTest {
     model.setFullname("Test User");
     Set<ConstraintViolation<UserInfoModel>> violations = validator.validate(model);
     violations.forEach(
-        vio ->
-            assertThat(vio.getMessage())
-                .contains("Password must be at least 8 characters long and include at least"));
+        vio -> assertThat(vio.getMessage()).isEqualTo(PASSWORD_REGEX_VALIDATION_STR));
     assertThat(violations.isEmpty()).isFalse();
     model.setUserPassword("testpassworS3@");
     violations = validator.validate(model);
