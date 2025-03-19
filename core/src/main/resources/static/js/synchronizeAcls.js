@@ -244,7 +244,6 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                             method: "POST",
                             url: "updateSyncAcls",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'syncAclUpdates' : $scope.updatedSyncArray },
                             data: $scope.updatedSyncArray
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;

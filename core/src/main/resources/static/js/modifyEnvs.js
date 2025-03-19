@@ -614,7 +614,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewEnv",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "Environment updated: "+output.message;
@@ -681,7 +680,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "addNewEnv",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'addNewEnv' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                     $scope.alert = "Environment updated: "+output.message;
@@ -740,7 +738,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "addNewEnv",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'addNewEnv' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
             $scope.alert = "Environment updated: "+output.message;

@@ -265,7 +265,6 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "updatePermissions",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'updatePermissionsRequest' : $scope.updatedPermissionsArray },
                     data:  $scope.updatedPermissionsArray
                 }).success(function(output) {
                     $scope.alert = "Permissions update: "+output.message;

@@ -287,7 +287,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "updateProfile",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updateProfile' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Update User Request : "+output.message;
