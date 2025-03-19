@@ -11,6 +11,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.List;
@@ -697,6 +698,41 @@ public class UsersTeamsControllerIT {
     UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(userDetailsResponse, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeam()).isEqualTo(INFRATEAM);
+  }
+
+  @Test
+  @Order(23)
+  public void testClusterApiConnectionWithRegularuser() throws Exception {
+    // Regular user gets a 401 response from not having the required permissions.
+    mvc.perform(
+            MockMvcRequestBuilders.get("/testClusterApiConnection")
+                .with(user(user1).password(userPwd))
+                .param("clusterApiUrl", "http://localhost:9343")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(401));
+  }
+
+  @Test
+  @Order(24)
+  public void testClusterApiConnectionWithSuperAdmin() throws Exception {
+    // SuperAdmin gets a 200 but a failure on the status, as the cluster is not configured for the
+    // test however it passes the permission check.
+    String apiResult =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/testClusterApiConnection")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("clusterApiUrl", "http://localhost:9343")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ConnectivityStatus connectionStatus =
+        OBJECT_MAPPER.readValue(apiResult, new TypeReference<>() {});
+    assertThat(connectionStatus.getConnectionStatus()).isEqualTo("failure");
   }
 
   private ApiResponse getApiResponseUserApprove(String userToApprove) throws Exception {
