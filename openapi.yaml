@@ -767,7 +767,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           }
         }, {
           "name" : "username",

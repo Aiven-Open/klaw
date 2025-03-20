@@ -207,7 +207,7 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void resetPassword_withSuccess() throws KlawException, KlawNotAuthorizedException {
-    String newPW = "newPW";
+    String newPW = "newPW321@";
     String resetToken = UUID.randomUUID().toString();
     when(handleDbRequests.getUsersInfo(eq(OCTOPUS))).thenReturn(generateUser(OCTOPUS));
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Octo");
