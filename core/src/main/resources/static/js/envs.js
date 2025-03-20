@@ -858,7 +858,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewEnv",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New environment status : "+output.message;
@@ -929,7 +928,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewEnv",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New Environment added status: " + output.message;
@@ -994,7 +992,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "addNewEnv",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'addNewEnv' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "New Environment added status: " + output.message;
@@ -1231,7 +1228,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "sendMessageToAdmin",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
                         data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
                     }).success(function(output) {
                         $scope.alert = "Message Sent.";

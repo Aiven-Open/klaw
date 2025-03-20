@@ -64,7 +64,6 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 method: "POST",
                 url: "sendMessageToAdmin",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
                 data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
             }).success(function(output) {
                 $scope.alert = "Message Sent.";
@@ -326,7 +325,6 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                             method: "POST",
                             url: "updateSyncTopics",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'updatedSyncTopics' : $scope.updatedSyncArray},
                             data:  $scope.updatedSyncArray
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;
