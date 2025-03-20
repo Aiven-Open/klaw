@@ -45,7 +45,7 @@ public class MockMethods {
   public UserInfoModel getUserInfoModel(String username, String role, String team) {
     UserInfoModel userInfoModel = new UserInfoModel();
     userInfoModel.setUsername(username);
-    userInfoModel.setUserPassword("userpass");
+    userInfoModel.setUserPassword("userpasS2@");
     userInfoModel.setRole(role);
     userInfoModel.setTeamId(1001);
     userInfoModel.setFullname("New User");
@@ -57,7 +57,7 @@ public class MockMethods {
   public RegisterUserInfoModel getRegisterUserInfoModel(String username, String role) {
     RegisterUserInfoModel userInfoModel = new RegisterUserInfoModel();
     userInfoModel.setUsername(username);
-    userInfoModel.setPwd("testpwd");
+    userInfoModel.setPwd("testpwD32@");
     userInfoModel.setRole(role);
     userInfoModel.setTeamId(1001);
     userInfoModel.setFullname("New User");
@@ -70,7 +70,7 @@ public class MockMethods {
       String username, String role, int teamId, int switchTeamSize) {
     UserInfoModel userInfoModel = new UserInfoModel();
     userInfoModel.setUsername(username);
-    userInfoModel.setUserPassword("userpass");
+    userInfoModel.setUserPassword("userpasS2#");
     userInfoModel.setRole(role);
     userInfoModel.setTeamId(teamId);
     userInfoModel.setFullname("New User");

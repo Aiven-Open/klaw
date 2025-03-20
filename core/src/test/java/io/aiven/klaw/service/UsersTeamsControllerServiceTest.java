@@ -8,6 +8,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_120;
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +51,10 @@ import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +76,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.platform.commons.util.StringUtils;
 import org.mockito.ArgumentCaptor;
@@ -97,6 +103,8 @@ public class UsersTeamsControllerServiceTest {
   private static final String TEST_LOGIN_URL = "http://klaw.com/login";
   private UtilMethods utilMethods;
 
+  private static Validator validator;
+
   @Mock InMemoryUserDetailsManager inMemoryUserDetailsManager;
   @Mock private MailUtils mailService;
 
@@ -116,6 +124,8 @@ public class UsersTeamsControllerServiceTest {
   @BeforeEach
   public void setUp() {
     utilMethods = new UtilMethods();
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
     usersTeamsControllerService = new UsersTeamsControllerService();
     teamCaptor = ArgumentCaptor.forClass(Team.class);
     userDetailsArgCaptor = ArgumentCaptor.forClass(UserDetails.class);
@@ -197,7 +207,7 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   public void resetPassword_withSuccess() throws KlawException, KlawNotAuthorizedException {
-    String newPW = "newPW";
+    String newPW = "newPW321@";
     String resetToken = UUID.randomUUID().toString();
     when(handleDbRequests.getUsersInfo(eq(OCTOPUS))).thenReturn(generateUser(OCTOPUS));
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Octo");
@@ -889,6 +899,31 @@ public class UsersTeamsControllerServiceTest {
     changePwdEncodedParams(updatePwdUserDetails, changePwdRequestModel);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+    "invalidpwd, false",
+    "INVALID3@, false",
+    "IaVALID3, false",
+    "validpwD3@, true",
+    "validpwD3@$, true",
+    "validpwD3#%^&*()!~@$, true"
+  })
+  public void changePwdRegex(String password, boolean isValid) {
+    ChangePasswordRequestModel changePwdRequestModel = utilMethods.getChangePwdRequestModelMock();
+    changePwdRequestModel.setPwd(password);
+
+    Set<ConstraintViolation<ChangePasswordRequestModel>> violations =
+        validator.validate(changePwdRequestModel);
+
+    if (isValid) {
+      assertThat(violations.isEmpty()).isTrue();
+    } else {
+      violations.forEach(
+          vio -> assertThat(vio.getMessage()).isEqualTo(PASSWORD_REGEX_VALIDATION_STR));
+      assertThat(violations.isEmpty()).isFalse();
+    }
+  }
+
   @Test
   public void changePwdWhenDbApiFailure() throws KlawException {
     UserDetails updatePwdUserDetails = mock(UserDetails.class);
@@ -1315,7 +1350,7 @@ public class UsersTeamsControllerServiceTest {
     RegisterUserInfoModel model = new RegisterUserInfoModel();
     model.setTeam("Octopus");
     model.setRole("USER");
-    model.setPwd("XXXXXXX");
+    model.setPwd("xXXXXXXX12@");
     model.setFullname(userName);
     model.setUsername(userName);
     model.setMailid(mailId);

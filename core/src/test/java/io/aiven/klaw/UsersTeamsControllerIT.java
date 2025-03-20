@@ -46,7 +46,7 @@ public class UsersTeamsControllerIT {
   @Autowired private MockMvc mvc;
 
   static String superAdmin = "superadmin";
-  private static String superAdminPwd = "welcometoklaw";
+  private static String superAdminPwd = "WelcomeToKlaw321@";
   private static String user1 = "kwusera",
       user2 = "kwuserb",
       user3 = "kwuserg",

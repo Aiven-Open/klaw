@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.aiven.klaw.model.requests.UserInfoModel;
@@ -24,6 +25,20 @@ public class UserInfoModelTest {
   public static void setUp() {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
+  }
+
+  @Test
+  public void validatePasswordRegex() {
+    UserInfoModel model = getUserInfoModelForTeamContactValidation();
+    model.setUserPassword("testpassword");
+    model.setFullname("Test User");
+    Set<ConstraintViolation<UserInfoModel>> violations = validator.validate(model);
+    violations.forEach(
+        vio -> assertThat(vio.getMessage()).isEqualTo(PASSWORD_REGEX_VALIDATION_STR));
+    assertThat(violations.isEmpty()).isFalse();
+    model.setUserPassword("testpassworS3@");
+    violations = validator.validate(model);
+    assertThat(violations.isEmpty()).isTrue();
   }
 
   @Test
@@ -83,7 +98,7 @@ public class UserInfoModelTest {
     model.setTeamId(1001);
     model.setRole("USER");
     model.setSwitchTeams(false);
-    model.setUserPassword("password");
+    model.setUserPassword("passworD32@");
     return model;
   }
 }

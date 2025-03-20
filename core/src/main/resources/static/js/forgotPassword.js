@@ -120,7 +120,15 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                                 }).error(
                                     function(error)
                                     {
-                                        $scope.alert = 'Unable to update your password. Please check your token has not expired and your user name is spelt correctly.'
+                                        if(error != null && error.detail != null && error.detail.includes("Validation failure")){
+                                            $scope.alert = error.detail + ": Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+                                            $scope.alertnote = $scope.alert;
+                                            $scope.showAlertToast();
+                                        } else {
+                                            $scope.alert = 'Unable to update your password. Please check your token has not expired and your user name is spelt correctly.'
+                                            $scope.alertnote = error;
+                                            $scope.showAlertToast();
+                                        }
                                     }
                                 );
                         }
