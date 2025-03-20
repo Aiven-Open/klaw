@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,24 +42,23 @@ public class UserTeamsControllerTest {
   @ParameterizedTest
   @Order(1)
   @CsvSource({
-          "'invalidpwd', 400", // Invalid password -> Expect 4xx Client Error
-          "'Invalidpwd321@', 200" // Valid password -> Expect 200 OK
+    "'invalidpwd', 400", // Invalid password -> Expect 4xx Client Error
+    "'Invalidpwd321@', 200" // Valid password -> Expect 200 OK
   })
   public void resetPasswordWithTokenTest(String password, int expectedStatus) throws Exception {
     ResetPasswordInfo passwordReset = new ResetPasswordInfo();
     when(usersTeamsControllerService.resetPassword(anyString(), anyString(), anyString()))
-            .thenReturn(passwordReset);
+        .thenReturn(passwordReset);
 
     mvc.perform(
-                    MockMvcRequestBuilders.post("/reset/password")
-                            .param("token", "token")
-                            .param("password", password)
-                            .param("username", "username")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .accept(MediaType.APPLICATION_JSON))
-            .andDo(print())
-            .andExpect(status().is(expectedStatus));
+            MockMvcRequestBuilders.post("/reset/password")
+                .param("token", "token")
+                .param("password", password)
+                .param("username", "username")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().is(expectedStatus));
   }
-
 }
