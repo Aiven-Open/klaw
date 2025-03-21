@@ -68,6 +68,8 @@ public class KwConstants {
       "Dear User, \\n These are the topics that require reconciliation:\\n\\nTenant: %s\\nTopics: %s";
   public static final String MAIL_NEWUSERADDED_CONTENT =
       "Dear User,\\n Congratulations, you have been granted access to Klaw.. \\n\\nUser name: %s\\nPassword: %s";
+  public static final String MAIL_NEWUSERADDED_V2_CONTENT =
+      "Dear User,\\n Congratulations, you have been granted access to Klaw.. \\n\\nUser name: %s\\nPlease set your password through the forgot your password link on the login page if you are unable to access it.";
   public static final String MAIL_PASSWORDRESET_CONTENT =
       "Dear User,\\nA password reset for your Klaw account has been requested.\\n\\nUse the Reset Token to update your password: %s\\nIt will be valid for 10 minutes.\\n\\nIf you did not request this change, please ignore this email.";
 

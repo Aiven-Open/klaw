@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ public class SecurityConfigNoSSO {
   @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
 
   @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+
   @Autowired private ManageDatabase manageTopics;
 
   @Value("${klaw.login.authentication.type}")
@@ -69,6 +71,8 @@ public class SecurityConfigNoSSO {
   private String apiUser;
 
   @Autowired LdapTemplate ldapTemplate;
+
+  public static final String BCRYPT_ENCODING_ID = "{bcrypt}";
 
   private void shutdownApp() {
     // TODO
@@ -146,46 +150,68 @@ public class SecurityConfigNoSSO {
         throw new Exception(SEC_CONFIG_ERR_102);
       }
 
-      if (users.size() == 0) {
+      if (users.isEmpty()) {
         shutdownApp();
         throw new Exception(SEC_CONFIG_ERR_101);
       }
 
-      Iterator<UserInfo> iter = users.iterator();
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-      loadAllUsers(globalUsers, iter, encoder);
+      loadAllUsers(globalUsers, users.iterator());
       globalUsers.put(apiUser, ",CACHE_ADMIN,enabled");
     }
     return new InMemoryUserDetailsManager(globalUsers);
   }
 
-  private void loadAllUsers(
-      Properties globalUsers, Iterator<UserInfo> iter, PasswordEncoder encoder) {
+  private void loadAllUsers(Properties globalUsers, Iterator<UserInfo> iter) {
     UserInfo userInfo;
+    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     while (iter.hasNext()) {
       userInfo = iter.next();
       try {
         String secPwd = userInfo.getPwd();
-        if (secPwd == null || secPwd.equals("")) {
+        if (StringUtils.isEmpty(secPwd)) {
           continue;
-        } else {
-          secPwd = decodePwd(secPwd);
         }
+
         globalUsers.put(
-            userInfo.getUsername(), encoder.encode(secPwd) + "," + userInfo.getRole() + ",enabled");
+            userInfo.getUsername(),
+            getBcryptPassword(secPwd, encoder) + "," + userInfo.getRole() + ",enabled");
       } catch (Exception e) {
         log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
       }
     }
   }
 
-  private String decodePwd(String pwd) {
-    if (pwd != null) {
-      BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-      textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
-
-      return textEncryptor.decrypt(pwd);
+  /**
+   * Temporary method until BCrypt migration is completed Currently Klaw supports two types of
+   * encryption for database authentication but all use BCrypt at runtime, this method checks the
+   * encryption type already being used and returns the BCrypt encrypted Password
+   *
+   * @param encodedPassword is the password from database already encoded
+   * @return The BCrypt encoded password
+   */
+  private String getBcryptPassword(String encodedPassword, PasswordEncoder encoder) {
+    if (encodedPassword != null) {
+      // All passwords use bcrypt encoding, check here if they have already been encoded so they
+      // don't get double encoded.
+      if (encodedPassword.startsWith(BCRYPT_ENCODING_ID)) {
+        return encodedPassword;
+      } else {
+        // not saved a Bcrypt and should be changed to bcrypt
+        return encodePwd(getJasyptEncryptor().decrypt(encodedPassword), encoder);
+      }
+    } else {
+      return "";
     }
-    return "";
+  }
+
+  private String encodePwd(String pwd, PasswordEncoder encoder) {
+    return encoder.encode(pwd);
+  }
+
+  private BasicTextEncryptor getJasyptEncryptor() {
+    BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+    textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
+
+    return textEncryptor;
   }
 }
