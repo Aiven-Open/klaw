@@ -2,7 +2,6 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
-import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
@@ -83,6 +82,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -101,6 +101,7 @@ public class UsersTeamsControllerServiceTest {
   private static final String TEST_NEW_USER_PWD_PLAIN_TEXT = "newUserPwd";
   private static final String TEST_AUTHENTICATED_USER_UNAME = "authenticatedUserName";
   private static final String TEST_LOGIN_URL = "http://klaw.com/login";
+  public static final String BCRYPT_ENCODING_ID = "{bcrypt}";
   private UtilMethods utilMethods;
 
   private static Validator validator;
@@ -110,8 +111,10 @@ public class UsersTeamsControllerServiceTest {
 
   @Mock private HandleDbRequestsJdbc handleDbRequests;
   @Mock private CommonUtilsService commonUtilsService;
+  @Mock private PasswordService passwordService;
   @Mock private UserDetails userDetails;
   @Mock private ManageDatabase manageDatabase;
+  @Mock private BCryptPasswordEncoder bcryptPasswordEncoder;
 
   private UsersTeamsControllerService usersTeamsControllerService;
   private UserInfo userInfo;
@@ -140,12 +143,20 @@ public class UsersTeamsControllerServiceTest {
     ReflectionTestUtils.setField(usersTeamsControllerService, "mailService", mailService);
     ReflectionTestUtils.setField(
         usersTeamsControllerService, "commonUtilsService", commonUtilsService);
+    ReflectionTestUtils.setField(usersTeamsControllerService, "passwordService", passwordService);
+    ReflectionTestUtils.setField(passwordService, "encryptorSecretKey", ENCRYPTOR_SECRET_KEY);
     ReflectionTestUtils.setField(
-        usersTeamsControllerService, "encryptorSecretKey", ENCRYPTOR_SECRET_KEY);
+        passwordService,
+        "passwordEncoder",
+        PasswordEncoderFactories.createDelegatingPasswordEncoder());
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     userInfo = utilMethods.getUserInfoMockDao();
+
     when(commonUtilsService.getPrincipal()).thenReturn(userDetails);
     when(commonUtilsService.isNotAuthorizedUser(any(), any(PermissionType.class))).thenReturn(true);
+    when(passwordService.getBcryptPassword(any())).thenCallRealMethod();
+    when(passwordService.encodePwd(any())).thenCallRealMethod();
+    when(commonUtilsService.getJasyptEncryptor()).thenCallRealMethod();
   }
 
   @Test
@@ -1460,6 +1471,9 @@ public class UsersTeamsControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     approveNewUserRequestsSetupTest(authType);
 
+    String bcryptPassword = "{bcrypt}$2a$10$Jes55QOFcnStUvsMXyaCu.w8FdpgwOvsbE99EVHS99Ma3mX52GpLC";
+    testNewRegUser.setPwd(bcryptPassword);
+
     ApiResponse response =
         usersTeamsControllerService.approveNewUserRequests(
             testNewRegUser.getUsername(), isExternal, Integer.MIN_VALUE, null);
@@ -1516,32 +1530,34 @@ public class UsersTeamsControllerServiceTest {
     approveNewUserRequestsValidateCapturedUserDetails();
   }
 
-  @Test
-  public void approveNewUserRequestsFailureWithLDAPAuth() {
-    when(handleDbRequests.addNewUser(userInfoArgCaptor.capture()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
-    approveNewUserRequestsSetupTest(AuthenticationType.LDAP);
-
-    assertThatExceptionOfType(KlawException.class)
-        .isThrownBy(
-            () ->
-                usersTeamsControllerService.approveNewUserRequests(
-                    testNewRegUser.getUsername(), true, Integer.MIN_VALUE, null))
-        .withMessage(TEAMS_ERR_111);
-
-    verify(commonUtilsService)
-        .updateMetadata(
-            TEST_TENANT_ID,
-            EntityType.USERS,
-            MetadataOperationType.CREATE,
-            testNewRegUser.getUsername());
-    verify(commonUtilsService).getTenantId(TEST_AUTHENTICATED_USER_UNAME);
-    verify(inMemoryUserDetailsManager, never()).createUser(any());
-    verify(handleDbRequests, never()).updateNewUserRequest(anyString(), anyString(), anyBoolean());
-    verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
-
-    approveNewUserRequestsValidateCapturedUserInfo(AuthenticationType.LDAP);
-  }
+  // Previously failed on inability to decode a password we don't want this anymore
+  //  @Test
+  //  public void approveNewUserRequestsFailureWithLDAPAuth() {
+  //    when(handleDbRequests.addNewUser(userInfoArgCaptor.capture()))
+  //        .thenReturn(ApiResultStatus.SUCCESS.value);
+  //    approveNewUserRequestsSetupTest(AuthenticationType.LDAP);
+  //
+  //    assertThatExceptionOfType(KlawException.class)
+  //        .isThrownBy(
+  //            () ->
+  //                usersTeamsControllerService.approveNewUserRequests(
+  //                    testNewRegUser.getUsername(), true, Integer.MIN_VALUE, null))
+  //        .withMessage(TEAMS_ERR_111);
+  //
+  //    verify(commonUtilsService)
+  //        .updateMetadata(
+  //            TEST_TENANT_ID,
+  //            EntityType.USERS,
+  //            MetadataOperationType.CREATE,
+  //            testNewRegUser.getUsername());
+  //    verify(commonUtilsService).getTenantId(TEST_AUTHENTICATED_USER_UNAME);
+  //    verify(inMemoryUserDetailsManager, never()).createUser(any());
+  //    verify(handleDbRequests, never()).updateNewUserRequest(anyString(), anyString(),
+  // anyBoolean());
+  //    verify(mailService, never()).sendMail(anyString(), any(), anyString());
+  //
+  //    approveNewUserRequestsValidateCapturedUserInfo(AuthenticationType.LDAP);
+  //  }
 
   @Test
   public void approveNewUserRequestsFailureWithUnAuthorizedUser() throws KlawException {
@@ -1556,7 +1572,7 @@ public class UsersTeamsControllerServiceTest {
     verify(commonUtilsService, never()).getTenantId(anyString());
     verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
     verify(commonUtilsService, never()).getLoginUrl();
-    verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
+    verify(mailService, never()).sendMail(anyString(), any(), anyString());
   }
 
   @Test
@@ -1573,12 +1589,7 @@ public class UsersTeamsControllerServiceTest {
     assertThat(response.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
 
     verify(inMemoryUserDetailsManager).createUser(userDetailsArgCaptor.capture());
-    verify(mailService)
-        .sendMail(
-            testNewRegUser.getUsername(),
-            TEST_NEW_USER_PWD_PLAIN_TEXT,
-            handleDbRequests,
-            TEST_LOGIN_URL);
+    verify(mailService).sendMail(testNewRegUser.getUsername(), handleDbRequests, TEST_LOGIN_URL);
     verify(commonUtilsService, never()).getTenantId(anyString());
     verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
     verify(handleDbRequests, never()).updateNewUserRequest(anyString(), anyString(), anyBoolean());
@@ -1603,7 +1614,7 @@ public class UsersTeamsControllerServiceTest {
 
     verify(inMemoryUserDetailsManager).createUser(userDetailsArgCaptor.capture());
     verify(inMemoryUserDetailsManager).deleteUser(testNewRegUser.getUsername());
-    verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
+    verify(mailService, never()).sendMail(anyString(), any(), anyString());
     verify(commonUtilsService, never()).getTenantId(anyString());
     verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
     verify(handleDbRequests, never()).updateNewUserRequest(anyString(), anyString(), anyBoolean());
@@ -1626,7 +1637,7 @@ public class UsersTeamsControllerServiceTest {
     assertThat(response.isSuccess()).isFalse();
     verify(commonUtilsService, never()).getTenantId(anyString());
     verify(inMemoryUserDetailsManager, never()).createUser(any());
-    verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
+    verify(mailService, never()).sendMail(anyString(), any(), anyString());
     verify(handleDbRequests, never()).addNewUser(any());
     verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());
     verify(inMemoryUserDetailsManager, never()).deleteUser(anyString());
@@ -1964,12 +1975,11 @@ public class UsersTeamsControllerServiceTest {
         .getTenantId(TEST_AUTHENTICATED_USER_UNAME);
     verify(inMemoryUserDetailsManager, never()).deleteUser(anyString());
     if (isExternal) {
-      verify(mailService)
-          .sendMail(testNewRegUser.getUsername(), sentMailPwd, handleDbRequests, TEST_LOGIN_URL);
+      verify(mailService).sendMail(testNewRegUser.getUsername(), handleDbRequests, TEST_LOGIN_URL);
     } else {
       verify(commonUtilsService, never()).isNotAuthorizedUser(any(), any(PermissionType.class));
       verify(commonUtilsService, never()).getLoginUrl();
-      verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
+      verify(mailService, never()).sendMail(anyString(), any(), anyString());
     }
   }
 
@@ -1982,7 +1992,7 @@ public class UsersTeamsControllerServiceTest {
     assertThat(capturedUserInfo.getRole()).isEqualTo(testNewRegUser.getRole());
     assertThat(capturedUserInfo.getFullname()).isEqualTo(testNewRegUser.getFullname());
     if (authType == AuthenticationType.DATABASE) {
-      assertThat(decodePwd(capturedUserInfo.getPwd())).isEqualTo(TEST_NEW_USER_PWD_PLAIN_TEXT);
+      assertThat(capturedUserInfo.getPwd()).startsWith(BCRYPT_ENCODING_ID);
     } else {
       assertThat(capturedUserInfo.getPwd()).isEqualTo(UsersTeamsControllerService.UNUSED_PASSWD);
     }
@@ -2054,8 +2064,6 @@ public class UsersTeamsControllerServiceTest {
             PasswordEncoderFactories.createDelegatingPasswordEncoder()
                 .matches(changePwdRequestModel.getPwd(), stringArgCaptor.getAllValues().get(0)))
         .isTrue();
-    assertThat(decodePwd(stringArgCaptor.getAllValues().get(1)))
-        .isEqualTo(changePwdRequestModel.getPwd());
   }
 
   private void changePwdSetupTest(UserDetails updatePwdUserDetails, ApiResultStatus dbApiResult) {

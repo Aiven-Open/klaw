@@ -58,7 +58,7 @@ public class MailUtils {
   private static final String ACL_DELETE_REQ_KEY = "klaw.mail.aclrequestdelete.content";
   private static final String ACL_REQ_APPRVL_KEY = "klaw.mail.aclrequestapproval.content";
   private static final String ACL_REQ_DENY_KEY = "klaw.mail.aclrequestdenial.content";
-  private static final String NEW_USER_ADDED_KEY = "klaw.mail.newuseradded.content";
+  private static final String NEW_USER_ADDED_V2_KEY = "klaw.mail.newuseradded.v2.content";
   private static final String PWD_RESET_KEY = "klaw.mail.passwordreset.content";
 
   private static final String PWD_CHANGED_KEY = "klaw.mail.passwordchanged.content";
@@ -134,7 +134,7 @@ public class MailUtils {
     }
   }
 
-  void sendMail(String username, String pwd, HandleDbRequests dbHandle, String loginUrl) {
+  void sendMail(String username, HandleDbRequests dbHandle, String loginUrl) {
     String formattedStr, subject;
     int tenantId =
         manageDatabase
@@ -142,8 +142,8 @@ public class MailUtils {
             .getUsersInfo(
                 getUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
             .getTenantId();
-    String newUserAdded = manageDatabase.getKwPropertyValue(NEW_USER_ADDED_KEY, tenantId);
-    formattedStr = String.format(newUserAdded, username, pwd);
+    String newUserAdded = manageDatabase.getKwPropertyValue(NEW_USER_ADDED_V2_KEY, tenantId);
+    formattedStr = String.format(newUserAdded, username);
     subject = "Access to Klaw";
 
     sendMail(
