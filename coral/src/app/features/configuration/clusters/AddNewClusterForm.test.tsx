@@ -55,7 +55,7 @@ describe("<AddNewClusterForm />", () => {
       expect(clusterNameInput).toBeEnabled();
     });
 
-    it("renders Protocol field", () => {
+    it("renders Protocol field with preselected option", () => {
       const protocolSelect = screen.getByRole("combobox", {
         name: "Protocol *",
       });
@@ -64,17 +64,23 @@ describe("<AddNewClusterForm />", () => {
 
       expect(protocolSelect).toBeEnabled();
       expect(protocolSelectOptions).toHaveLength(7);
+      expect(protocolSelect).toHaveValue("SSL");
     });
 
-    it("renders cluster type field", () => {
+    it("renders cluster type field with preselected option", () => {
       const clusterTypeSelect = screen.getByRole("group", {
         name: "Cluster type *",
       });
+      const preselectedClusterType = within(clusterTypeSelect).getByRole(
+        "radio",
+        { name: "Kafka" }
+      );
       const clusterTypeOptions =
         within(clusterTypeSelect).getAllByRole("radio");
 
       expect(clusterTypeSelect).toBeEnabled();
       expect(clusterTypeOptions).toHaveLength(3);
+      expect(preselectedClusterType).toBeChecked();
     });
 
     it("renders Kafka flavor field", () => {
@@ -110,6 +116,105 @@ describe("<AddNewClusterForm />", () => {
       });
 
       expect(submitButton).toBeEnabled();
+    });
+  });
+
+  describe("warns users about using PLAINTEXT as protocol", () => {
+    it("shows warning when user chooses PLAINTEXT as protocol", async () => {
+      const warningText =
+        "PLAINTEXT is not secure. Use a secure option like SSL.";
+
+      expect(screen.queryByText(warningText)).not.toBeInTheDocument();
+
+      const protocolSelect = screen.getByRole("combobox", {
+        name: "Protocol *",
+      });
+
+      const plaintextOption = within(protocolSelect).getByRole("option", {
+        name: /PLAINTEXT/,
+      });
+      await userEvent.selectOptions(protocolSelect, plaintextOption);
+
+      const warning = screen.getByRole("alert");
+
+      expect(warning).toBeVisible();
+      expect(warning).toHaveTextContent(warningText);
+    });
+
+    it("does not let user submit form directly but shows confirmation dialog", async () => {
+      const clusterNameInput = screen.getByRole("textbox", {
+        name: "Cluster name *",
+      });
+      const protocolSelect = screen.getByRole("combobox", {
+        name: "Protocol *",
+      });
+      const kafkaFlavorSelect = screen.getByRole("combobox", {
+        name: "Kafka flavor *",
+      });
+      const bootstrapServersInput = screen.getByRole("textbox", {
+        name: "Bootstrap servers *",
+      });
+      const submitButton = screen.getByRole("button", {
+        name: "Add new cluster",
+      });
+      await userEvent.type(clusterNameInput, "MyCluster");
+      await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
+      await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
+      await userEvent.type(bootstrapServersInput, "server:9092");
+      await userEvent.click(submitButton);
+
+      expect(mockAddNewClusterRequest).not.toHaveBeenCalled();
+
+      const dialog = screen.getByRole("dialog", {
+        name: "PLAINTEXT is not secure",
+      });
+      expect(dialog).toBeVisible();
+      expect(dialog).toHaveTextContent(
+        "Are you sure you want to continue with PLAINTEXT?"
+      );
+    });
+
+    it("lets user submit form after confirming usage of PLAINTEXT protocol", async () => {
+      const clusterNameInput = screen.getByRole("textbox", {
+        name: "Cluster name *",
+      });
+      const protocolSelect = screen.getByRole("combobox", {
+        name: "Protocol *",
+      });
+      const kafkaFlavorSelect = screen.getByRole("combobox", {
+        name: "Kafka flavor *",
+      });
+      const bootstrapServersInput = screen.getByRole("textbox", {
+        name: "Bootstrap servers *",
+      });
+      const submitButton = screen.getByRole("button", {
+        name: "Add new cluster",
+      });
+      await userEvent.type(clusterNameInput, "MyCluster");
+      await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
+      await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
+      await userEvent.type(bootstrapServersInput, "server:9092");
+      await userEvent.click(submitButton);
+
+      expect(mockAddNewClusterRequest).not.toHaveBeenCalled();
+
+      const dialog = screen.getByRole("dialog", {
+        name: "PLAINTEXT is not secure",
+      });
+      const confirmButton = within(dialog).getByRole("button", {
+        name: "Add new Cluster",
+      });
+
+      await userEvent.click(confirmButton);
+
+      expect(mockAddNewClusterRequest).toHaveBeenCalledWith({
+        clusterType: "KAFKA",
+        clusterName: "MyCluster",
+        protocol: "PLAINTEXT",
+        kafkaFlavor: "APACHE_KAFKA",
+        bootstrapServers: "server:9092",
+      });
+      expect(dialog).not.toBeVisible();
     });
   });
 
@@ -261,14 +366,14 @@ describe("<AddNewClusterForm />", () => {
     });
     await userEvent.type(clusterNameInput, "MyCluster");
     await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
-    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
+    await userEvent.selectOptions(protocolSelect, "SSL");
     await userEvent.type(bootstrapServersInput, "server:9092");
     await userEvent.click(submitButton);
 
     expect(mockAddNewClusterRequest).toHaveBeenCalledWith({
       clusterType: "KAFKA",
       clusterName: "MyCluster",
-      protocol: "PLAINTEXT",
+      protocol: "SSL",
       kafkaFlavor: "APACHE_KAFKA",
       bootstrapServers: "server:9092",
     });
@@ -305,7 +410,7 @@ describe("<AddNewClusterForm />", () => {
       name: "Add new cluster",
     });
     await userEvent.selectOptions(kafkaFlavorSelect, "APACHE_KAFKA");
-    await userEvent.selectOptions(protocolSelect, "PLAINTEXT");
+    await userEvent.selectOptions(protocolSelect, "SSL");
     await userEvent.type(clusterNameInput, "MyCluster");
 
     await userEvent.type(bootstrapServersInput, "server:9092");
@@ -314,7 +419,7 @@ describe("<AddNewClusterForm />", () => {
     expect(mockAddNewClusterRequest).toHaveBeenCalledWith({
       clusterType: "KAFKA",
       clusterName: "MyCluster",
-      protocol: "PLAINTEXT",
+      protocol: "SSL",
       kafkaFlavor: "APACHE_KAFKA",
       bootstrapServers: "server:9092",
     });
