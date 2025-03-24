@@ -4,9 +4,10 @@ import {
   Grid,
   Option,
   useToast,
+  Alert,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -26,18 +27,22 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { Routes } from "src/services/router-utils/types";
 import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
+import { Dialog } from "src/app/components/Dialog";
 
 const AddNewClusterForm = () => {
+  const [confirmPlaintextProctocolDialog, setConfirmPlaintextProctocolDialog] =
+    useState(false);
+
   const navigate = useNavigate();
   const toast = useToast();
   const form = useForm<AddNewClusterFormSchema>({
     schema: addNewClusterFormSchema,
     defaultValues: {
       clusterType: "KAFKA",
-      protocol: "PLAINTEXT",
+      protocol: "SSL",
     },
   });
-  const { clusterType, kafkaFlavor, clusterName } = form.watch();
+  const { clusterType, kafkaFlavor, clusterName, protocol } = form.watch();
 
   // Because the protocol fields for the 'kafka' clusterType has more options than the other clusterTypes
   // We need to reset the protocol field when the clusterType changes
@@ -72,16 +77,10 @@ const AddNewClusterForm = () => {
     },
   });
 
-  const onSubmitForm = (userInput: AddNewClusterFormSchema) => {
+  const onSubmitForm = () => {
+    const userInput: AddNewClusterFormSchema = form.getValues();
     const formattedBootstrapServers = userInput.bootstrapServers.join(",");
     const formattedAssociatedServers = userInput.associatedServers?.join(",");
-    if (userInput.protocol === "PLAINTEXT") {
-      toast({
-        message: "PLAINTEXT protocol is unsecure!",
-        position: "bottom-left",
-        variant: "danger",
-      });
-    }
 
     addNewClusterMutation.mutate({
       ...userInput,
@@ -91,124 +90,165 @@ const AddNewClusterForm = () => {
   };
 
   return (
-    <Form {...form} ariaLabel={"Add new cluster"} onSubmit={onSubmitForm}>
-      <RadioButtonGroup<AddNewClusterFormSchema>
-        name="clusterType"
-        labelText="Cluster type"
-        required
+    <>
+      {confirmPlaintextProctocolDialog && (
+        <Dialog
+          title={"PLAINTEXT is not secure"}
+          primaryAction={{
+            text: "Add new Cluster",
+            onClick: () => {
+              onSubmitForm();
+              setConfirmPlaintextProctocolDialog(false);
+            },
+          }}
+          secondaryAction={{
+            text: "Cancel",
+            onClick: () => setConfirmPlaintextProctocolDialog(false),
+          }}
+          type={"warning"}
+        >
+          Are you sure you want to continue with PLAINTEXT?
+        </Dialog>
+      )}
+      <Form
+        {...form}
+        ariaLabel={"Add new cluster"}
+        onSubmit={
+          protocol === "PLAINTEXT"
+            ? () => setConfirmPlaintextProctocolDialog(true)
+            : onSubmitForm
+        }
       >
-        <BaseRadioButton name="KAFKA" value="KAFKA">
-          {clusterTypeToString["KAFKA"]}
-        </BaseRadioButton>
-        <BaseRadioButton name="KAFKA_CONNECT" value="KAFKA_CONNECT">
-          {clusterTypeToString["KAFKA_CONNECT"]}
-        </BaseRadioButton>
-        <BaseRadioButton name="SCHEMA_REGISTRY" value="SCHEMA_REGISTRY">
-          {clusterTypeToString["SCHEMA_REGISTRY"]}
-        </BaseRadioButton>
-      </RadioButtonGroup>
-      <TextInput<AddNewClusterFormSchema>
-        name="clusterName"
-        labelText="Cluster name"
-        placeholder="DEV"
-        required
-      />
+        <RadioButtonGroup<AddNewClusterFormSchema>
+          name="clusterType"
+          labelText="Cluster type"
+          required
+        >
+          <BaseRadioButton name="KAFKA" value="KAFKA">
+            {clusterTypeToString["KAFKA"]}
+          </BaseRadioButton>
+          <BaseRadioButton name="KAFKA_CONNECT" value="KAFKA_CONNECT">
+            {clusterTypeToString["KAFKA_CONNECT"]}
+          </BaseRadioButton>
+          <BaseRadioButton name="SCHEMA_REGISTRY" value="SCHEMA_REGISTRY">
+            {clusterTypeToString["SCHEMA_REGISTRY"]}
+          </BaseRadioButton>
+        </RadioButtonGroup>
+        <TextInput<AddNewClusterFormSchema>
+          name="clusterName"
+          labelText="Cluster name"
+          placeholder="DEV"
+          required
+        />
 
-      <NativeSelect<AddNewClusterFormSchema>
-        name="protocol"
-        labelText="Protocol"
-        required
-      >
-        <Option value="SSL">SSL</Option>
-        {clusterType === "KAFKA" && (
-          <>
-            <Option value="SASL_PLAIN">SASL_PLAIN</Option>
-            <Option value="SASL_SSL_PLAIN_MECHANISM">
-              SASL_SSL_PLAIN_MECHANISM
-            </Option>
-            <Option value="SASL_SSL_GSSAPI_MECHANISM">
-              SASL_SSL_GSSAPI_MECHANISM
-            </Option>
-            <Option value="SASL_SSL_SCRAM_MECHANISM_256">
-              SASL_SSL_SCRAM_MECHANISM_256
-            </Option>
-            <Option value="SASL_SSL_SCRAM_MECHANISM_512">
-              SASL_SSL_SCRAM_MECHANISM_512
-            </Option>
-          </>
+        {protocol === "PLAINTEXT" && (
+          <Alert type={"warning"}>
+            PLAINTEXT is not secure. Use a secure option like SSL.{" "}
+            <a
+              href="https://www.klaw-project.io/docs/cluster-connectivity-setup/kafka-cluster-ssl-protocol/"
+              aria-label="Documentation Cluster connectivty setup"
+            >
+              Learn more
+            </a>
+          </Alert>
         )}
-        <Option value="PLAINTEXT">PLAINTEXT</Option>
-      </NativeSelect>
-      <NativeSelect<AddNewClusterFormSchema>
-        name="kafkaFlavor"
-        labelText="Kafka flavor"
-        placeholder="-- Please select --"
-        required
-      >
-        <Option value="APACHE_KAFKA">
-          {kafkaFlavorToString["APACHE_KAFKA"]}
-        </Option>
-        <Option value="AIVEN_FOR_APACHE_KAFKA">
-          {kafkaFlavorToString["AIVEN_FOR_APACHE_KAFKA"]}
-        </Option>
-        <Option value="CONFLUENT">{kafkaFlavorToString["CONFLUENT"]}</Option>
-        <Option value="CONFLUENT_CLOUD">
-          {kafkaFlavorToString["CONFLUENT_CLOUD"]}
-        </Option>
-        <Option value="OTHERS">{kafkaFlavorToString["OTHERS"]}</Option>
-      </NativeSelect>
+        <NativeSelect<AddNewClusterFormSchema>
+          name="protocol"
+          labelText="Protocol"
+          required
+        >
+          <Option value="SSL">SSL</Option>
+          {clusterType === "KAFKA" && (
+            <>
+              <Option value="SASL_PLAIN">SASL_PLAIN</Option>
+              <Option value="SASL_SSL_PLAIN_MECHANISM">
+                SASL_SSL_PLAIN_MECHANISM
+              </Option>
+              <Option value="SASL_SSL_GSSAPI_MECHANISM">
+                SASL_SSL_GSSAPI_MECHANISM
+              </Option>
+              <Option value="SASL_SSL_SCRAM_MECHANISM_256">
+                SASL_SSL_SCRAM_MECHANISM_256
+              </Option>
+              <Option value="SASL_SSL_SCRAM_MECHANISM_512">
+                SASL_SSL_SCRAM_MECHANISM_512
+              </Option>
+            </>
+          )}
+          <Option value="PLAINTEXT">PLAINTEXT (not recommended)</Option>
+        </NativeSelect>
+        <NativeSelect<AddNewClusterFormSchema>
+          name="kafkaFlavor"
+          labelText="Kafka flavor"
+          placeholder="-- Please select --"
+          required
+        >
+          <Option value="APACHE_KAFKA">
+            {kafkaFlavorToString["APACHE_KAFKA"]}
+          </Option>
+          <Option value="AIVEN_FOR_APACHE_KAFKA">
+            {kafkaFlavorToString["AIVEN_FOR_APACHE_KAFKA"]}
+          </Option>
+          <Option value="CONFLUENT">{kafkaFlavorToString["CONFLUENT"]}</Option>
+          <Option value="CONFLUENT_CLOUD">
+            {kafkaFlavorToString["CONFLUENT_CLOUD"]}
+          </Option>
+          <Option value="OTHERS">{kafkaFlavorToString["OTHERS"]}</Option>
+        </NativeSelect>
 
-      {kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA" && clusterType === "KAFKA" && (
-        <Grid gap={"l3"}>
-          <Grid.Item xs={6}>
-            <TextInput<AddNewClusterFormSchema>
-              name="projectName"
-              labelText="Project name"
-              placeholder="project-name"
-              width="full"
-              required
-            />
+        {kafkaFlavor === "AIVEN_FOR_APACHE_KAFKA" &&
+          clusterType === "KAFKA" && (
+            <Grid gap={"l3"}>
+              <Grid.Item xs={6}>
+                <TextInput<AddNewClusterFormSchema>
+                  name="projectName"
+                  labelText="Project name"
+                  placeholder="project-name"
+                  width="full"
+                  required
+                />
+              </Grid.Item>
+              <Grid.Item xs={6}>
+                <TextInput<AddNewClusterFormSchema>
+                  name="serviceName"
+                  labelText="Service name"
+                  placeholder="kafka-service-name"
+                  width="full"
+                  required
+                />
+              </Grid.Item>
+            </Grid>
+          )}
+        <MultiInput<AddNewClusterFormSchema>
+          name="bootstrapServers"
+          labelText="Bootstrap servers"
+          placeholder="server:9092"
+          required
+        />
+        <MultiInput<AddNewClusterFormSchema>
+          name="associatedServers"
+          labelText="REST API servers (optional)"
+          placeholder="https://server:8082"
+        />
+
+        <Grid cols={"2"} colGap={"5"} width={"fit"} marginTop={"l1"}>
+          <Grid.Item>
+            <SubmitButton loading={addNewClusterMutation.isLoading}>
+              Add new cluster
+            </SubmitButton>
           </Grid.Item>
-          <Grid.Item xs={6}>
-            <TextInput<AddNewClusterFormSchema>
-              name="serviceName"
-              labelText="Service name"
-              placeholder="kafka-service-name"
-              width="full"
-              required
-            />
+          <Grid.Item>
+            <Button.Secondary
+              disabled={addNewClusterMutation.isLoading}
+              type="button"
+              onClick={() => navigate(Routes.CLUSTERS)}
+            >
+              Cancel
+            </Button.Secondary>
           </Grid.Item>
         </Grid>
-      )}
-      <MultiInput<AddNewClusterFormSchema>
-        name="bootstrapServers"
-        labelText="Bootstrap servers"
-        placeholder="server:9092"
-        required
-      />
-      <MultiInput<AddNewClusterFormSchema>
-        name="associatedServers"
-        labelText="REST API servers (optional)"
-        placeholder="https://server:8082"
-      />
-
-      <Grid cols={"2"} colGap={"5"} width={"fit"} marginTop={"l1"}>
-        <Grid.Item>
-          <SubmitButton loading={addNewClusterMutation.isLoading}>
-            Add new cluster
-          </SubmitButton>
-        </Grid.Item>
-        <Grid.Item>
-          <Button.Secondary
-            disabled={addNewClusterMutation.isLoading}
-            type="button"
-            onClick={() => navigate(Routes.CLUSTERS)}
-          >
-            Cancel
-          </Button.Secondary>
-        </Grid.Item>
-      </Grid>
-    </Form>
+      </Form>
+    </>
   );
 };
 export default AddNewClusterForm;
