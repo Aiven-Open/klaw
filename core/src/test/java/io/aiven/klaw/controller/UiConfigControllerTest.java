@@ -12,6 +12,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.NotificationModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.ChangePasswordRequestModel;
@@ -422,5 +423,24 @@ public class UiConfigControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  @Order(22)
+  public void sendMessage() throws Exception {
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
+    NotificationModel notificationModel = new NotificationModel();
+    notificationModel.setContactFormSubject("subject");
+    notificationModel.setContactFormMessage("message");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(notificationModel);
+    when(uiConfigControllerService.sendMessageToAdmin(anyString(), anyString()))
+        .thenReturn(apiResponse);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/sendMessageToAdmin")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
   }
 }

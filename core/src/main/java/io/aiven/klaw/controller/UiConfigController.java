@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.ActivityLogModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.NotificationModel;
 import io.aiven.klaw.model.enums.OrderBy;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import io.aiven.klaw.service.UiConfigControllerService;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,10 +42,10 @@ public class UiConfigController {
 
   @PostMapping(value = "/sendMessageToAdmin")
   public ResponseEntity<ApiResponse> sendMessageToAdmin(
-      @RequestParam("contactFormSubject") String contactFormSubject,
-      @RequestParam("contactFormMessage") String contactFormMessage) {
+      @RequestBody NotificationModel notificationModel) {
     return new ResponseEntity<>(
-        uiConfigControllerService.sendMessageToAdmin(contactFormSubject, contactFormMessage),
+        uiConfigControllerService.sendMessageToAdmin(
+            notificationModel.getContactFormSubject(), notificationModel.getContactFormMessage()),
         HttpStatus.OK);
   }
 
