@@ -287,7 +287,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "updateProfile",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updateProfile' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Update User Request : "+output.message;
@@ -907,7 +906,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "sendMessageToAdmin",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
                         data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
                     }).success(function(output) {
                         $scope.alert = "Message Sent.";

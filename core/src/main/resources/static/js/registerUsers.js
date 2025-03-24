@@ -526,7 +526,6 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                         method: "POST",
                         url: "registerUser",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'newUser' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "Registration Request : "+output.message;
@@ -616,8 +615,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                          method: "POST",
                          url: "sendMessageToAdmin",
                          headers : { 'Content-Type' : 'application/json' },
-                         params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
-                         data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                          data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
                      }).success(function(output) {
                          $scope.alert = "Message Sent.";
                         swal({

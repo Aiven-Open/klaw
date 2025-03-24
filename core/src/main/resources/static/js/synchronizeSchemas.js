@@ -64,7 +64,6 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 method: "POST",
                 url: "sendMessageToAdmin",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
                 data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
             }).success(function(output) {
                 $scope.alert = "Message Sent.";
