@@ -43,7 +43,7 @@ public class EnvsClustersTenantsControllerIT {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static MockMethods mockMethods;
   private static final String superAdmin = "superadmin";
-  private static final String superAdminPwd = "welcometoklaw";
+  private static final String superAdminPwd = "WelcomeToKlaw321@";
 
   @Autowired private MockMvc mvc;
 

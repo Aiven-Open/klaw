@@ -75,6 +75,13 @@ const AddNewClusterForm = () => {
   const onSubmitForm = (userInput: AddNewClusterFormSchema) => {
     const formattedBootstrapServers = userInput.bootstrapServers.join(",");
     const formattedAssociatedServers = userInput.associatedServers?.join(",");
+    if (userInput.protocol === "PLAINTEXT") {
+      toast({
+        message: "PLAINTEXT protocol is unsecure!",
+        position: "bottom-left",
+        variant: "danger",
+      });
+    }
 
     addNewClusterMutation.mutate({
       ...userInput,
@@ -112,7 +119,6 @@ const AddNewClusterForm = () => {
         labelText="Protocol"
         required
       >
-        <Option value="PLAINTEXT">PLAINTEXT</Option>
         <Option value="SSL">SSL</Option>
         {clusterType === "KAFKA" && (
           <>
@@ -131,6 +137,7 @@ const AddNewClusterForm = () => {
             </Option>
           </>
         )}
+        <Option value="PLAINTEXT">PLAINTEXT</Option>
       </NativeSelect>
       <NativeSelect<AddNewClusterFormSchema>
         name="kafkaFlavor"

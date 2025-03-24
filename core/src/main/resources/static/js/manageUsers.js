@@ -109,10 +109,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         $scope.chPwd = function() {
 
-            var serviceInput = {};
-
-            serviceInput['pwd'] = $scope.chPwd.pwd;
-            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
+            if(!$scope.chPwd.pwd) {
+                $scope.alertnote = "Please enter a valid password.";
+                $scope.showAlertToast();
+                return;
+            }
 
             if(!$scope.chPwd.pwd || ($scope.chPwd.pwd !== $scope.chPwd.repeatpwd))
             {
@@ -127,6 +128,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.showAlertToast();
                 return;
             }
+
+            var serviceInput = {};
+
+            serviceInput['pwd'] = $scope.chPwd.pwd;
+            serviceInput['repeatPwd'] = $scope.chPwd.repeatpwd;
 
             swal({
             		title: "Are you sure?",
@@ -336,7 +342,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.addNewUser.pwd)
             {
-                $scope.alertnote = "Please enter a password.";
+                $scope.alertnote = "Please enter a valid password.";
                 $scope.showAlertToast();
                 return;
             }
@@ -420,7 +426,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewUser",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewUser' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New User Request : "+output.message;
@@ -491,7 +496,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "addNewUser",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'addNewUser' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "New User Request : "+output.message;

@@ -135,7 +135,7 @@ public class UtilMethods {
     userInfo.setRole("USER");
     userInfo.setMailid("test@test.com");
     userInfo.setFullname("My full name");
-    userInfo.setUserPassword("mypwadasdas");
+    userInfo.setUserPassword("mypwadaSdas32@#");
 
     return userInfo;
   }
@@ -628,8 +628,8 @@ public class UtilMethods {
 
   public ChangePasswordRequestModel getChangePwdRequestModelMock() {
     ChangePasswordRequestModel changePwd = new ChangePasswordRequestModel();
-    changePwd.setPwd("newpassword");
-    changePwd.setRepeatPwd("newpassword");
+    changePwd.setPwd("newpassworD3@");
+    changePwd.setRepeatPwd("newpassworD3@");
     return changePwd;
   }
 
