@@ -747,27 +747,27 @@ public class UsersTeamsControllerIT {
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(profileModel);
 
     mvc.perform(
-                    MockMvcRequestBuilders.post("/updateProfile")
-                            .with(user(superAdmin).password(superAdminPwd))
-                            .content(jsonReq)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            MockMvcRequestBuilders.post("/updateProfile")
+                .with(user(superAdmin).password(superAdminPwd))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
 
     String response =
-            mvc.perform(
-                            MockMvcRequestBuilders.get("/getMyProfileInfo")
-                                    .with(user(superAdmin).password(superAdminPwd))
-                                    .content(jsonReq)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString();
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getMyProfileInfo")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
     UserInfoModelResponse userInfoModelResponse =
-            OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelResponse.getFullname()).isEqualTo(fullName);
     assertThat(userInfoModelResponse.getMailid()).isEqualTo(emailId);
   }
