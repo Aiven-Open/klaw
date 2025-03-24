@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_MAIL_TEXT;
 import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_TEXT;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
@@ -180,6 +181,21 @@ public class UsersTeamsControllerService {
           getUserName(), newUser.getUsername())) { // should be able to update same user
         return ApiResponse.notOk(TEAMS_ERR_102);
       }
+    }
+
+    // Only a user with permission FULL_ACCESS_USERS_TEAMS_ROLES or UPDATE_PERMISSIONS
+    // should be able to update other user who has permissions FULL_ACCESS_USERS_TEAMS_ROLES or
+    // UPDATE_PERMISSIONS or
+    // role SUPERADMIN_ROLE
+    if ((newUser.getRole().equals(SUPERADMIN_ROLE)
+            || (permissions != null
+                && (permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())
+                    || permissions.contains(PermissionType.UPDATE_PERMISSIONS.name()))))
+        && (commonUtilsService.isNotAuthorizedUser(
+                getUserName(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES)
+            && commonUtilsService.isNotAuthorizedUser(
+                getUserName(), PermissionType.UPDATE_PERMISSIONS))) {
+      return ApiResponse.notOk(TEAMS_ERR_102);
     }
 
     return getApiResponseUpdateUser(newUser, existingUserInfo, tenantId);
@@ -569,6 +585,28 @@ public class UsersTeamsControllerService {
         tenantId = newUser.getTenantId();
       }
       newUser.setTenantId(tenantId);
+    } else {
+      tenantId = commonUtilsService.getTenantId(getUserName());
+    }
+
+    // Only a user with permission FULL_ACCESS_USERS_TEAMS_ROLES or UPDATE_PERMISSIONS
+    // should be able to update other user who has permissions FULL_ACCESS_USERS_TEAMS_ROLES or
+    // UPDATE_PERMISSIONS or
+    // role SUPERADMIN_ROLE
+    Set<String> permissions =
+        manageDatabase
+            .getRolesPermissionsPerTenant(tenantId)
+            .getOrDefault(newUser.getRole(), Collections.emptySet());
+
+    if ((newUser.getRole().equals(SUPERADMIN_ROLE)
+            || (permissions != null
+                && (permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())
+                    || permissions.contains(PermissionType.UPDATE_PERMISSIONS.name()))))
+        && (commonUtilsService.isNotAuthorizedUser(
+                getUserName(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES)
+            && commonUtilsService.isNotAuthorizedUser(
+                getUserName(), PermissionType.UPDATE_PERMISSIONS))) {
+      return ApiResponse.notOk(TEAMS_ERR_102);
     }
 
     if (isExternal
@@ -600,7 +638,7 @@ public class UsersTeamsControllerService {
       String result = dbHandle.addNewUser(userInfo);
 
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        tenantId = commonUtilsService.getTenantId(getUserName());
+
         commonUtilsService.updateMetadata(
             tenantId, EntityType.USERS, MetadataOperationType.CREATE, newUser.getUsername());
       }
