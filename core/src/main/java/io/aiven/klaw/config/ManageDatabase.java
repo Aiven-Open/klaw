@@ -1,5 +1,6 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SUPER_ADMIN_PWD_CONFIG_ERR;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -206,10 +207,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     } else {
       // verify and add user with superadmin role
       if (superAdminDefaultPwd.isBlank()) {
-        String errorMsg =
-            "Please configure klaw.superadmin.default.password with a valid password.";
-        log.error(errorMsg);
-        throw new KlawException(errorMsg);
+        log.error(SUPER_ADMIN_PWD_CONFIG_ERR);
+        throw new KlawException(SUPER_ADMIN_PWD_CONFIG_ERR);
       }
       UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
       if (userExists == null) {

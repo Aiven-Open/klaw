@@ -339,7 +339,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         method: "POST",
                         url: "addNewCluster",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'addNewCluster' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "Cluster updated : " + output.message;
@@ -402,7 +401,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "addNewCluster",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "Schema registry cluster updated: "+output.message;
@@ -463,7 +461,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                    method: "POST",
                    url: "addNewCluster",
                    headers : { 'Content-Type' : 'application/json' },
-                   params: {'addNewEnv' : serviceInput },
                    data: serviceInput
                }).success(function(output) {
                    $scope.alert = "Schema registry cluster updated: "+output.message;

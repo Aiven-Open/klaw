@@ -1,5 +1,8 @@
 package io.aiven.klaw.model.requests;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX;
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -20,6 +23,8 @@ public class RegisterUserInfoModel implements Serializable {
   @NotNull(message = "Username cannot be null")
   private String username;
 
+  @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_REGEX_VALIDATION_STR)
+  @NotNull
   private String pwd;
 
   private String team;

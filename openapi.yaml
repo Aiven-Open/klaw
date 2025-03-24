@@ -767,7 +767,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           }
         }, {
           "name" : "username",
@@ -5905,8 +5906,7 @@
           },
           "userPassword" : {
             "type" : "string",
-            "maxLength" : 2147483647,
-            "minLength" : 8
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           },
           "teamId" : {
             "type" : "integer",
@@ -6475,7 +6475,8 @@
             "minLength" : 6
           },
           "pwd" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           },
           "team" : {
             "type" : "string"
@@ -6517,7 +6518,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "fullname", "username" ]
+        "required" : [ "fullname", "pwd", "username" ]
       },
       "SchemaPromotion" : {
         "properties" : {
@@ -6994,13 +6995,11 @@
         "properties" : {
           "pwd" : {
             "type" : "string",
-            "maxLength" : 2147483647,
-            "minLength" : 8
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           },
           "repeatPwd" : {
             "type" : "string",
-            "maxLength" : 2147483647,
-            "minLength" : 8
+            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
           }
         },
         "required" : [ "pwd", "repeatPwd" ]
@@ -7163,7 +7162,7 @@
           },
           "protocol" : {
             "type" : "string",
-            "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512" ]
+            "enum" : [ "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
           },
           "clusterType" : {
             "type" : "string",
@@ -9045,7 +9044,7 @@
           },
           "protocol" : {
             "type" : "string",
-            "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512" ]
+            "enum" : [ "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
           },
           "clusterType" : {
             "type" : "string",

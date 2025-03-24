@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX;
+
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
@@ -16,6 +18,7 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import io.aiven.klaw.validation.PermissionAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -276,7 +279,7 @@ public class UsersTeamsController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ResetPasswordInfo> resetPasswordWithToken(
       @RequestParam("token") String token,
-      @RequestParam("password") String password,
+      @Pattern(regexp = PASSWORD_REGEX) @RequestParam("password") String password,
       @RequestParam("username") String username)
       throws KlawNotAuthorizedException {
     return new ResponseEntity<>(

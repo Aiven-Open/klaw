@@ -85,7 +85,7 @@ public class TopicAclControllerIT {
 
   @Autowired BuildProperties buildProperties;
   private static final String superAdmin = "superadmin";
-  private static final String superAdminPwd = "welcometoklaw";
+  private static final String superAdminPwd = "WelcomeToKlaw321@";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
   private static final int topicId1 = 1001, topicId3 = 1004, topicId4 = 1006, topicId5 = 1008;

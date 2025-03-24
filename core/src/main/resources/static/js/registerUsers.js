@@ -389,7 +389,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
           if(!$scope.registerUser.pwd)
           {
-              $scope.alertnote = "Please enter a password.";
+              $scope.alertnote = "Please enter a valid password.";
              $scope.showAlertToast();
               return;
           }

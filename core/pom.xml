@@ -389,6 +389,7 @@
                         -Dspringdoc.writer-with-default-pretty-printer=true
                         -Dklaw.core.ha.enable=true
                         -Dspring.application.admin.enabled=true
+                        -Dklaw.superadmin.default.password=checkstartstopapp
                     </jvmArguments>
                 </configuration>
                 <executions>

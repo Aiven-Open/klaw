@@ -8,6 +8,7 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
       KLAW_UIAPI_SERVERS: "http://klaw-core:9097"
       KLAW_CLUSTERAPI_URL: "http://klaw-cluster-api:9343"
+      KLAW_SUPERADMIN_DEFAULT_PASSWORD: 'WelcomeToKlaw321@'
     volumes:
       - "klaw_data:/klaw"
     extra_hosts:

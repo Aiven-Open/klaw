@@ -509,4 +509,7 @@ public class KlawErrorMessages {
 
   public static final String DELETE_REQ_ERR =
       " Unable to verify ownership of this request. you may only delete your own requests.";
+
+  public static final String SUPER_ADMIN_PWD_CONFIG_ERR =
+      "Please configure klaw.superadmin.default.password with a valid password.";
 }

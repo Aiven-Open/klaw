@@ -137,9 +137,9 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
 
             var serviceInput = {};
 
-            if($scope.userDetails.userPassword.length < 6)
+            if($scope.userDetails.userPassword.length < 8)
             {
-                $scope.alertnote = "Password should be at least 6 characters.";
+                $scope.alertnote = "Password should be at least 8 characters.";
                 $scope.showAlertToast();
                 return;
             }
@@ -204,7 +204,6 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "updateUser",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updateUserObj' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "User update request : "+output.message;
