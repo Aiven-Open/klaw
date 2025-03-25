@@ -192,7 +192,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void updateUserNotAuthorizedToUpdateUserWithSpecificPermissions() throws KlawException {
+  public void notAuthorizedToUpdateUserWithSpecificPermissions() throws KlawException {
     final String userName = "testUser";
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS))
@@ -208,7 +208,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
+  public void notAuthorizedToUpdateSuperAdmin() throws KlawException {
     final String userName = "testUser";
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     userInfoModel.setRole(SUPERADMIN_ROLE);
