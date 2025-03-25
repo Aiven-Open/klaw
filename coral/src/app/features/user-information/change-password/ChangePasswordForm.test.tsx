@@ -29,17 +29,13 @@ describe("<ChangePasswordForm />", () => {
         aquariumContext: true,
       });
     });
-    afterAll(() => {
-      cleanup();
-    });
+    afterAll(cleanup);
 
     it("shows correct elements", () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -90,9 +86,7 @@ describe("<ChangePasswordForm />", () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -138,9 +132,7 @@ describe("<ChangePasswordForm />", () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -199,9 +191,7 @@ describe("<ChangePasswordForm />", () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -215,8 +205,7 @@ describe("<ChangePasswordForm />", () => {
 
       const errors = screen.getAllByText("Must be 8 or more characters long");
 
-      expect(confirmPasswordField).toBeInvalid();
-      expect(errors).toHaveLength(2);
+      expect(errors).toHaveLength(1);
 
       await userEvent.click(submitButton);
 
@@ -227,13 +216,12 @@ describe("<ChangePasswordForm />", () => {
       expect(confirmModal).not.toBeInTheDocument();
       expect(mockChangePassword).not.toHaveBeenCalled();
     });
+
     it("shows an error when password don't match", async () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -266,9 +254,7 @@ describe("<ChangePasswordForm />", () => {
       const form = screen.getByRole("form", {
         name: "Change your password by entering a new password",
       });
-      const passwordField = within(form).getByLabelText(
-        "New password Entered password should be at least 8 characters long"
-      );
+      const passwordField = within(form).getByLabelText("New password *");
       const confirmPasswordField = within(form).getByLabelText(
         "Confirm new password"
       );
@@ -312,6 +298,44 @@ describe("<ChangePasswordForm />", () => {
         success: false,
         message: "error",
       });
+    });
+  });
+
+  describe("shows information about password strength to user", () => {
+    beforeEach(() => {
+      customRender(<ChangePasswordForm />, {
+        queryClient: true,
+        aquariumContext: true,
+      });
+    });
+    afterEach(cleanup);
+
+    it("renders PasswordStrengthMeter and announces lowercase rule as met when typing a lowercase password", async () => {
+      const passwordField = screen.getByLabelText("New password *");
+
+      await userEvent.type(passwordField, "abcd");
+
+      const announcement = await screen.findByRole("alert");
+
+      expect(announcement).toHaveTextContent(/Lowercase letter: Met/i);
+      expect(announcement).toHaveTextContent(/8\+ characters: Not met/i);
+      expect(announcement).toHaveTextContent(/Uppercase letter: Not met/i);
+      expect(announcement).toHaveTextContent(/Number: Not met/i);
+      expect(announcement).toHaveTextContent(/Special character: Not met/i);
+    });
+
+    it("removes password strength announcement when user leaves field", async () => {
+      const passwordField = screen.getByLabelText("New password *");
+
+      await userEvent.type(passwordField, "abcd");
+
+      const announcement = await screen.findByRole("alert");
+
+      expect(announcement).toHaveTextContent(/Lowercase letter: Met/i);
+
+      await userEvent.tab();
+
+      expect(announcement).not.toBeVisible();
     });
   });
 });
