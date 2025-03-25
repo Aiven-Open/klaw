@@ -664,8 +664,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                         if($scope.addNewCluster.protocol === "PLAINTEXT"){
                             swal({
-                                title: "PLAINTEXT protocol is unsecure!",
-                                text: "Would you like to proceed anyways?",
+                                title: "PLAINTEXT is not secure",
+                                text: "Are you sure you want to continue with PLAINTEXT?",
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#DD6B55",
