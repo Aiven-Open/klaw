@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
@@ -9,6 +10,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
 import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_120;
 import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
+import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -190,7 +192,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void updateUserNotAuthorizedToUpdateSuperAdmin() throws KlawException {
+  public void notAuthorizedToUpdateUserWithSpecificPermissions() throws KlawException {
     final String userName = "testUser";
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS))
@@ -203,6 +205,38 @@ public class UsersTeamsControllerServiceTest {
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
     assertThat(apiResponse.getMessage())
         .isEqualTo("Not Authorized to update another SUPERADMIN user.");
+  }
+
+  @Test
+  public void notAuthorizedToUpdateSuperAdmin() throws KlawException {
+    final String userName = "testUser";
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    userInfoModel.setRole(SUPERADMIN_ROLE);
+    when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(userDetails)).thenReturn(userName);
+    ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_102);
+  }
+
+  @Test
+  public void updateSuperAdminSuccessWithPermissions() throws KlawException {
+    final String userName = "testUser";
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    userInfoModel.setRole(SUPERADMIN_ROLE);
+    when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS))
+        .thenReturn(false);
+    when(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_PERMISSIONS))
+        .thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(userDetails)).thenReturn(userName);
+
+    when(handleDbRequests.updateUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
   }
 
   @Test
@@ -726,6 +760,49 @@ public class UsersTeamsControllerServiceTest {
     when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+  }
+
+  @Test
+  public void addNewUserSuperAdminFailure() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    newUser.setRole(SUPERADMIN_ROLE);
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_102);
+  }
+
+  @Test
+  public void addNewUserSuperAdminSuccess() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    newUser.setRole(SUPERADMIN_ROLE);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails.getUsername(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
+        .thenReturn(false);
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void addNewUserWithPermissionsFailure() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(TEAMS_ERR_102);
+  }
+
+  @Test
+  public void addNewUserWithPermissionsSuccess() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.isNotAuthorizedUser(
+            userDetails.getUsername(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
+        .thenReturn(false);
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMapForSuperuser());
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -1465,7 +1542,11 @@ public class UsersTeamsControllerServiceTest {
             testNewRegUser.getUsername(), isExternal, Integer.MIN_VALUE, null);
 
     assertThat(response.isSuccess()).isTrue();
-    approveNewUserRequestsVerifyServiceInteractions(authType, isExternal, 1);
+    int tenantIdCalls = 0;
+    if (!isExternal) {
+      tenantIdCalls = 1;
+    }
+    approveNewUserRequestsVerifyServiceInteractions(authType, isExternal, tenantIdCalls);
     approveNewUserRequestsValidateCapturedUserInfo(authType);
     if (authType == AuthenticationType.DATABASE) {
       approveNewUserRequestsValidateCapturedUserDetails();
@@ -1493,7 +1574,7 @@ public class UsersTeamsControllerServiceTest {
             testNewRegUser.getUsername(), true, Integer.MIN_VALUE, null);
 
     assertThat(response.isSuccess()).isTrue();
-    approveNewUserRequestsVerifyServiceInteractions(AuthenticationType.DATABASE, true, 1);
+    approveNewUserRequestsVerifyServiceInteractions(AuthenticationType.DATABASE, true, 0);
     approveNewUserRequestsValidateCapturedUserInfo(AuthenticationType.DATABASE);
     approveNewUserRequestsValidateCapturedUserDetails();
   }
@@ -1511,7 +1592,7 @@ public class UsersTeamsControllerServiceTest {
 
     assertThat(response.isSuccess()).isTrue();
     testNewRegUser.setTenantId(TEST_TENANT_ID);
-    approveNewUserRequestsVerifyServiceInteractions(AuthenticationType.DATABASE, true, 2);
+    approveNewUserRequestsVerifyServiceInteractions(AuthenticationType.DATABASE, true, 1);
     approveNewUserRequestsValidateCapturedUserInfo(AuthenticationType.DATABASE);
     approveNewUserRequestsValidateCapturedUserDetails();
   }
@@ -1535,7 +1616,6 @@ public class UsersTeamsControllerServiceTest {
             EntityType.USERS,
             MetadataOperationType.CREATE,
             testNewRegUser.getUsername());
-    verify(commonUtilsService).getTenantId(TEST_AUTHENTICATED_USER_UNAME);
     verify(inMemoryUserDetailsManager, never()).createUser(any());
     verify(handleDbRequests, never()).updateNewUserRequest(anyString(), anyString(), anyBoolean());
     verify(mailService, never()).sendMail(anyString(), anyString(), any(), anyString());
