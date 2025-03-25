@@ -26,12 +26,12 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @EnableWebSecurity
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
@@ -76,7 +76,11 @@ public class SecurityConfigNoSSO {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
+    http.csrf(
+            csrf -> {
+              csrf.ignoringRequestMatchers("/logout");
+              csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository());
+            })
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(ConfigUtils.getStaticResources(coralEnabled))
