@@ -7,6 +7,7 @@ import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_TEXT;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
+import static io.aiven.klaw.service.PasswordService.BCRYPT_ENCODING_ID;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -200,6 +201,8 @@ public class UsersTeamsControllerService {
       if (!"".equals(existingPwd)) {
         newUser.setUserPassword(passwordService.getBcryptPassword(existingPwd));
       }
+    } else if (!MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+      newUser.setUserPassword(passwordService.encodePwd(pwdUpdated));
     }
 
     try {
@@ -581,6 +584,12 @@ public class UsersTeamsControllerService {
 
     try {
       if (DATABASE.value.equals(authenticationType)) {
+        // If the newUser is coming from the UI directly the password will not be encrypted yet, if
+        // it is coming from the register users it will already be encrypted so check before
+        // encrypting.
+        if (!newUser.getUserPassword().startsWith(BCRYPT_ENCODING_ID)) {
+          newUser.setUserPassword(passwordService.encodePwd(newUser.getUserPassword()));
+        }
         inMemoryUserDetailsManager.createUser(
             User.withUsername(newUser.getUsername())
                 .password(newUser.getUserPassword())

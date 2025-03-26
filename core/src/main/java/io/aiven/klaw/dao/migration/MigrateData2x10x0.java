@@ -1,5 +1,7 @@
 package io.aiven.klaw.dao.migration;
 
+import static io.aiven.klaw.service.MailUtils.NEW_USER_ADDED_V2_KEY;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.dao.KwTenants;
@@ -41,13 +43,13 @@ public class MigrateData2x10x0 {
     for (int tenantId : tenantIds) {
       List<KwProperties> kwPropertiesList =
           new ArrayList<>(selectDataJdbc.selectAllKwPropertiesPerTenant(tenantId));
-      String newUserV2Content = "klaw.mail.newuseradded.v2.content";
+
       if (kwPropertiesList.stream()
-          .noneMatch(kwProperties -> kwProperties.getKwKey().equals(newUserV2Content))) {
-        log.info("Add new property {} to the database", newUserV2Content);
+          .noneMatch(kwProperties -> kwProperties.getKwKey().equals(NEW_USER_ADDED_V2_KEY))) {
+        log.info("Add new property {} to the database", NEW_USER_ADDED_V2_KEY);
         KwProperties kwProperties =
             new KwProperties(
-                newUserV2Content,
+                NEW_USER_ADDED_V2_KEY,
                 tenantId,
                 KwConstants.MAIL_NEWUSERADDED_V2_CONTENT,
                 "Email notification body after a new user is added");

@@ -1,10 +1,7 @@
 package io.aiven.klaw.model.requests;
 
-import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX;
-import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
-
+import io.aiven.klaw.validation.PasswordValidator;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
@@ -23,9 +20,7 @@ public class UserInfoModel extends ProfileModel implements Serializable {
 
   @NotNull private String role;
 
-  @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_REGEX_VALIDATION_STR)
-  @NotNull
-  private String userPassword;
+  @PasswordValidator @NotNull private String userPassword;
 
   @NotNull private Integer teamId;
 

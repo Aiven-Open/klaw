@@ -142,6 +142,8 @@ public class SsoActiveDirectoryAuthenticationIT {
           .getResponse();
       RegisterUserInfoModel userInfoModel =
           mockMethods.getRegisterUserInfoModel(nonExistingUserInKlaw, "USER");
+      // ad user should not have a password set
+      userInfoModel.setPwd("");
       String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
       // Allow the user to signup

@@ -5900,8 +5900,7 @@
             "type" : "string"
           },
           "userPassword" : {
-            "type" : "string",
-            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
+            "type" : "string"
           },
           "teamId" : {
             "type" : "integer",
@@ -6480,8 +6479,7 @@
             "minLength" : 6
           },
           "pwd" : {
-            "type" : "string",
-            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
+            "type" : "string"
           },
           "team" : {
             "type" : "string"

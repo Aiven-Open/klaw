@@ -80,7 +80,9 @@ public class SecurityConfigNoSSO {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth ->
@@ -97,7 +99,8 @@ public class SecurityConfigNoSSO {
                     .failureUrl("/login?error")
                     .loginPage("/login")
                     .permitAll())
-        .logout(logout -> logout.logoutSuccessUrl("/login"));
+        .logout(logout -> logout.logoutSuccessUrl("/login"))
+        .authenticationManager(authenticationManager(authenticationConfiguration));
 
     return http.build();
   }

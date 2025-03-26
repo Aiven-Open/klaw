@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao.migration;
 
+import static io.aiven.klaw.service.MailUtils.NEW_USER_ADDED_V2_KEY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -47,16 +48,16 @@ class MigrateData2x10x0Test {
 
   @Test
   public void addEntryToPropertiesWhenItDoesNotAlreadyExist() {
-    String newUserAddedV2 = "klaw.mail.newuseradded.v2.content";
+
     when(selectDataJdbc.selectAllKwPropertiesPerTenant(TENANT_ID))
-        .thenReturn(getKWProperties(TENANT_ID, List.of(newUserAddedV2)));
+        .thenReturn(getKWProperties(TENANT_ID, List.of(NEW_USER_ADDED_V2_KEY)));
     when(selectDataJdbc.getTenants()).thenReturn(utilMethods.getTenants());
 
     boolean success = migrateData2x10x0.migrate();
     verify(insertDataJdbc, times(1)).insertDefaultKwProperties(kwPropertiesCaptor.capture());
     assertThat(kwPropertiesCaptor.getValue().size()).isEqualTo(1);
     kwPropertiesCaptor.getValue().stream()
-        .allMatch(prop -> Objects.equals(prop.getKwKey(), newUserAddedV2));
+        .allMatch(prop -> Objects.equals(prop.getKwKey(), NEW_USER_ADDED_V2_KEY));
     assertThat(success).isTrue();
   }
 
