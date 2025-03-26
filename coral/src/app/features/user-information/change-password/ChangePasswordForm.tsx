@@ -1,4 +1,4 @@
-import { Alert, Box, useToast } from "@aivenio/aquarium";
+import { Alert, Box, Typography, useToast } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Dialog } from "src/app/components/Dialog";
@@ -14,19 +14,19 @@ import {
 } from "src/app/features/user-information/change-password/changePasswordFormSchema";
 import { changePassword } from "src/domain/user/user-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { PasswordStrengthMeter } from "src/app/features/user-information/change-password/PasswordStrengthMeter";
 
 function ChangePasswordForm() {
   const toast = useToast();
 
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const form = useForm<ChangePasswordFormSchema>({
     schema: changePasswordFormSchema,
   });
-  // This destructuring is necessary for the test to correctly register isDirty
-  // If we access it inline like form.formState.isDirty, it works when using it
-  // But in the test isDirty will always be false at the moment of being checked
-  const { isDirty } = form.formState;
+
+  const currentPassword = form.watch("password");
 
   const { mutate, isLoading, isError, error, isSuccess } =
     useMutation(changePassword);
@@ -49,9 +49,7 @@ function ChangePasswordForm() {
   }, [isSuccess, isError]);
 
   const handleSubmit = () => {
-    // onSubmit will not trigger if form has errors, but will if the form is pristine
-    // We only want to show the confirm modal if form is filled and with no field error
-    isDirty && setShowConfirmationModal(true);
+    setShowConfirmationModal(true);
   };
 
   return (
@@ -78,22 +76,39 @@ function ChangePasswordForm() {
           effect immediately.
         </Dialog>
       )}
-      <Box maxWidth={"md"}>
+      <Box maxWidth={"lg"}>
         {isError && (
           <Box marginBottom={"l1"}>
             <Alert type="error">{parseErrorMsg(error)}</Alert>
           </Box>
         )}
+
+        <Box paddingBottom={"l2"}>
+          <Typography>
+            Entered password should be at least 8 characters long, and contain
+            at least one: uppercase letter, lowercase letter, number and special
+            character.
+          </Typography>
+        </Box>
         <Form
           {...form}
           ariaLabel={"Change your password by entering a new password"}
           onSubmit={handleSubmit}
         >
-          <PasswordInput<ChangePasswordFormSchema>
-            labelText="New password "
-            name="password"
-            description="Entered password should be at least 8 characters long"
-          />
+          <Box.Flex marginBottom={"l1"} gap={"2"} flexDirection={"column"}>
+            <PasswordInput<ChangePasswordFormSchema>
+              labelText="New password "
+              name="password"
+              required={true}
+              reserveSpaceForError={false}
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
+            />
+            <PasswordStrengthMeter
+              password={currentPassword}
+              active={passwordFocused}
+            />
+          </Box.Flex>
           <PasswordInput<ChangePasswordFormSchema>
             labelText="Confirm new password"
             name="confirmPassword"

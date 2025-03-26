@@ -122,6 +122,8 @@ function _PasswordInput<T extends FieldValues>({
   const { errors } = form.formState;
   const error = get(errors, name)?.message as string;
 
+  const { onBlur: rhfOnBlur, ...registeredField } = form.register(name);
+
   // if the element is readonly or disabled, we prevent the
   // event from being handled
   const isEditable = !props.disabled && !props.readOnly;
@@ -130,8 +132,14 @@ function _PasswordInput<T extends FieldValues>({
     <BaseInput
       {...props}
       type="password"
-      {...form.register(name)}
+      {...registeredField}
       {...(!isEditable && { onChange: () => null })}
+      onBlur={(e) => {
+        if (isEditable) {
+          props.onBlur?.(e);
+          rhfOnBlur(e);
+        }
+      }}
       valid={error ? false : undefined}
       helperText={error}
     />
