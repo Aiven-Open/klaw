@@ -2836,6 +2836,10 @@ export type components = {
             kwValue?: string;
             kwDesc?: string;
         };
+        NotificationModel: {
+            contactFormSubject?: string;
+            contactFormMessage?: string;
+        };
         SyncSchemaUpdates: {
             topicList?: string[];
             topicListForRemoval?: string[];
@@ -4367,15 +4371,16 @@ export interface operations {
     };
     sendMessageToAdmin: {
         parameters: {
-            query: {
-                contactFormSubject: string;
-                contactFormMessage: string;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationModel"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {

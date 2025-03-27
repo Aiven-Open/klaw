@@ -201,7 +201,7 @@ public class DefaultDataService {
             "klaw.mail.newuseradded.content",
             tenantId,
             KwConstants.MAIL_NEWUSERADDED_CONTENT,
-            "Email notification body after a new user is added");
+            "(Deprecated) Email notification body after a new user is added");
     kwPropertiesList.add(kwProperties15);
 
     KwProperties kwProperties16 =
@@ -292,6 +292,15 @@ public class DefaultDataService {
                 + APPROVE_TOPICS_CREATE
                 + " to allow users to create new topics");
     kwPropertiesList.add(kwProperties38);
+
+    KwProperties kwProperties39 =
+        new KwProperties(
+            "klaw.mail.newuseradded.v2.content",
+            tenantId,
+            KwConstants.MAIL_NEWUSERADDED_V2_CONTENT,
+            "Email notification body after a new user is added");
+    kwPropertiesList.add(kwProperties39);
+
     return kwPropertiesList;
   }
 

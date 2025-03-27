@@ -7,6 +7,7 @@ import static io.aiven.klaw.helpers.KwConstants.USER_DELETION_TEXT;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
+import static io.aiven.klaw.service.PasswordService.BCRYPT_ENCODING_ID;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,13 +56,10 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +93,7 @@ public class UsersTeamsControllerService {
   @Autowired(required = false)
   private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
+  @Autowired private PasswordService passwordService;
   // pattern for simple username/mailid
 
   // pattern for simple username
@@ -200,27 +199,28 @@ public class UsersTeamsControllerService {
     if (MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) {
-        newUser.setUserPassword(decodePwd(existingPwd));
+        newUser.setUserPassword(passwordService.getBcryptPassword(existingPwd));
       }
+    } else if (!MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+      newUser.setUserPassword(passwordService.encodePwd(pwdUpdated));
     }
 
     try {
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
       if (DATABASE.value.equals(authenticationType)) {
         if (inMemoryUserDetailsManager.userExists(newUser.getUsername())) {
           inMemoryUserDetailsManager.updateUser(
               User.withUsername(newUser.getUsername())
-                  .password(encoder.encode(newUser.getUserPassword()))
+                  .password(newUser.getUserPassword())
                   .roles(newUser.getRole())
                   .build());
         } else {
           inMemoryUserDetailsManager.createUser(
               User.withUsername(newUser.getUsername())
-                  .password(encoder.encode(newUser.getUserPassword()))
+                  .password(newUser.getUserPassword())
                   .roles(newUser.getRole())
                   .build());
         }
-        newUser.setUserPassword(encodePwd(newUser.getUserPassword()));
+        newUser.setUserPassword(newUser.getUserPassword());
       }
 
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -310,13 +310,14 @@ public class UsersTeamsControllerService {
       resetPasswordInfo.setUserFound(false);
     } else {
       resetPasswordInfo.setUserFound(true);
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-      String pwdUpdated = dbHandle.resetPassword(username, resetToken, encodePwd(password));
+      String pwdUpdated =
+          dbHandle.resetPassword(username, resetToken, passwordService.encodePwd(password));
 
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
         UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(username);
-        inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(password));
+        inMemoryUserDetailsManager.updatePassword(
+            updatePwdUserDetails, passwordService.encodePwd(password));
         resetPasswordInfo.setTokenSent(true);
         mailService.sendMailPwdChanged(
             username, dbHandle, userInfoModel.getTenantId(), commonUtilsService.getLoginUrl());
@@ -543,25 +544,6 @@ public class UsersTeamsControllerService {
     }
   }
 
-  private String encodePwd(String pwd) {
-    return getJasyptEncryptor().encrypt(pwd);
-  }
-
-  private String decodePwd(String pwd) {
-    if (pwd != null) {
-      return getJasyptEncryptor().decrypt(pwd);
-    } else {
-      return "";
-    }
-  }
-
-  private BasicTextEncryptor getJasyptEncryptor() {
-    BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-    textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
-
-    return textEncryptor;
-  }
-
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeamId(), newUser.getRole());
     boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
@@ -601,15 +583,18 @@ public class UsersTeamsControllerService {
     }
 
     try {
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
       if (DATABASE.value.equals(authenticationType)) {
+        // If the newUser is coming from the UI directly the password will not be encrypted yet, if
+        // it is coming from the register users it will already be encrypted so check before
+        // encrypting.
+        if (!newUser.getUserPassword().startsWith(BCRYPT_ENCODING_ID)) {
+          newUser.setUserPassword(passwordService.encodePwd(newUser.getUserPassword()));
+        }
         inMemoryUserDetailsManager.createUser(
             User.withUsername(newUser.getUsername())
-                .password(encoder.encode(newUser.getUserPassword()))
+                .password(newUser.getUserPassword())
                 .roles(newUser.getRole())
                 .build());
-        newUser.setUserPassword(encodePwd(newUser.getUserPassword()));
       }
 
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -632,17 +617,9 @@ public class UsersTeamsControllerService {
 
         if ("".equals(newUser.getUserPassword())
             || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-          mailService.sendMail(
-              newUser.getUsername(),
-              newUser.getUserPassword(),
-              dbHandle,
-              commonUtilsService.getLoginUrl());
+          mailService.sendMail(newUser.getUsername(), dbHandle, commonUtilsService.getLoginUrl());
         } else {
-          mailService.sendMail(
-              newUser.getUsername(),
-              decodePwd(newUser.getUserPassword()),
-              dbHandle,
-              commonUtilsService.getLoginUrl());
+          mailService.sendMail(newUser.getUsername(), dbHandle, commonUtilsService.getLoginUrl());
         }
       }
 
@@ -794,12 +771,15 @@ public class UsersTeamsControllerService {
     String pwdChange = changePasswordRequestModel.getPwd();
 
     try {
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
       UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(userDetails);
-      inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(pwdChange));
+      inMemoryUserDetailsManager.updatePassword(
+          updatePwdUserDetails, passwordService.encodePwd(pwdChange));
 
       String result =
-          manageDatabase.getHandleDbRequests().updatePassword(userDetails, encodePwd(pwdChange));
+          manageDatabase
+              .getHandleDbRequests()
+              .updatePassword(userDetails, passwordService.encodePwd(pwdChange));
       return ApiResultStatus.SUCCESS.value.equals(result)
           ? ApiResponse.ok(result)
           : ApiResponse.notOk(result);
@@ -957,7 +937,7 @@ public class UsersTeamsControllerService {
 
       RegisterUserInfo registerUserInfo = new RegisterUserInfo();
       copyProperties(newUser, registerUserInfo);
-      registerUserInfo.setPwd(encodePwd(registerUserInfo.getPwd()));
+      registerUserInfo.setPwd(passwordService.encodePwd(registerUserInfo.getPwd()));
 
       if (newUser.getTenantName() == null
           || newUser.getTenantName().equals("")) { // join default tenant
@@ -1062,7 +1042,7 @@ public class UsersTeamsControllerService {
       userInfo.setTenantId(tenantId);
 
       if (DATABASE.value.equals(authenticationType)) {
-        userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
+        userInfo.setUserPassword(passwordService.getBcryptPassword(registerUserInfo.getPwd()));
       } else {
         userInfo.setUserPassword(UNUSED_PASSWD);
       }
