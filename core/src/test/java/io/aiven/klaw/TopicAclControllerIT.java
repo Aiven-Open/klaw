@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -109,7 +108,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -129,7 +127,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -147,7 +144,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -169,7 +165,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -185,7 +180,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -209,7 +203,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -225,7 +218,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -249,7 +241,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -265,7 +256,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -289,7 +279,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -305,7 +294,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -340,7 +328,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/updateKwCustomProperty")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -364,7 +351,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -385,7 +371,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicRequests")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -412,7 +397,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -433,7 +417,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/topic/request/1001")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -463,8 +446,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execTopicRequests")
                     .with(user(user2).password(PASSWORD))
-                    .with(csrf())
-                    .with(csrf())
                     .param("topicId", topicId1 + "")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -480,8 +461,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getActivityLogPerEnv")
                     .with(user(user2).password(PASSWORD))
-                    .with(csrf())
-                    .with(csrf())
                     .param("env", "1")
                     .param("pageNo", "1")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -507,7 +486,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -528,7 +506,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -544,8 +521,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execTopicRequestsDecline")
                     .with(user(user2).password(PASSWORD))
-                    .with(csrf())
-                    .with(csrf())
                     .param("topicId", topicIdLocal + "")
                     .param("reasonForDecline", "reason")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -567,7 +542,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicTeam")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("topicName", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -590,7 +564,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -606,7 +579,6 @@ public class TopicAclControllerIT {
                 MockMvcRequestBuilders.post("/deleteTopicRequests")
                     .param("topicId", "1003")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -635,7 +607,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopics")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("env", "1")
                     .param("pageNo", "1")
                     .param("topicnamesearch", topicName)
@@ -668,7 +639,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicsOnly")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("env", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -698,7 +668,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequestsForApprover")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -722,7 +691,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createAcl")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -743,7 +711,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequestsForApprover")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -795,7 +762,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execAclRequest")
                     .with(user(user2).password(PASSWORD))
-                    .with(csrf())
                     .param("req_no", "" + reqNo)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -817,7 +783,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createAcl")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -850,7 +815,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createAcl")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -866,7 +830,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execAclRequestDecline")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("req_no", "" + reqNo)
                     .param("reasonForDecline", "reason")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -887,7 +850,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequests")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -903,7 +865,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteAclRequests")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("req_no", "" + hMap.get("req_no"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -928,7 +889,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getTopicOverview")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .param("topicName", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -955,7 +915,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getSyncAcls")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("env", "1")
                     .param("pageNo", "1")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -980,7 +939,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequests")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -996,7 +954,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteAclRequests")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .param("req_no", "" + hMap.get("req_no"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1024,7 +981,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopicDeleteRequest")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1040,7 +996,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicRequests")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .param("order", "DESC_REQUESTED_TIME")
@@ -1072,7 +1027,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createAcl")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1105,7 +1059,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createDeleteAclSubscriptionRequest")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1164,7 +1117,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/createTopics")
                 .with(user(user1).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1193,7 +1145,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/execTopicRequests")
                 .with(user(user3).password(PASSWORD))
-                .with(csrf())
                 .param("topicId", topicID + "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1217,7 +1168,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1233,7 +1183,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -1257,7 +1206,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1284,7 +1232,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1311,7 +1258,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReqSch)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1327,7 +1273,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.SCHEMA_REGISTRY.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1356,7 +1301,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReqSch)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1387,7 +1331,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/updateKwCustomProperty")
                 .with(user(superAdmin).password(superAdminPwd))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1401,7 +1344,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getSchemaRegEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -1440,7 +1382,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
                 .with(user(user1).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1478,7 +1419,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
                 .with(user(user2).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1516,7 +1456,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
                 .with(user(user1).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1546,7 +1485,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/execSchemaRequests")
                 .with(user(user2).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .param("avroSchemaReqId", "1001")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1566,7 +1504,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getSchemaOfTopic")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .param("topicName", topicName + topicId1)
                     .param("kafkaEnvId", "1")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -1592,7 +1529,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getTopicOverview")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .param("topicName", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1638,7 +1574,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1001 + "/delete")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -1670,7 +1605,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1002 + "/decline")
                     .with(user(user2).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .param("reasonForDecline", "not required")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1710,7 +1644,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1003 + "/approve")
                     .with(user(user2).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -1737,7 +1670,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/updateTopics")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1764,7 +1696,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/deleteTopicRequests")
                 .with(user(superAdmin).password(superAdminPwd))
-                .with(csrf())
                 .param("topicId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1794,7 +1725,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/updateKwCustomProperty")
                 .with(user(superAdmin).password(superAdminPwd))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1812,7 +1742,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/createTopics")
                 .with(user(superAdmin).password(superAdminPwd))
-                .with(csrf())
                 .content(topicReq)
                 .param("topicId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -1835,7 +1764,6 @@ public class TopicAclControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/updateTopics")
                 .with(user(superAdmin).password(superAdminPwd))
-                .with(csrf())
                 .content(topicReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1846,7 +1774,6 @@ public class TopicAclControllerIT {
     return mvc.perform(
             MockMvcRequestBuilders.get("/schema/request/" + schemaRequestId)
                 .with(user(user1).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -1863,7 +1790,6 @@ public class TopicAclControllerIT {
     return mvc.perform(
             MockMvcRequestBuilders.post("/operationalRequest/consumerOffsetsReset/create")
                 .with(user(user1).password(PASSWORD).roles("USER"))
-                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -1879,7 +1805,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/operationalRequests/requestsFor/myTeam")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .with(csrf())
                     .param("pageNo", "1")
                     .param("requestStatus", status)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -1897,7 +1822,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequests")
                     .with(user(user1).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -1914,7 +1838,6 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAclRequests")
                     .with(user(user3).password(PASSWORD))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .param("order", "DESC_REQUESTED_TIME")
