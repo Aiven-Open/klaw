@@ -2,7 +2,6 @@ package io.aiven.klaw;
 
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_110;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,7 +60,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTenants")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -84,7 +82,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addTenantId")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -100,7 +97,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTenants")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -123,7 +119,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -139,7 +134,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -166,7 +160,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -189,7 +182,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -204,7 +196,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -232,7 +223,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusterDetails")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterId", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -257,7 +247,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -272,7 +261,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -290,7 +278,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterId", "" + hashMap.get("clusterId"))
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -306,7 +293,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getClusters")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("clusterType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -331,7 +317,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -347,7 +332,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -372,7 +356,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -395,7 +378,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -421,7 +403,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -437,7 +418,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -465,7 +445,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -480,7 +459,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -511,7 +489,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -528,7 +505,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("envId", "2")
                     .param("envType", KafkaClustersType.KAFKA.value)
                     .content(jsonReq)
@@ -551,7 +527,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvDetails")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("envSelected", "1")
                     .param("envType", KafkaClustersType.KAFKA.value)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -574,7 +549,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvParams")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("envSelected", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -599,7 +573,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewEnv")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -614,7 +587,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvs")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -630,7 +602,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("envId", "1")
                     .param("envType", KafkaClustersType.KAFKA.value)
                     .content(jsonReq)
@@ -654,7 +625,6 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getStandardEnvNames")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

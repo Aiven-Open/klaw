@@ -1,7 +1,6 @@
 package io.aiven.klaw;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +54,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addRoleId")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("roleId", testRole)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -70,7 +68,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getRolesFromDb")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -91,7 +88,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getPermissions")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -115,7 +111,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/updatePermissions")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +125,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getPermissions")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -157,7 +151,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteRole")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .param("roleId", testRole)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -172,7 +165,6 @@ public class RolesPermissionsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getRolesFromDb")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
