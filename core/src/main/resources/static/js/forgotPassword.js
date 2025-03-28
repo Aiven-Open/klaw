@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('forgotPwdApp',[]);
+var app = angular.module('forgotPwdApp',['sharedHttpInterceptor']);
 
 app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
 	

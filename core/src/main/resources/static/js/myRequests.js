@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('myRequestsApp',[]);
+var app = angular.module('myRequestsApp',['sharedHttpInterceptor']);
 
 app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 	

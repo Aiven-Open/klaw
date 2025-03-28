@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('synchronizeTopicsApp',[]);
+var app = angular.module('synchronizeTopicsApp',['sharedHttpInterceptor']);
 
 app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $window) {
 	

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('serverConfigApp',[]);
+var app = angular.module('serverConfigApp',['sharedHttpInterceptor']);
 
 app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
 	

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('registerUsersApp',[]);
+var app = angular.module('registerUsersApp',['sharedHttpInterceptor']);
 
 app.controller("registerUsersCtrl", function($scope, $http, $location, $window) {
 	
