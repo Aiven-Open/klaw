@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('syncConnectorsApp',[]);
+var app = angular.module('syncConnectorsApp',['sharedHttpInterceptor']);
 
 app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window) {
 	

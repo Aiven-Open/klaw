@@ -4,7 +4,7 @@
 // edit
 // solution for transaction
 // message store / key / gui
-var app = angular.module('browseAclsApp',['textAngular']);
+var app = angular.module('browseAclsApp',['textAngular', 'sharedHttpInterceptor']);
 
 app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 

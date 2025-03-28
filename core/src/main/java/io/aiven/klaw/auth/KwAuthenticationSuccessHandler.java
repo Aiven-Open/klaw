@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,15 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
     log.debug("User logged in : {}", authentication.getPrincipal());
+
+    CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+    if (csrfToken != null) {
+      response.setHeader(
+          "X-XSRF-TOKEN",
+          csrfToken.getToken()); // Set CSRF token in response headers after user login
+    }
     super.clearAuthenticationAttributes(request);
+
     response.sendRedirect(contextPath.concat(getRedirectPage(request, authentication)));
   }
 
