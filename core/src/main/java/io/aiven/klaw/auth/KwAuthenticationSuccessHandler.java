@@ -46,7 +46,7 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
     if (csrfToken != null) {
       response.setHeader(
-          "X-CSRF-TOKEN",
+          "X-XSRF-TOKEN",
           csrfToken.getToken()); // Set CSRF token in response headers after user login
     }
     super.clearAuthenticationAttributes(request);
