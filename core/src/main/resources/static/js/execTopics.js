@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('execTopicsApp',[]);
+var app = angular.module('execTopicsApp',['sharedHttpInterceptor']);
 
 app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 	

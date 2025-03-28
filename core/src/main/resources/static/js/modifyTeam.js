@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('modifyTeamApp',[]);
+var app = angular.module('modifyTeamApp',['sharedHttpInterceptor']);
 
 app.controller("modifyTeamCtrl", function($scope, $http, $location, $window) {
 	

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('requestConsumerOffsetResetApp',[]);
+var app = angular.module('requestConsumerOffsetResetApp',['sharedHttpInterceptor']);
 
 app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $location, $window) {
 	

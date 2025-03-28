@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('oauthLoginApp',[]);
+var app = angular.module('oauthLoginApp',['sharedHttpInterceptor']);
 
 app.controller("oauthLoginCtrl", function($scope, $http, $location, $window) {	
 	// Set http service defaults

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('editTopicRequestApp',[]);
+var app = angular.module('editTopicRequestApp',['sharedHttpInterceptor']);
 
 app.controller("editTopicRequestCtrl", function($scope, $http, $location, $window) {
 	

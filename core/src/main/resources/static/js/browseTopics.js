@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('browseTopicsApp',[]);
+var app = angular.module('browseTopicsApp',['sharedHttpInterceptor']);
 
 app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 	

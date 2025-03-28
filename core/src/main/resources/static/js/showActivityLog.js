@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('showActivityLogApp',[]);
+var app = angular.module('showActivityLogApp',['sharedHttpInterceptor']);
 
 app.controller("showActivityLogCtrl", function($scope, $http, $location, $window) {
 	

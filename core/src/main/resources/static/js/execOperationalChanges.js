@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('execOperationalChangesApp',[]);
+var app = angular.module('execOperationalChangesApp',['sharedHttpInterceptor']);
 
 app.controller("execOperationalChangesCtrl", function($scope, $http, $location, $window) {
 	
