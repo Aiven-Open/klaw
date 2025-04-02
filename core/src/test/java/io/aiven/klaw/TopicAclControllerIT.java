@@ -545,7 +545,6 @@ public class TopicAclControllerIT {
                 MockMvcRequestBuilders.post("/execTopicRequestsDecline")
                     .with(user(user2).password(PASSWORD))
                     .with(csrf())
-                    .with(csrf())
                     .param("topicId", topicIdLocal + "")
                     .param("reasonForDecline", "reason")
                     .contentType(MediaType.APPLICATION_JSON)
