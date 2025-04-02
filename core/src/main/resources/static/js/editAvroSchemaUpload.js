@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('editSchemaApp',[]);
+var app = angular.module('editSchemaApp',['sharedHttpInterceptor']);
 
 app.directive('onReadFile', function ($parse) {
 	return {

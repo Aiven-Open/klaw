@@ -1,6 +1,7 @@
 package io.aiven.klaw;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,6 +79,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -93,6 +95,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -113,6 +116,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -128,6 +132,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTeamDetails")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("teamId", "1003")
                     .param("tenantName", "default")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -152,6 +157,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -175,6 +181,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -200,6 +207,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/updateTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -214,6 +222,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTeamDetails")
                     .with(user(superAdmin).password(superAdmin))
+                    .with(csrf())
                     .param("teamId", "1003")
                     .param("tenantName", "default")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -238,6 +247,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewTeam")
                     .with(user(user1).password(userPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -261,6 +271,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -275,6 +286,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteTeamRequest")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("teamId", "1004")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -290,6 +302,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTeamDetails")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("teamId", "1004")
                     .param("tenantName", "default")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -310,6 +323,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteTeamRequest")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("teamId", INFRATEAM_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -331,6 +345,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteUserRequest")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("userId", user1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -355,6 +370,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getAllTeamsSU")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -381,6 +397,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -428,6 +445,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -450,6 +468,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -472,6 +491,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -495,6 +515,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/user/updateTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -528,6 +549,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/user/updateTeam")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -558,6 +580,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/updateUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -600,6 +623,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/showUserList")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -679,6 +703,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execNewUserRequestDecline")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("username", user4)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -723,6 +748,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/testClusterApiConnection")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("clusterApiUrl", "http://localhost:9343")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -749,6 +775,7 @@ public class UsersTeamsControllerIT {
     mvc.perform(
             MockMvcRequestBuilders.post("/updateProfile")
                 .with(user(superAdmin).password(superAdminPwd))
+                .with(csrf())
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -758,6 +785,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getMyProfileInfo")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -778,6 +806,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execNewUserRequestApprove")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("username", userToApprove)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -796,6 +825,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/registerUser")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -813,6 +843,7 @@ public class UsersTeamsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getUserDetails")
                     .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
                     .param("userId", user)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('kafkaConnectApp',[]);
+var app = angular.module('kafkaConnectApp',['sharedHttpInterceptor']);
 
 app.controller("kafkaConnectCtrl", function($scope, $http, $location, $window) {
 	

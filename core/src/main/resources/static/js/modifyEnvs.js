@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('modifyEnvsApp',[]);
+var app = angular.module('modifyEnvsApp',['sharedHttpInterceptor']);
 
 app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 

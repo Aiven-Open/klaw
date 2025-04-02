@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('docsApp',[]);
+var app = angular.module('docsApp',['sharedHttpInterceptor']);
 
 app.controller("docsCtrl", function($scope, $http, $location, $window) {
 	

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('rolesPermsApp',[]);
+var app = angular.module('rolesPermsApp',['sharedHttpInterceptor']);
 
 app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
 	
