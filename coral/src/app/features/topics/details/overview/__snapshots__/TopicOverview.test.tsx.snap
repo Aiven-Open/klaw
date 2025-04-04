@@ -12,7 +12,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -65,7 +65,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -126,7 +126,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
             <img
               alt=""
               class="bg-cover object-cover w-full"
-              src="[object Object]"
+              src="/test-image.svg"
             />
           </div>
         </div>
@@ -139,7 +139,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -173,7 +173,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -191,7 +191,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -209,7 +209,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -227,7 +227,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -245,7 +245,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -263,7 +263,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -278,7 +278,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -388,7 +388,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -492,7 +492,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -545,7 +545,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -571,7 +571,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
       >
         <div
-          class="flex flex-col gap-4"
+          class="flex flex-col flex-auto gap-4"
         >
           <div
             class="typography-default-strong text-intense"
@@ -605,7 +605,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -623,7 +623,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -641,7 +641,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -659,7 +659,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -677,7 +677,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -695,7 +695,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
                   >
                     <div
                       aria-label="Loading..."
-                      class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                      class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                       role="progressbar"
                     />
                   </dd>
@@ -710,7 +710,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -820,7 +820,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"

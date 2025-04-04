@@ -2,6 +2,9 @@
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
+const esModules = ["@aivenio/aquarium", "d3", "internmap", "lodash-es"].join(
+  "|"
+);
 
 //eslint-disable-next-line
 export default {
@@ -15,9 +18,19 @@ export default {
     "<rootDir>/test-setup/mock-ds-icon-component.tsx",
     "<rootDir>/test-setup/mock-ds-tabBadge-component.tsx",
   ],
-
+  transform: {
+    "^.+\\.[tj]sx?|mjs$": [
+      "ts-jest",
+      { tsconfig: "<rootDir>/tsconfig.jest.json", isolatedModules: true },
+    ],
+  },
+  transformIgnorePatterns: [
+    `/node_modules/(?!.*(${esModules}))/`,
+    "^.+\\.json$",
+  ],
   moduleNameMapper: {
-    ".+\\.(png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
+    ".+\\.(png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+    ".+\\.svg$": "<rootDir>/src/__mocks__/svg.ts",
     "\\.css$": "identity-obj-proxy",
     "^src/(.*)$": "<rootDir>/src/$1",
   },
