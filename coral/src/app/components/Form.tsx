@@ -359,7 +359,10 @@ MultiInput.Skeleton = BaseMultiInput.Skeleton;
 //
 // <MultiSelect>
 //
-function _MultiSelect<T extends FieldValues, FieldValue>({
+function _MultiSelect<
+  T extends FieldValues,
+  FieldValue extends OptionType | string,
+>({
   name,
   formContext: form,
   ...props
@@ -402,7 +405,10 @@ function _MultiSelect<T extends FieldValues, FieldValue>({
 const MultiSelectMemo = memo(_MultiSelect) as typeof _MultiSelect;
 
 // eslint-disable-next-line import/exports-last,import/group-exports
-export const MultiSelect = <T extends FieldValues, FieldValue>(
+export const MultiSelect = <
+  T extends FieldValues,
+  FieldValue extends OptionType | string,
+>(
   props: FormInputProps<T> & BaseMultiSelectProps<FieldValue>
 ): React.ReactElement<FormInputProps<T> & BaseMultiSelectProps<FieldValue>> => {
   const ctx = useFormContext<T>();
