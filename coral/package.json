@@ -40,7 +40,7 @@
     ]
   },
   "dependencies": {
-    "@aivenio/aquarium": "2.20.0",
+    "@aivenio/aquarium": "2.20.1",
     "@hookform/resolvers": "^4.1.3",
     "@monaco-editor/react": "^4.7.0",
     "@tanstack/react-query": "^4.29.5",
