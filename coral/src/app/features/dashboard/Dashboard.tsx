@@ -8,7 +8,12 @@ import {
   Template,
   useToast,
 } from "@aivenio/aquarium";
-import { AreaChart, Axis, BarChart, Tooltip } from "@aivenio/aquarium/charts";
+import {
+  AreaChart,
+  Axis,
+  BarChart,
+  Tooltip,
+} from "@aivenio/aquarium/charts/index";
 import loading from "@aivenio/aquarium/icons/loading";
 import { useEffect, useState } from "react";
 import StatsDisplay from "src/app/components/StatsDisplay";
