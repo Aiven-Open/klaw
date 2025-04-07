@@ -9,7 +9,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -35,7 +35,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -58,7 +58,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -81,7 +81,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -104,7 +104,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -122,7 +122,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -148,7 +148,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -171,7 +171,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -194,7 +194,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -217,7 +217,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <div
                   aria-label="Loading..."
-                  class="Aquarium-Skeleton bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                  class="bg-default h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse Aquarium-Skeleton"
                   role="progressbar"
                 />
               </div>
@@ -235,7 +235,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
@@ -292,7 +292,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                   </svg>
                 </span>
                 <select
-                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-inactive focus:outline-none px-3 py-3 disabled:border-default disabled:bg-default disabled:text-inactive border border-default hover:border-intense focus:border-info-default"
+                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-inactive focus:outline-none px-3 py-3 bg-body disabled:border-default disabled:bg-default disabled:text-inactive border border-default hover:border-intense focus:border-info-default"
                   id="react-aria-:r0:"
                 >
                   <option
@@ -335,7 +335,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
       class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
     >
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col flex-auto gap-4"
       >
         <div
           class="typography-default-strong text-intense"
