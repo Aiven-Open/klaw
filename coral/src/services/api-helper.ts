@@ -22,7 +22,7 @@ function convertQueryValuesToString(
   });
 }
 
-const getCsrfTokenFromCookie = (): string | undefined => {
+const getXsrfTokenFromCookie = (): string | undefined => {
   return Cookies.get("XSRF-TOKEN");
 };
-export { convertQueryValuesToString, getCsrfTokenFromCookie };
+export { convertQueryValuesToString, getXsrfTokenFromCookie };
