@@ -162,7 +162,6 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                     method: "POST",
                     url: "/operationalRequest/consumerOffsetsReset/create",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'consumerOffsetResetRequestModel' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
                     if(output.success){
@@ -373,7 +372,6 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                         method: "POST",
                         url: "sendMessageToAdmin",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
                         data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
                     }).success(function(output) {
                         $scope.alert = "Message Sent.";

@@ -485,21 +485,16 @@
       "post" : {
         "tags" : [ "ui-config-controller" ],
         "operationId" : "sendMessageToAdmin",
-        "parameters" : [ {
-          "name" : "contactFormSubject",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "contactFormMessage",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NotificationModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -5905,8 +5900,7 @@
             "type" : "string"
           },
           "userPassword" : {
-            "type" : "string",
-            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
+            "type" : "string"
           },
           "teamId" : {
             "type" : "integer",
@@ -6283,6 +6277,16 @@
           }
         }
       },
+      "NotificationModel" : {
+        "properties" : {
+          "contactFormSubject" : {
+            "type" : "string"
+          },
+          "contactFormMessage" : {
+            "type" : "string"
+          }
+        }
+      },
       "SyncSchemaUpdates" : {
         "properties" : {
           "topicList" : {
@@ -6475,8 +6479,7 @@
             "minLength" : 6
           },
           "pwd" : {
-            "type" : "string",
-            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}"
+            "type" : "string"
           },
           "team" : {
             "type" : "string"

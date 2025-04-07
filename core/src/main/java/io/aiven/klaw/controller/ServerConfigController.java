@@ -65,6 +65,9 @@ public class ServerConfigController {
         serverConfigService.updateKwCustomProperty(kwPropertiesModel), HttpStatus.OK);
   }
 
+  // The permission update_servcerconfig is required to gain access to this feature and so it is
+  // also required to be protected from miss use.
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_SERVERCONFIG})
   @RequestMapping(
       value = "/testClusterApiConnection",
       method = RequestMethod.GET,
