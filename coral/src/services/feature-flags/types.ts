@@ -1,5 +1,3 @@
-enum FeatureFlag {
-  FEATURE_FLAG_ADD_CLUSTER = "FEATURE_FLAG_ADD_CLUSTER",
-}
+enum FeatureFlag {}
 
 export { FeatureFlag };

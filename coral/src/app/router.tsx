@@ -49,7 +49,6 @@ import { ChangePassword } from "src/app/pages/user-information/change-password";
 import { UserProfile } from "src/app/pages/user-information/profile";
 import { TenantInfo } from "src/app/pages/user-information/tenant-info";
 import { getRouterBasename } from "src/config";
-import { FeatureFlag } from "src/services/feature-flags/types";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -65,7 +64,6 @@ import {
 } from "src/services/router-utils/types";
 import {
   createPrivateRoute,
-  createRouteBehindFeatureFlag,
   filteredRoutesForSuperAdmin,
   SuperadminRouteMap,
 } from "src/services/router-utils/route-utils";
@@ -332,15 +330,11 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
         element: <ConnectorPromotionRequestPage />,
       },
-      createRouteBehindFeatureFlag({
-        ...createPrivateRoute({
-          path: Routes.ADD_CLUSTER,
-          element: <AddClusterPage />,
-          permission: "addDeleteEditClusters",
-          redirectUnauthorized: Routes.CLUSTERS,
-        }),
-        featureFlag: FeatureFlag.FEATURE_FLAG_ADD_CLUSTER,
-        redirectRouteWithoutFeatureFlag: Routes.CLUSTERS,
+      createPrivateRoute({
+        path: Routes.ADD_CLUSTER,
+        element: <AddClusterPage />,
+        permission: "addDeleteEditClusters",
+        redirectUnauthorized: Routes.CLUSTERS,
       }),
     ],
   },
