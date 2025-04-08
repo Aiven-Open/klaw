@@ -4,10 +4,9 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('manageUsersApp',[]);
+var app = angular.module('manageUsersApp',['sharedHttpInterceptor']);
 
 app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
-	
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:

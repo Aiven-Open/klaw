@@ -1,6 +1,7 @@
 import cloneDeepWith from "lodash/cloneDeepWith";
 import isPlainObject from "lodash/isPlainObject";
 import toString from "lodash/toString";
+import Cookies from "js-cookie";
 
 type QueryToTransform = {
   [key: string]: string | boolean | number | string[] | QueryToTransform;
@@ -21,4 +22,7 @@ function convertQueryValuesToString(
   });
 }
 
-export { convertQueryValuesToString };
+const getXsrfTokenFromCookie = (): string | undefined => {
+  return Cookies.get("XSRF-TOKEN");
+};
+export { convertQueryValuesToString, getXsrfTokenFromCookie };

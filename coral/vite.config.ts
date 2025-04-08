@@ -123,8 +123,6 @@ function getPlugins(environment: Record<string, string>): PluginOption[] {
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
   const usesNodeProxy = mode === "local-api";
-
-  console.log("mode", mode);
   return {
     plugins: getPlugins(environment),
     define: {

@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('modifyUserApp',[]);
+var app = angular.module('modifyUserApp',['sharedHttpInterceptor']);
 
 app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
 	

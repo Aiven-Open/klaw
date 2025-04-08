@@ -5,7 +5,7 @@
 // solution for transaction
 // message store / key / gui
 //var app = angular.module('dashboardApp',['chart.js','ngCookies']);
-var app = angular.module('dashboardApp',['chart.js']);
+var app = angular.module('dashboardApp',['chart.js', 'sharedHttpInterceptor']);
 
 // add $cookies
 app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $rootScope) {

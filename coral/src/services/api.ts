@@ -8,6 +8,7 @@ import {
   components,
 } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
+import { getXsrfTokenFromCookie } from "src/services/api-helper";
 
 type KlawApiResponse = ResolveIntersectionTypes<
   components["schemas"]["ApiResponse"]
@@ -340,6 +341,23 @@ type ServerError = ResolveIntersectionTypes<
   }
 >;
 
+const fetchWithXsrf = (
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> => {
+  const xsrfToken = getXsrfTokenFromCookie();
+
+  const headers = {
+    ...options.headers,
+    ...(xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : {}),
+  };
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+};
+
 function isHTTPErrorProperties(
   value: Record<string, unknown>
 ): value is Record<keyof HTTPError, unknown> {
@@ -546,9 +564,10 @@ function withPayloadAndVerb<
   pathname: keyof ApiPaths,
   data: TBody
 ): Promise<TResponse> {
-  return fetch(`${API_BASE_URL}${pathname}`, withPayload(method, data)).then(
-    (response) => handleResponse<TResponse>(response)
-  );
+  return fetchWithXsrf(
+    `${API_BASE_URL}${pathname}`,
+    withPayload(method, data)
+  ).then((response) => handleResponse<TResponse>(response));
 }
 
 function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
@@ -556,7 +575,7 @@ function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
   pathname: keyof ApiPaths,
   params?: Params
 ): Promise<TResponse> {
-  return fetch(
+  return fetchWithXsrf(
     `${API_BASE_URL}${pathname}${!params ? "" : `?${params}`}`,
     withoutPayload(method)
   ).then((response) => handleResponse<TResponse>(response));

@@ -5,7 +5,7 @@
 // solution for transaction
 // message store / key / gui
 
-var app = angular.module('envsApp',[]);
+var app = angular.module('envsApp',['sharedHttpInterceptor']);
 
 app.directive('onReadFile', function ($parse) {
 	return {
@@ -662,6 +662,17 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         else if($scope.addNewCluster.type === 'kafkaconnect')
                             clusterType = 'KAFKA_CONNECT';
 
+                        let serviceInput = {};
+
+                        serviceInput['clusterName'] = $scope.addNewCluster.envname;
+                        serviceInput['bootstrapServers'] = $scope.addNewCluster.host;
+                        serviceInput['protocol'] = $scope.addNewCluster.protocol;
+                        serviceInput['clusterType'] = clusterType;
+                        serviceInput['projectName'] = $scope.addNewCluster.projectName;
+                        serviceInput['serviceName'] = $scope.addNewCluster.serviceName;
+                        serviceInput['kafkaFlavor'] = $scope.kafkaFlavor;
+                        serviceInput['associatedServers'] = $scope.addNewCluster.associatedServers;
+
                         if($scope.addNewCluster.protocol === "PLAINTEXT"){
                             swal({
                                 title: "PLAINTEXT is not secure",
@@ -676,54 +687,46 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 timer: 10000
                             }).then(function(isConfirm) {
                                 if (isConfirm.value) {
-                                    var serviceInput = {};
-
-                                    serviceInput['clusterName'] = $scope.addNewCluster.envname;
-                                    serviceInput['bootstrapServers'] = $scope.addNewCluster.host;
-                                    serviceInput['protocol'] = $scope.addNewCluster.protocol;
-                                    serviceInput['clusterType'] = clusterType;
-                                    serviceInput['projectName'] = $scope.addNewCluster.projectName;
-                                    serviceInput['serviceName'] = $scope.addNewCluster.serviceName;
-                                    serviceInput['kafkaFlavor'] = $scope.kafkaFlavor;
-                                    serviceInput['associatedServers'] = $scope.addNewCluster.associatedServers;
-
-                                    $http({
-                                        method: "POST",
-                                        url: "addNewCluster",
-                                        headers : { 'Content-Type' : 'application/json' },
-                                        data: serviceInput
-                                    }).success(function(output) {
-                                        $scope.alert = "New cluster added : " + output.message;
-                                        $scope.addNewCluster.envname = "";
-                                        $scope.addNewCluster.host = "";
-                                        $scope.addNewCluster.pubKeyFile = "";
-                                        if(output.success){
-                                            swal({
-                                                title: "",
-                                                text: "New cluster added : " + output.message,
-                                                timer: 2000,
-                                                showConfirmButton: true
-                                            }).then(function(isConfirm){
-                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
-                                            });
-                                        }else {
-                                            $scope.showSubmitFailed('','');
-                                        }
-                                    }).error(
-                                        function(error)
-                                        {
-                                            $scope.handleValidationErrors(error);
-                                        }
-                                    );
+                                    $scope.httpCallAddNewCluster(serviceInput);
                                 } else {
                                     return;
                                 }
                             });
+                        } else {
+                            $scope.httpCallAddNewCluster(serviceInput);
                         }
-
-
-
                     };
+
+        $scope.httpCallAddNewCluster = function(serviceInput) {
+                $http({
+                    method: "POST",
+                    url: "addNewCluster",
+                    headers : { 'Content-Type' : 'application/json' },
+                    data: serviceInput
+                }).success(function(output) {
+                    $scope.alert = "New cluster added : " + output.message;
+                    $scope.addNewCluster.envname = "";
+                    $scope.addNewCluster.host = "";
+                    $scope.addNewCluster.pubKeyFile = "";
+                    if(output.success){
+                        swal({
+                            title: "",
+                            text: "New cluster added : " + output.message,
+                            timer: 2000,
+                            showConfirmButton: true
+                        }).then(function(isConfirm){
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
+                        });
+                    }else {
+                        $scope.showSubmitFailed('','');
+                    }
+                }).error(
+                    function(error)
+                    {
+                        $scope.handleValidationErrors(error);
+                    }
+                );
+        }
 
         $scope.addNewEnv = function() {
 

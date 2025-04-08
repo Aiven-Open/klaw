@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('synchronizeSchemasApp',[]);
+var app = angular.module('synchronizeSchemasApp',['sharedHttpInterceptor']);
 
 app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $window) {
 	

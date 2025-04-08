@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('synchronizeAclsApp',[]);
+var app = angular.module('synchronizeAclsApp',['sharedHttpInterceptor']);
 
 app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window) {
 
