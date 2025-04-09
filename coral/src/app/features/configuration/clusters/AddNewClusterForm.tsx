@@ -145,8 +145,8 @@ const AddNewClusterForm = () => {
           <Alert type={"warning"}>
             PLAINTEXT is not secure. Use a secure option like SSL.{" "}
             <a
-              href="https://www.klaw-project.io/docs/cluster-connectivity-setup/kafka-cluster-ssl-protocol/"
-              aria-label="Documentation Cluster connectivty setup"
+              href="https://www.klaw-project.io/docs/cluster-management/clusters-environments/"
+              aria-label="Documentation Clusters and Environments"
             >
               Learn more
             </a>
