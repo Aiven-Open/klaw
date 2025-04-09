@@ -184,11 +184,7 @@ public class SecurityConfigNoSSO {
             userInfo.getUsername(),
             getBcryptPassword(secPwd, encoder) + "," + userInfo.getRole() + ",enabled");
       } catch (Exception e) {
-        log.error(
-            "Error : User not loaded {}. Check password. {}",
-            userInfo.getUsername(),
-            userInfo.getPwd(),
-            e);
+        log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
       }
     }
   }
