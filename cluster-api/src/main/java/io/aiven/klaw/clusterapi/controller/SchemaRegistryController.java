@@ -1,6 +1,7 @@
 package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
+import io.aiven.klaw.clusterapi.models.ClusterSchemaCacheResetRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
@@ -109,9 +110,10 @@ public class SchemaRegistryController {
       value = "/schema/resetCache",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> resetCache(
-      @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
+      @RequestBody @Valid ClusterSchemaCacheResetRequest clusterSchemaCacheResetRequest) {
     try {
-      return new ResponseEntity<>(schemaService.resetCache(clusterSchemaRequest), HttpStatus.OK);
+      return new ResponseEntity<>(
+          schemaService.resetCache(clusterSchemaCacheResetRequest), HttpStatus.OK);
     } catch (Exception e) {
       return handleException(e);
     }

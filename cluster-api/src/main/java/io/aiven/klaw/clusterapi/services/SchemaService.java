@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterKeyIdentifier;
+import io.aiven.klaw.clusterapi.models.ClusterSchemaCacheResetRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
@@ -789,11 +790,11 @@ public class SchemaService {
     }
   }
 
-  public ApiResponse resetCache(ClusterSchemaRequest clusterSchemaRequest) {
+  public ApiResponse resetCache(ClusterSchemaCacheResetRequest clusterSchemaCacheResetRequest) {
     updateSchemaCache(
-        clusterSchemaRequest.getEnv(),
-        clusterSchemaRequest.getProtocol(),
-        clusterSchemaRequest.getClusterIdentification(),
+        clusterSchemaCacheResetRequest.getEnv(),
+        clusterSchemaCacheResetRequest.getProtocol(),
+        clusterSchemaCacheResetRequest.getClusterIdentification(),
         SchemaCacheUpdateType.NONE,
         null);
     return ApiResponse.builder().success(true).build();

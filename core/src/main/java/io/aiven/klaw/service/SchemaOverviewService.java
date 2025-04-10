@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -148,7 +149,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(true);
-            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)) {
+            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)
+                || Objects.isNull(hashMapSchemaObj.get(SCHEMA_TYPE))) {
               schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
             } else {
               schemaDetailsPerEnv.setSchemaType(
@@ -166,7 +168,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(false);
-            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)) {
+            if (!hashMapSchemaObj.containsKey(SCHEMA_TYPE)
+                || Objects.isNull(hashMapSchemaObj.get(SCHEMA_TYPE))) {
               schemaDetailsPerEnv.setSchemaType(SchemaType.AVRO);
             } else {
               schemaDetailsPerEnv.setSchemaType(
