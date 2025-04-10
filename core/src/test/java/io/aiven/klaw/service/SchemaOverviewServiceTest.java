@@ -26,6 +26,7 @@ import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.SchemaType;
 import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class SchemaOverviewServiceTest {
   public static final String TESTTOPIC = "testtopic";
   public static final String TEAM_1 = "Team-1";
   public static final String TEAM_ID = "kwusera";
+  public static final String SCHEMA_TYPE = "schemaType";
   private UtilMethods utilMethods;
   @Mock private UserDetails userDetails;
   @Mock private HandleDbRequestsJdbc handleDbRequests;
@@ -330,6 +332,52 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.NO_PROMOTION);
+    assertThat(returnedValue.isCreateSchemaAllowed()).isFalse();
+  }
+
+  @Test
+  @Order(11)
+  public void givenASchemaWithNoSchemaTypeDefaultToAvro() throws Exception {
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 2);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 2, "2");
+
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaDetailsPerEnv().getSchemaType()).isEqualTo(SchemaType.AVRO);
+    assertThat(returnedValue.isCreateSchemaAllowed()).isFalse();
+  }
+
+  @Test
+  @Order(11)
+  public void givenASchemaWithNullSchemaTypeDefaultToAvro() throws Exception {
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 2);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
+
+    TreeMap<Integer, Map<String, Object>> schemaList = utilMethods.createSchemaList();
+    schemaList.get(2).put(SCHEMA_TYPE, null);
+    schemaList.get(1).put(SCHEMA_TYPE, null);
+    // override default schemas returned
+    when(clusterApiService.getAvroSchema(any(), any(), any(), eq(TESTTOPIC), eq(101)))
+        .thenReturn(schemaList)
+        .thenReturn(null);
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 2, "2");
+
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaDetailsPerEnv().getSchemaType()).isEqualTo(SchemaType.AVRO);
     assertThat(returnedValue.isCreateSchemaAllowed()).isFalse();
   }
 

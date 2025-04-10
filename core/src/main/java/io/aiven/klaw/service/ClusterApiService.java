@@ -1284,6 +1284,7 @@ public class ClusterApiService {
     HttpHeaders headers = createHeaders(clusterApiUser);
 
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    headers.add("User-Agent", "klaw-core");
     return new HttpEntity<>(headers);
   }
 }
