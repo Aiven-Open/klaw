@@ -2718,6 +2718,20 @@ export type components = {
             /** Format: int32 */
             tenantId?: number;
         };
+        UserUpdateInfoModel: {
+            fullname: string;
+            mailid?: string;
+            username: string;
+            role: string;
+            userPassword: string;
+            /** Format: int32 */
+            teamId: number;
+            switchTeams: boolean;
+            switchAllowedTeamIds?: number[];
+            switchAllowedTeamNames?: string[];
+            /** Format: int32 */
+            tenantId?: number;
+        };
         TopicConfigEntry: {
             configKey?: string;
             configValue?: string;
@@ -4066,7 +4080,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UserInfoModel"];
+                "application/json": components["schemas"]["UserUpdateInfoModel"];
             };
         };
         responses: {
