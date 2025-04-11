@@ -18,7 +18,7 @@ public class UserUpdateInfoModel extends ProfileModel implements Serializable {
 
   @NotNull private String role;
 
-  // Update regex check also allows the masked pw tobe sent.
+  // Update regex check also allows no password to be sent and then no password update occurs.
   @PasswordUpdateValidator private String userPassword;
 
   @NotNull private Integer teamId;
