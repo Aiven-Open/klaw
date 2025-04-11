@@ -1,13 +1,18 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.helpers.KwConstants.PASSWORD_UPDATE_REGEX;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -60,5 +65,18 @@ public class UserTeamsControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().is(expectedStatus));
+  }
+
+  @ParameterizedTest
+  @Order(2)
+  @CsvSource({
+    "invalidpwd, false", // Invalid password -> Expect 4xx Client Error
+    "Invalidpwd321@, true", // Valid password -> Expect 200 OK
+    "********, true",
+    "******, false",
+  })
+  public void updateUserPasswordTest(String password, boolean expectedStatus) throws KlawException {
+    Matcher matcher = Pattern.compile(PASSWORD_UPDATE_REGEX).matcher(password);
+    assertThat(matcher.find()).isEqualTo(expectedStatus);
   }
 }
