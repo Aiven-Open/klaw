@@ -2723,7 +2723,7 @@ export type components = {
             mailid?: string;
             username: string;
             role: string;
-            userPassword: string;
+            userPassword?: string;
             /** Format: int32 */
             teamId: number;
             switchTeams: boolean;
