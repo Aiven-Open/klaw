@@ -1,10 +1,7 @@
 package io.aiven.klaw.model.requests;
 
-import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX_VALIDATION_STR;
-import static io.aiven.klaw.helpers.KwConstants.PASSWORD_UPDATE_REGEX;
-
+import io.aiven.klaw.validation.PasswordUpdateValidator;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Set;
 import lombok.Getter;
@@ -22,9 +19,7 @@ public class UserUpdateInfoModel extends ProfileModel implements Serializable {
   @NotNull private String role;
 
   // Update regex check also allows the masked pw tobe sent.
-  @Pattern(regexp = PASSWORD_UPDATE_REGEX, message = PASSWORD_REGEX_VALIDATION_STR)
-  @NotNull
-  private String userPassword;
+  @PasswordUpdateValidator private String userPassword;
 
   @NotNull private Integer teamId;
 

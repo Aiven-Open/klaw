@@ -196,12 +196,12 @@ public class UsersTeamsControllerService {
       UserInfoModel newUser, UserInfo existingUserInfo, int tenantId) throws KlawException {
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
-    if (MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+    if (StringUtils.isEmpty(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) {
         newUser.setUserPassword(passwordService.getBcryptPassword(existingPwd));
       }
-    } else if (!MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+    } else if (!StringUtils.isEmpty(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       newUser.setUserPassword(passwordService.encodePwd(pwdUpdated));
     }
 

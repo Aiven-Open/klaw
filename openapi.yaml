@@ -5949,8 +5949,7 @@
             "type" : "string"
           },
           "userPassword" : {
-            "type" : "string",
-            "pattern" : "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}|(?=.*[*]).{8}"
+            "type" : "string"
           },
           "teamId" : {
             "type" : "integer",
@@ -5979,7 +5978,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "fullname", "role", "switchTeams", "teamId", "userPassword", "username" ]
+        "required" : [ "fullname", "role", "switchTeams", "teamId", "username" ]
       },
       "TopicConfigEntry" : {
         "properties" : {

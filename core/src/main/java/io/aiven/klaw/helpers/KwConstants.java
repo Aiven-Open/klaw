@@ -159,9 +159,6 @@ public class KwConstants {
 
   public static final String PASSWORD_REGEX = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}";
 
-  public static final String PASSWORD_UPDATE_REGEX =
-      "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}|(?=.*[*]).{8}";
-
   public static final String PASSWORD_REGEX_VALIDATION_STR =
       "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
   public static final String PASSWORD_VALIDATION_AD_STR =
