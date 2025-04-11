@@ -193,7 +193,9 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
 
             serviceInput['username'] = $scope.userDetails.username;
             serviceInput['fullname'] = $scope.userDetails.fullname;
-            serviceInput['userPassword'] = $scope.userDetails.userPassword;
+            if($scope.userDetails.userPassword !== '********') {
+                serviceInput['userPassword'] = $scope.userDetails.userPassword;
+            }
             serviceInput['teamId'] = $scope.userDetails.teamId;
             serviceInput['role'] = $scope.userDetails.role;
             serviceInput['mailid'] = $scope.userDetails.mailid;

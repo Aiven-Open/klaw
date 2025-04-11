@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import static io.aiven.klaw.helpers.KwConstants.PASSWORD_REGEX;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
@@ -11,6 +12,7 @@ import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.requests.UserUpdateInfoModel;
 import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
@@ -98,10 +100,11 @@ public class UsersTeamsController {
   @PostMapping(
       value = "/updateUser",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody UserInfoModel updateUserObj)
-      throws KlawException {
-    return new ResponseEntity<>(
-        usersTeamsControllerService.updateUser(updateUserObj), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> updateUser(
+      @Valid @RequestBody UserUpdateInfoModel updateUserObj) throws KlawException {
+    UserInfoModel userInfoObj = new UserInfoModel();
+    copyProperties(updateUserObj, userInfoObj);
+    return new ResponseEntity<>(usersTeamsControllerService.updateUser(userInfoObj), HttpStatus.OK);
   }
 
   @PostMapping(

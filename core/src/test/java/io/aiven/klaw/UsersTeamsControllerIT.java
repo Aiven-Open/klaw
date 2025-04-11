@@ -1,6 +1,7 @@
 package io.aiven.klaw;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,6 +14,7 @@ import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.requests.UserUpdateInfoModel;
 import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
@@ -573,8 +575,10 @@ public class UsersTeamsControllerIT {
     UserInfoModel userInfoModel =
         mockMethods.getUserInfoModelSwitchTeams(
             user2, role, 1001, 2); // add switch teams 1001, 1002
+    UserUpdateInfoModel updateModel = new UserUpdateInfoModel();
     userInfoModel.setTeamId(1001);
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+    copyProperties(userInfoModel, updateModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(updateModel);
 
     String response =
         mvc.perform(

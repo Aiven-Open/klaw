@@ -113,7 +113,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/UserInfoModel"
+                "$ref" : "#/components/schemas/UserUpdateInfoModel"
               }
             }
           },
@@ -5930,6 +5930,55 @@
           }
         },
         "required" : [ "fullname", "role", "switchTeams", "teamId", "userPassword", "username" ]
+      },
+      "UserUpdateInfoModel" : {
+        "properties" : {
+          "fullname" : {
+            "type" : "string",
+            "maxLength" : 50,
+            "minLength" : 5,
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+          },
+          "mailid" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "userPassword" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "switchTeams" : {
+            "type" : "boolean"
+          },
+          "switchAllowedTeamIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            },
+            "uniqueItems" : true
+          },
+          "switchAllowedTeamNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "fullname", "role", "switchTeams", "teamId", "username" ]
       },
       "TopicConfigEntry" : {
         "properties" : {
