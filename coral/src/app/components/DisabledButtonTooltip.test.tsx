@@ -31,7 +31,8 @@ describe("DisabledButtonTooltip", () => {
     });
 
     it("shows a tooltip for visual user", async () => {
-      await user.tab();
+      const button = screen.getByRole("button");
+      await user.hover(button);
 
       const tooltip = screen.getByRole("tooltip");
 
@@ -41,6 +42,7 @@ describe("DisabledButtonTooltip", () => {
       // is used, but it's misleading, since it implied accessibility
       expect(tooltip).toBeVisible();
 
+      await user.tab();
       await user.tab();
 
       expect(tooltip).not.toBeInTheDocument();
@@ -71,7 +73,8 @@ describe("DisabledButtonTooltip", () => {
     });
 
     it("shows a tooltip for visual user", async () => {
-      await user.tab();
+      const link = screen.getByRole("link");
+      await user.hover(link);
 
       const tooltip = screen.getByRole("tooltip");
 
@@ -81,6 +84,7 @@ describe("DisabledButtonTooltip", () => {
       // is used, but it's misleading, since it implied accessibility
       expect(tooltip).toBeVisible();
 
+      await user.tab();
       await user.tab();
 
       expect(tooltip).not.toBeInTheDocument();
