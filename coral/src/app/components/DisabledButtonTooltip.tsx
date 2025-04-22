@@ -34,7 +34,6 @@ function DisabledButtonTooltip({
       content={props.tooltip}
       placement="bottom"
       isOpen={tooltipOpen}
-      data-testid={"test"}
     >
       <div className={classes.buttonWrapper}>
         <Button.Primary
