@@ -353,16 +353,6 @@
                 <version>${exec-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>uglifyjs-files</id>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <phase>test</phase>
-                        <configuration>
-                            <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>Build Coral assets</id>
                         <goals>
                             <goal>exec</goal>
