@@ -508,7 +508,10 @@ public class UsersTeamsControllerService {
     }
 
     try {
-      inMemoryUserDetailsManager.deleteUser(userIdToDelete);
+      if (inMemoryUserDetailsManager != null
+          && inMemoryUserDetailsManager.userExists(userIdToDelete)) {
+        inMemoryUserDetailsManager.deleteUser(userIdToDelete);
+      }
       String result = manageDatabase.getHandleDbRequests().deleteUserRequest(userIdToDelete);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         commonUtilsService.updateMetadata(
@@ -628,8 +631,10 @@ public class UsersTeamsControllerService {
           : ApiResponse.notOk(result);
     } catch (Exception e) {
       try {
-        if (inMemoryUserDetailsManager != null)
+        if (inMemoryUserDetailsManager != null
+            && inMemoryUserDetailsManager.userExists(newUser.getUsername())) {
           inMemoryUserDetailsManager.deleteUser(newUser.getUsername());
+        }
       } catch (Exception e1) {
         log.error("Try deleting user");
       }

@@ -19,10 +19,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +48,9 @@ public class UiControllerLoginService {
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
+
+  @Value("${spring.ad.domain:#{null}}")
+  private String adDomain;
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
@@ -146,7 +154,11 @@ public class UiControllerLoginService {
           }
         }
       }
-      return registerStagingUser(userName, nameAttribute, roleValidationPair.getRight());
+      return registerStagingUser(
+          userName,
+          nameAttribute,
+          roleValidationPair.getRight(),
+          extractDomain(abstractAuthenticationToken));
     }
 
     if (abstractAuthenticationToken.isAuthenticated()) {
@@ -154,6 +166,44 @@ public class UiControllerLoginService {
     } else {
       return UriConstants.OAUTH_LOGIN;
     }
+  }
+
+  private static String extractDomain(AbstractAuthenticationToken abstractAuthenticationToken) {
+    Object principal = abstractAuthenticationToken.getPrincipal();
+    try {
+      if (principal instanceof org.springframework.security.ldap.userdetails.LdapUserDetailsImpl) {
+        String distinguishedName =
+            ((org.springframework.security.ldap.userdetails.LdapUserDetailsImpl) principal).getDn();
+        return getLdapName(distinguishedName);
+      }
+      // Case 2: If DN is just a string (fallback)
+      else if (principal instanceof String distinguishedName
+          && ((String) principal).contains("DC=")) {
+        return getLdapName(distinguishedName);
+      }
+    } catch (Exception e) {
+      log.error("Could not extract domain from principal");
+    }
+    return null;
+  }
+
+  private static String getLdapName(String distinguishedName) {
+    try {
+      LdapName ldapName = new LdapName(distinguishedName);
+      List<String> domainComponents = new ArrayList<>();
+      for (Rdn rdn : ldapName.getRdns()) {
+        if (rdn.getType().equalsIgnoreCase("DC")) {
+          domainComponents.add(rdn.getValue().toString());
+        }
+      }
+      if (!domainComponents.isEmpty()) {
+        Collections.reverse(domainComponents); // Always reverse to get correct domain order
+        return String.join(".", domainComponents);
+      }
+    } catch (Exception e) {
+      log.error("Could not extract domain from principal");
+    }
+    return null;
   }
 
   // redirect the user to login page with error display
@@ -272,7 +322,8 @@ public class UiControllerLoginService {
   }
 
   // register user with staging status, and forward to signup
-  public String registerStagingUser(String userName, Object fullName, String roleFromAD) {
+  public String registerStagingUser(
+      String userName, Object fullName, String roleFromAD, String adDomainFromPrincipal) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
@@ -296,6 +347,13 @@ public class UiControllerLoginService {
         registerUserInfoModel.setRole(
             Objects.requireNonNullElse(roleFromAD, KwConstants.USER_ROLE));
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
+
+        if (adDomainFromPrincipal != null && !adDomainFromPrincipal.isBlank()) {
+          registerUserInfoModel.setMailid(userName + "@" + adDomainFromPrincipal);
+        } else if (adDomain != null && !adDomain.isBlank()) {
+          registerUserInfoModel.setMailid(userName + "@" + adDomain);
+        }
+
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");
         if (fullName != null) {

@@ -493,19 +493,19 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                   return;
               }
 
-                if(!$scope.registerUser.emailid)
+                if(!$scope.registerUser.mailid)
                 {
                     $scope.alertnote = "Email id is mandatory.";
                     $scope.showAlertToast();
                     return;
                 }
-                else if($scope.registerUser.emailid.length < 7)
+                else if($scope.registerUser.mailid.length < 7)
                 {
                     $scope.alertnote = "Please enter a valid email id.";
                     $scope.showAlertToast();
                     return;
                 }
-                else if(!$scope.registerUser.emailid.includes("@"))
+                else if(!$scope.registerUser.mailid.includes("@"))
                 {
                     $scope.alertnote = "Please enter a valid email id.";
                      $scope.showAlertToast();
@@ -518,7 +518,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
                     serviceInput['username'] = $scope.registerUser.username;
                     serviceInput['fullname'] = $scope.registerUser.fullname;
-                    serviceInput['mailid'] = $scope.registerUser.emailid;
+                    serviceInput['mailid'] = $scope.registerUser.mailid;
                     serviceInput['tenantName'] = tenantName.trim();
                     serviceInput['pwd'] = '';
 

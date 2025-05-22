@@ -33,7 +33,7 @@ public class RegisterUserInfoModel implements Serializable {
   @NotNull(message = "Name cannot be null")
   @Pattern(
       message = "Invalid Full name.",
-      regexp = "^[a-zA-z ]*$") //  Pattern a-zA-z and/or spaces.
+      regexp = "^[a-zA-Z ()]*$") //  Pattern a-zA-z and/or spaces.
   private String fullname;
 
   @Email(message = "Email should be valid")
