@@ -19,10 +19,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -43,6 +49,9 @@ public class UiControllerLoginService {
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
+
+  @Value("${spring.ad.domain:#{null}}")
+  private String adDomain;
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
@@ -116,12 +125,14 @@ public class UiControllerLoginService {
     String nameAttribute = "name";
     Collection<? extends GrantedAuthority> authorities = null;
 
+    Object principal = abstractAuthenticationToken.getPrincipal();
     // Extract attributes for user verification/registration
     if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
-      defaultOAuth2User =
-          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
-      authorities = defaultOAuth2User.getAuthorities();
+      if (principal instanceof DefaultOAuth2User) {
+        defaultOAuth2User = (DefaultOAuth2User) principal;
+        nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
+        authorities = defaultOAuth2User.getAuthorities();
+      }
     } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
       nameAttribute = abstractAuthenticationToken.getName();
       authorities = abstractAuthenticationToken.getAuthorities();
@@ -146,7 +157,9 @@ public class UiControllerLoginService {
           }
         }
       }
-      return registerStagingUser(userName, nameAttribute, roleValidationPair.getRight());
+      String extractedDomain = extractDomain(principal);
+      return registerStagingUser(
+          userName, nameAttribute, roleValidationPair.getRight(), extractedDomain);
     }
 
     if (abstractAuthenticationToken.isAuthenticated()) {
@@ -154,6 +167,45 @@ public class UiControllerLoginService {
     } else {
       return UriConstants.OAUTH_LOGIN;
     }
+  }
+
+  public String extractDomain(Object principal) {
+    try {
+      if (principal instanceof LdapUserDetailsImpl) {
+        String distinguishedName = ((LdapUserDetailsImpl) principal).getDn();
+        return getLdapName(distinguishedName);
+      } else if (principal instanceof String distinguishedName
+          && ((String) principal).contains("DC=")) {
+        return getLdapName(distinguishedName);
+      } else if (principal instanceof DefaultOAuth2User defaultOAuth2User) {
+        Object email = defaultOAuth2User.getAttributes().get("email");
+        if (email instanceof String emailStr && emailStr.contains("@")) {
+          return emailStr.substring(emailStr.indexOf("@") + 1);
+        }
+      }
+    } catch (Exception e) {
+      log.error("Could not extract domain from principal");
+    }
+    return null;
+  }
+
+  private static String getLdapName(String distinguishedName) {
+    try {
+      LdapName ldapName = new LdapName(distinguishedName);
+      List<String> domainComponents = new ArrayList<>();
+      for (Rdn rdn : ldapName.getRdns()) {
+        if (rdn.getType().equalsIgnoreCase("DC")) {
+          domainComponents.add(rdn.getValue().toString());
+        }
+      }
+      if (!domainComponents.isEmpty()) {
+        Collections.reverse(domainComponents); // Always reverse to get correct domain order
+        return String.join(".", domainComponents);
+      }
+    } catch (Exception e) {
+      log.error("Could not extract domain from principal");
+    }
+    return null;
   }
 
   // redirect the user to login page with error display
@@ -272,7 +324,8 @@ public class UiControllerLoginService {
   }
 
   // register user with staging status, and forward to signup
-  public String registerStagingUser(String userName, Object fullName, String roleFromAD) {
+  public String registerStagingUser(
+      String userName, Object fullName, String roleFromAD, String adDomainFromPrincipal) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
@@ -296,6 +349,13 @@ public class UiControllerLoginService {
         registerUserInfoModel.setRole(
             Objects.requireNonNullElse(roleFromAD, KwConstants.USER_ROLE));
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
+
+        if (adDomainFromPrincipal != null && !adDomainFromPrincipal.isBlank()) {
+          registerUserInfoModel.setMailid(userName + "@" + adDomainFromPrincipal);
+        } else if (adDomain != null && !adDomain.isBlank()) {
+          registerUserInfoModel.setMailid(userName + "@" + adDomain);
+        }
+
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");
         if (fullName != null) {
