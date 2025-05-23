@@ -192,18 +192,8 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = new Response();
 
-    //    loginMock();
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    //    Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
-    //    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-    //    Mockito.when(defaultOAuth2User.getAttributes())
-    //        .thenReturn(Map.of("name", TestConstants.USERNAME));
-    //    Mockito.when(defaultOAuth2User.getAuthorities())
-    //        .thenReturn(
-    //            (Collection)
-    //                List.of(new SimpleGrantedAuthority(TestConstants.ROLE + "_" +
-    // TestConstants.ROLE)));
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
