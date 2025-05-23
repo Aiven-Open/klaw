@@ -11,6 +11,7 @@ import io.aiven.klaw.model.enums.RolesType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -190,14 +192,18 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = new Response();
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-    Mockito.when(defaultOAuth2User.getAttributes())
-        .thenReturn(Map.of("name", TestConstants.USERNAME));
-    Mockito.when(defaultOAuth2User.getAuthorities())
-        .thenReturn(
-            (Collection)
-                List.of(new SimpleGrantedAuthority(TestConstants.ROLE + "_" + TestConstants.ROLE)));
+    //    loginMock();
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    //    Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+    SecurityContextHolder.setContext(securityContext);
+    //    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    //    Mockito.when(defaultOAuth2User.getAttributes())
+    //        .thenReturn(Map.of("name", TestConstants.USERNAME));
+    //    Mockito.when(defaultOAuth2User.getAuthorities())
+    //        .thenReturn(
+    //            (Collection)
+    //                List.of(new SimpleGrantedAuthority(TestConstants.ROLE + "_" +
+    // TestConstants.ROLE)));
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
@@ -225,8 +231,10 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
     Mockito.when(defaultOAuth2User.getAttributes())
         .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities())
@@ -254,8 +262,10 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
     Mockito.when(defaultOAuth2User.getAttributes())
         .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities()).thenReturn(List.of());
@@ -349,5 +359,53 @@ class UiControllerLoginServiceTest {
         .checkAnonymousLogin("", authenticationToken, response, null);
     String actual = uiControllerLoginService.checkAuth("", request, response, authenticationToken);
     Assertions.assertEquals("", actual);
+  }
+
+  @Test
+  void testExtractDomain_withLdapUserDetailsImpl() {
+    LdapUserDetailsImpl mockPrincipal = Mockito.mock(LdapUserDetailsImpl.class);
+    Mockito.when(mockPrincipal.getDn()).thenReturn("CN=John Doe,OU=Users,DC=example,DC=com");
+    String result = uiControllerLoginService.extractDomain(mockPrincipal);
+
+    // Assert
+    Assertions.assertEquals("example.com", result);
+  }
+
+  @Test
+  void testExtractDomain_withStringDn() {
+    String dn = "CN=Jane,OU=Staff,DC=company,DC=org";
+    String result = uiControllerLoginService.extractDomain(dn);
+
+    Assertions.assertEquals("company.org", result);
+  }
+
+  @Test
+  void testExtractDomain_withOAuth2User() {
+    Map<String, Object> attributes = Map.of("email", "user@mydomain.net");
+    DefaultOAuth2User oAuth2User =
+        new DefaultOAuth2User(
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), attributes, "email");
+
+    String result = uiControllerLoginService.extractDomain(oAuth2User);
+    Assertions.assertEquals("mydomain.net", result);
+  }
+
+  @Test
+  void testExtractDomain_withOAuth2User_noEmail() {
+    Map<String, Object> attributes = Map.of("name", "User Name"); // no email
+    DefaultOAuth2User oAuth2User =
+        new DefaultOAuth2User(
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), attributes, "name");
+
+    String result = uiControllerLoginService.extractDomain(oAuth2User);
+    Assertions.assertNull(result);
+  }
+
+  @Test
+  void testExtractDomain_withInvalidPrincipalType() {
+    Object principal = new Object(); // some random object
+    String result = uiControllerLoginService.extractDomain(principal);
+
+    Assertions.assertNull(result);
   }
 }
