@@ -37,6 +37,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -124,12 +125,14 @@ public class UiControllerLoginService {
     String nameAttribute = "name";
     Collection<? extends GrantedAuthority> authorities = null;
 
+    Object principal = abstractAuthenticationToken.getPrincipal();
     // Extract attributes for user verification/registration
     if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
-      defaultOAuth2User =
-          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
-      authorities = defaultOAuth2User.getAuthorities();
+      if (principal instanceof DefaultOAuth2User) {
+        defaultOAuth2User = (DefaultOAuth2User) principal;
+        nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
+        authorities = defaultOAuth2User.getAuthorities();
+      }
     } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
       nameAttribute = abstractAuthenticationToken.getName();
       authorities = abstractAuthenticationToken.getAuthorities();
@@ -154,11 +157,9 @@ public class UiControllerLoginService {
           }
         }
       }
+      String extractedDomain = extractDomain(principal);
       return registerStagingUser(
-          userName,
-          nameAttribute,
-          roleValidationPair.getRight(),
-          extractDomain(abstractAuthenticationToken));
+          userName, nameAttribute, roleValidationPair.getRight(), extractedDomain);
     }
 
     if (abstractAuthenticationToken.isAuthenticated()) {
@@ -168,18 +169,19 @@ public class UiControllerLoginService {
     }
   }
 
-  private static String extractDomain(AbstractAuthenticationToken abstractAuthenticationToken) {
-    Object principal = abstractAuthenticationToken.getPrincipal();
+  public String extractDomain(Object principal) {
     try {
-      if (principal instanceof org.springframework.security.ldap.userdetails.LdapUserDetailsImpl) {
-        String distinguishedName =
-            ((org.springframework.security.ldap.userdetails.LdapUserDetailsImpl) principal).getDn();
+      if (principal instanceof LdapUserDetailsImpl) {
+        String distinguishedName = ((LdapUserDetailsImpl) principal).getDn();
         return getLdapName(distinguishedName);
-      }
-      // Case 2: If DN is just a string (fallback)
-      else if (principal instanceof String distinguishedName
+      } else if (principal instanceof String distinguishedName
           && ((String) principal).contains("DC=")) {
         return getLdapName(distinguishedName);
+      } else if (principal instanceof DefaultOAuth2User defaultOAuth2User) {
+        Object email = defaultOAuth2User.getAttributes().get("email");
+        if (email instanceof String emailStr && emailStr.contains("@")) {
+          return emailStr.substring(emailStr.indexOf("@") + 1);
+        }
       }
     } catch (Exception e) {
       log.error("Could not extract domain from principal");
