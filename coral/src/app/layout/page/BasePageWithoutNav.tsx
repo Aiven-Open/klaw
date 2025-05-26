@@ -1,5 +1,5 @@
 import { Box, Grid } from "@aivenio/aquarium";
-import logo from "/src/app/layout/header/klaw_logo.png";
+import logo from "src/app/layout/header/klaw_logo.png";
 
 type BasePageWithoutNavProps = {
   headerContent?: JSX.Element;
