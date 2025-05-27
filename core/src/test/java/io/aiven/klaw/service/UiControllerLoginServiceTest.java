@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.constants.TestConstants;
 import io.aiven.klaw.constants.UriConstants;
+import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -157,6 +159,73 @@ class UiControllerLoginServiceTest {
   }
 
   @Test
+  public void checkAnonymousLogin_WithOAuth2AndEmailClaim() {
+    ReflectionTestUtils.setField(uiControllerLoginService, "enableUserAuthorizationFromAD", false);
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(
+            Map.of(
+                "name", TestConstants.USERNAME, "email", TestConstants.USERNAME + "@example.com"));
+    Mockito.when(
+            manageDatabase.getTeamIdFromTeamName(
+                KwConstants.DEFAULT_TENANT_ID, KwConstants.STAGINGTEAM))
+        .thenReturn(TestConstants.TEAM_ID);
+    Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    HttpServletResponse response = new Response();
+
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
+
+    String actual =
+        uiControllerLoginService.checkAnonymousLogin(
+            "", authenticationToken, response, TestConstants.USERNAME);
+
+    ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
+        ArgumentCaptor.forClass(RegisterUserInfo.class);
+    Mockito.verify(handleDbRequestsJdbc).registerUserForAD(userInfoCaptor.capture());
+    Assertions.assertEquals(
+        TestConstants.USERNAME + "@example.com", userInfoCaptor.getValue().getMailid());
+  }
+
+  @Test
+  public void checkAnonymousLogin_WithOAuth2AndNoEmailClaim() {
+    ReflectionTestUtils.setField(uiControllerLoginService, "enableUserAuthorizationFromAD", false);
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(Map.of("name", TestConstants.USERNAME));
+    Mockito.when(
+            manageDatabase.getTeamIdFromTeamName(
+                KwConstants.DEFAULT_TENANT_ID, KwConstants.STAGINGTEAM))
+        .thenReturn(TestConstants.TEAM_ID);
+    Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    HttpServletResponse response = new Response();
+
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
+
+    String actual =
+        uiControllerLoginService.checkAnonymousLogin(
+            "", authenticationToken, response, TestConstants.USERNAME);
+
+    ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
+        ArgumentCaptor.forClass(RegisterUserInfo.class);
+    Mockito.verify(handleDbRequestsJdbc).registerUserForAD(userInfoCaptor.capture());
+    Assertions.assertNull(userInfoCaptor.getValue().getMailid());
+  }
+
+  @Test
   public void checkAnonymousLogin_UserAuthorizationFromAdDisabled() {
     AbstractAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(
@@ -190,14 +259,8 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = new Response();
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-    Mockito.when(defaultOAuth2User.getAttributes())
-        .thenReturn(Map.of("name", TestConstants.USERNAME));
-    Mockito.when(defaultOAuth2User.getAuthorities())
-        .thenReturn(
-            (Collection)
-                List.of(new SimpleGrantedAuthority(TestConstants.ROLE + "_" + TestConstants.ROLE)));
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
     Mockito.when(manageDatabase.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID))
@@ -225,8 +288,10 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
     Mockito.when(defaultOAuth2User.getAttributes())
         .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities())
@@ -254,8 +319,10 @@ class UiControllerLoginServiceTest {
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-    loginMock();
-    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
     Mockito.when(defaultOAuth2User.getAttributes())
         .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities()).thenReturn(List.of());

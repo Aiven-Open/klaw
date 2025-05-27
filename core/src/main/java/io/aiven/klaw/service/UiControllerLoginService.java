@@ -44,6 +44,9 @@ public class UiControllerLoginService {
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
+  @Value("${spring.ad.domain:#{null}}")
+  private String adDomain;
+
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
 
@@ -114,14 +117,19 @@ public class UiControllerLoginService {
       String userName) {
     DefaultOAuth2User defaultOAuth2User = null;
     String nameAttribute = "name";
+    String emailAttribute = "email";
+    String emailAttributeVal = null;
     Collection<? extends GrantedAuthority> authorities = null;
 
+    Object principal = abstractAuthenticationToken.getPrincipal();
     // Extract attributes for user verification/registration
     if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
-      defaultOAuth2User =
-          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
-      authorities = defaultOAuth2User.getAuthorities();
+      if (principal instanceof DefaultOAuth2User) {
+        defaultOAuth2User = (DefaultOAuth2User) principal;
+        nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
+        emailAttributeVal = (String) defaultOAuth2User.getAttributes().get(emailAttribute);
+        authorities = defaultOAuth2User.getAuthorities();
+      }
     } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
       nameAttribute = abstractAuthenticationToken.getName();
       authorities = abstractAuthenticationToken.getAuthorities();
@@ -146,7 +154,8 @@ public class UiControllerLoginService {
           }
         }
       }
-      return registerStagingUser(userName, nameAttribute, roleValidationPair.getRight());
+      return registerStagingUser(
+          userName, nameAttribute, roleValidationPair.getRight(), emailAttributeVal);
     }
 
     if (abstractAuthenticationToken.isAuthenticated()) {
@@ -272,7 +281,8 @@ public class UiControllerLoginService {
   }
 
   // register user with staging status, and forward to signup
-  public String registerStagingUser(String userName, Object fullName, String roleFromAD) {
+  public String registerStagingUser(
+      String userName, Object fullName, String roleFromAD, String emailClaim) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
@@ -296,6 +306,11 @@ public class UiControllerLoginService {
         registerUserInfoModel.setRole(
             Objects.requireNonNullElse(roleFromAD, KwConstants.USER_ROLE));
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
+
+        if (emailClaim != null) {
+          registerUserInfoModel.setMailid(emailClaim);
+        }
+
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");
         if (fullName != null) {

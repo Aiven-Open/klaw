@@ -1665,7 +1665,7 @@ public class UsersTeamsControllerServiceTest {
     assertThat(response.getMessage()).isEqualTo(ApiResponse.FAILURE.getMessage());
 
     verify(inMemoryUserDetailsManager).createUser(userDetailsArgCaptor.capture());
-    verify(inMemoryUserDetailsManager).deleteUser(testNewRegUser.getUsername());
+    verify(inMemoryUserDetailsManager).userExists(testNewRegUser.getUsername());
     verify(mailService, never()).sendMail(anyString(), any(), anyString());
     verify(commonUtilsService, never()).getTenantId(anyString());
     verify(commonUtilsService, never()).updateMetadata(anyInt(), any(), any(), anyString());

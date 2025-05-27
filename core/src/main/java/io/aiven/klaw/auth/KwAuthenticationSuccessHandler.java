@@ -62,25 +62,30 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     String providerRoute = "{{ provider }}";
     String coralTopicsUri = "/coral/";
 
-    if (quickStartEnabled
-        && handleDbRequests
-            .getUsersInfo(
-                UtilMethods.getUserName(
-                    authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
-            .getRole()
-            .equals(KwConstants.USER_ROLE)) {
-      return coralTopicsUri;
-    }
+    try {
+      if (quickStartEnabled
+          && handleDbRequests
+              .getUsersInfo(
+                  UtilMethods.getUserName(
+                      authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
+              .getRole()
+              .equals(KwConstants.USER_ROLE)) {
+        return coralTopicsUri;
+      }
 
-    if (coralEnabled
-        && UtilControllerService.isCoralBuilt
-        && !handleDbRequests
-            .getUsersInfo(
-                UtilMethods.getUserName(
-                    authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
-            .getRole()
-            .equals(KwConstants.SUPERADMIN_ROLE)) {
-      return coralTopicsUri;
+      if (coralEnabled
+          && UtilControllerService.isCoralBuilt
+          && !handleDbRequests
+              .getUsersInfo(
+                  UtilMethods.getUserName(
+                      authentication.getPrincipal(), preferredUsernameAttribute, emailAttribute))
+              .getRole()
+              .equals(KwConstants.SUPERADMIN_ROLE)) {
+        return coralTopicsUri;
+      }
+    } catch (Exception e) {
+      log.info("Could not retrieve user info");
+      return rootPath + indexPage;
     }
 
     if (defaultSavedRequest == null) {

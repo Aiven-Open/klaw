@@ -5886,7 +5886,7 @@
             "type" : "string",
             "maxLength" : 50,
             "minLength" : 5,
-            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ()]*$"
           },
           "mailid" : {
             "type" : "string"
@@ -5937,7 +5937,7 @@
             "type" : "string",
             "maxLength" : 50,
             "minLength" : 5,
-            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ()]*$"
           },
           "mailid" : {
             "type" : "string"
@@ -6282,7 +6282,7 @@
             "type" : "string",
             "maxLength" : 50,
             "minLength" : 5,
-            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+            "pattern" : "^[A-Za-zÀ-ÖØ-öø-ÿ' ()]*$"
           },
           "mailid" : {
             "type" : "string"
@@ -6544,7 +6544,7 @@
             "type" : "string",
             "maxLength" : 50,
             "minLength" : 5,
-            "pattern" : "^[a-zA-z ]*$"
+            "pattern" : "^[a-zA-Z ()]*$"
           },
           "mailid" : {
             "type" : "string"
