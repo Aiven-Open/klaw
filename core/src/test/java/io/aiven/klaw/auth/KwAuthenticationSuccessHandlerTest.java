@@ -108,6 +108,6 @@ public class KwAuthenticationSuccessHandlerTest {
         kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest, mockAuthentication);
 
     // Assert
-    assertThat(redirectedPage).isEqualTo("index");
+    assertThat(redirectedPage).isEqualTo("/index");
   }
 }

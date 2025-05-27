@@ -84,8 +84,8 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         return coralTopicsUri;
       }
     } catch (Exception e) {
-      log.error("Could not retrieve user info");
-      return indexPage;
+      log.info("Could not retrieve user info");
+      return rootPath + indexPage;
     }
 
     if (defaultSavedRequest == null) {
