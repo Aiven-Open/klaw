@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.constants.TestConstants;
 import io.aiven.klaw.constants.UriConstants;
+import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -11,7 +12,6 @@ import io.aiven.klaw.model.enums.RolesType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,7 +37,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -156,6 +156,73 @@ class UiControllerLoginServiceTest {
     Assertions.assertEquals(
         UriConstants.DEFAULT_PAGE,
         uiControllerLoginService.getReturningPage("", TestConstants.USERNAME));
+  }
+
+  @Test
+  public void checkAnonymousLogin_WithOAuth2AndEmailClaim() {
+    ReflectionTestUtils.setField(uiControllerLoginService, "enableUserAuthorizationFromAD", false);
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(
+            Map.of(
+                "name", TestConstants.USERNAME, "email", TestConstants.USERNAME + "@example.com"));
+    Mockito.when(
+            manageDatabase.getTeamIdFromTeamName(
+                KwConstants.DEFAULT_TENANT_ID, KwConstants.STAGINGTEAM))
+        .thenReturn(TestConstants.TEAM_ID);
+    Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    HttpServletResponse response = new Response();
+
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
+
+    String actual =
+        uiControllerLoginService.checkAnonymousLogin(
+            "", authenticationToken, response, TestConstants.USERNAME);
+
+    ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
+        ArgumentCaptor.forClass(RegisterUserInfo.class);
+    Mockito.verify(handleDbRequestsJdbc).registerUserForAD(userInfoCaptor.capture());
+    Assertions.assertEquals(
+        TestConstants.USERNAME + "@example.com", userInfoCaptor.getValue().getMailid());
+  }
+
+  @Test
+  public void checkAnonymousLogin_WithOAuth2AndNoEmailClaim() {
+    ReflectionTestUtils.setField(uiControllerLoginService, "enableUserAuthorizationFromAD", false);
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    Mockito.when(authenticationToken.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(Map.of("name", TestConstants.USERNAME));
+    Mockito.when(
+            manageDatabase.getTeamIdFromTeamName(
+                KwConstants.DEFAULT_TENANT_ID, KwConstants.STAGINGTEAM))
+        .thenReturn(TestConstants.TEAM_ID);
+    Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    HttpServletResponse response = new Response();
+
+    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
+
+    String actual =
+        uiControllerLoginService.checkAnonymousLogin(
+            "", authenticationToken, response, TestConstants.USERNAME);
+
+    ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
+        ArgumentCaptor.forClass(RegisterUserInfo.class);
+    Mockito.verify(handleDbRequestsJdbc).registerUserForAD(userInfoCaptor.capture());
+    Assertions.assertNull(userInfoCaptor.getValue().getMailid());
   }
 
   @Test
@@ -349,53 +416,5 @@ class UiControllerLoginServiceTest {
         .checkAnonymousLogin("", authenticationToken, response, null);
     String actual = uiControllerLoginService.checkAuth("", request, response, authenticationToken);
     Assertions.assertEquals("", actual);
-  }
-
-  @Test
-  void testExtractDomain_withLdapUserDetailsImpl() {
-    LdapUserDetailsImpl mockPrincipal = Mockito.mock(LdapUserDetailsImpl.class);
-    Mockito.when(mockPrincipal.getDn()).thenReturn("CN=John Doe,OU=Users,DC=example,DC=com");
-    String result = uiControllerLoginService.extractDomain(mockPrincipal);
-
-    // Assert
-    Assertions.assertEquals("example.com", result);
-  }
-
-  @Test
-  void testExtractDomain_withStringDn() {
-    String dn = "CN=Jane,OU=Staff,DC=company,DC=org";
-    String result = uiControllerLoginService.extractDomain(dn);
-
-    Assertions.assertEquals("company.org", result);
-  }
-
-  @Test
-  void testExtractDomain_withOAuth2User() {
-    Map<String, Object> attributes = Map.of("email", "user@mydomain.net");
-    DefaultOAuth2User oAuth2User =
-        new DefaultOAuth2User(
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), attributes, "email");
-
-    String result = uiControllerLoginService.extractDomain(oAuth2User);
-    Assertions.assertEquals("mydomain.net", result);
-  }
-
-  @Test
-  void testExtractDomain_withOAuth2User_noEmail() {
-    Map<String, Object> attributes = Map.of("name", "User Name"); // no email
-    DefaultOAuth2User oAuth2User =
-        new DefaultOAuth2User(
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), attributes, "name");
-
-    String result = uiControllerLoginService.extractDomain(oAuth2User);
-    Assertions.assertNull(result);
-  }
-
-  @Test
-  void testExtractDomain_withInvalidPrincipalType() {
-    Object principal = new Object(); // some random object
-    String result = uiControllerLoginService.extractDomain(principal);
-
-    Assertions.assertNull(result);
   }
 }
