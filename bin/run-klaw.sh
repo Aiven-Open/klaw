@@ -4,7 +4,7 @@ WORKING_DIR="$(dirname "$0")"/..
 cd $WORKING_DIR
 
 # Declarations
-version=2.10.0
+version=2.10.1
 core_lib=./core/target/klaw-${version}.jar
 cluster_lib=./cluster-api/target/cluster-api-${version}.jar
 core_config=./core/target/classes/application.properties
