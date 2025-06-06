@@ -1,4 +1,4 @@
-version = 2.10.0
+version = 2.10.1
 NODE = node
 
 # Sets a custom hook path in the local git config.
