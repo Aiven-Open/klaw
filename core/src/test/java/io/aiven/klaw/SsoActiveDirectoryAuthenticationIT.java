@@ -195,10 +195,18 @@ public class SsoActiveDirectoryAuthenticationIT {
           new ObjectMapper().readValue(response4.getContentAsString(), ApiResponse.class);
       assertThat(objectResponse1.isSuccess()).isTrue();
 
+      // Without csrf, forbidden to POST
+      mvc.perform(
+              MockMvcRequestBuilders.post("/execNewUserRequestApprove")
+                  .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
+                  .param("username", nonExistingUserInKlaw)
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .accept(MediaType.APPLICATION_JSON))
+          .andExpect(status().isForbidden());
+
       // Fetch and see if user is now created
       MockHttpServletRequestBuilder obj =
           MockMvcRequestBuilders.get("/getUserDetails")
-              .with(csrf())
               .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
               .param("userId", nonExistingUserInKlaw)
               .contentType(MediaType.APPLICATION_JSON)
@@ -207,7 +215,6 @@ public class SsoActiveDirectoryAuthenticationIT {
       String userDetailsResponse =
           mvc.perform(
                   MockMvcRequestBuilders.get("/getUserDetails")
-                      .with(csrf())
                       .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
                       .param("userId", nonExistingUserInKlaw)
                       .contentType(MediaType.APPLICATION_JSON)
