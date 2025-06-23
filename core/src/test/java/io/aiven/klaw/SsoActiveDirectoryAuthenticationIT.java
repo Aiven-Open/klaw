@@ -6,6 +6,7 @@ import static io.aiven.klaw.helpers.KwConstants.STAGINGTEAM;
 import static io.aiven.klaw.model.enums.NewUserStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames.ID_TOKEN;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +41,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest(
@@ -150,6 +152,7 @@ public class SsoActiveDirectoryAuthenticationIT {
       MockHttpServletResponse response2 =
           mvc.perform(
                   MockMvcRequestBuilders.post("/registerUser")
+                      .with(csrf())
                       .with(oidcLogin().oidcUser(getOidcUser(nonExistingUserInKlaw)))
                       .content(jsonReq)
                       .contentType(MediaType.APPLICATION_JSON)
@@ -164,6 +167,7 @@ public class SsoActiveDirectoryAuthenticationIT {
       MockHttpServletResponse response3 =
           mvc.perform(
                   MockMvcRequestBuilders.get("/getNewUserRequests")
+                      .with(csrf())
                       .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
                       .contentType(MediaType.APPLICATION_JSON)
                       .accept(MediaType.APPLICATION_JSON))
@@ -180,6 +184,7 @@ public class SsoActiveDirectoryAuthenticationIT {
       MockHttpServletResponse response4 =
           mvc.perform(
                   MockMvcRequestBuilders.post("/execNewUserRequestApprove")
+                      .with(csrf())
                       .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
                       .param("username", nonExistingUserInKlaw)
                       .contentType(MediaType.APPLICATION_JSON)
@@ -191,9 +196,18 @@ public class SsoActiveDirectoryAuthenticationIT {
       assertThat(objectResponse1.isSuccess()).isTrue();
 
       // Fetch and see if user is now created
+      MockHttpServletRequestBuilder obj =
+          MockMvcRequestBuilders.get("/getUserDetails")
+              .with(csrf())
+              .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
+              .param("userId", nonExistingUserInKlaw)
+              .contentType(MediaType.APPLICATION_JSON)
+              .accept(MediaType.APPLICATION_JSON);
+
       String userDetailsResponse =
           mvc.perform(
                   MockMvcRequestBuilders.get("/getUserDetails")
+                      .with(csrf())
                       .with(oidcLogin().oidcUser(getOidcUser(superAdmin)))
                       .param("userId", nonExistingUserInKlaw)
                       .contentType(MediaType.APPLICATION_JSON)
