@@ -5,8 +5,9 @@ import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -66,7 +67,12 @@ public class ConfigUtils {
       KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
       KwAuthenticationFailureHandler kwAuthenticationFailureHandler)
       throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
+    http.csrf(
+            csrf -> {
+              csrf.ignoringRequestMatchers("/logout");
+              csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+              csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
+            })
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(getStaticResources(coralEnabled))
