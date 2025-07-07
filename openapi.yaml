@@ -7214,7 +7214,7 @@
           },
           "protocol" : {
             "type" : "string",
-            "enum" : [ "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
+            "enum" : [ "SSL", "SASL_PLAIN", "SASL_PLAIN_OAUTHBEARER", "SASL_SSL_OAUTHBEARER", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
           },
           "clusterType" : {
             "type" : "string",
@@ -9096,7 +9096,7 @@
           },
           "protocol" : {
             "type" : "string",
-            "enum" : [ "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
+            "enum" : [ "SSL", "SASL_PLAIN", "SASL_PLAIN_OAUTHBEARER", "SASL_SSL_OAUTHBEARER", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512", "PLAINTEXT" ]
           },
           "clusterType" : {
             "type" : "string",
