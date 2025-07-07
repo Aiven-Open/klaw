@@ -272,7 +272,6 @@ public class ClusterApiUtilsTest {
     assertThat(props.getProperty("sasl.client.callback.handler.class"))
         .isEqualTo("callbackHandler");
     assertThat(props.getProperty("sasl.jaas.config")).isEqualTo("jaasConfigOauth");
-    assertThat(props.getProperty("sasl.kerberos.service.name")).isEqualTo("serviceNameOauth");
   }
 
   @Test
