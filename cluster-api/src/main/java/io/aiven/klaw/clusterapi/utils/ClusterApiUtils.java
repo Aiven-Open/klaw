@@ -426,17 +426,6 @@ public class ClusterApiUtils {
                 clusterIdentification.toLowerCase() + ".kafkasasl.jaasconfig.oauthbearer"));
       }
 
-      if (!Strings.isNullOrEmpty(
-          env.getProperty(
-              clusterIdentification.toLowerCase()
-                  + ".kafkasasl.saslmechanism.oauthbearer.servicename"))) {
-        props.put(
-            SaslConfigs.SASL_KERBEROS_SERVICE_NAME,
-            env.getProperty(
-                clusterIdentification.toLowerCase()
-                    + ".kafkasasl.saslmechanism.oauthbearer.servicename"));
-      }
-
     } catch (Exception exception) {
       log.error("Error : Cannot set SASL SSL OAUTHBEARER Config properties.", exception);
     }
