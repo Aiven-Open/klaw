@@ -3165,7 +3165,7 @@ export type components = {
             clusterName: string;
             bootstrapServers: string;
             /** @enum {string} */
-            protocol: "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
+            protocol: "SSL" | "SASL_PLAIN" | "SASL_PLAIN_OAUTHBEARER" | "SASL_SSL_OAUTHBEARER" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
             /** @enum {string} */
             clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
             /** @enum {string} */
@@ -3825,7 +3825,7 @@ export type components = {
             clusterName: string;
             bootstrapServers: string;
             /** @enum {string} */
-            protocol: "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
+            protocol: "SSL" | "SASL_PLAIN" | "SASL_PLAIN_OAUTHBEARER" | "SASL_SSL_OAUTHBEARER" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512" | "PLAINTEXT";
             /** @enum {string} */
             clusterType: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
             /** @enum {string} */

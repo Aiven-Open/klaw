@@ -174,6 +174,26 @@ public class ClusterApiUtils {
             adminClient = adminClientsMap.get(adminClientKey);
           }
           break;
+
+        case SASL_PLAIN_OAUTHBEARER:
+          if (!adminClientsMap.containsKey(adminClientKey)) {
+            adminClient =
+                AdminClient.create(
+                    getSasl_OauthBearerMechanismProperties(envHost, clusterIdentification, false));
+          } else {
+            adminClient = adminClientsMap.get(adminClientKey);
+          }
+          break;
+
+        case SASL_SSL_OAUTHBEARER:
+          if (!adminClientsMap.containsKey(adminClientKey)) {
+            adminClient =
+                AdminClient.create(
+                    getSasl_OauthBearerMechanismProperties(envHost, clusterIdentification, true));
+          } else {
+            adminClient = adminClientsMap.get(adminClientKey);
+          }
+          break;
       }
     } catch (Exception exception) {
       log.error("Unable to create Admin client ", exception);
@@ -350,6 +370,69 @@ public class ClusterApiUtils {
     return props;
   }
 
+  public Properties getSasl_OauthBearerMechanismProperties(
+      String environment, String clusterIdentification, boolean isSsl) {
+    Properties props = new Properties();
+
+    try {
+      if (isSsl) {
+        props = getSslConfig(clusterIdentification);
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+      } else {
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+      }
+      props.put("bootstrap.servers", environment);
+
+      props.put(AdminClientConfig.CLIENT_ID_CONFIG, "klawclientsaslplainoauthbearer");
+      setOtherConfig(props);
+
+      if (!Strings.isNullOrEmpty(
+          env.getProperty(
+              clusterIdentification.toLowerCase() + ".kafkasasl.saslmechanism.oauthbearer"))) {
+        props.put(
+            SaslConfigs.SASL_MECHANISM,
+            env.getProperty(
+                clusterIdentification.toLowerCase() + ".kafkasasl.saslmechanism.oauthbearer"));
+      }
+
+      if (!Strings.isNullOrEmpty(
+          env.getProperty(
+              clusterIdentification.toLowerCase()
+                  + ".kafkasasl.sasl.oauthbearer.token.endpoint.url"))) {
+        props.put(
+            SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL,
+            env.getProperty(
+                clusterIdentification.toLowerCase()
+                    + ".kafkasasl.sasl.oauthbearer.token.endpoint.url"));
+      }
+
+      if (!Strings.isNullOrEmpty(
+          env.getProperty(
+              clusterIdentification.toLowerCase()
+                  + ".kafkasasl.sasl.client.callback.handler.class"))) {
+        props.put(
+            SaslConfigs.SASL_CLIENT_CALLBACK_HANDLER_CLASS,
+            env.getProperty(
+                clusterIdentification.toLowerCase()
+                    + ".kafkasasl.sasl.client.callback.handler.class"));
+      }
+
+      if (!Strings.isNullOrEmpty(
+          env.getProperty(
+              clusterIdentification.toLowerCase() + ".kafkasasl.jaasconfig.oauthbearer"))) {
+        props.put(
+            SaslConfigs.SASL_JAAS_CONFIG,
+            env.getProperty(
+                clusterIdentification.toLowerCase() + ".kafkasasl.jaasconfig.oauthbearer"));
+      }
+
+    } catch (Exception exception) {
+      log.error("Error : Cannot set SASL SSL OAUTHBEARER Config properties.", exception);
+    }
+
+    return props;
+  }
+
   public Properties getSslConfig(String clusterIdentification) {
     Properties props = new Properties();
 
@@ -434,7 +517,7 @@ public class ClusterApiUtils {
     return props;
   }
 
-  void setOtherConfig(Properties props) {
+  public void setOtherConfig(Properties props) {
     props.put(AdminClientConfig.RETRIES_CONFIG, adminClientProperties.getRetriesConfig());
     props.put(
         AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, adminClientProperties.getRequestTimeOutMs());
