@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
 import { logoutUser } from "src/domain/auth-user";
+import { redirectUserToOriginalKlawUrl } from "src/services/redirect-user-to-original-klaw-url";
 
 type MenuItem = {
   angularPath: string;
@@ -63,7 +64,7 @@ function ProfileDropdown() {
           });
           console.error(error);
         } else {
-          window.location.assign(`${window.origin}/login`);
+          redirectUserToOriginalKlawUrl(`${window.origin}/login`);
         }
       });
       return;
