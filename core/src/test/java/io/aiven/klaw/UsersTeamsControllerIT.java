@@ -813,6 +813,7 @@ public class UsersTeamsControllerIT {
 
     RegisterUserInfoModelResponse registerUserInfoModelResponse =
         getRegisterUserInfoModelResponse(user5);
+    assert registerUserInfoModelResponse != null;
     assertThat(registerUserInfoModelResponse.getStatus()).isEqualTo(NewUserStatus.APPROVED.value);
 
     String response = deleteUser(user5);
