@@ -2654,6 +2654,32 @@
         }
       }
     },
+    "/getUserRequestInfo" : {
+      "get" : {
+        "tags" : [ "users-teams-controller" ],
+        "operationId" : "getRegistrationInfoFromUserName",
+        "parameters" : [ {
+          "name" : "userName",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RegisterUserInfoModelResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/getUserInfoFromRegistrationId" : {
       "get" : {
         "tags" : [ "users-teams-controller" ],
