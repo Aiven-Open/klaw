@@ -165,7 +165,7 @@ public class UsersTeamsController {
   }
 
   @RequestMapping(
-      value = "/getUserRequestInfo",
+      value = "/userRequestInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<RegisterUserInfoModelResponse> getRegistrationInfoFromUserName(

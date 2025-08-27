@@ -829,7 +829,7 @@ public class UsersTeamsControllerIT {
     String response;
     response =
         mvc.perform(
-                MockMvcRequestBuilders.get("/getUserRequestInfo")
+                MockMvcRequestBuilders.get("/userRequestInfo")
                     .with(user(superAdmin).password(superAdminPwd))
                     .with(csrf())
                     .param("userName", userName)
