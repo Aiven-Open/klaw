@@ -376,25 +376,6 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("/topic/:topicName/subscribe: Form submission (TopicProducerForm)", () => {
-    const locationAssignSpy = jest.fn();
-    let originalLocation: Location;
-
-    beforeAll(() => {
-      originalLocation = window.location;
-      Object.defineProperty(global.window, "location", {
-        writable: true,
-        value: {
-          assign: locationAssignSpy,
-        },
-      });
-    });
-
-    afterAll(() => {
-      Object.defineProperty(global.window, "location", {
-        writable: true,
-        value: originalLocation,
-      });
-    });
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
@@ -1033,26 +1014,6 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("/request/acl: Form submission (TopicProducerForm)", () => {
-    const locationAssignSpy = jest.fn();
-    let originalLocation: Location;
-
-    beforeAll(() => {
-      originalLocation = window.location;
-      Object.defineProperty(global.window, "location", {
-        writable: true,
-        value: {
-          assign: locationAssignSpy,
-        },
-      });
-    });
-
-    afterAll(() => {
-      Object.defineProperty(global.window, "location", {
-        writable: true,
-        value: originalLocation,
-      });
-    });
-
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
