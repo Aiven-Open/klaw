@@ -140,12 +140,6 @@ describe("RequestsDropdown", () => {
 
     describe("handles user choosing items from the menu", () => {
       beforeEach(() => {
-        Object.defineProperty(window, "location", {
-          value: {
-            assign: jest.fn(),
-          },
-          writable: true,
-        });
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,
@@ -310,12 +304,6 @@ describe("RequestsDropdown", () => {
 
     describe("handles user choosing items from the menu", () => {
       beforeEach(() => {
-        Object.defineProperty(window, "location", {
-          value: {
-            assign: jest.fn(),
-          },
-          writable: true,
-        });
         customRender(<RequestsDropdown />, {
           memoryRouter: true,
           queryClient: true,

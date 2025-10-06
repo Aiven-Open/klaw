@@ -42,6 +42,8 @@ public class DeleteDataJdbcTest {
 
   @Mock UserInfoRepo userInfoRepo;
 
+  @Mock RegisterInfoRepo registerUserInfoRepo;
+
   private UtilMethods utilMethods;
 
   @BeforeEach
@@ -54,7 +56,8 @@ public class DeleteDataJdbcTest {
             teamRepo,
             aclRequestsRepo,
             aclRepo,
-            userInfoRepo);
+            userInfoRepo,
+            registerUserInfoRepo);
     utilMethods = new UtilMethods();
   }
 
