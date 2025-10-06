@@ -10,12 +10,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.requests.UserUpdateInfoModel;
 import io.aiven.klaw.model.response.ConnectivityStatus;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.List;
@@ -56,6 +58,7 @@ public class UsersTeamsControllerIT {
       user2 = "kwuserb",
       user3 = "kwuserg",
       user4 = "kwuserh",
+      user5 = "kwuseri",
       switchUser1 = "kwuserc",
       switchUser2 = "kwuserd",
       switchUser3 = "kwusere";
@@ -343,24 +346,10 @@ public class UsersTeamsControllerIT {
   @Test
   @Order(9)
   public void deleteUserSuccess() throws Exception {
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/deleteUserRequest")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
-                    .param("userId", user1)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
+    String response = deleteUser(user1);
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
-
     response = getUserDetails(user1);
-
     assertThat(response).isEmpty();
   }
 
@@ -694,7 +683,7 @@ public class UsersTeamsControllerIT {
   }
 
   @Test
-  @Order(22)
+  @Order(23)
   public void registerAndDeclineAndReRegisterAndApproveUser() throws Exception {
     String role = "USER";
     RegisterUserInfoModel userInfoModel = mockMethods.getRegisterUserInfoModel(user4, role);
@@ -731,7 +720,7 @@ public class UsersTeamsControllerIT {
   }
 
   @Test
-  @Order(23)
+  @Order(24)
   public void testClusterApiConnectionWithRegularuser() throws Exception {
     // Regular user gets a 401 response from not having the required permissions.
     mvc.perform(
@@ -744,7 +733,7 @@ public class UsersTeamsControllerIT {
   }
 
   @Test
-  @Order(24)
+  @Order(25)
   public void testClusterApiConnectionWithSuperAdmin() throws Exception {
     // SuperAdmin gets a 200 but a failure on the status, as the cluster is not configured for the
     // test however it passes the permission check.
@@ -767,7 +756,7 @@ public class UsersTeamsControllerIT {
   }
 
   @Test
-  @Order(25)
+  @Order(26)
   public void updateProfile() throws Exception {
     String fullName = "Test User";
     String emailId = "test@test.com";
@@ -802,6 +791,60 @@ public class UsersTeamsControllerIT {
         OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelResponse.getFullname()).isEqualTo(fullName);
     assertThat(userInfoModelResponse.getMailid()).isEqualTo(emailId);
+  }
+
+  @Test
+  @Order(27)
+  public void registerAndApproveAndDeleteUser() throws Exception {
+    String role = "USER";
+    RegisterUserInfoModel userInfoModel = mockMethods.getRegisterUserInfoModel(user5, role);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    ApiResponse apiResponse = getApiResponseForUserRegistration(jsonReq);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    apiResponse = getApiResponseUserApprove(user5);
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    String userDetailsResponse = getUserDetails(user5);
+    UserInfoModelResponse userInfoModelActual =
+        new ObjectMapper().readValue(userDetailsResponse, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(INFRATEAM);
+
+    RegisterUserInfoModelResponse registerUserInfoModelResponse =
+        getRegisterUserInfoModelResponse(user5);
+    assert registerUserInfoModelResponse != null;
+    assertThat(registerUserInfoModelResponse.getStatus()).isEqualTo(NewUserStatus.APPROVED.value);
+
+    String response = deleteUser(user5);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+
+    registerUserInfoModelResponse = getRegisterUserInfoModelResponse(user5);
+    assertThat(registerUserInfoModelResponse).isNull();
+  }
+
+  private RegisterUserInfoModelResponse getRegisterUserInfoModelResponse(String userName)
+      throws Exception {
+    String response;
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/userRequestInfo")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
+                    .param("userName", userName)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    if (!response.equals("")) {
+      return OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    } else {
+      return null;
+    }
   }
 
   private ApiResponse getApiResponseUserApprove(String userToApprove) throws Exception {
@@ -856,5 +899,19 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
     return response;
+  }
+
+  private String deleteUser(String user) throws Exception {
+    return mvc.perform(
+            MockMvcRequestBuilders.post("/deleteUserRequest")
+                .with(user(superAdmin).password(superAdminPwd))
+                .with(csrf())
+                .param("userId", user)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
   }
 }

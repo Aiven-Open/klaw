@@ -1099,6 +1099,19 @@ public class UsersTeamsControllerService {
     }
   }
 
+  public RegisterUserInfoModelResponse getRegistrationInfoFromUserName(String userName) {
+    RegisterUserInfo registerUserInfo =
+        manageDatabase.getHandleDbRequests().getRegisterUsersInfo(userName);
+
+    if (registerUserInfo != null) {
+      RegisterUserInfoModelResponse registerUserInfoModel = new RegisterUserInfoModelResponse();
+      copyProperties(registerUserInfo, registerUserInfoModel);
+      return registerUserInfoModel;
+    } else {
+      return null;
+    }
+  }
+
   public Env getEnvDetailsFromId(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()

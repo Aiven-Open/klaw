@@ -15,6 +15,7 @@ import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatt
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import editIcon from "@aivenio/aquarium/dist/src/icons/edit";
 import camelCase from "lodash/camelCase";
+import { redirectUserToOriginalKlawUrl } from "src/services/redirect-user-to-original-klaw-url";
 
 type ClustersTableProps = {
   clusters: ClusterDetails[];
@@ -189,7 +190,7 @@ const ClustersTable = (props: ClustersTableProps) => {
         if (action === "edit") {
           const { id, type } = data;
           const typeForUrl = camelCase(type).toLowerCase();
-          window.location.assign(
+          redirectUserToOriginalKlawUrl(
             `${window.origin}/modifyCluster?clusterId=${id}&clusterType=${typeForUrl}`
           );
         }

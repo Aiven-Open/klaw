@@ -1168,6 +1168,22 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/userRequestInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRegistrationInfoFromUserName"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/user/{userId}/switchTeamsList": {
         parameters: {
             query?: never;
@@ -3174,6 +3190,24 @@ export type components = {
             projectName?: string;
             serviceName?: string;
         };
+        RegisterUserInfoModelResponse: {
+            username: string;
+            fullname: string;
+            mailid?: string;
+            pwd?: string;
+            team?: string;
+            /** Format: int32 */
+            teamId?: number;
+            role?: string;
+            status?: string;
+            /** Format: date-time */
+            registeredTime?: string;
+            approver?: string;
+            registrationId?: string;
+            /** Format: int32 */
+            tenantId?: number;
+            tenantName?: string;
+        };
         ServiceAccounts: {
             /** Format: int32 */
             numberOfAllowedAccounts?: number;
@@ -3371,24 +3405,6 @@ export type components = {
             possibleTeams?: string[];
             deletable?: boolean;
             editable?: boolean;
-        };
-        RegisterUserInfoModelResponse: {
-            username: string;
-            fullname: string;
-            mailid?: string;
-            pwd?: string;
-            team?: string;
-            /** Format: int32 */
-            teamId?: number;
-            role?: string;
-            status?: string;
-            /** Format: date-time */
-            registeredTime?: string;
-            approver?: string;
-            registrationId?: string;
-            /** Format: int32 */
-            tenantId?: number;
-            tenantName?: string;
         };
         EnvUpdatedStatus: {
             result: string;
@@ -5791,6 +5807,28 @@ export interface operations {
             };
         };
     };
+    getRegistrationInfoFromUserName: {
+        parameters: {
+            query: {
+                userName: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterUserInfoModelResponse"];
+                };
+            };
+        };
+    };
     getSwitchTeams: {
         parameters: {
             query?: never;
@@ -8039,6 +8077,7 @@ export enum ApiPaths {
     addNewEnv = "/addNewEnv",
     addNewCluster = "/addNewCluster",
     claimAcl = "/acl/claim/{aclId}",
+    getRegistrationInfoFromUserName = "/userRequestInfo",
     getSwitchTeams = "/user/{userId}/switchTeamsList",
     getTopicRequest = "/topic/request/{topicReqId}",
     testClusterApiConnection = "/testClusterApiConnection",
