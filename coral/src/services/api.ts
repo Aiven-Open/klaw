@@ -119,6 +119,7 @@ const API_PATHS = {
   resetCache: "/resetCache",
   getRequestStatistics: "/requests/statistics",
   getRegistrationInfoFromId: "/getUserInfoFromRegistrationId",
+  getRegistrationInfoFromUserName: "/userRequestInfo",
   getUserDetails: "/getUserDetails",
   getUpdateEnvStatus: "/getUpdateEnvStatus",
   getTopics: "/getTopics",

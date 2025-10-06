@@ -6,6 +6,7 @@ import { ClusterDetails } from "src/domain/cluster";
 import { ClustersTable } from "src/app/features/configuration/clusters/components/ClustersTable";
 import { clusterTypeToString } from "src/services/formatter/cluster-type-formatter";
 import { kafkaFlavorToString } from "src/services/formatter/kafka-flavor-formatter";
+import * as redirectHelper from "src/services/redirect-user-to-original-klaw-url";
 
 const testCluster: ClusterDetails[] = [
   {
@@ -51,6 +52,10 @@ const tableRowHeader = [
 
 const mockHandleShowConnectModal = jest.fn();
 const mockHandleShowDeleteModal = jest.fn();
+
+jest
+  .spyOn(redirectHelper, "redirectUserToOriginalKlawUrl")
+  .mockImplementation(jest.fn());
 
 describe("ClusterTable.tsx", () => {
   beforeAll(() => {
@@ -263,14 +268,8 @@ describe("ClusterTable.tsx", () => {
   });
   describe("shows all clusters as a table (user with permissions.addDeleteEditClusters)", () => {
     const tableLabel = "Cluster overview";
-    beforeAll(() => {
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
 
+    beforeAll(() => {
       customRender(
         <ClustersTable
           clusters={testCluster}
@@ -518,7 +517,9 @@ describe("ClusterTable.tsx", () => {
 
         await userEvent.click(editButton);
 
-        expect(window.location.assign).toHaveBeenCalledWith(
+        expect(
+          redirectHelper.redirectUserToOriginalKlawUrl
+        ).toHaveBeenCalledWith(
           "http://localhost/modifyCluster?clusterId=1&clusterType=kafka"
         );
       });
