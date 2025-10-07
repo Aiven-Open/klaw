@@ -3,6 +3,7 @@ import { userEvent } from "@testing-library/user-event";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 import { AuthUser, logoutUser } from "src/domain/auth-user";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import * as redirectHelper from "src/services/redirect-user-to-original-klaw-url";
 
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 const mockedNavigate = jest.fn();
@@ -148,12 +149,7 @@ describe("ProfileDropdown", () => {
   describe("handles user choosing items from the menu", () => {
     beforeEach(() => {
       mockAuthUser.mockReturnValue(testUser);
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
+
       customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
@@ -183,16 +179,15 @@ describe("ProfileDropdown", () => {
 
   describe("handles user sucessfully login out", () => {
     beforeEach(() => {
+      jest
+        .spyOn(redirectHelper, "redirectUserToOriginalKlawUrl")
+        .mockImplementation(jest.fn());
+
       mockAuthUser.mockReturnValue(testUser);
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
       mockLogoutUser.mockRejectedValue({ status: 401 });
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
+
       customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
@@ -238,7 +233,7 @@ describe("ProfileDropdown", () => {
       const logout = screen.getByRole("menuitem", { name: "Log out" });
       await user.click(logout);
 
-      expect(window.location.assign).toHaveBeenCalledWith(
+      expect(redirectHelper.redirectUserToOriginalKlawUrl).toHaveBeenCalledWith(
         "http://localhost/login"
       );
     });
@@ -252,14 +247,13 @@ describe("ProfileDropdown", () => {
     };
 
     beforeEach(() => {
+      jest
+        .spyOn(redirectHelper, "redirectUserToOriginalKlawUrl")
+        .mockImplementation(jest.fn());
+
       jest.spyOn(console, "error").mockImplementation((error) => error);
       mockLogoutUser.mockRejectedValue(testError);
-      Object.defineProperty(window, "location", {
-        value: {
-          assign: jest.fn(),
-        },
-        writable: true,
-      });
+
       customRender(<ProfileDropdown />, { memoryRouter: true });
     });
 
@@ -277,7 +271,9 @@ describe("ProfileDropdown", () => {
       const logout = screen.getByRole("menuitem", { name: "Log out" });
       await user.click(logout);
 
-      expect(window.location.assign).not.toHaveBeenCalled();
+      expect(
+        redirectHelper.redirectUserToOriginalKlawUrl
+      ).not.toHaveBeenCalled();
       expect(console.error).toHaveBeenCalledWith(testError);
     });
 

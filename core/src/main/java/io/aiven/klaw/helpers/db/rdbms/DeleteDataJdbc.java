@@ -77,7 +77,8 @@ public class DeleteDataJdbc {
       TeamRepo teamRepo,
       AclRequestsRepo aclRequestsRepo,
       AclRepo aclRepo,
-      UserInfoRepo userInfoRepo) {
+      UserInfoRepo userInfoRepo,
+      RegisterInfoRepo registerInfoRepo) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.envRepo = envRepo;
@@ -85,6 +86,7 @@ public class DeleteDataJdbc {
     this.aclRepo = aclRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
+    this.registerInfoRepo = registerInfoRepo;
   }
 
   public String deleteConnectorRequest(int connectorId, int tenantId) {
@@ -230,6 +232,11 @@ public class DeleteDataJdbc {
     UserInfo user = new UserInfo();
     user.setUsername(userId);
     userInfoRepo.delete(user);
+
+    // if the record exists in kwregisterusers, delete it
+    Optional<RegisterUserInfo> registerUserInfo = registerInfoRepo.findByUsername(userId);
+    registerUserInfo.ifPresent(userInfo -> registerInfoRepo.delete(userInfo));
+
     return ApiResultStatus.SUCCESS.value;
   }
 
