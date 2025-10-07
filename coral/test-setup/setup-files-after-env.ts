@@ -22,4 +22,8 @@ jest.mock("src/services/is-dev-mode", () => ({
 failOnConsole({
   shouldFailOnWarn: true,
   shouldFailOnError: true,
+  silenceMessage(message) {
+    // remove console.warn from tests until update react router 7
+    return /React Router Future Flag Warning/.test(message);
+  },
 });
