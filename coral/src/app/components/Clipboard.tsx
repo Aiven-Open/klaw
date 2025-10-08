@@ -21,7 +21,7 @@ const ClipBoard = ({
   accessibleCopiedDescription: string;
   description?: string;
 }) => {
-  const feedbackTimerRef = useRef<number>();
+  const feedbackTimerRef = useRef<number>(undefined);
 
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
 

@@ -251,8 +251,8 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
           >
             <label
               class="w-full"
-              for="react-aria-:r0:"
-              id="react-aria-:r0:-label"
+              for="react-aria-_r_0_"
+              id="react-aria-_r_0_-label"
             >
               <span
                 class="block mb-2"
@@ -293,7 +293,7 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                 </span>
                 <select
                   class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-inactive focus:outline-none px-3 py-3 bg-body disabled:border-default disabled:bg-default disabled:text-inactive border border-default hover:border-intense focus:border-info-default"
-                  id="react-aria-:r0:"
+                  id="react-aria-_r_0_"
                 >
                   <option
                     value="7"
