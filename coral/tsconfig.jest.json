@@ -5,6 +5,7 @@
     "target": "ESNext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": true
+    "allowJs": true,
+    "isolatedModules": true
   }
 }

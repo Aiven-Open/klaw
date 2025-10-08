@@ -1,5 +1,5 @@
 import { useToast } from "@aivenio/aquarium";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { Navigate, RouteObject, useParams } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import {

@@ -124,8 +124,7 @@ describe("RequestDeclineModal.test", () => {
     });
 
     it("shows error when entering a too long message", async () => {
-      const tooLong =
-        "Quisque commodo aliquam tristique. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed ornare turpis ac cursus vulputate. Morbi auctor sodales porttitor. Mauris placerat ante id facilisis vehicula. Pellentesque ornare quis massa elementum auctor. Suspendisse potenti. Phasellus dignissim sit amet risus vitae aliquet. Vivamus at dolor vehicula, placerat odio sit amet, imperdiet enim. Donec scelerisque pretium metus ut dignissim. Morbi posuere tortor in cursus porttitor. Maecenas a diam ut urna mattis convallis a vel ligula.";
+      const tooLong = "x".repeat(301);
 
       const declineButton = screen.getByRole("button", {
         name: "Decline request",
@@ -134,7 +133,7 @@ describe("RequestDeclineModal.test", () => {
         name: "Submit a reason to decline the request *",
       });
 
-      await userEvent.type(textArea, tooLong);
+      await userEvent.type(textArea, tooLong, { delay: 0 });
       expect(declineButton).toBeDisabled();
       expect(textArea).toBeInvalid();
     });
