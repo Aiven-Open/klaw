@@ -44,7 +44,7 @@ const ConnectorPromotionBanner = ({
         type={"connector"}
         promoteElement={
           <InternalLinkButton
-            to={`/connector/${connectorName}/request-promotion?sourceEnv=${connectorPromotionDetails.sourceEnv}&targetEnv=${connectorPromotionDetails.targetEnvId}`}
+            href={`/connector/${connectorName}/request-promotion?sourceEnv=${connectorPromotionDetails.sourceEnv}&targetEnv=${connectorPromotionDetails.targetEnvId}`}
           >
             Promote
           </InternalLinkButton>

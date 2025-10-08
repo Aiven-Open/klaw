@@ -11,7 +11,7 @@ describe("InternalLinkButton", () => {
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       customRender(
-        <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>,
+        <InternalLinkButton href={testTo}>{testText}</InternalLinkButton>,
         { browserRouter: true }
       );
     });
@@ -36,7 +36,7 @@ describe("InternalLinkButton", () => {
 
     it("shows a primary button by default", () => {
       const { container } = customRender(
-        <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>,
+        <InternalLinkButton href={testTo}>{testText}</InternalLinkButton>,
         { browserRouter: true }
       );
 
@@ -45,7 +45,7 @@ describe("InternalLinkButton", () => {
 
     it("shows a secondary button based on props", () => {
       const { container } = customRender(
-        <InternalLinkButton to={testTo} kind={"secondary"}>
+        <InternalLinkButton href={testTo} kind={"secondary"}>
           {testText}
         </InternalLinkButton>,
         { browserRouter: true }
@@ -58,7 +58,7 @@ describe("InternalLinkButton", () => {
   describe("renders a disabled link dependent on prop", () => {
     beforeAll(() => {
       customRender(
-        <InternalLinkButton to={testTo} disabled={true}>
+        <InternalLinkButton href={testTo} disabled={true}>
           {testText}
         </InternalLinkButton>,
         { browserRouter: true }
