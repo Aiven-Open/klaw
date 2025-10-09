@@ -117,7 +117,7 @@ const PromotionBanner = ({
         <Box component={"p"} marginBottom={"l1"}>
           {text}
         </Box>
-        <InternalLinkButton to={link}>View request</InternalLinkButton>
+        <InternalLinkButton href={link}>View request</InternalLinkButton>
       </Banner>
     );
   }

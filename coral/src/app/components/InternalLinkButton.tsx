@@ -1,11 +1,6 @@
-import { asButton, ButtonProps, Button } from "@aivenio/aquarium";
-import { Link, LinkProps } from "react-router-dom";
+import { Link, ButtonProps, Button, LinkProps } from "@aivenio/aquarium";
 import { ResolveIntersectionTypes } from "types/utils";
-import { ElementType, ReactNode } from "react";
-
-const AsButton = asButton<"a", LinkProps, HTMLAnchorElement>(
-  Link as ElementType
-);
+import { ReactNode } from "react";
 
 type InternalLinkButtonProps = ResolveIntersectionTypes<
   {
@@ -31,7 +26,7 @@ function InternalLinkButton({ children, ...props }: InternalLinkButtonProps) {
       </Button>
     );
   }
-  return <AsButton {...props}>{children}</AsButton>;
+  return <Link.Button {...props}>{children}</Link.Button>;
 }
 
 export { InternalLinkButton };
