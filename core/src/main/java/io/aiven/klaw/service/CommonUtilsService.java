@@ -550,6 +550,21 @@ public class CommonUtilsService {
     }
   }
 
+  public List<Topic> getTopicsForTopicNameAndConfigs(
+      String topicName, int partitions, String replicationFactor, int tenantId) {
+    if (topicName != null) {
+      return manageDatabase.getTopicsForTenant(tenantId).stream()
+          .filter(
+              topic ->
+                  topic.getTopicname().equals(topicName)
+                      && topic.getNoOfPartitions().equals(partitions)
+                      && topic.getNoOfReplicas().equals(replicationFactor))
+          .toList();
+    } else {
+      return manageDatabase.getTopicsForTenant(tenantId);
+    }
+  }
+
   public List<Topic> getTopics(String env, Integer teamId, int tenantId) {
     log.debug("getSyncTopics {} {}", env, teamId);
     List<Topic> allTopicsList = manageDatabase.getTopicsForTenant(tenantId);
