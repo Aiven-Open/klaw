@@ -548,7 +548,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(14, 6));
+        .thenReturn(generateClusterTopics(14));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -586,7 +586,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(14, 6));
+        .thenReturn(generateClusterTopics(14));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -620,7 +620,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(15, 6));
+        .thenReturn(generateClusterTopics(15));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -659,7 +659,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(19, 6));
+        .thenReturn(generateClusterTopics(19));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -697,7 +697,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(15, 6));
+        .thenReturn(generateClusterTopics(15));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -736,7 +736,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(10, 6));
+        .thenReturn(generateClusterTopics(10));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -774,7 +774,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(15, 6));
+        .thenReturn(generateClusterTopics(15));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -833,7 +833,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     List<Topic> topics =
-        utilMethods.generateTopics(6, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -844,8 +844,7 @@ public class TopicSyncControllerServiceTest {
             eq(101),
             eq(false)))
         .thenReturn(
-            generateClusterTopics(
-                6, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -914,7 +913,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     List<Topic> topics =
-        utilMethods.generateTopics(9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -925,8 +924,7 @@ public class TopicSyncControllerServiceTest {
             eq(101),
             eq(false)))
         .thenReturn(
-            generateClusterTopics(
-                9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -994,7 +992,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     List<Topic> topics =
-        utilMethods.generateTopics(9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -1005,8 +1003,7 @@ public class TopicSyncControllerServiceTest {
             eq(101),
             eq(false)))
         .thenReturn(
-            generateClusterTopics(
-                9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -1076,7 +1073,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     List<Topic> topics =
-        utilMethods.generateTopics(9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -1087,8 +1084,7 @@ public class TopicSyncControllerServiceTest {
             eq(101),
             eq(false)))
         .thenReturn(
-            generateClusterTopics(
-                9, Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -1129,7 +1125,7 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    List<Topic> topics = utilMethods.generateTopics(9, Arrays.copyOfRange(namesOfTopics, 0, 1));
+    List<Topic> topics = utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, 1));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -1139,7 +1135,7 @@ public class TopicSyncControllerServiceTest {
             anyString(),
             eq(101),
             eq(false)))
-        .thenReturn(generateClusterTopics(9, Arrays.copyOfRange(namesOfTopics, 0, 4)));
+        .thenReturn(generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, 4)));
 
     // from the DB
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
@@ -1171,97 +1167,21 @@ public class TopicSyncControllerServiceTest {
     assertThat(actualStringValidation).isEqualTo(3);
   }
 
-  @Test
-  @Order(22)
-  public void getSyncList_FailedValidationOn_DifferentPartitions() throws Exception {
-    String[] namesOfTopics = new String[] {"Topic1", "Topic2", "Topic3", "Topic4"};
-    stubUserInfo();
-    validatedEnvironmentSetUp(null, null);
-    // Get KwCluster Settings
-    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
-        .thenReturn(getKwClusters(4));
-    List<Topic> topics = utilMethods.generateTopics(9, Arrays.copyOfRange(namesOfTopics, 0, 1));
-
-    // from the cluster
-    when(clusterApiService.getAllTopics(
-            anyString(),
-            any(KafkaSupportedProtocol.class),
-            anyString(),
-            anyString(),
-            eq(101),
-            eq(false)))
-        .thenReturn(generateClusterTopics(6, Arrays.copyOfRange(namesOfTopics, 0, 4)));
-
-    // from the DB
-    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
-        .thenReturn(false);
-
-    SyncTopicsList syncTopics =
-        topicSyncControllerService.getSyncTopics(
-            "1", "1", "", null, "false", false, false, null, false);
-
-    assertThat(syncTopics.getResultSet()).hasSize(4); // all 4 topics have different partitions
-    int actualInvalid = 0, actualStringValidation = 0;
-    // Deleted Topics are not set with validation status as they are being removed
-    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
-      if (!response.isValidatedTopic()
-          && (response.getRemarks() == null || !response.getRemarks().equals("DELETED"))) {
-        actualInvalid++;
-      }
-      if (!StringUtils.isEmpty(response.getValidationStatus())) {
-        actualStringValidation++;
-      }
-    }
-    assertThat(syncTopics.getResultSet().get(0).getRemarks()).isEqualTo("UPDATED");
-    // every invalid string shoult match with an invalid flag
-    assertThat(actualInvalid).isEqualTo(actualStringValidation);
-    assertThat(actualInvalid).isEqualTo(4);
-    assertThat(actualStringValidation).isEqualTo(4);
-  }
-
-  @Test
-  @Order(23)
-  public void updateSyncTopicsSuccessWithDifferentConfigs() throws KlawException {
-    stubUserInfo();
-    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
-    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
-    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.SYNC_TOPICS))
-        .thenReturn(false);
-    when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.generateTopics(1));
-    when(commonUtilsService.getTopicsForTopicNameAndConfigs(
-            anyString(), anyInt(), anyString(), anyInt()))
-        .thenReturn(utilMethods.generateTopics(1));
-    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("Team1");
-    when(handleDbRequests.addToSynctopics(any()))
-        .thenReturn(
-            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
-
-    ApiResponse result =
-        topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
-    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  private LoadTopicsResponse generateClusterTopics(int numberOfTopics, int numOfPartitions) {
+  private LoadTopicsResponse generateClusterTopics(int numberOfTopics) {
     String[] topicNames = new String[numberOfTopics];
     for (int i = 0; i < numberOfTopics; i++) {
       topicNames[i] = "Topic" + i;
     }
-    return generateClusterTopics(numOfPartitions, topicNames);
+    return generateClusterTopics(topicNames);
   }
 
-  private LoadTopicsResponse generateClusterTopics(int numOfPartitions, String... topicNames) {
+  private LoadTopicsResponse generateClusterTopics(String... topicNames) {
     Set<TopicConfig> topics = new HashSet<>();
 
     for (String topicName : topicNames) {
       TopicConfig topic = new TopicConfig();
       topic.setTopicName(topicName);
-      topic.setPartitions(numOfPartitions + "");
+      topic.setPartitions("9");
       topic.setReplicationFactor("3");
       topics.add(topic);
     }

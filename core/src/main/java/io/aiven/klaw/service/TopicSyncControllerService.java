@@ -496,29 +496,18 @@ public class TopicSyncControllerService {
 
     topicMap = topicsList.get(i);
     final String tmpTopicName = topicMap.getTopicName();
-    final String tmpTopicPartitions = topicMap.getPartitions();
-    final String tmpTopicReplicationFactor = topicMap.getReplicationFactor();
 
     mp.setTopicname(tmpTopicName);
     mp.setTopicpartitions(Integer.parseInt(topicMap.getPartitions()));
     mp.setReplicationfactor(topicMap.getReplicationFactor());
 
     String teamUpdated = null;
-    boolean topicConfigDiffers = false;
-    Optional<Topic> teamUpdatedFirst = Optional.empty();
+
     try {
-      teamUpdatedFirst =
+      Optional<Topic> teamUpdatedFirst =
           topicsFromSOT.stream()
               .filter(a -> Objects.equals(a.getTopicname(), tmpTopicName))
               .findFirst();
-
-      topicConfigDiffers =
-          topicsFromSOT.stream()
-              .anyMatch(
-                  a ->
-                      (Objects.equals(a.getTopicname(), tmpTopicName))
-                          && (a.getNoOfPartitions() != Integer.parseInt(tmpTopicPartitions)
-                              || !Objects.equals(a.getNoOfReplicas(), tmpTopicReplicationFactor)));
 
       if (teamUpdatedFirst.isPresent()) {
         teamUpdated =
@@ -528,7 +517,7 @@ public class TopicSyncControllerService {
       log.error("Error from getSyncTopicList ", e);
     }
 
-    if (teamUpdated != null && !teamUpdated.equals("undefined") && !topicConfigDiffers) {
+    if (teamUpdated != null && !teamUpdated.equals("undefined")) {
       mp.setPossibleTeams(teamList);
       if (teamList.contains(teamUpdated)) {
         mp.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, teamUpdated));
@@ -536,18 +525,9 @@ public class TopicSyncControllerService {
         return false; // belongs to different tenant
       }
     } else {
-      if (teamUpdatedFirst.isPresent() && topicConfigDiffers) {
-        List<String> topicTeamList = new ArrayList<>();
-        topicTeamList.add(
-            manageDatabase.getTeamNameFromTeamId(tenantId, teamUpdatedFirst.get().getTeamId()));
-        mp.setRemarks("UPDATED");
-        mp.setPossibleTeams(topicTeamList);
-        mp.setTeamId(0);
-      } else {
-        mp.setRemarks("ADDED");
-        mp.setPossibleTeams(teamList);
-        mp.setTeamId(0);
-      }
+      mp.setPossibleTeams(teamList);
+      mp.setTeamId(0);
+      mp.setRemarks("ADDED");
     }
 
     return true;
@@ -1088,7 +1068,6 @@ public class TopicSyncControllerService {
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
 
     List<Topic> existingTopics;
-    List<Topic> existingTopicsWithConfigs;
     List<Topic> listTopics = new ArrayList<>();
     Topic t;
 
@@ -1121,12 +1100,6 @@ public class TopicSyncControllerService {
         }
         existingTopics =
             commonUtilsService.getTopicsForTopicName(topicUpdate.getTopicName(), tenantId);
-        existingTopicsWithConfigs =
-            commonUtilsService.getTopicsForTopicNameAndConfigs(
-                topicUpdate.getTopicName(),
-                topicUpdate.getPartitions(),
-                topicUpdate.getReplicationFactor(),
-                tenantId);
 
         if (existingTopics != null) {
           for (Topic existingTopic : existingTopics) {
@@ -1172,10 +1145,6 @@ public class TopicSyncControllerService {
               t.setTeamId(
                   manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
               t.setTopicname(topicUpdate.getTopicName());
-              if (existingTopicsWithConfigs.isEmpty()) {
-                t.setNoOfPartitions(topicUpdate.getPartitions());
-                t.setNoOfReplicas(topicUpdate.getReplicationFactor());
-              }
               t.setEnvironment(existingTopic.getEnvironment());
               t.setExistingTopic(true);
               t.setTenantId(tenantId);
