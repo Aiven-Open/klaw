@@ -251,8 +251,8 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
           >
             <label
               class="w-full"
-              for="react-aria-:r0:"
-              id="react-aria-:r0:-label"
+              for="react-aria-_r_0_"
+              id="react-aria-_r_0_-label"
             >
               <span
                 class="block mb-2"
@@ -263,57 +263,57 @@ exports[`Dashboard.tsx renders correct DOM according to data received from getRe
                   Timeframe
                 </span>
               </span>
-              <span
-                class="Aquarium-NativeSelectBase relative block"
-              >
-                <span
-                  class="absolute right-0 inset-y-0 mr-4 text-inactive flex ml-3 pointer-events-none typography-default-strong mt-4"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="Aquarium-Icon"
-                    data-testid="icon-dropdown"
-                    height="1em"
-                    preserveAspectRatio="xMidYMid meet"
-                    role="img"
-                    viewBox="0 0 22 22"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                  >
-                    <path
-                      d="m5.5 8.25 5.5 5.5 5.5-5.5"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                    />
-                  </svg>
-                </span>
-                <select
-                  class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-inactive focus:outline-none px-3 py-3 bg-body disabled:border-default disabled:bg-default disabled:text-inactive border border-default hover:border-intense focus:border-info-default"
-                  id="react-aria-:r0:"
-                >
-                  <option
-                    value="7"
-                  >
-                    Last 7 days
-                  </option>
-                  <option
-                    selected=""
-                    value="30"
-                  >
-                    Last 30 days
-                  </option>
-                  <option
-                    value="90"
-                  >
-                    Last 90 days
-                  </option>
-                </select>
-              </span>
             </label>
+            <span
+              class="Aquarium-NativeSelectBase relative block"
+            >
+              <span
+                class="absolute right-0 inset-y-0 mr-4 text-inactive flex ml-3 pointer-events-none typography-default-strong mt-4"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="Aquarium-Icon"
+                  data-testid="icon-dropdown"
+                  height="1em"
+                  preserveAspectRatio="xMidYMid meet"
+                  role="img"
+                  viewBox="0 0 22 22"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
+                  <path
+                    d="m5.5 8.25 5.5 5.5 5.5-5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </span>
+              <select
+                class="block w-full rounded-sm appearance-none disabled:cursor-not-allowed typography-small text-default placeholder:text-inactive focus:outline-none px-3 py-3 bg-transparent disabled:border-default disabled:bg-default disabled:text-inactive border border-default hover:border-intense focus:border-info-default"
+                id="react-aria-_r_0_"
+              >
+                <option
+                  value="7"
+                >
+                  Last 7 days
+                </option>
+                <option
+                  selected=""
+                  value="30"
+                >
+                  Last 30 days
+                </option>
+                <option
+                  value="90"
+                >
+                  Last 90 days
+                </option>
+              </select>
+            </span>
             <p
               class="block mt-1 mb-3 typography-caption"
             >

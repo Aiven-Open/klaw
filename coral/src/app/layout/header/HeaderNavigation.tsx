@@ -33,9 +33,9 @@ function HeaderNavigation() {
           }}
         >
           <DropdownMenu.Trigger>
-            <Button.PrimaryDropdown aria-label="Request a new">
+            <Button.Dropdown aria-label="Request a new">
               Request a new
-            </Button.PrimaryDropdown>
+            </Button.Dropdown>
           </DropdownMenu.Trigger>
           <DropdownMenu.Items>
             <DropdownMenu.Item key="topic" icon={codeBlock}>

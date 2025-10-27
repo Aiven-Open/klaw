@@ -761,7 +761,7 @@ describe("Form", () => {
           name="cities"
           labelText="Cities"
           options={["Helsinki", "Paris", "Berlin"]}
-          noResults="No cities"
+          emptyState="No cities"
           createOption={(newOption) => {
             if (newOption === undefined) {
               return;
