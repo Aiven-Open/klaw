@@ -1272,10 +1272,10 @@ public class UtilMethods {
     for (int i = 0; i < numberOfTopics; i++) {
       topicNames[i] = "Topic" + i;
     }
-    return generateTopics(topicNames);
+    return generateTopics(6, topicNames);
   }
 
-  public List<Topic> generateTopics(String... topicNames) {
+  public List<Topic> generateTopics(int numOfPartitions, String... topicNames) {
     List<Topic> topics = new ArrayList<>();
 
     for (int i = 0; i < topicNames.length; i++) {
@@ -1285,7 +1285,7 @@ public class UtilMethods {
       topic.setTopicid(i);
       topic.setTeamId(10);
       topic.setNoOfReplicas("3");
-      topic.setNoOfPartitions(6);
+      topic.setNoOfPartitions(numOfPartitions);
       topic.setEnvironment("1");
       topics.add(topic);
     }
