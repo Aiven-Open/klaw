@@ -550,6 +550,33 @@ public class CommonUtilsService {
     }
   }
 
+  /**
+   * Retrieves a list of topics for a given tenant, optionally filtered by topic name, number of
+   * partitions, and replication factor.
+   *
+   * @param topicName the name of the topic to filter by; if null, all topics for the tenant are
+   *     returned
+   * @param partitions the number of partitions to filter by
+   * @param replicationFactor the replication factor to filter by
+   * @param tenantId the ID of the tenant whose topics are being queried
+   * @return a list of {@link Topic} objects matching the specified criteria, or all topics for the
+   *     tenant if {@code topicName} is null
+   */
+  public List<Topic> getTopicsForTopicNameAndConfigs(
+      String topicName, int partitions, String replicationFactor, int tenantId) {
+    if (topicName != null) {
+      return manageDatabase.getTopicsForTenant(tenantId).stream()
+          .filter(
+              topic ->
+                  topic.getTopicname().equals(topicName)
+                      && topic.getNoOfPartitions().equals(partitions)
+                      && topic.getNoOfReplicas().equals(replicationFactor))
+          .toList();
+    } else {
+      return manageDatabase.getTopicsForTenant(tenantId);
+    }
+  }
+
   public List<Topic> getTopics(String env, Integer teamId, int tenantId) {
     log.debug("getSyncTopics {} {}", env, teamId);
     List<Topic> allTopicsList = manageDatabase.getTopicsForTenant(tenantId);
