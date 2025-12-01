@@ -168,8 +168,8 @@ public class SchemaRegistryControllerService {
   private Comparator<SchemaRequestsResponseModel> getPreferredOrder(Order order) {
     return switch (order) {
       case ASC_REQUESTED_TIME -> Comparator.comparing(BaseRequestsResponseModel::getRequesttime);
-      case DESC_REQUESTED_TIME -> Collections.reverseOrder(
-          Comparator.comparing(BaseRequestsResponseModel::getRequesttime));
+      case DESC_REQUESTED_TIME ->
+          Collections.reverseOrder(Comparator.comparing(BaseRequestsResponseModel::getRequesttime));
     };
   }
 

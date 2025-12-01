@@ -209,11 +209,11 @@ public class ApprovalService {
         if ((completedApprovalTypes.isEmpty() || allowMultiApproval)
             && completedApprovalTypes.add(approval.getApprovalType())) {
           switch (approval.getApprovalType()) {
-            case TOPIC_TEAM_OWNER, CONNECTOR_TEAM_OWNER -> isResourceApprovalSatisfied(
-                user.get(), resourceOwnerId, approval, approvals);
+            case TOPIC_TEAM_OWNER, CONNECTOR_TEAM_OWNER ->
+                isResourceApprovalSatisfied(user.get(), resourceOwnerId, approval, approvals);
 
-            case ACL_TEAM_OWNER -> isAclApprovalSatisfied(
-                user.get(), aclOwnerId, approval, approvals);
+            case ACL_TEAM_OWNER ->
+                isAclApprovalSatisfied(user.get(), aclOwnerId, approval, approvals);
 
             case TEAM -> isTeamApprovalSatisfied(user.get(), approval, approvals);
           }
