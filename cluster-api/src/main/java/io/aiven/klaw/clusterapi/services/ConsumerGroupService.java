@@ -65,9 +65,8 @@ public class ConsumerGroupService {
         switch (consumerGroupOffsetsRequest.getOffsetResetType()) {
           case EARLIEST -> OffsetSpec.earliest();
           case LATEST -> OffsetSpec.latest();
-          case TO_DATE_TIME ->
-              OffsetSpec.forTimestamp(
-                  consumerGroupOffsetsRequest.getConsumerGroupResetTimestampMilliSecs());
+          case TO_DATE_TIME -> OffsetSpec.forTimestamp(
+              consumerGroupOffsetsRequest.getConsumerGroupResetTimestampMilliSecs());
         };
     Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter = new HashMap<>();
 

@@ -14,10 +14,9 @@ public class Pager {
       case ">>" -> totalPages;
       case "<" -> Integer.parseInt(currentPage) - 1;
       case "<<" -> 1;
-      default ->
-          !NumberUtils.isCreatable(pageNo)
-              ? defaultToCurrentPage(currentPage)
-              : Integer.parseInt(pageNo);
+      default -> !NumberUtils.isCreatable(pageNo)
+          ? defaultToCurrentPage(currentPage)
+          : Integer.parseInt(pageNo);
     };
   }
 

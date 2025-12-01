@@ -584,14 +584,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public void addEnvToCache(int tenantId, Env env, boolean isLocal) {
 
     switch (KafkaClustersType.of(env.getType())) {
-      case KAFKA ->
-          kafkaEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
-      case SCHEMA_REGISTRY ->
-          schemaRegEnvListPerTenant.addOrUpdate(
-              tenantId, Integer.valueOf(env.getId()), env, isLocal);
-      case KAFKA_CONNECT ->
-          kafkaConnectEnvListPerTenant.addOrUpdate(
-              tenantId, Integer.valueOf(env.getId()), env, isLocal);
+      case KAFKA -> kafkaEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
+      case SCHEMA_REGISTRY -> schemaRegEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
+      case KAFKA_CONNECT -> kafkaConnectEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
     }
     allEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
     updateTeamToEnvMappings(tenantId);
@@ -617,10 +615,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
     switch (KafkaClustersType.of(env.get().getType())) {
       case KAFKA -> kafkaEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-      case SCHEMA_REGISTRY ->
-          schemaRegEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-      case KAFKA_CONNECT ->
-          kafkaConnectEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
+      case SCHEMA_REGISTRY -> schemaRegEnvListPerTenant.remove(
+          tenantId, Integer.valueOf(envId), isLocal);
+      case KAFKA_CONNECT -> kafkaConnectEnvListPerTenant.remove(
+          tenantId, Integer.valueOf(envId), isLocal);
     }
     allEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
     updateTeamToEnvMappings(tenantId);
