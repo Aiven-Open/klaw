@@ -349,4 +349,22 @@ public class TopicControllerTest {
             .andReturn();
     assertThat(mvcResult.getResponse().getContentAsString()).isEqualTo("{}");
   }
+
+  @Test
+  @Order(14)
+  public void saveTopicDocumentation() throws Exception {
+    TopicInfo topicInfo = utilMethods.getTopicInfo();
+    topicInfo.setDocumentation("<p>Test documentation</p>");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(topicInfo);
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
+    when(topicControllerService.saveTopicDocumentation(any())).thenReturn(apiResponse);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/saveTopicDocumentation")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+  }
 }
