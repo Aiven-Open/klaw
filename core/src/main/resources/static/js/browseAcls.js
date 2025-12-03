@@ -6,7 +6,7 @@
 // message store / key / gui
 var app = angular.module('browseAclsApp',['textAngular', 'ngSanitize', 'sharedHttpInterceptor']);
 
-app.controller("browseAclsCtrl", function($scope, $http, $location, $window, $sanitize) {
+app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
@@ -18,24 +18,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window, $sa
 	$scope.envSelectedParam;
 
     $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'NONE','name':'None'}];
-
-	// Sanitize HTML to prevent XSS attacks while preserving safe HTML formatting
-	$scope.sanitizeHtml = function(html) {
-		if (!html) return '';
-		try {
-			return $sanitize(html);
-		} catch (e) {
-			// If sanitization fails, escape all HTML
-			var map = {
-				'&': '&amp;',
-				'<': '&lt;',
-				'>': '&gt;',
-				'"': '&quot;',
-				"'": '&#039;'
-			};
-			return html.replace(/[&<>"']/g, function(m) { return map[m]; });
-		}
-	}
 
 	$scope.showSubmitFailed = function(title, text){
 		swal({
@@ -626,9 +608,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window, $sa
                                          });
                                          $scope.addDocsVar = false;
                                          $scope.tmpTopicDocumentation = $scope.topicDocumentation;
-                                         // Sanitize HTML to prevent XSS attacks
-                                         var sanitizedDoc = $scope.sanitizeHtml($scope.topicDocumentation);
-                                         document.getElementById("topicDocId").innerHTML = sanitizedDoc;
+                                         // Use textContent to prevent XSS attacks - displays as plain text
+                                         document.getElementById("topicDocId").textContent = $scope.topicDocumentation || '';
                                     }
                                     else{
                                             $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
@@ -732,9 +713,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window, $sa
             	$scope.topicDocumentation = output.topicDocumentation;
             	$scope.tmpTopicDocumentation = output.topicDocumentation;
             	$scope.topicIdForDocumentation = output.topicIdForDocumentation;
-            	// Sanitize HTML to prevent XSS attacks
-            	var sanitizedDoc = $scope.sanitizeHtml(output.topicDocumentation);
-            	document.getElementById("topicDocId").innerHTML = sanitizedDoc;
+            	// Use textContent to prevent XSS attacks - displays as plain text
+            	document.getElementById("topicDocId").textContent = output.topicDocumentation || '';
 		    }
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
