@@ -71,6 +71,7 @@ public class UtilController {
     return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
   }
 
+  @PermissionAllowed(permissionAllowed = {PermissionType.UPDATE_SERVERCONFIG})
   @RequestMapping(
       value = "/resetMemoryCache",
       method = RequestMethod.POST,
