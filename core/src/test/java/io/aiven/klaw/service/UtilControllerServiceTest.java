@@ -54,11 +54,20 @@ public class UtilControllerServiceTest {
   public void resetCache() {
     ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(mailService.getUserName(any())).thenReturn("anonymousUser");
+    when(mailService.getUserName(any())).thenReturn("testuser");
     when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_USERS))
         .thenReturn(false);
     ApiResponse apiResponse = utilControllerService.resetCache(resetEntityCache);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void resetCacheRejectsAnonymousUser() {
+    ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(mailService.getUserName(any())).thenReturn("anonymousUser");
+    ApiResponse apiResponse = utilControllerService.resetCache(resetEntityCache);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
