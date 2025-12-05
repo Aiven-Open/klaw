@@ -615,7 +615,7 @@ public class UtilControllerService implements InitializingBean {
             commonUtilsService.getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
-    log.info("Reset cache triggered by user {} on instance {}", getUserName(), resetEntityCache);
+    log.debug("Reset cache triggered by user {} on instance {}", getUserName(), resetEntityCache);
 
     try {
       CompletableFuture.runAsync(
