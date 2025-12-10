@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -35,8 +35,8 @@ import org.mockserver.model.HttpStatusCode;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -73,7 +73,7 @@ public class ClusterApiConfluentCloudControllerIT {
 
   @Autowired private MockMvc mvc;
 
-  @Autowired ObjectMapper objectMapper;
+  ObjectMapper objectMapper = new ObjectMapper();
   private static UtilMethods utilMethods;
 
   static boolean bindPort = false;

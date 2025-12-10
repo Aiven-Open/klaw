@@ -29,8 +29,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,12 +39,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(SpringExtension.class)
 public class ClusterApiControllerTest {
 
-  @MockBean private UtilComponentsService utilComponentsService;
-  @MockBean private ApacheKafkaAclService apacheKafkaAclService;
-  @MockBean private ApacheKafkaTopicService apacheKafkaTopicService;
-  @MockBean private AivenApiService aivenApiService;
+  @MockitoBean private UtilComponentsService utilComponentsService;
+  @MockitoBean private ApacheKafkaAclService apacheKafkaAclService;
+  @MockitoBean private ApacheKafkaTopicService apacheKafkaTopicService;
+  @MockitoBean private AivenApiService aivenApiService;
 
-  @MockBean private ConfluentCloudApiService confluentCloudApiService;
+  @MockitoBean private ConfluentCloudApiService confluentCloudApiService;
 
   private MockMvc mvc;
 

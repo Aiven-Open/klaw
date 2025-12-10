@@ -11,17 +11,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableSchedulerLock(
     defaultLockAtMostFor = "PT30S" // ShedLock now reads this as a Duration string
-)
+    )
 @SpringBootApplication(
     exclude = {
-        DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class
-    }
-)
+      DataSourceAutoConfiguration.class,
+      DataSourceTransactionManagerAutoConfiguration.class,
+      HibernateJpaAutoConfiguration.class
+    })
 public class UiapiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(UiapiApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(UiapiApplication.class, args);
+  }
 }

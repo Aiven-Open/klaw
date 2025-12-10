@@ -53,8 +53,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
 import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.acl.AclBindingFilter;
-import org.apache.kafka.common.acl.AclOperation;
-import org.apache.kafka.common.acl.AclPermissionType;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
@@ -69,7 +67,6 @@ import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -77,6 +74,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -128,7 +126,7 @@ public class ClusterApiControllerIT {
   @Autowired private MockMvc mvc;
   ObjectMapper mapper = new ObjectMapper();
 
-  @MockBean SchemaService schemaService;
+  @MockitoBean SchemaService schemaService;
 
   @Test
   @Order(1)
@@ -185,9 +183,9 @@ public class ClusterApiControllerIT {
     String url = "/topics/createTopics";
     executeCreateTopicRequest(jsonReq, url);
 
-    Map<String, Object> configs = Map.of(
-        AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString()
-    );
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
 
     try (AdminClient adminClient = AdminClient.create(configs)) {
       ListTopicsResult topicsResult = adminClient.listTopics();
@@ -221,22 +219,27 @@ public class ClusterApiControllerIT {
         .getResponse();
     Thread.sleep(300);
 
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            ConfigResource configResource =
-                new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
-            Config topicConfig =
-                adminClient
-                    .describeConfigs(Collections.singleton(configResource))
-                    .all()
-                    .get(10, TimeUnit.SECONDS)
-                    .get(configResource);
-            assertThat(topicConfig.get("compression.type").value()).isEqualTo("snappy");
-          } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error("Error : ", e);
-          }
-        });
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ConfigResource configResource =
+          new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
+
+      Config topicConfig =
+          adminClient
+              .describeConfigs(Collections.singleton(configResource))
+              .all()
+              .get(10, TimeUnit.SECONDS)
+              .get(configResource);
+
+      assertThat(topicConfig.get("compression.type").value()).isEqualTo("snappy");
+
+    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+      log.error("Error checking topic config", e);
+      Thread.currentThread().interrupt(); // restore interrupt status
+    }
   }
 
   @Test
@@ -293,16 +296,29 @@ public class ClusterApiControllerIT {
     final List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList = new ArrayList<>();
 
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter,
-                            new AccessControlEntryFilter(
-                                "User:*", ipHost, AclOperation.WRITE, AclPermissionType.ALLOW)))
-                    .values()));
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+
+      var filter =
+          new AclBindingFilter(
+              resourceFilter,
+              new AccessControlEntryFilter(
+                  "User:*", ipHost, AclOperation.WRITE, AclPermissionType.ALLOW));
+
+      var future = adminClient.describeAcls(filter).values();
+      aclBindingFutureList.add(future);
+
+      // If you want to wait for results:
+      // var result = future.get();
+      // aclBindingFutureList.addAll(result);
+
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings.size()).isEqualTo(1);

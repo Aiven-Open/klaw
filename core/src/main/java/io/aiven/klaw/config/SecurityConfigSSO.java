@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -69,9 +68,7 @@ public class SecurityConfigSSO {
   @Bean
   public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>
       accessTokenResponseClient() {
-    DefaultAuthorizationCodeTokenResponseClient accessTokenResponseClient =
-        new DefaultAuthorizationCodeTokenResponseClient();
-    return accessTokenResponseClient;
+    return new DefaultAuthorizationCodeTokenResponseClient();
   }
 
   @Bean
