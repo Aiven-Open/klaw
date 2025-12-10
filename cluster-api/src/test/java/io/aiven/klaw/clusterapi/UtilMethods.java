@@ -34,7 +34,6 @@ import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePattern;
 import org.apache.kafka.common.resource.ResourceType;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -351,7 +350,7 @@ public class UtilMethods {
       String clusterApiUser, String clusterAccessSecret, long expirationTime) {
     Key hmacKey =
         new SecretKeySpec(
-            Base64.decodeBase64(clusterAccessSecret), SignatureAlgorithm.HS256.getJcaName());
+            Base64.getDecoder().decode(clusterAccessSecret), SignatureAlgorithm.HS256.getJcaName());
     Instant now = Instant.now();
 
     return Jwts.builder()

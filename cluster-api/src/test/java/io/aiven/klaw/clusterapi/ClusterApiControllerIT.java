@@ -35,7 +35,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -65,11 +68,11 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -115,7 +118,7 @@ public class ClusterApiControllerIT {
   public static final String BOOTSTRAP_SERVERS = "localhost:9092";
   public static final String BOOTSTRAP_SERVERS_SSL = "localhost:9093";
 
-  @Autowired private EmbeddedKafkaZKBroker embeddedKafkaBroker;
+  @Autowired private EmbeddedKafkaBroker embeddedKafkaBroker;
 
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
@@ -182,15 +185,18 @@ public class ClusterApiControllerIT {
     String url = "/topics/createTopics";
     executeCreateTopicRequest(jsonReq, url);
 
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Set<String> topicsSet = adminClient.listTopics().names().get();
-            assertThat(topicsSet).contains(topicName);
-          } catch (InterruptedException | ExecutionException e) {
-            log.error("Error : ", e);
-          }
-        });
+    Map<String, Object> configs = Map.of(
+        AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString()
+    );
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListTopicsResult topicsResult = adminClient.listTopics();
+      Set<String> topicsSet = topicsResult.names().get();
+      assertThat(topicsSet).contains(topicName);
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error checking topic existence", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
   }
 
   @Test

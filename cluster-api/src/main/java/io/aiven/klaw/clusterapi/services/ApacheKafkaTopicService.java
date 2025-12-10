@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -217,7 +217,7 @@ public class ApacheKafkaTopicService {
         adminClient.describeTopics(Collections.singletonList(clusterTopicRequest.getTopicName()));
 
     TopicDescription topicDescription =
-        describeTopicsResult.all().get().get(clusterTopicRequest.getTopicName());
+        describeTopicsResult.allTopicNames().get().get(clusterTopicRequest.getTopicName());
     return topicDescription.partitions().size() == clusterTopicRequest.getPartitions()
         && topicDescription.partitions().get(0).replicas().size()
             == clusterTopicRequest.getReplicationFactor();
@@ -237,44 +237,50 @@ public class ApacheKafkaTopicService {
       throw new Exception("Cannot connect to cluster.");
     }
 
+    // Describe topic
     DescribeTopicsResult describeTopicsResult =
         client.describeTopics(Collections.singleton(clusterTopicRequest.getTopicName()));
-    TopicDescription result =
+
+    TopicDescription topicDescription =
         describeTopicsResult
-            .all()
+            .allTopicNames()
             .get(
                 clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS)
             .get(clusterTopicRequest.getTopicName());
 
-    if (result.partitions().size() > clusterTopicRequest.getPartitions()) {
-      // delete topic and recreate
+    int currentPartitions = topicDescription.partitions().size();
+    int requestedPartitions = clusterTopicRequest.getPartitions();
+
+    // If partitions need to decrease, delete and recreate topic
+    if (currentPartitions > requestedPartitions) {
       deleteTopic(clusterTopicRequest);
       createTopic(clusterTopicRequest);
     } else {
-      // Update partitions
-      Map<String, NewPartitions> newPartitionSet = new HashMap<>();
-      newPartitionSet.put(
-          clusterTopicRequest.getTopicName(),
-          NewPartitions.increaseTo(clusterTopicRequest.getPartitions()));
-      if (result.partitions().size() != clusterTopicRequest.getPartitions()) {
-        client.createPartitions(newPartitionSet);
+      // Increase partitions if needed
+      if (currentPartitions < requestedPartitions) {
+        Map<String, NewPartitions> newPartitionSet = new HashMap<>();
+        newPartitionSet.put(
+            clusterTopicRequest.getTopicName(), NewPartitions.increaseTo(requestedPartitions));
+        client.createPartitions(newPartitionSet).all().get();
       }
 
-      // Update advanced config
-      ConfigResource configResource =
-          new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
-      Map<ConfigResource, Config> updateConfig = new HashMap<>();
-
+      // Update advanced topic configuration using incrementalAlterConfigs
       Map<String, String> advancedConfig = clusterTopicRequest.getAdvancedTopicConfiguration();
-      Collection<ConfigEntry> entries = new ArrayList<>();
-      for (String key : advancedConfig.keySet()) {
-        ConfigEntry configEntry = new ConfigEntry(key, advancedConfig.get(key));
-        entries.add(configEntry);
-      }
-
       if (!advancedConfig.isEmpty()) {
-        updateConfig.put(configResource, new Config(entries));
-        client.alterConfigs(updateConfig);
+        ConfigResource configResource =
+            new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
+
+        Collection<AlterConfigOp> ops = new ArrayList<>();
+        for (Map.Entry<String, String> entry : advancedConfig.entrySet()) {
+          ops.add(
+              new AlterConfigOp(
+                  new ConfigEntry(entry.getKey(), entry.getValue()), AlterConfigOp.OpType.SET));
+        }
+
+        Map<ConfigResource, Collection<AlterConfigOp>> updateOps = new HashMap<>();
+        updateOps.put(configResource, ops);
+
+        client.incrementalAlterConfigs(updateOps).all().get();
       }
     }
 
@@ -299,7 +305,7 @@ public class ApacheKafkaTopicService {
       DeleteTopicsResult result =
           client.deleteTopics(Collections.singletonList(clusterTopicRequest.getTopicName()));
       result
-          .values()
+          .topicNameValues()
           .get(clusterTopicRequest.getTopicName())
           .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
 

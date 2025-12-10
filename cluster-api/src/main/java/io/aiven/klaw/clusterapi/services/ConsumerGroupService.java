@@ -174,11 +174,7 @@ public class ConsumerGroupService {
       throws Exception {
     try {
       DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
-      if (result.values().containsKey(topicName)) {
-        return result.values().get(topicName).get();
-      } else {
-        return null;
-      }
+      return result.allTopicNames().get().getOrDefault(topicName, null);
     } catch (Exception ex) {
       if (ex.getMessage().contains("UnknownTopic")) {
         log.info("Topic {} does not exist on the cluster.", topicName);
@@ -214,7 +210,7 @@ public class ConsumerGroupService {
       DescribeTopicsResult describeTopicsResult =
           adminClient.describeTopics(Collections.singletonList(topicName));
       List<TopicPartitionInfo> topicPartitions =
-          describeTopicsResult.values().get(topicName).get().partitions();
+          describeTopicsResult.allTopicNames().get().get(topicName).partitions();
 
       TopicPartition topicPartition;
 

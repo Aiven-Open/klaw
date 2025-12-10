@@ -4,11 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,9 +37,9 @@ public class JwtTokenUtilService implements InitializingBean {
 
   // for retrieving any information from token we will need the secret key
   private Claims getAllClaimsFromToken(String token) {
-    Key hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
-    Jws<Claims> jwt = Jwts.parser().setSigningKey(hmacKey).build().parseClaimsJws(token);
-    return jwt.getBody();
+    SecretKey hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
+    Jws<Claims> jwt = Jwts.parser().verifyWith(hmacKey).build().parseSignedClaims(token);
+    return jwt.getPayload();
   }
 
   // check if the token has expired

@@ -9,16 +9,12 @@ import org.springframework.security.web.authentication.logout.HeaderWriterLogout
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-/*
-- Provide static resources to be loaded, required by the application
-- Apply HttpSecurity configs
- */
 public class ConfigUtils {
-  protected static AntPathRequestMatcher[] getStaticResources(boolean coralEnabled) {
 
-    List<String> staticResourcesHtmlArray =
+  protected static String[] getStaticResources(boolean coralEnabled) {
+
+    List<String> staticResources =
         new ArrayList<>(
             List.of(
                 "/assets/**",
@@ -47,26 +43,20 @@ public class ConfigUtils {
                 "/cache/**"));
 
     if (coralEnabled) {
-      staticResourcesHtmlArray.add("/assets/coral/**");
+      staticResources.add("/assets/coral/**");
     }
 
-    AntPathRequestMatcher[] antPathRequestMatchersArray =
-        new AntPathRequestMatcher[staticResourcesHtmlArray.size()];
-    int i = 0;
-    for (String s : staticResourcesHtmlArray) {
-      antPathRequestMatchersArray[i] = new AntPathRequestMatcher(s);
-      i++;
-    }
-
-    return antPathRequestMatchersArray;
+    // convert List<String> to String[] for requestMatchers
+    return staticResources.toArray(new String[0]);
   }
 
   protected static void applyHttpSecurityConfig(
       HttpSecurity http,
       boolean coralEnabled,
-      KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
-      KwAuthenticationFailureHandler kwAuthenticationFailureHandler)
+      KwAuthenticationSuccessHandler successHandler,
+      KwAuthenticationFailureHandler failureHandler)
       throws Exception {
+
     http.csrf(
             csrf -> {
               csrf.ignoringRequestMatchers("/logout");
@@ -80,11 +70,10 @@ public class ConfigUtils {
                     .anyRequest()
                     .authenticated())
         .oauth2Login(
-            oauthLogin ->
-                oauthLogin
-                    .successHandler(kwAuthenticationSuccessHandler)
-                    .failureHandler(kwAuthenticationFailureHandler)
-                    .failureUrl("/login?error")
+            oauth ->
+                oauth
+                    .successHandler(successHandler)
+                    .failureHandler(failureHandler)
                     .loginPage("/login")
                     .permitAll())
         .logout(

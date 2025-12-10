@@ -37,7 +37,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
+        <version>4.0.0</version>
         <relativePath/>
     </parent>
 
@@ -55,7 +55,7 @@
         <guava.version>33.4.8-jre</guava.version>
         <httpclient5.version>5.3.1</httpclient5.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-        <jjwt.version>0.12.6</jjwt.version>
+        <jjwt.version>0.13.0</jjwt.version>
         <lombok.version>1.18.36</lombok.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
