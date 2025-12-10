@@ -204,7 +204,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.all())
+    Mockito.when(describeTopicsResult.allTopicNames())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
@@ -242,7 +242,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.all())
+    Mockito.when(describeTopicsResult.allTopicNames())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
     Mockito.when(topicPartitionInfo.replicas()).thenReturn(List.of(mock(Node.class)));
@@ -327,7 +327,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.all())
+    Mockito.when(describeTopicsResult.allTopicNames())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
     Mockito.when(adminClient.createPartitions(anyMap())).thenReturn(null);
@@ -382,7 +382,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
     Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
-    Mockito.when(deleteTopicsResult.values())
+    Mockito.when(deleteTopicsResult.topicNameValues())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
     Mockito.when(schemaService.deleteSchema(clusterTopicRequest)).thenReturn(schemaApiResponse);
 
@@ -413,7 +413,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
     Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
-    Mockito.when(deleteTopicsResult.values())
+    Mockito.when(deleteTopicsResult.topicNameValues())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS))
         .thenThrow(new InterruptedException("UnknownTopicOrPartition"));
@@ -446,7 +446,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
     Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
-    Mockito.when(deleteTopicsResult.values())
+    Mockito.when(deleteTopicsResult.topicNameValues())
         .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(10L, TimeUnit.SECONDS)).thenThrow(expected);
 

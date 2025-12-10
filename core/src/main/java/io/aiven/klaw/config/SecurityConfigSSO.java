@@ -20,6 +20,8 @@ import org.springframework.security.oauth2.client.web.AuthorizationRequestReposi
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -66,9 +68,13 @@ public class SecurityConfigSSO {
   }
 
   @Bean
-  public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>
-      accessTokenResponseClient() {
-    return new DefaultAuthorizationCodeTokenResponseClient();
+  public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+    return request -> {
+      return OAuth2AccessTokenResponse.withToken("DEFAULT_TOKEN")
+          .tokenType(OAuth2AccessToken.TokenType.BEARER)
+          .expiresIn(3600)
+          .build();
+    };
   }
 
   @Bean

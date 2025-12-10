@@ -142,7 +142,8 @@ public class AivenApiServiceTest {
 
     // create acl stubs
     ResponseEntity<AivenAclResponse> responseEntity =
-        new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+
     when(restTemplate.postForEntity(eq(createAclsUri), any(), eq(AivenAclResponse.class)))
         .thenReturn(responseEntity);
 

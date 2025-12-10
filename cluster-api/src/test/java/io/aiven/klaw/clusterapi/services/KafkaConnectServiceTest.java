@@ -24,12 +24,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-@RestClientTest(KafkaConnectService.class)
+@SpringBootTest
 class KafkaConnectServiceTest {
 
   public static final String THIS_IS_A_MISCONFIGURED_CONNECTOR =
@@ -37,9 +39,10 @@ class KafkaConnectServiceTest {
   @Autowired KafkaConnectService kafkaConnectService;
 
   RestTemplate restTemplate;
-  @Autowired ObjectMapper objectMapper;
+  ObjectMapper objectMapper = new ObjectMapper();
   private MockRestServiceServer mockRestServiceServer;
-  @MockBean private ClusterApiUtils getAdminClient;
+  @MockitoBean
+  private ClusterApiUtils getAdminClient;
 
   private UtilMethods utilMethods;
 

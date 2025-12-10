@@ -32,13 +32,14 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-@RestClientTest(SchemaService.class)
+@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SchemaServiceTest {
   public static final String TOPIC_COMPATIBILITY_URI_TEMPLATE =
@@ -52,7 +53,7 @@ class SchemaServiceTest {
 
   @Autowired SchemaService schemaService;
   RestTemplate restTemplate;
-  @Autowired ObjectMapper objectMapper;
+  ObjectMapper objectMapper = new ObjectMapper();
   private ObjectMapper mapper = new ObjectMapper();
   private MockRestServiceServer mockRestServiceServer;
   @MockitoBean private ClusterApiUtils getAdminClient;

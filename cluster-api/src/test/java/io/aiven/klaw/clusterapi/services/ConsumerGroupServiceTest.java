@@ -65,7 +65,7 @@ class ConsumerGroupServiceTest {
         .thenReturn(adminClient);
     when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
         .thenReturn(describeTopicsResult);
-    when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
+    when(describeTopicsResult.topicNameValues()).thenReturn(nameTopicDescriptionFutures);
     when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
     when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
     when(listOffsetsEarliestResult.partitionResult(any())).thenReturn(listOffsetResultInfoFutures);
