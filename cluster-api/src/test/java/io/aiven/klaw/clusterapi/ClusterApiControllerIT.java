@@ -38,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.DescribeAclsResult;
+import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -53,6 +55,8 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
 import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.acl.AclBindingFilter;
+import org.apache.kafka.common.acl.AclOperation;
+import org.apache.kafka.common.acl.AclPermissionType;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
@@ -68,6 +72,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -116,7 +121,10 @@ public class ClusterApiControllerIT {
   public static final String BOOTSTRAP_SERVERS = "localhost:9092";
   public static final String BOOTSTRAP_SERVERS_SSL = "localhost:9093";
 
-  @Autowired private EmbeddedKafkaBroker embeddedKafkaBroker;
+  @Autowired(required = false)
+  private EmbeddedKafkaBroker embeddedKafkaBroker;
+
+  @Autowired private ApplicationContext applicationContext;
 
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
@@ -127,6 +135,13 @@ public class ClusterApiControllerIT {
   ObjectMapper mapper = new ObjectMapper();
 
   @MockitoBean SchemaService schemaService;
+
+  private EmbeddedKafkaBroker getEmbeddedKafkaBroker() {
+    if (embeddedKafkaBroker != null) {
+      return embeddedKafkaBroker;
+    }
+    return applicationContext.getBean(EmbeddedKafkaBroker.class);
+  }
 
   @Test
   @Order(1)
@@ -185,7 +200,8 @@ public class ClusterApiControllerIT {
 
     Map<String, Object> configs =
         Map.of(
-            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
 
     try (AdminClient adminClient = AdminClient.create(configs)) {
       ListTopicsResult topicsResult = adminClient.listTopics();
@@ -221,7 +237,8 @@ public class ClusterApiControllerIT {
 
     Map<String, Object> configs =
         Map.of(
-            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
 
     try (AdminClient adminClient = AdminClient.create(configs)) {
       ConfigResource configResource =
@@ -298,7 +315,8 @@ public class ClusterApiControllerIT {
     Thread.sleep(300);
     Map<String, Object> configs =
         Map.of(
-            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
 
     try (AdminClient adminClient = AdminClient.create(configs)) {
 
@@ -315,9 +333,6 @@ public class ClusterApiControllerIT {
       // var result = future.get();
       // aclBindingFutureList.addAll(result);
 
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("Error describing ACLs", e);
-      Thread.currentThread().interrupt(); // restore interrupt
     }
     Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get();
 
@@ -354,16 +369,29 @@ public class ClusterApiControllerIT {
 
     // verify topic read access
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter,
-                            new AccessControlEntryFilter(
-                                "User:*", ipHost, AclOperation.READ, AclPermissionType.ALLOW)))
-                    .values()));
+    List<AclBinding> aclBindingList = new ArrayList<>();
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      DescribeAclsResult result =
+          adminClient.describeAcls(
+              new org.apache.kafka.common.acl.AclBindingFilter(
+                  resourceFilter, // your ResourcePatternFilter
+                  new AccessControlEntryFilter(
+                      "User:*", // principal
+                      ipHost, // host
+                      AclOperation.READ,
+                      AclPermissionType.ALLOW)));
+
+      aclBindingList.addAll(result.values().get()); // block until results available
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings.size()).isEqualTo(1);
@@ -374,16 +402,29 @@ public class ClusterApiControllerIT {
     List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList1 = new ArrayList<>();
 
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList1.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter1,
-                            new AccessControlEntryFilter(
-                                "User:*", ipHost, AclOperation.READ, AclPermissionType.ALLOW)))
-                    .values()));
+    List<AclBinding> aclBindingList1 = new ArrayList<>();
+
+    configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      DescribeAclsResult result =
+          adminClient.describeAcls(
+              new org.apache.kafka.common.acl.AclBindingFilter(
+                  resourceFilter1, // your ResourcePatternFilter
+                  new AccessControlEntryFilter(
+                      "User:*", // principal
+                      ipHost, // host
+                      AclOperation.READ,
+                      AclPermissionType.ALLOW)));
+
+      aclBindingList1.addAll(result.values().get()); // block until results available
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings1 = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings1.size()).isEqualTo(1);
@@ -416,19 +457,29 @@ public class ClusterApiControllerIT {
     final List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList = new ArrayList<>();
 
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter,
-                            new AccessControlEntryFilter(
-                                "User:" + principle,
-                                "*",
-                                AclOperation.WRITE,
-                                AclPermissionType.ALLOW)))
-                    .values()));
+    List<AclBinding> aclBindingList = new ArrayList<>();
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      DescribeAclsResult result =
+          adminClient.describeAcls(
+              new org.apache.kafka.common.acl.AclBindingFilter(
+                  resourceFilter, // your ResourcePatternFilter
+                  new AccessControlEntryFilter(
+                      "User:" + principle, // dynamic principal
+                      "*", // host wildcard
+                      AclOperation.WRITE,
+                      AclPermissionType.ALLOW)));
+
+      aclBindingList.addAll(result.values().get()); // block until results available
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get(3, TimeUnit.SECONDS);
 
     assertThat(aclBindings.size()).isEqualTo(1);
@@ -463,19 +514,29 @@ public class ClusterApiControllerIT {
 
     // verify topic read access
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter,
-                            new AccessControlEntryFilter(
-                                "User:" + principle,
-                                "*",
-                                AclOperation.READ,
-                                AclPermissionType.ALLOW)))
-                    .values()));
+    List<AclBinding> aclBindingList = new ArrayList<>();
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      DescribeAclsResult result =
+          adminClient.describeAcls(
+              new org.apache.kafka.common.acl.AclBindingFilter(
+                  resourceFilter, // your ResourcePatternFilter
+                  new AccessControlEntryFilter(
+                      "User:" + principle, // dynamic principal
+                      "*", // host wildcard
+                      AclOperation.READ,
+                      AclPermissionType.ALLOW)));
+
+      aclBindingList.addAll(result.values().get()); // block until results available
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings.size()).isEqualTo(1);
@@ -486,19 +547,29 @@ public class ClusterApiControllerIT {
     List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList1 = new ArrayList<>();
 
     Thread.sleep(300);
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient ->
-            aclBindingFutureList1.add(
-                adminClient
-                    .describeAcls(
-                        new AclBindingFilter(
-                            resourceFilter1,
-                            new AccessControlEntryFilter(
-                                "User:" + principle,
-                                "*",
-                                AclOperation.READ,
-                                AclPermissionType.ALLOW)))
-                    .values()));
+    aclBindingList = new ArrayList<>();
+
+    configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      DescribeAclsResult result =
+          adminClient.describeAcls(
+              new org.apache.kafka.common.acl.AclBindingFilter(
+                  resourceFilter1, // your ResourcePatternFilter
+                  new AccessControlEntryFilter(
+                      "User:" + principle, // dynamic principal
+                      "*", // host wildcard
+                      AclOperation.READ,
+                      AclPermissionType.ALLOW)));
+
+      aclBindingList.addAll(result.values().get()); // block until results available
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error describing ACLs", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     Collection<AclBinding> aclBindings1 = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings1.size()).isEqualTo(1);
@@ -554,23 +625,25 @@ public class ClusterApiControllerIT {
     // verify consumer group offset position from admin client
     Thread.sleep(300);
     Map<String, Long> currentOffsetPositionsMap = new TreeMap<>();
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Map<TopicPartition, OffsetAndMetadata> topicPartitionOffsetAndMetadataMap =
-                adminClient
-                    .listConsumerGroupOffsets(CONSUMER_GROUP)
-                    .partitionsToOffsetAndMetadata()
-                    .get();
-            for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
-              currentOffsetPositionsMap.put(
-                  topicPartition.toString(),
-                  topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
-            }
-          } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-          }
-        });
+    currentOffsetPositionsMap = new HashMap<>();
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(CONSUMER_GROUP);
+
+      Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
+
+      for (Map.Entry<TopicPartition, OffsetAndMetadata> entry : offsets.entrySet()) {
+        currentOffsetPositionsMap.put(entry.getKey().toString(), entry.getValue().offset());
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error reading consumer group offsets", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     assertThat(currentOffsetPositionsMap.get(TOPIC_NAME + "-0") + "")
         .isEqualTo(expectedOffsetAfterReset);
   }
@@ -625,23 +698,28 @@ public class ClusterApiControllerIT {
     // verify consumer group offset position from admin client
     Thread.sleep(300);
     Map<String, Long> currentOffsetPositionsMap = new TreeMap<>();
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Map<TopicPartition, OffsetAndMetadata> topicPartitionOffsetAndMetadataMap =
-                adminClient
-                    .listConsumerGroupOffsets(CONSUMER_GROUP)
-                    .partitionsToOffsetAndMetadata()
-                    .get();
-            for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
-              currentOffsetPositionsMap.put(
-                  topicPartition.toString(),
-                  topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
-            }
-          } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-          }
-        });
+    currentOffsetPositionsMap = new HashMap<>();
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(CONSUMER_GROUP);
+
+      Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
+
+      Map<String, Long> finalCurrentOffsetPositionsMap = currentOffsetPositionsMap;
+      offsets.forEach(
+          (topicPartition, offsetAndMetadata) ->
+              finalCurrentOffsetPositionsMap.put(
+                  topicPartition.toString(), offsetAndMetadata.offset()));
+
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error reading consumer group offsets", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     assertThat(currentOffsetPositionsMap.get(TOPIC_NAME + "-0") + "")
         .isEqualTo(expectedOffsetsBeforeAfter);
   }
@@ -696,23 +774,25 @@ public class ClusterApiControllerIT {
     // verify consumer group offset position from admin client
     Thread.sleep(300);
     Map<String, Long> currentOffsetPositionsMap = new TreeMap<>();
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Map<TopicPartition, OffsetAndMetadata> topicPartitionOffsetAndMetadataMap =
-                adminClient
-                    .listConsumerGroupOffsets(CONSUMER_GROUP)
-                    .partitionsToOffsetAndMetadata()
-                    .get();
-            for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
-              currentOffsetPositionsMap.put(
-                  topicPartition.toString(),
-                  topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
-            }
-          } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-          }
-        });
+
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(CONSUMER_GROUP);
+
+      Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
+
+      for (Map.Entry<TopicPartition, OffsetAndMetadata> entry : offsets.entrySet()) {
+        currentOffsetPositionsMap.put(entry.getKey().toString(), entry.getValue().offset());
+      }
+
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error reading consumer group offsets", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
     assertThat(currentOffsetPositionsMap.get(TOPIC_NAME + "-0") + "").isEqualTo("30");
   }
 
@@ -726,15 +806,21 @@ public class ClusterApiControllerIT {
     String url = "/topics/createTopics";
     executeCreateTopicRequest(jsonReq, url);
 
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Set<String> topicsSet = adminClient.listTopics().names().get();
-            assertThat(topicsSet).contains(topicName);
-          } catch (InterruptedException | ExecutionException e) {
-            log.error("Error : ", e);
-          }
-        });
+    Map<String, Object> configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListTopicsResult topicsResult = adminClient.listTopics();
+      Set<String> topicsSet = topicsResult.names().get();
+
+      assertThat(topicsSet).contains(topicName);
+
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error checking topic existence", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
 
     // Delete the topic
     clusterTopicRequest = clusterTopicRequest.toBuilder().deleteAssociatedSchema(true).build();
@@ -745,15 +831,21 @@ public class ClusterApiControllerIT {
             ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build());
     MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
 
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Set<String> topicsSet = adminClient.listTopics().names().get();
-            assertThat(topicsSet).doesNotContain(topicName);
-          } catch (InterruptedException | ExecutionException e) {
-            log.error("Error : ", e);
-          }
-        });
+    configs =
+        Map.of(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+            getEmbeddedKafkaBroker().getBrokersAsString());
+
+    try (AdminClient adminClient = AdminClient.create(configs)) {
+      ListTopicsResult topicsResult = adminClient.listTopics();
+      Set<String> topicsSet = topicsResult.names().get();
+
+      assertThat(topicsSet).contains(topicName);
+
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error checking topic existence", e);
+      Thread.currentThread().interrupt(); // restore interrupt
+    }
 
     ApiResponse apiResponse = mapper.readValue(response.getContentAsString(), ApiResponse.class);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);

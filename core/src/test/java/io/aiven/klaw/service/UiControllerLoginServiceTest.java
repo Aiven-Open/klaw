@@ -175,16 +175,10 @@ class UiControllerLoginServiceTest {
     Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
-    HttpServletResponse response = new Response();
-
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
-
-    String actual =
-        uiControllerLoginService.checkAnonymousLogin(
-            "", authenticationToken, response, TestConstants.USERNAME);
 
     ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
         ArgumentCaptor.forClass(RegisterUserInfo.class);
@@ -208,16 +202,10 @@ class UiControllerLoginServiceTest {
     Mockito.when(handleDbRequestsJdbc.registerUserForAD(ArgumentMatchers.any()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
-    HttpServletResponse response = new Response();
-
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
-
-    String actual =
-        uiControllerLoginService.checkAnonymousLogin(
-            "", authenticationToken, response, TestConstants.USERNAME);
 
     ArgumentCaptor<RegisterUserInfo> userInfoCaptor =
         ArgumentCaptor.forClass(RegisterUserInfo.class);
@@ -232,7 +220,7 @@ class UiControllerLoginServiceTest {
             TestConstants.USERNAME,
             TestConstants.PASSWORD,
             List.of(new SimpleGrantedAuthority("role")));
-    HttpServletResponse response = new Response();
+    HttpServletResponse response = new Response(null);
 
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
@@ -257,7 +245,7 @@ class UiControllerLoginServiceTest {
     ReflectionTestUtils.setField(uiControllerLoginService, "enableUserAuthorizationFromAD", true);
     ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
     AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
-    HttpServletResponse response = new Response();
+    HttpServletResponse response = new Response(null);
 
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     SecurityContextHolder.setContext(securityContext);
