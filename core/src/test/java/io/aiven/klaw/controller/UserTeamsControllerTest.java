@@ -20,8 +20,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,7 +33,7 @@ import org.thymeleaf.util.StringUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserTeamsControllerTest {
 
-  @MockBean private UsersTeamsControllerService usersTeamsControllerService;
+  @MockitoBean private UsersTeamsControllerService usersTeamsControllerService;
 
   private MockMvc mvc;
 

@@ -41,8 +41,7 @@ class KafkaConnectServiceTest {
   RestTemplate restTemplate;
   ObjectMapper objectMapper = new ObjectMapper();
   private MockRestServiceServer mockRestServiceServer;
-  @MockitoBean
-  private ClusterApiUtils getAdminClient;
+  @MockitoBean private ClusterApiUtils getAdminClient;
 
   private UtilMethods utilMethods;
 

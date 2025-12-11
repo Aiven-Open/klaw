@@ -68,7 +68,8 @@ public class SecurityConfigSSO {
   }
 
   @Bean
-  public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+  public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest>
+      accessTokenResponseClient() {
     return request -> {
       return OAuth2AccessTokenResponse.withToken("DEFAULT_TOKEN")
           .tokenType(OAuth2AccessToken.TokenType.BEARER)

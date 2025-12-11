@@ -22,8 +22,8 @@ import io.aiven.klaw.service.UtilControllerService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,9 +35,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class UtilControllerTest {
 
   UtilMethods utilMethods;
-  @MockBean private UtilControllerService utilControllerService;
+  @MockitoBean private UtilControllerService utilControllerService;
 
-  @MockBean private RequestStatisticsService requestStatisticsService;
+  @MockitoBean private RequestStatisticsService requestStatisticsService;
 
   private MockMvc mvc;
 

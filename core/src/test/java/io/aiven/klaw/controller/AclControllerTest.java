@@ -27,8 +27,8 @@ import io.aiven.klaw.service.TopicOverviewService;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,10 +42,10 @@ public class AclControllerTest {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String topicName = "testtopic";
   private static final int topicId = 1001;
-  @MockBean private AclControllerService aclControllerService;
-  @MockBean private AclSyncControllerService aclSyncControllerService;
+  @MockitoBean private AclControllerService aclControllerService;
+  @MockitoBean private AclSyncControllerService aclSyncControllerService;
 
-  @MockBean private TopicOverviewService topicOverviewService;
+  @MockitoBean private TopicOverviewService topicOverviewService;
   private UtilMethods utilMethods;
   private MockMvc mvcAcls;
   private AclController aclController;

@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,7 +40,7 @@ public class SchemaRegistrySyncControllerTest {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  @MockBean private SchemaRegistrySyncControllerService schemaRegistrySyncControllerService;
+  @MockitoBean private SchemaRegistrySyncControllerService schemaRegistrySyncControllerService;
 
   private SchemaRegistrySyncController schemaRegistrySyncController;
 

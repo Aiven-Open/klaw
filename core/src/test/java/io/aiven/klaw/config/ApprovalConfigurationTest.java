@@ -14,9 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @Slf4j
@@ -27,9 +27,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class ApprovalConfigurationTest {
 
   public static final String PRD_ENV = "PRD";
-  @MockBean MailUtils mailUtils;
-  @MockBean CommonUtilsService commonUtilsService;
-  @MockBean ManageDatabase manageDatabase;
+  @MockitoBean MailUtils mailUtils;
+  @MockitoBean CommonUtilsService commonUtilsService;
+  @MockitoBean ManageDatabase manageDatabase;
   @Autowired ApprovalConfig config;
 
   @Test

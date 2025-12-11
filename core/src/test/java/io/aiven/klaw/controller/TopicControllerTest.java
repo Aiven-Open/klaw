@@ -37,8 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,9 +52,9 @@ import org.springframework.validation.Validator;
 public class TopicControllerTest {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  @MockBean private TopicControllerService topicControllerService;
+  @MockitoBean private TopicControllerService topicControllerService;
 
-  @MockBean private TopicSyncControllerService topicSyncControllerService;
+  @MockitoBean private TopicSyncControllerService topicSyncControllerService;
 
   private UtilMethods utilMethods;
 

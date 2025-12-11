@@ -31,15 +31,15 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -53,11 +53,11 @@ public class TopicRequestValidatorImplIT {
   public static final String KWUSER = "kwuser";
   @Autowired private Validator validator;
 
-  @MockBean private CommonUtilsService commonUtilsService;
+  @MockitoBean private CommonUtilsService commonUtilsService;
 
-  @MockBean private TopicControllerService topicControllerService;
+  @MockitoBean private TopicControllerService topicControllerService;
 
-  @MockBean private MailUtils mailService;
+  @MockitoBean private MailUtils mailService;
 
   private UtilMethods utilMethods;
 
