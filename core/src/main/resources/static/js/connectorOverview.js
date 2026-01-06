@@ -4,9 +4,9 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('connectorOverviewApp',['textAngular', 'sharedHttpInterceptor']);
+var app = angular.module('connectorOverviewApp',['textAngular', 'ngSanitize', 'sharedHttpInterceptor']);
 
-app.controller("connectorOverviewCtrl", function($scope, $http, $location, $window) {
+app.controller("connectorOverviewCtrl", function($scope, $http, $location, $window, $sanitize) {
 	
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
@@ -16,6 +16,24 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 	// parsed. 
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
+
+	// Sanitize HTML to prevent XSS attacks while preserving safe HTML formatting
+	$scope.sanitizeHtml = function(html) {
+		if (!html) return '';
+		try {
+			return $sanitize(html);
+		} catch (e) {
+			// If sanitization fails, escape all HTML
+			var map = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				"'": '&#039;'
+			};
+			return html.replace(/[&<>"']/g, function(m) { return map[m]; });
+		}
+	}
 
 	$scope.showSubmitFailed = function(title, text){
 		swal({
@@ -467,7 +485,9 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                          });
                                          $scope.addDocsVar = false;
                                          $scope.tmpconnectorDocumentation = $scope.connectorDocumentation;
-                                         document.getElementById("connectorDocId").innerHTML = $scope.connectorDocumentation;
+                                         // Sanitize HTML to prevent XSS attacks
+                                         var sanitizedDoc = $scope.sanitizeHtml($scope.connectorDocumentation);
+                                         document.getElementById("connectorDocId").innerHTML = sanitizedDoc;
                                     }
                                     else{
                                             $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
@@ -538,7 +558,9 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
             	$scope.connectorDocumentation = output.connectorDocumentation;
             	$scope.tmpconnectorDocumentation = output.connectorDocumentation;
             	$scope.connectorIdForDocumentation = output.connectorIdForDocumentation;
-            	document.getElementById("connectorDocId").innerHTML = output.connectorDocumentation;
+            	// Sanitize HTML to prevent XSS attacks
+            	var sanitizedDoc = $scope.sanitizeHtml(output.connectorDocumentation);
+            	document.getElementById("connectorDocId").innerHTML = sanitizedDoc;
 		    }
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/kafkaConnectors";

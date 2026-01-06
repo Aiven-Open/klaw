@@ -298,7 +298,12 @@ public class TopicController {
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
   }
 
-  @PermissionAllowed(permissionAllowed = {PermissionType.VIEW_TOPICS})
+  @PermissionAllowed(
+      permissionAllowed = {
+        PermissionType.APPROVE_TOPICS,
+        PermissionType.APPROVE_TOPICS_CREATE,
+        PermissionType.APPROVE_ALL_REQUESTS_TEAMS
+      })
   @PostMapping(
       value = "/saveTopicDocumentation",
       produces = {MediaType.APPLICATION_JSON_VALUE})
