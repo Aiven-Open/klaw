@@ -3,12 +3,11 @@ package io.aiven.klaw.clusterapi.services;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import java.security.Key;
+import io.jsonwebtoken.security.Keys;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.tomcat.util.codec.binary.Base64;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class JwtTokenUtilService implements InitializingBean {
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterApiSecret;
 
-  private static byte[] decodedSecret;
+  private SecretKey hmacKey;
 
   // retrieve username from jwt token
   public String getUsernameFromToken(String token) {
@@ -37,9 +36,8 @@ public class JwtTokenUtilService implements InitializingBean {
 
   // for retrieving any information from token we will need the secret key
   private Claims getAllClaimsFromToken(String token) {
-    Key hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
-    Jws<Claims> jwt = Jwts.parser().setSigningKey(hmacKey).build().parseClaimsJws(token);
-    return jwt.getBody();
+    Jws<Claims> jwt = Jwts.parser().verifyWith(hmacKey).build().parseSignedClaims(token);
+    return jwt.getPayload();
   }
 
   // check if the token has expired
@@ -56,15 +54,16 @@ public class JwtTokenUtilService implements InitializingBean {
   // validate secret during app initialization
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (clusterApiSecret != null && !clusterApiSecret.trim().equals("")) {
-      try {
-        decodedSecret = Base64.decodeBase64(clusterApiSecret);
-        return;
-      } catch (Exception e) {
-        throw new Exception(
-            "Invalid Base64 value configured. klaw.clusterapi.access.base64.secret");
-      }
+    if (clusterApiSecret == null || clusterApiSecret.trim().isEmpty()) {
+      throw new Exception("Property not configured. klaw.clusterapi.access.base64.secret");
     }
-    throw new Exception("Property not configured. klaw.clusterapi.access.base64.secret");
+
+    try {
+      byte[] decoded = Base64.getDecoder().decode(clusterApiSecret);
+      this.hmacKey = Keys.hmacShaKeyFor(decoded);
+    } catch (Exception e) {
+      throw new Exception(
+          "Invalid Base64 value configured. klaw.clusterapi.access.base64.secret", e);
+    }
   }
 }

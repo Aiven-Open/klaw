@@ -180,6 +180,15 @@
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.42.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -395,12 +404,24 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
                             <goal>stop</goal>
                         </goals>
                         <configuration>
-                            <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>

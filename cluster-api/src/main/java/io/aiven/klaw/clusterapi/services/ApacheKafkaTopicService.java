@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -142,7 +142,7 @@ public class ApacheKafkaTopicService {
         client.describeTopics(new ArrayList<>(topicsResult.names().get()));
 
     return describeTopicsResult
-        .allTopicNames()
+        .all()
         .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
   }
 
@@ -263,18 +263,20 @@ public class ApacheKafkaTopicService {
       // Update advanced config
       ConfigResource configResource =
           new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
-      Map<ConfigResource, Config> updateConfig = new HashMap<>();
+      Map<ConfigResource, Collection<AlterConfigOp>> updateConfig = new HashMap<>();
 
       Map<String, String> advancedConfig = clusterTopicRequest.getAdvancedTopicConfiguration();
-      Collection<ConfigEntry> entries = new ArrayList<>();
+      Collection<AlterConfigOp> entries = new ArrayList<>();
       for (String key : advancedConfig.keySet()) {
-        ConfigEntry configEntry = new ConfigEntry(key, advancedConfig.get(key));
+        AlterConfigOp configEntry =
+            new AlterConfigOp(
+                new ConfigEntry(key, advancedConfig.get(key)), AlterConfigOp.OpType.SET);
         entries.add(configEntry);
       }
 
       if (!advancedConfig.isEmpty()) {
-        updateConfig.put(configResource, new Config(entries));
-        client.alterConfigs(updateConfig);
+        updateConfig.put(configResource, entries);
+        client.incrementalAlterConfigs(updateConfig).all().get();
       }
     }
 
