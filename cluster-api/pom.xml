@@ -24,7 +24,7 @@
         <apache.commons.lang.version>3.18.0</apache.commons.lang.version>
         <kafka.version>3.9.1</kafka.version>
         <mockserver.version>5.15.0</mockserver.version>
-        <spring-kafka-test.version>3.3.0</spring-kafka-test.version>
+        <spring-kafka-test.version>3.3.3</spring-kafka-test.version>
     </properties>
 
     <dependencies>
@@ -37,6 +37,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache.commons.lang.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
