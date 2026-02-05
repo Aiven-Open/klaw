@@ -53,7 +53,7 @@
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <google-java-format.version>1.17.0</google-java-format.version>
         <guava.version>33.4.8-jre</guava.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <jjwt.version>0.12.6</jjwt.version>
         <lombok.version>1.18.42</lombok.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
