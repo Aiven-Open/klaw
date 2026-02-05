@@ -55,7 +55,7 @@
         <guava.version>33.4.8-jre</guava.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <jjwt.version>0.12.6</jjwt.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <snakeyaml.version>2.2</snakeyaml.version>
