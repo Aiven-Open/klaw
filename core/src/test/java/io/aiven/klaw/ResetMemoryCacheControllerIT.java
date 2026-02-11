@@ -89,6 +89,7 @@ public class ResetMemoryCacheControllerIT {
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/resetMemoryCache")
+                    .header("Authorization", "")
                     .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -111,6 +112,7 @@ public class ResetMemoryCacheControllerIT {
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/resetMemoryCache")
+                    .header("Authorization", "Bearer user-token")
                     .with(user(SUPERADMIN).password(SUPERADMIN_PWD).roles("SUPERADMIN"))
                     .with(csrf())
                     .content(jsonReq)
