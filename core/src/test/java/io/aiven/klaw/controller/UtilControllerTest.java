@@ -102,7 +102,8 @@ public class UtilControllerTest {
             MockMvcRequestBuilders.post("/resetMemoryCache")
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer test-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }

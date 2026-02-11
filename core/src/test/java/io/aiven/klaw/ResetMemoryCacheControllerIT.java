@@ -1,24 +1,16 @@
 package io.aiven.klaw;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.requests.ResetEntityCache;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.codec.binary.Base64;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -29,10 +21,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.requests.ResetEntityCache;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 /**
  * Integration tests for /resetMemoryCache endpoint security. Tests verify that:
@@ -89,6 +92,7 @@ public class ResetMemoryCacheControllerIT {
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/resetMemoryCache")
+                    .header("Authorization", "")
                     .with(csrf())
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -111,6 +115,7 @@ public class ResetMemoryCacheControllerIT {
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/resetMemoryCache")
+                    .header("Authorization", "Bearer user-token")
                     .with(user(SUPERADMIN).password(SUPERADMIN_PWD).roles("SUPERADMIN"))
                     .with(csrf())
                     .content(jsonReq)
