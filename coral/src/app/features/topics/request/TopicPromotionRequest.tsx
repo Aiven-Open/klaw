@@ -157,7 +157,7 @@ function TopicPromotionRequest() {
     error: promoteError,
   } = useMutation(requestTopicPromotion, {
     onSuccess: () => {
-      navigate(-1);
+      navigate("/requests/topics?status=CREATED&requestType=PROMOTE");
       toast({
         message: "Topic promotion request successfully created",
         position: "bottom-left",
