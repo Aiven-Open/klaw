@@ -455,7 +455,9 @@ describe("<TopicPromotionRequest />", () => {
 
       expect(mockPromoteTopic).toHaveBeenCalled();
       await waitFor(() => {
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(
+          "/requests/topics?status=CREATED&requestType=PROMOTE"
+        );
       });
 
       expect(mockedUseToast).toHaveBeenCalledWith({
