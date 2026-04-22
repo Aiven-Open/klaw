@@ -27,6 +27,10 @@ public class Env implements Serializable {
   @Column(name = "tenantid")
   private Integer tenantId;
 
+  @Version
+  @Column(name = "version")
+  private Long version;
+
   @Column(name = "envname")
   private String name;
 

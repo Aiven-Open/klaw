@@ -1209,7 +1209,6 @@ public class TopicAclControllerIT {
     EnvModel envModel = mockMethods.getEnvModel("TST");
     envModel.getParams().setTopicPrefix(List.of("prefix-"));
     envModel.getParams().setTopicSuffix(List.of("-suffix"));
-    envModel.setId("3");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
 
     String response =
