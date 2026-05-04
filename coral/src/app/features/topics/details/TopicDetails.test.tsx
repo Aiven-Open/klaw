@@ -393,7 +393,10 @@ describe("TopicDetails", () => {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
         },
       ]);
-      mockGetTopicOverview.mockResolvedValue(testTopicOverview);
+      mockGetTopicOverview.mockResolvedValue({
+        ...testTopicOverview,
+        topicInfo: { ...testTopicOverview.topicInfo, topicOwner: true },
+      });
 
       customRender(<TopicDetails topicName={testTopicName} />, {
         memoryRouter: true,

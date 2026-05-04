@@ -87,6 +87,7 @@ public class SecurityConfigNoSSO {
     http.csrf(
             csrf -> {
               csrf.ignoringRequestMatchers("/logout");
+              csrf.ignoringRequestMatchers("/resetMemoryCache/**"); // Internal service endpoint
               csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
               csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
             })

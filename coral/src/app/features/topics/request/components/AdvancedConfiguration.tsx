@@ -18,8 +18,8 @@ type Props = {
 };
 
 function AdvancedConfiguration({ name }: Props) {
-  const setModelMarkers = useRef<typeof editor.setModelMarkers>();
-  const monacoEditor = useRef<editor.IStandaloneCodeEditor>();
+  const setModelMarkers = useRef<typeof editor.setModelMarkers>(undefined);
+  const monacoEditor = useRef<editor.IStandaloneCodeEditor>(undefined);
   const { setValue, setError, control, getValues } = useFormContext<Schema>();
   const monaco = useMonaco();
 

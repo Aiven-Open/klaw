@@ -46,6 +46,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.HtmlSanitizer;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -951,7 +952,9 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     topic.setTenantId(tenantId);
     topic.setTopicid(topicInfo.getTopicid());
-    topic.setDocumentation(topicInfo.getDocumentation());
+    // Sanitize HTML to prevent XSS attacks
+    String sanitizedDocumentation = HtmlSanitizer.sanitize(topicInfo.getDocumentation());
+    topic.setDocumentation(sanitizedDocumentation);
 
     List<Topic> topicsSearchList =
         commonUtilsService.getTopicsForTopicName(topicInfo.getTopicName(), tenantId);

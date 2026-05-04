@@ -6,7 +6,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
     style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
   >
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -59,7 +59,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -85,7 +85,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         data-testid="topic-promotion-banner"
@@ -113,7 +113,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                 </p>
               </div>
               <a
-                class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-intense focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+                class="Aquarium-Link focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 hover:text-primary-hover Aquarium-Button whitespace-nowrap transition text-center rounded-sm relative px-4 py-3 inline-flex gap-3 items-center justify-center active:text-white active:bg-primary-active hover:bg-primary-intense disabled:text-white disabled:bg-primary-muted Aquarium-Button.Primary text-white bg-primary-default icon-stroke-2 typography-default-strong"
                 href="/topic/aivendemotopic/request-promotion?sourceEnv=1&targetEnv=2"
               >
                 Promote
@@ -133,7 +133,7 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -327,42 +327,34 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                  class="flex items-center justify-center gap-3"
                 >
-                  <span
-                    class="children:inline-block inline-flex justify-center items-center"
+                  <svg
+                    aria-hidden="true"
+                    height="20"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    viewBox="0 0 22 22"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="Aquarium-InlineIcon"
-                      height="20px"
-                      preserveAspectRatio="xMidYMid meet"
-                      role="img"
-                      style="vertical-align: -0.125em;"
-                      viewBox="0 0 22 22"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                      <path
-                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                  </span>
-                  <div>
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      Request new subscription
-                    </div>
+                    <path
+                      d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    Request new subscription
                   </div>
                 </div>
               </button>
@@ -371,12 +363,16 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  class="typography-small-strong text-primary-80"
+                  class="flex items-center justify-center gap-3"
                 >
-                  See subscriptions
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    See subscriptions
+                  </div>
                 </div>
               </button>
             </a>
@@ -419,42 +415,34 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                  class="flex items-center justify-center gap-3"
                 >
-                  <span
-                    class="children:inline-block inline-flex justify-center items-center"
+                  <svg
+                    aria-hidden="true"
+                    height="20"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    viewBox="0 0 22 22"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="Aquarium-InlineIcon"
-                      height="20px"
-                      preserveAspectRatio="xMidYMid meet"
-                      role="img"
-                      style="vertical-align: -0.125em;"
-                      viewBox="0 0 22 22"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                      <path
-                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                  </span>
-                  <div>
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      Request new schema
-                    </div>
+                    <path
+                      d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    Request new schema
                   </div>
                 </div>
               </button>
@@ -463,12 +451,16 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  class="typography-small-strong text-primary-80"
+                  class="flex items-center justify-center gap-3"
                 >
-                  See schema
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    See schema
+                  </div>
                 </div>
               </button>
             </a>
@@ -486,7 +478,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
     style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
   >
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -539,7 +531,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -565,7 +557,7 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
       </div>
     </div>
     <div
-      style="grid-column: [object Object];"
+      style="grid-column: span 2 / span 2;"
     >
       <div
         class="border-[2px] border-muted rounded-[2px] relative p-5 flex flex-col gap-5 bg-body outline-none transition-all w-full Aquarium-Card"
@@ -759,42 +751,34 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscribe?env=1"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                  class="flex items-center justify-center gap-3"
                 >
-                  <span
-                    class="children:inline-block inline-flex justify-center items-center"
+                  <svg
+                    aria-hidden="true"
+                    height="20"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    viewBox="0 0 22 22"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="Aquarium-InlineIcon"
-                      height="20px"
-                      preserveAspectRatio="xMidYMid meet"
-                      role="img"
-                      style="vertical-align: -0.125em;"
-                      viewBox="0 0 22 22"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                      <path
-                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                  </span>
-                  <div>
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      Request new subscription
-                    </div>
+                    <path
+                      d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    Request new subscription
                   </div>
                 </div>
               </button>
@@ -803,12 +787,16 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/subscriptions"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  class="typography-small-strong text-primary-80"
+                  class="flex items-center justify-center gap-3"
                 >
-                  See subscriptions
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    See subscriptions
+                  </div>
                 </div>
               </button>
             </a>
@@ -851,42 +839,34 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/request-schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                  class="flex items-center justify-center gap-3"
                 >
-                  <span
-                    class="children:inline-block inline-flex justify-center items-center"
+                  <svg
+                    aria-hidden="true"
+                    height="20"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    viewBox="0 0 22 22"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="Aquarium-InlineIcon"
-                      height="20px"
-                      preserveAspectRatio="xMidYMid meet"
-                      role="img"
-                      style="vertical-align: -0.125em;"
-                      viewBox="0 0 22 22"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                      <path
-                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                  </span>
-                  <div>
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      Request new schema
-                    </div>
+                    <path
+                      d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    Request new schema
                   </div>
                 </div>
               </button>
@@ -895,12 +875,16 @@ exports[`TopicOverview without promotion banner renders correct DOM according to
               href="/topic/aivendemotopic/schema"
             >
               <button
-                class="Aquarium-Button Aquarium-Button.Ghost text-primary-intense active:text-primary-active focus-visible:text-primary-active hover:text-primary-active disabled:text-primary-inactive inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+                class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 active:text-primary-active disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative py-3 inline-flex gap-3 items-center justify-center hover:text-primary-active Aquarium-Button.Ghost px-0 icon-stroke-2 typography-default-strong"
               >
                 <div
-                  class="typography-small-strong text-primary-80"
+                  class="flex items-center justify-center gap-3"
                 >
-                  See schema
+                  <div
+                    class="typography-small-strong text-primary-80"
+                  >
+                    See schema
+                  </div>
                 </div>
               </button>
             </a>

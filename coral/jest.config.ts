@@ -21,7 +21,7 @@ export default {
   transform: {
     "^.+\\.[tj]sx?|mjs$": [
       "ts-jest",
-      { tsconfig: "<rootDir>/tsconfig.jest.json", isolatedModules: true },
+      { tsconfig: "<rootDir>/tsconfig.jest.json" },
     ],
   },
   transformIgnorePatterns: [

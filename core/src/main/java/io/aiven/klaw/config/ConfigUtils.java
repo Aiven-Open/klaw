@@ -70,6 +70,7 @@ public class ConfigUtils {
     http.csrf(
             csrf -> {
               csrf.ignoringRequestMatchers("/logout");
+              csrf.ignoringRequestMatchers("/resetMemoryCache/**"); // Internal service endpoint
               csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
               csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
             })

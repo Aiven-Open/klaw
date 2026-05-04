@@ -1,5 +1,6 @@
 import { Box, Grid } from "@aivenio/aquarium";
 import logo from "src/app/layout/header/klaw_logo.png";
+import { JSX } from "react";
 
 type BasePageWithoutNavProps = {
   headerContent?: JSX.Element;

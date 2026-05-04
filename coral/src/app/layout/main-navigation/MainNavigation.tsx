@@ -218,9 +218,8 @@ function MainNavigation() {
         </li>
       </ul>
       {!hideFeedbackForm && (
-        <Box.Flex paddingTop={"l2"}>
+        <Box.Flex padding={"l2"}>
           <Card
-            color="info-70"
             primaryAction={{
               href: "https://forms.gle/F2Pi8aanWeJPDPLT8",
               text: "Submit feedback",

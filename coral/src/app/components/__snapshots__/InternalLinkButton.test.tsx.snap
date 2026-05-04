@@ -3,7 +3,7 @@
 exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a primary button by default 1`] = `
 <div>
   <a
-    class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-default active:bg-primary-intense active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-intense focus-visible:ring-inset hover:bg-primary-intense disabled:bg-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    class="Aquarium-Link focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 hover:text-primary-hover Aquarium-Button whitespace-nowrap transition text-center rounded-sm relative px-4 py-3 inline-flex gap-3 items-center justify-center active:text-white active:bg-primary-active hover:bg-primary-intense disabled:text-white disabled:bg-primary-muted Aquarium-Button.Primary text-white bg-primary-default icon-stroke-2 typography-default-strong"
     href="/test/url"
   >
     My nice link
@@ -14,7 +14,7 @@ exports[`InternalLinkButton renders different styles based on selected Aquarium'
 exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a secondary button based on props 1`] = `
 <div>
   <a
-    class="Aquarium-Button Aquarium-Button.Secondary text-primary-intense bg-transparent ring-1 ring-primary-default ring-inset active:bg-primary-active active:ring-primary-default active:text-primary-intense focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:text-primary-intense hover:bg-primary-hover hover:ring-primary-default hover:text-primary-intense disabled:bg-body disabled:text-primary-inactive disabled:ring-primary-muted inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    class="Aquarium-Link focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-2 hover:text-primary-hover disabled:text-primary-inactive disabled:bg-body Aquarium-Button whitespace-nowrap transition text-center text-primary-intense rounded-sm relative px-4 py-3 inline-flex gap-3 items-center justify-center active:bg-primary-active active:text-primary-active before:active:border-primary-active hover:bg-primary-hover before:hover:border-primary-hover before:disabled:border-primary-muted Aquarium-Button.Secondary bg-transparent before:absolute before:inset-0 before:border before:border-primary-default before:rounded-sm icon-stroke-2 typography-default-strong"
     href="/test/url"
   >
     My nice link

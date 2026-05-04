@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    classes = UiapiApplication.class)
+    classes = {UiapiApplication.class})
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:test-application-rdbms1.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

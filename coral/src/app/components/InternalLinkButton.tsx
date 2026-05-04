@@ -1,11 +1,7 @@
-import { asButton, ButtonProps, Button } from "@aivenio/aquarium";
-import { Link, LinkProps } from "react-router-dom";
+import { Link, ButtonProps, Button, LinkProps } from "@aivenio/aquarium";
 import { ResolveIntersectionTypes } from "types/utils";
-import { ElementType, ReactNode } from "react";
-
-const AsButton = asButton<"a", LinkProps, HTMLAnchorElement>(
-  Link as ElementType
-);
+import { ReactNode } from "react";
+import { useHref } from "react-router-dom";
 
 type InternalLinkButtonProps = ResolveIntersectionTypes<
   {
@@ -15,6 +11,8 @@ type InternalLinkButtonProps = ResolveIntersectionTypes<
   } & LinkProps
 >;
 function InternalLinkButton({ children, ...props }: InternalLinkButtonProps) {
+  const resolvedHref = useHref(props.href ?? "");
+
   if (props.disabled) {
     // a Link cannot really be disabled semantically. Adding an empty ref
     // with aria-disabled would solve this, but that there are no styles
@@ -31,7 +29,11 @@ function InternalLinkButton({ children, ...props }: InternalLinkButtonProps) {
       </Button>
     );
   }
-  return <AsButton {...props}>{children}</AsButton>;
+  return (
+    <Link.Button {...props} href={resolvedHref}>
+      {children}
+    </Link.Button>
+  );
 }
 
 export { InternalLinkButton };

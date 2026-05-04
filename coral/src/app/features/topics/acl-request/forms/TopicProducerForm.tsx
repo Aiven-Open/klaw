@@ -8,7 +8,7 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";

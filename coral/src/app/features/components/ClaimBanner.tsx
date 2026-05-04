@@ -46,7 +46,7 @@ const ClaimBanner = ({
           {entityName} is already in progress.
         </Box>
         <InternalLinkButton
-          to={`/requests/${entityType}s?search=${entityName}&requestType=CLAIM&status=CREATED&page=1`}
+          href={`/requests/${entityType}s?search=${entityName}&requestType=CLAIM&status=CREATED&page=1`}
         >
           View request
         </InternalLinkButton>
@@ -62,6 +62,7 @@ const ClaimBanner = ({
           {`This ${entityType} is currently owned by ${entityOwner}. Select "Claim ${entityType}" to request ownership.`}
         </Box>
       </Spacing>
+
       <Button.Primary onClick={claimEntity}>Claim {entityType}</Button.Primary>
     </Banner>
   );

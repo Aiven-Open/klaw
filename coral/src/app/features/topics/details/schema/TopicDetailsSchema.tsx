@@ -181,7 +181,7 @@ function TopicDetailsSchema() {
           // as it makes it harder to convey the information for assistive technology
           <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
-              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}&schemaType=${schemaDetailsPerEnv.schemaType || "AVRO"}`}
+              href={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}&schemaType=${schemaDetailsPerEnv.schemaType || "AVRO"}`}
               // user can not promote a schema when it it's forbidden, when there is an open request
               // or an open promotion request
 

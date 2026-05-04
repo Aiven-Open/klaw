@@ -109,7 +109,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
         </Box>
         {showEditButton && !hasPendingRequest && (
           <InternalLinkButton
-            to={entityEditLink}
+            href={entityEditLink}
             disabled={!entityExists || entityUpdating}
           >
             {`Edit ${entity.type}`}

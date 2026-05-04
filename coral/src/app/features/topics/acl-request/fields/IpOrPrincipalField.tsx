@@ -75,7 +75,7 @@ const IpOrPrincipalField = ({
           }
           return newOption;
         }}
-        noResults={"No service account matches."}
+        emptyState={"No service account matches."}
         required
       />
     );

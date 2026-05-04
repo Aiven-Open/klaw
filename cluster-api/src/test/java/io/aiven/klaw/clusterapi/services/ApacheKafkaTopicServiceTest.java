@@ -51,6 +51,7 @@ class ApacheKafkaTopicServiceTest {
   @Mock private TopicPartitionInfo topicPartitionInfo;
   @Mock private CreateTopicsResult createTopicsResult;
   @Mock private DeleteTopicsResult deleteTopicsResult;
+  @Mock private AlterConfigsResult alterConfigsResult;
   @Mock private KafkaFuture<Void> kafkaFuture;
 
   private static Stream<Exception> exceptionProviderForCreateTopic() {
@@ -115,7 +116,7 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(listTopicsResult.names()).thenReturn(KafkaFuture.completedFuture(Set.of("name")));
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.allTopicNames())
+    Mockito.when(describeTopicsResult.all())
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
@@ -331,6 +332,8 @@ class ApacheKafkaTopicServiceTest {
         .thenReturn(KafkaFuture.completedFuture(topicDescriptionsPerAdminClient));
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
     Mockito.when(adminClient.createPartitions(anyMap())).thenReturn(null);
+    Mockito.when(adminClient.incrementalAlterConfigs(anyMap())).thenReturn(alterConfigsResult);
+    Mockito.when(alterConfigsResult.all()).thenReturn(KafkaFuture.completedFuture(null));
 
     ApiResponse response = apacheKafkaTopicService.updateTopic(clusterTopicRequest);
 

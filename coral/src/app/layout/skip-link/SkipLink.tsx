@@ -2,7 +2,7 @@ import classes from "src/app/layout/skip-link/SkipLink.module.css";
 import { MouseEvent, RefObject } from "react";
 
 type SkipLinkProps = {
-  mainContent: RefObject<HTMLDivElement>;
+  mainContent: RefObject<HTMLDivElement | null>;
 };
 
 function SkipLink(props: SkipLinkProps) {

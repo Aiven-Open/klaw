@@ -383,8 +383,6 @@ describe("ConnectorDetails", () => {
     });
 
     it("closes the modal and renders a toast when request was successful", async () => {
-      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
-
       const button = await waitFor(() =>
         screen.getByRole("button", { name: "Claim connector" })
       );

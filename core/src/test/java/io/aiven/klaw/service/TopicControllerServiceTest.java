@@ -858,6 +858,37 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(32)
+  public void saveTopicDocumentationWithXSSAttack() throws KlawException {
+    stubUserInfo();
+    TopicInfo topicInfo = utilMethods.getTopicInfo();
+    // Include malicious XSS content with safe HTML
+    topicInfo.setDocumentation("<script>alert('XSS')</script><p>Safe content</p>");
+
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
+
+    // Capture the Topic object passed to updateTopicDocumentation
+    ArgumentCaptor<Topic> topicCaptor = ArgumentCaptor.forClass(Topic.class);
+    when(handleDbRequests.updateTopicDocumentation(topicCaptor.capture()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    ApiResponse apiResponse = topicControllerService.saveTopicDocumentation(topicInfo);
+
+    // Verify success
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    // Verify that dangerous content was sanitized
+    Topic savedTopic = topicCaptor.getValue();
+    assertThat(savedTopic.getDocumentation())
+        .doesNotContain("<script>")
+        .doesNotContain("alert('XSS')")
+        .contains("<p>Safe content</p>"); // Safe HTML should be preserved
+  }
+
+  @Test
+  @Order(33)
   public void getTopicDetailsPerEnvFailureTopicDoesNotExist() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
@@ -873,7 +904,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(33)
+  @Order(34)
   public void getTopicDetailsPerEnvFailureNotOwnerTeamOfTopic() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
@@ -889,7 +920,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(34)
+  @Order(35)
   public void getTopicDetailsPerEnv() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
@@ -912,7 +943,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(35)
+  @Order(36)
   public void getTopics() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
@@ -1639,7 +1670,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(60)
+  @Order(61)
   public void getTopicsWithProducerFilterAndEnv() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1";
 
@@ -1669,7 +1700,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(61)
+  @Order(62)
   public void getTopicsWithConsumerFilterNoResults() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
@@ -1699,7 +1730,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(62)
+  @Order(63)
   public void getTopicsWithPatternFilterOneResult() throws KlawNotAuthorizedException {
     String envSel = "1", pageNo = "1", topicNameSearch = "2";
 
@@ -1734,7 +1765,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(63)
+  @Order(64)
   public void approvePromoteTopicRequests() throws KlawException {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(TOPIC_1);

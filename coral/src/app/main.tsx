@@ -57,7 +57,10 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AquariumContext>
-          <RouterProvider router={router} />
+          <RouterProvider
+            future={{ v7_startTransition: true }}
+            router={router}
+          />
           {DEV_MODE && <ReactQueryDevtools />}
         </AquariumContext>
       </AuthProvider>

@@ -21,7 +21,7 @@ const ClipBoard = ({
   accessibleCopiedDescription: string;
   description?: string;
 }) => {
-  const feedbackTimerRef = useRef<number>();
+  const feedbackTimerRef = useRef<number>(undefined);
 
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
 
@@ -49,14 +49,14 @@ const ClipBoard = ({
         isOpen
         placement={PositionerPlacement.top}
       >
-        <Button.SecondaryGhost
+        <Button.Ghost
           key="copy-button"
           aria-label={accessibleCopiedDescription}
           onClick={handleCopy}
           icon={duplicate}
         >
           {description}
-        </Button.SecondaryGhost>
+        </Button.Ghost>
         <div aria-live="polite" className={"visually-hidden"}>
           {accessibleCopiedDescription}
         </div>
@@ -70,14 +70,14 @@ const ClipBoard = ({
       content="Copy"
       placement={PositionerPlacement.top}
     >
-      <Button.SecondaryGhost
+      <Button.Ghost
         key="copy-button"
         aria-label={accessibleCopyDescription}
         onClick={handleCopy}
         icon={duplicate}
       >
         {description}
-      </Button.SecondaryGhost>
+      </Button.Ghost>
     </Tooltip>
   );
 };

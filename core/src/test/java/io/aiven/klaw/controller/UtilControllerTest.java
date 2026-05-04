@@ -97,12 +97,13 @@ public class UtilControllerTest {
     ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(resetEntityCache);
     ApiResponse apiResponse = ApiResponse.SUCCESS;
-    when(utilControllerService.resetCache(eq(resetEntityCache))).thenReturn(apiResponse);
+    when(utilControllerService.resetCache(eq(resetEntityCache), any())).thenReturn(apiResponse);
     mvc.perform(
             MockMvcRequestBuilders.post("/resetMemoryCache")
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer test-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }

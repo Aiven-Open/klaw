@@ -29,7 +29,7 @@ const TopicPromotionBanner = ({
         type={"topic"}
         promoteElement={
           <InternalLinkButton
-            to={`/topic/${topicName}/request-promotion?sourceEnv=${topicPromotionDetails.sourceEnv}&targetEnv=${topicPromotionDetails.targetEnvId}`}
+            href={`/topic/${topicName}/request-promotion?sourceEnv=${topicPromotionDetails.sourceEnv}&targetEnv=${topicPromotionDetails.targetEnvId}`}
           >
             Promote
           </InternalLinkButton>

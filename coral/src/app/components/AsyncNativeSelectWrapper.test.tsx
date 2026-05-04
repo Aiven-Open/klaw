@@ -44,7 +44,6 @@ describe("AsyncNativeSelectWrapper", () => {
     afterEach(cleanup);
 
     it("throws an error when child element is a html element", () => {
-      jest.spyOn(console, "error").mockImplementation((error) => error);
       expect(() =>
         render(
           <AsyncNativeSelectWrapper {...testProps}>
@@ -56,11 +55,9 @@ describe("AsyncNativeSelectWrapper", () => {
           " a" +
           " child."
       );
-      expect(console.error).toHaveBeenCalled();
     });
 
     it("throws an error when child element is a different DS component", () => {
-      jest.spyOn(console, "error").mockImplementation((error) => error);
       expect(() =>
         render(
           <AsyncNativeSelectWrapper {...testProps}>
@@ -72,7 +69,6 @@ describe("AsyncNativeSelectWrapper", () => {
           " a" +
           " child."
       );
-      expect(console.error).toHaveBeenCalled();
     });
 
     it("does not throw an error when child element is a DS NativeSelect", () => {

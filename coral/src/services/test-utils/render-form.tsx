@@ -57,7 +57,7 @@ export const renderForm = <T extends FieldValues>(
       onError={onError}
     >
       {children}
-      <Button type="submit" title="Submit" />
+      <Button type="submit">Submit</Button>
     </Wrapper>,
     { queryClient: true }
   );

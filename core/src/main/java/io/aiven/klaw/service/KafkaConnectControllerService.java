@@ -27,6 +27,7 @@ import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.HtmlSanitizer;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
@@ -1412,7 +1413,9 @@ public class KafkaConnectControllerService {
 
     KwKafkaConnector kwKafkaConnector = new KwKafkaConnector();
     kwKafkaConnector.setConnectorId(topicInfo.getConnectorId());
-    kwKafkaConnector.setDocumentation(topicInfo.getDocumentation());
+    // Sanitize HTML to prevent XSS attacks
+    String sanitizedDocumentation = HtmlSanitizer.sanitize(topicInfo.getDocumentation());
+    kwKafkaConnector.setDocumentation(sanitizedDocumentation);
     kwKafkaConnector.setTenantId(tenantId);
 
     List<KwKafkaConnector> topicsSearchList =

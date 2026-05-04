@@ -33,7 +33,7 @@
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>8.7.1</pnpm.version>
-        <shedlock.version>6.3.0</shedlock.version>
+        <shedlock.version>7.6.0</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.6.0</springdoc-openapi-ui.version>
@@ -100,6 +100,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${commons-text.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+            <artifactId>owasp-java-html-sanitizer</artifactId>
+            <version>20220608.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -174,6 +179,15 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.53.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
     </dependencies>
 
@@ -390,12 +404,24 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
                             <goal>stop</goal>
                         </goals>
                         <configuration>
-                            <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>

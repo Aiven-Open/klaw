@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@aivenio/aquarium";
+import { Box, Link, Typography } from "@aivenio/aquarium";
 
 function NoCoralAccessSuperadmin() {
   return (
@@ -25,10 +25,12 @@ function NoCoralAccessSuperadmin() {
         To continue as superadmin, go to the old interface.
       </Typography.LargeStrong>
       <Box.Flex colGap={"l2"}>
-        <Button.ExternalLink href={"/login"}>Login as user</Button.ExternalLink>
-        <Button.ExternalLink href={"/"} kind="secondary">
+        <Link.Button kind={"primary"} href={"/login"}>
+          Login as user
+        </Link.Button>
+        <Link.Button href={"/"} kind="secondary">
           Go to old interface
-        </Button.ExternalLink>
+        </Link.Button>
       </Box.Flex>
     </Box>
   );

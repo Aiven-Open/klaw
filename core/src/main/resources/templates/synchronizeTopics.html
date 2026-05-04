@@ -620,13 +620,21 @@
 													<span class="tooltip-content3">Topic new on cluster. {{resultBrowset.validationStatus}}</span>
 												</a>
 											</td>
+											<td ng-show="resultBrowset.remarks == 'UPDATED'">
+												<span class="badge badge-info"></span>
+												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
+													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-edit"></i>
+													<span class="tooltip-content3">Topic updated on cluster. {{resultBrowset.validationStatus}}</span>
+												</a>
+											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">
 												<a class="mytooltip" href="javascript:void(0)" style="color:red;">
 													<i class="fas fa-stopwatch"></i>
 													<span class="tooltip-content3">Topic deleted on cluster. Select REMOVE-FROM-KLAW team to delete from Klaw.</span>
 												</a>
 											</td>
-											<td ng-show="resultBrowset.remarks != 'DELETED' && resultBrowset.remarks != 'ADDED'">
+											<td ng-show="resultBrowset.remarks != 'DELETED' && resultBrowset.remarks != 'ADDED' && resultBrowset.remarks != 'UPDATED'">
 												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
 													<i class="fas fa-chess-rook"></i>
 													<span class="tooltip-content3">Topic synchronized.</span>

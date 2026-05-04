@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.util.Base64;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,19 +15,19 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 class JwtTokenUtilServiceTest {
   private final String clusterApiSecret = "dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==";
-  private final byte[] decodedSecret = Base64.decodeBase64(clusterApiSecret);
+  private final byte[] decodedSecret = Base64.getDecoder().decode(clusterApiSecret);
+  private final SecretKey hmacKey = Keys.hmacShaKeyFor(decodedSecret);
   JwtTokenUtilService jwtTokenUtilService;
 
   @BeforeEach
   public void setUp() {
     jwtTokenUtilService = new JwtTokenUtilService();
     ReflectionTestUtils.setField(jwtTokenUtilService, "clusterApiSecret", clusterApiSecret);
-    ReflectionTestUtils.setField(jwtTokenUtilService, "decodedSecret", decodedSecret);
+    ReflectionTestUtils.setField(jwtTokenUtilService, "hmacKey", hmacKey);
   }
 
   @Test
   void getUsernameFromToken() {
-    SecretKey hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
     String username = "user123";
     String token =
         Jwts.builder()
@@ -45,7 +44,6 @@ class JwtTokenUtilServiceTest {
 
   @Test
   void validateToken() {
-    SecretKey hmacKey = new SecretKeySpec(decodedSecret, SignatureAlgorithm.HS256.getJcaName());
     String username = "user123";
     String token =
         Jwts.builder()

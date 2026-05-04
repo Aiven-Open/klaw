@@ -76,8 +76,13 @@ public class UtilController {
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<io.aiven.klaw.model.ApiResponse> resetMemoryCache(
-      @Valid @RequestBody ResetEntityCache resetEntityCache) {
-    return new ResponseEntity<>(utilControllerService.resetCache(resetEntityCache), HttpStatus.OK);
+      @Valid @RequestBody ResetEntityCache resetEntityCache,
+      @org.springframework.web.bind.annotation.RequestHeader(
+              value = "Authorization",
+              required = true)
+          String authorizationHeader) {
+    return new ResponseEntity<>(
+        utilControllerService.resetCache(resetEntityCache, authorizationHeader), HttpStatus.OK);
   }
 
   @PermissionAllowed(permissionAllowed = {PermissionType.SHUTDOWN_KLAW})

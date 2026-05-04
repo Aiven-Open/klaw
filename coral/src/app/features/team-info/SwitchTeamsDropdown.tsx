@@ -105,12 +105,12 @@ function SwitchTeamsDropdown({
         }
       >
         <DropdownMenu.Trigger>
-          <Button.SecondaryDropdown dense>
+          <Button.Dropdown kind={"secondary"} dense>
             <Box width={"l7"} display={"flex"} alignContent={"left"}>
               <span className={"visually-hidden"}>Change your team</span>
               <span aria-hidden={"true"}>{currentTeam}</span>
             </Box>
-          </Button.SecondaryDropdown>
+          </Button.Dropdown>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           {teams.map((team) => {

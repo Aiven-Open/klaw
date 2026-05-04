@@ -387,7 +387,6 @@ describe("ConnectorPromotionRequest", () => {
         environment: defaultTargetEnv,
         description: "Just a description",
         connectorConfig: testConnectorConfig,
-        remarks: "",
       });
     });
 
@@ -446,6 +445,11 @@ describe("ConnectorPromotionRequest", () => {
       await user.type(editor, `{${updatedConfig}`);
       await user.tab();
 
+      const remarks = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
+      await user.type(remarks, "my test remark");
+
       const submitButton = screen.getByRole("button", {
         name: "Submit promotion request",
       });
@@ -457,7 +461,7 @@ describe("ConnectorPromotionRequest", () => {
         environment: defaultTargetEnv,
         description: "Just a description",
         connectorConfig: updatedConfig,
-        remarks: "",
+        remarks: "my test remark",
       });
     });
   });
