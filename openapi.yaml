@@ -2246,32 +2246,6 @@
         }
       }
     },
-    "/userRequestInfo" : {
-      "get" : {
-        "tags" : [ "users-teams-controller" ],
-        "operationId" : "getRegistrationInfoFromUserName",
-        "parameters" : [ {
-          "name" : "userName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/RegisterUserInfoModelResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/user/{userId}/switchTeamsList" : {
       "get" : {
         "tags" : [ "users-teams-controller" ],
@@ -7271,9 +7245,6 @@
             "type" : "string"
           },
           "mailid" : {
-            "type" : "string"
-          },
-          "pwd" : {
             "type" : "string"
           },
           "team" : {

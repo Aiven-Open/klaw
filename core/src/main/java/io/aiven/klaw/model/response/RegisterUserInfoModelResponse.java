@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class RegisterUserInfoModelResponse implements Serializable {
 
   @Email private String mailid;
 
-  private String pwd;
+  @JsonIgnore private String pwd;
 
   private String team;
 

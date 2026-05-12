@@ -164,16 +164,6 @@ public class UsersTeamsController {
         HttpStatus.OK);
   }
 
-  @RequestMapping(
-      value = "/userRequestInfo",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<RegisterUserInfoModelResponse> getRegistrationInfoFromUserName(
-      @RequestParam("userName") String userName) {
-    return new ResponseEntity<>(
-        usersTeamsControllerService.getRegistrationInfoFromUserName(userName), HttpStatus.OK);
-  }
-
   @PermissionAllowed(
       permissionAllowed = {
         PermissionType.APPROVE_ALL_REQUESTS_TEAMS,

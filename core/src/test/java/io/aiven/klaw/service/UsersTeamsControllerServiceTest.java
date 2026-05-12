@@ -1757,7 +1757,7 @@ public class UsersTeamsControllerServiceTest {
     assertThat(response.getTenantId()).isEqualTo(testNewRegUser.getTenantId());
     assertThat(response.getFullname()).isEqualTo(testNewRegUser.getFullname());
     assertThat(response.getRole()).isEqualTo(testNewRegUser.getRole());
-    assertThat(response.getPwd()).isEqualTo(testNewRegUser.getPwd());
+    assertThat(response.getPwd()).isEmpty();
   }
 
   @Test

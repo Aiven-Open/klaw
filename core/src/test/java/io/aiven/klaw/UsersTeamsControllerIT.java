@@ -10,14 +10,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.requests.ProfileModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.requests.UserUpdateInfoModel;
 import io.aiven.klaw.model.response.ConnectivityStatus;
-import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.List;
@@ -811,40 +809,9 @@ public class UsersTeamsControllerIT {
         new ObjectMapper().readValue(userDetailsResponse, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeam()).isEqualTo(INFRATEAM);
 
-    RegisterUserInfoModelResponse registerUserInfoModelResponse =
-        getRegisterUserInfoModelResponse(user5);
-    assert registerUserInfoModelResponse != null;
-    assertThat(registerUserInfoModelResponse.getStatus()).isEqualTo(NewUserStatus.APPROVED.value);
-
     String response = deleteUser(user5);
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
-
-    registerUserInfoModelResponse = getRegisterUserInfoModelResponse(user5);
-    assertThat(registerUserInfoModelResponse).isNull();
-  }
-
-  private RegisterUserInfoModelResponse getRegisterUserInfoModelResponse(String userName)
-      throws Exception {
-    String response;
-    response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/userRequestInfo")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .with(csrf())
-                    .param("userName", userName)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    if (!response.equals("")) {
-      return OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    } else {
-      return null;
-    }
   }
 
   private ApiResponse getApiResponseUserApprove(String userToApprove) throws Exception {
