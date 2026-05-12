@@ -8,6 +8,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, String> {
   Optional<RegisterUserInfo> findByUsername(String userid);
 
+  Optional<RegisterUserInfo> findByUsernameIgnoreCase(String username);
+
   List<RegisterUserInfo> findAllByStatusAndTenantId(String status, int tenantId);
 
   int countByStatusAndTenantId(String status, int tenantId);
@@ -18,7 +20,11 @@ public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, Strin
 
   RegisterUserInfo findFirstByUsernameAndStatusIn(String userId, List<String> status);
 
+  RegisterUserInfo findFirstByUsernameIgnoreCaseAndStatusIn(String userId, List<String> status);
+
   RegisterUserInfo findFirstByUsernameAndStatus(String userId, String status);
+
+  RegisterUserInfo findFirstByUsernameIgnoreCaseAndStatus(String userId, String status);
 
   boolean existsRegisterUserInfoByUsernameAndStatus(String userId, String status);
 

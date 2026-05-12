@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.SchemaRequestID;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
@@ -127,6 +128,15 @@ public class DeleteDataJdbcTest {
   @Test
   public void deleteUserRequest() {
     String result = deleteDataJdbc.deleteUserRequest("uiuser1");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void deleteUserRequestCaseInsensitive() {
+    UserInfo existingUser = new UserInfo();
+    existingUser.setUsername("TestUser");
+    when(userInfoRepo.findByUsernameIgnoreCase("testuser")).thenReturn(Optional.of(existingUser));
+    String result = deleteDataJdbc.deleteUserRequest("testuser");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 

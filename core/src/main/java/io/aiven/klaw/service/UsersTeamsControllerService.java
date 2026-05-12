@@ -549,6 +549,7 @@ public class UsersTeamsControllerService {
 
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeamId(), newUser.getRole());
+    newUser.setUsername(newUser.getUsername().toLowerCase());
     boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
     if (!userNamePatternCheck) {
       return ApiResponse.notOk(TEAMS_ERR_109);
@@ -887,15 +888,16 @@ public class UsersTeamsControllerService {
   public ApiResponse registerUser(RegisterUserInfoModel newUser, boolean isExternal)
       throws KlawException {
     log.info("registerUser {}", newUser.getUsername());
+    newUser.setUsername(newUser.getUsername().toLowerCase());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().getAllUsersAllTenants();
     if (userList.stream()
-        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
+        .anyMatch(user -> user.getUsername().equalsIgnoreCase(newUser.getMailid()))) {
       return ApiResponse.notOk(TEAMS_ERR_115);
     } else if (userList.stream()
-        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getUsername()))) {
+        .anyMatch(user -> user.getUsername().equalsIgnoreCase(newUser.getUsername()))) {
       return ApiResponse.notOk(TEAMS_ERR_115);
     }
 
@@ -905,8 +907,8 @@ public class UsersTeamsControllerService {
     if (registerUserInfoList.stream()
         .anyMatch(
             user -> {
-              if (user.getUsername().equals(newUser.getUsername())
-                  || user.getUsername().equals(newUser.getMailid())) {
+              if (user.getUsername().equalsIgnoreCase(newUser.getUsername())
+                  || user.getUsername().equalsIgnoreCase(newUser.getMailid())) {
                 // if not equal to pending it has been previously declined or should have been
                 // caught by the above check if the user already exists.
                 return !Objects.equals(user.getStatus(), NewUserStatus.PENDING);

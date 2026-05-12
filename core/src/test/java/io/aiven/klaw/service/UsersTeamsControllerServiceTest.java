@@ -98,7 +98,7 @@ public class UsersTeamsControllerServiceTest {
   private static final int TEST_TENANT_ID = 101;
   private static final int TEST_TEAM_ID = 3;
   private static final String TEST_TENANT_NAME = "testTenantName";
-  private static final String TEST_NEW_USER_UNAME = "newUserUname";
+  private static final String TEST_NEW_USER_UNAME = "newuseruname";
   private static final String ENCRYPTOR_SECRET_KEY = "encryptorSecretKey";
   private static final String TEST_NEW_USER_PWD_PLAIN_TEXT = "newUserPwd";
   private static final String TEST_AUTHENTICATED_USER_UNAME = "authenticatedUserName";
@@ -1472,6 +1472,39 @@ public class UsersTeamsControllerServiceTest {
             "octopus@klaw-project.io",
             ApiResponse.notOk(TEAMS_ERR_115),
             TEAMS_ERR_115));
+  }
+
+  @Test
+  public void registerUserRejectsCaseVariantOfExistingUser() throws KlawException {
+    UserInfo existingUser = new UserInfo();
+    existingUser.setUsername("victim");
+    existingUser.setMailid("victim@klaw-project.io");
+    when(handleDbRequests.getAllUsersAllTenants()).thenReturn(List.of(existingUser));
+
+    RegisterUserInfoModel model = new RegisterUserInfoModel();
+    model.setTeam("Octopus");
+    model.setRole("USER");
+    model.setPwd("xXXXXXXX12@");
+    model.setFullname("Victim");
+    model.setUsername("VictiM");
+    model.setMailid("victim2@klaw-project.io");
+
+    ApiResponse result = usersTeamsControllerService.registerUser(model, false);
+    assertThat(result.getMessage()).isEqualTo(TEAMS_ERR_115);
+  }
+
+  @Test
+  public void addNewUserNormalizesUsernameToLowercase() throws KlawException {
+    UserInfoModel newUser = utilMethods.getUserInfoMock();
+    newUser.setUsername("TestUser123");
+    when(handleDbRequests.addNewUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+
+    ArgumentCaptor<UserInfo> userCaptor = ArgumentCaptor.forClass(UserInfo.class);
+    ApiResponse apiResponse = usersTeamsControllerService.addNewUser(newUser, false);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResponse.SUCCESS.getMessage());
+
+    verify(handleDbRequests).addNewUser(userCaptor.capture());
+    assertThat(userCaptor.getValue().getUsername()).isEqualTo("testuser123");
   }
 
   @ParameterizedTest

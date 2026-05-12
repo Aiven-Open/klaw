@@ -286,7 +286,7 @@ public class InsertDataJdbc {
 
   public String insertIntoUsers(UserInfo userInfo) {
     log.debug("insertIntoUsers {}", userInfo.getUsername());
-    Optional<UserInfo> userExists = userInfoRepo.findById(userInfo.getUsername());
+    Optional<UserInfo> userExists = userInfoRepo.findByUsernameIgnoreCase(userInfo.getUsername());
     if (userExists.isPresent()) {
       return "Failure. User already exists";
     }
@@ -378,11 +378,12 @@ public class InsertDataJdbc {
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {
     log.debug("insertIntoRegisterUsers {}", userInfo.getUsername());
 
-    Optional<UserInfo> userNameExists = userInfoRepo.findById(userInfo.getUsername());
+    Optional<UserInfo> userNameExists =
+        userInfoRepo.findByUsernameIgnoreCase(userInfo.getUsername());
     if (userNameExists.isPresent()) return "Failure. User already exists";
 
     Optional<RegisterUserInfo> optionalUserRegistration =
-        registerInfoRepo.findByUsername(userInfo.getUsername());
+        registerInfoRepo.findByUsernameIgnoreCase(userInfo.getUsername());
     if (optionalUserRegistration.isPresent()) {
       if ("APPROVED".equals(optionalUserRegistration.get().getStatus())) {
         // do nothing -- user is deleted

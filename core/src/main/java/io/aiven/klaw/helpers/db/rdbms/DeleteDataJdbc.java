@@ -229,12 +229,11 @@ public class DeleteDataJdbc {
 
   public String deleteUserRequest(String userId) {
     log.debug("deleteUserRequest {}", userId);
-    UserInfo user = new UserInfo();
-    user.setUsername(userId);
-    userInfoRepo.delete(user);
+    Optional<UserInfo> userOpt = userInfoRepo.findByUsernameIgnoreCase(userId);
+    userOpt.ifPresent(userInfoRepo::delete);
 
     // if the record exists in kwregisterusers, delete it
-    Optional<RegisterUserInfo> registerUserInfo = registerInfoRepo.findByUsername(userId);
+    Optional<RegisterUserInfo> registerUserInfo = registerInfoRepo.findByUsernameIgnoreCase(userId);
     registerUserInfo.ifPresent(userInfo -> registerInfoRepo.delete(userInfo));
 
     return ApiResultStatus.SUCCESS.value;

@@ -1177,16 +1177,17 @@ public class SelectDataJdbc {
   }
 
   public RegisterUserInfo selectFirstStagingRegisterUsersInfo(String userId) {
-    return registerInfoRepo.findFirstByUsernameAndStatus(userId, "STAGING");
+    return registerInfoRepo.findFirstByUsernameIgnoreCaseAndStatus(userId, "STAGING");
   }
 
   public RegisterUserInfo selectRegisterUsersInfo(String username) {
-    Optional<RegisterUserInfo> registerUserRec = registerInfoRepo.findByUsername(username);
+    Optional<RegisterUserInfo> registerUserRec =
+        registerInfoRepo.findByUsernameIgnoreCase(username);
     return registerUserRec.orElse(null);
   }
 
   public RegisterUserInfo selectPendingRegisterUsersInfo(String username) {
-    return registerInfoRepo.findFirstByUsernameAndStatusIn(
+    return registerInfoRepo.findFirstByUsernameIgnoreCaseAndStatusIn(
         username, List.of(NewUserStatus.PENDING.value, NewUserStatus.STAGING.value));
   }
 

@@ -171,9 +171,10 @@ public class InsertDataJdbcTest {
   @ParameterizedTest
   @MethodSource
   public void insertIntoRegisterUsers(String userName, String mailId, String expectedResult) {
-    when(userInfoRepo.findById(eq(userName))).thenReturn(Optional.empty());
+    when(userInfoRepo.findByUsernameIgnoreCase(eq(userName))).thenReturn(Optional.empty());
     if (expectedResult.equals("Failure. User already exists")) {
-      when(userInfoRepo.findById(eq(userName))).thenReturn(Optional.of(new UserInfo()));
+      when(userInfoRepo.findByUsernameIgnoreCase(eq(userName)))
+          .thenReturn(Optional.of(new UserInfo()));
     } else if (expectedResult.equals("Failure. Registration already exists")) {
       when(registerInfoRepo.findFirstByUsernameAndStatusIn(eq(userName), any()))
           .thenReturn(new RegisterUserInfo());
@@ -196,6 +197,32 @@ public class InsertDataJdbcTest {
             "octopus@klaw-project.io", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value),
         Arguments.of("Octopus2", "octopus@klaw-project.io", "Failure. User already exists"),
         Arguments.of("Octopus3", "octopus@klaw-project.io", ApiResultStatus.SUCCESS.value));
+  }
+
+  @Test
+  public void insertIntoUsersCaseInsensitiveDuplicateRejected() {
+    UserInfo existingUser = new UserInfo();
+    existingUser.setUsername("testuser");
+    when(userInfoRepo.findByUsernameIgnoreCase("TestUser")).thenReturn(Optional.of(existingUser));
+    UserInfo newUser = new UserInfo();
+    newUser.setUsername("TestUser");
+    String result = insertData.insertIntoUsers(newUser);
+    assertThat(result).isEqualTo("Failure. User already exists");
+  }
+
+  @Test
+  public void insertIntoRegisterUsersCaseInsensitiveDuplicateRejected() {
+    UserInfo existingUser = new UserInfo();
+    existingUser.setUsername("octopus");
+    when(userInfoRepo.findByUsernameIgnoreCase("Octopus")).thenReturn(Optional.of(existingUser));
+    RegisterUserInfo regUser = new RegisterUserInfo();
+    regUser.setPwd("XXXXXXXXX");
+    regUser.setApprover("SUPERADMIN");
+    regUser.setRole("USER");
+    regUser.setUsername("Octopus");
+    regUser.setMailid("octopus@klaw-project.io");
+    String result = insertData.insertIntoRegisterUsers(regUser);
+    assertThat(result).isEqualTo("Failure. User already exists");
   }
 
   @ParameterizedTest
