@@ -18,6 +18,7 @@ With several downloads every week, many more companies which did not adopt a sol
 
 Not required but to get the latest experience we recommend also building the React UI.
 Latest:
+
 - [pnpm](https://pnpm.io/)  (>=9.0.0 <10.0.0)
 - [nodejs](https://nodejs.org/) (>=20.0.0 <21.0.0)
 
