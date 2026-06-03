@@ -396,6 +396,39 @@ class ApacheKafkaTopicServiceTest {
   }
 
   @Test
+  void deleteTopicWithoutDeleteAssociatedSchemaFlagSucceeds() throws Exception {
+    // Regression: when updateTopic decreases partitions it falls into the
+    // delete+recreate branch and forwards the original ClusterTopicRequest to
+    // deleteTopic with deleteAssociatedSchema unset (null). It must not NPE.
+    ClusterTopicRequest clusterTopicRequest =
+        ClusterTopicRequest.builder()
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
+            .protocol(protocol)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.SINGLE_PARTITION)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
+            .build();
+
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
+        .thenReturn(adminClient);
+    Mockito.when(clusterApiUtils.getAdminClientProperties()).thenReturn(adminClientProperties);
+    Mockito.when(adminClientProperties.getTopicsTimeoutSecs()).thenReturn(10L);
+    Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
+    Mockito.when(deleteTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
+
+    ApiResponse response = apacheKafkaTopicService.deleteTopic(clusterTopicRequest);
+
+    Assertions.assertThat(response.isSuccess()).isTrue();
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    Mockito.verifyNoInteractions(schemaService);
+  }
+
+  @Test
   void deleteTopicUnknownTopicOrPartitionException() throws Exception {
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()

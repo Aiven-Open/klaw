@@ -307,7 +307,7 @@ public class ApacheKafkaTopicService {
 
       // delete associated schema if requested
       String schemaDeletionStatus = "";
-      if (clusterTopicRequest.getDeleteAssociatedSchema()) {
+      if (Boolean.TRUE.equals(clusterTopicRequest.getDeleteAssociatedSchema())) {
         schemaDeletionStatus = schemaService.deleteSchema(clusterTopicRequest).getMessage();
         log.info("Schema deletion status : {}", schemaDeletionStatus);
       }
