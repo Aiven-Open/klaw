@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+// eslint allowAsImport: "True"
 
 // eslint-disable-next-line no-undef
 const http = require("http");
