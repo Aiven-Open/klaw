@@ -103,7 +103,7 @@ describe("ConnectorRequests", () => {
       memoryRouter: true,
       aquariumContext: true,
     });
-    expect(getConnectorRequests).toBeCalledTimes(1);
+    expect(getConnectorRequests).toHaveBeenCalledTimes(1);
   });
 
   describe("handles loading and error state when fetching the requests", () => {

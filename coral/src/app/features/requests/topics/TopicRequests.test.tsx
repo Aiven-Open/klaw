@@ -89,7 +89,7 @@ describe("TopicRequests", () => {
       memoryRouter: true,
       aquariumContext: true,
     });
-    expect(getTopicRequests).toBeCalledTimes(1);
+    expect(getTopicRequests).toHaveBeenCalledTimes(1);
   });
 
   describe("user can filter topic requests based on the topic name", () => {
