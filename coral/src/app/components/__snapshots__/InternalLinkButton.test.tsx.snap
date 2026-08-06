@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a primary button by default 1`] = `
 <div>
