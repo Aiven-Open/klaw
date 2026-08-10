@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`TopicOverview with promotion banner renders correct DOM according to data from useTopicDetails and getClusterDetails 1`] = `
 <div>

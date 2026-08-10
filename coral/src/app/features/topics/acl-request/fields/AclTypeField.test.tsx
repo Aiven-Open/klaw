@@ -48,6 +48,6 @@ describe("AclTypeField", () => {
     const consumerRadioButton = result.getByLabelText("Consumer");
 
     await userEvent.click(consumerRadioButton);
-    expect(handleChange).toBeCalled();
+    expect(handleChange).toHaveBeenCalled();
   });
 });

@@ -126,7 +126,7 @@ describe("AclRequests", () => {
       memoryRouter: true,
       aquariumContext: true,
     });
-    expect(getAclRequests).toBeCalledTimes(1);
+    expect(getAclRequests).toHaveBeenCalledTimes(1);
   });
 
   describe("renders pagination dependent on response", () => {
