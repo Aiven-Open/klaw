@@ -17,6 +17,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -329,9 +330,21 @@ public class TopicRequestValidatorImpl
     return true;
   }
 
+  // Cache of compiled topic-regex patterns keyed by the regex string.
+  // The env-level topic regex is identical across many validation calls, but the
+  // original code recompiled it on every call. Pattern.compile() is comparatively
+  // expensive, so we compile once per distinct regex and reuse it. The cache is
+  // bounded by the (small) number of distinct env-level topic regexes.
+  private static final ConcurrentHashMap<String, Pattern> TOPIC_REGEX_CACHE =
+      new ConcurrentHashMap<>();
+
+  private static Pattern getTopicRegexPattern(String topicRegex) {
+    return TOPIC_REGEX_CACHE.computeIfAbsent(topicRegex, Pattern::compile);
+  }
+
   // TODO Review rej and see if this would provide a better experience for Klaw.
   private boolean isRegexAMatch(TopicRequestModel topicRequestReq, String topicRegex) {
-    Pattern p = Pattern.compile(topicRegex);
+    Pattern p = getTopicRegexPattern(topicRegex);
     Matcher m = p.matcher(topicRequestReq.getTopicname());
     return m.matches();
   }
