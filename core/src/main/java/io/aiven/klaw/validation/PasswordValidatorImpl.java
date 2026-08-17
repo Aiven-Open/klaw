@@ -16,13 +16,17 @@ import org.springframework.beans.factory.annotation.Value;
 @Slf4j
 public class PasswordValidatorImpl implements ConstraintValidator<PasswordValidator, String> {
 
+  // Precompiled once: Pattern.compile() was previously called on every validation,
+  // which is expensive on the hot path (every user registration / password change).
+  private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
   @Override
   public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
     if (StringUtils.isEmpty(authenticationType) || authenticationType.equalsIgnoreCase("db")) {
-      Matcher matcher = Pattern.compile(PASSWORD_REGEX).matcher(password);
+      Matcher matcher = PASSWORD_PATTERN.matcher(password);
       if (!matcher.find()) {
         constraintValidatorContext
             .buildConstraintViolationWithTemplate(PASSWORD_REGEX_VALIDATION_STR)

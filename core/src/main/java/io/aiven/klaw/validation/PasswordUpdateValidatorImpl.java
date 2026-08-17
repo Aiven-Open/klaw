@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 public class PasswordUpdateValidatorImpl
     implements ConstraintValidator<PasswordUpdateValidator, String> {
 
+  // Precompiled once: Pattern.compile() was previously called on every validation,
+  // which is expensive on the hot path (every user password update).
+  private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
@@ -26,7 +30,7 @@ public class PasswordUpdateValidatorImpl
       return true;
     }
     if (StringUtils.isEmpty(authenticationType) || authenticationType.equalsIgnoreCase("db")) {
-      Matcher matcher = Pattern.compile(PASSWORD_REGEX).matcher(password);
+      Matcher matcher = PASSWORD_PATTERN.matcher(password);
       if (!matcher.find()) {
         constraintValidatorContext
             .buildConstraintViolationWithTemplate(PASSWORD_REGEX_VALIDATION_STR)
