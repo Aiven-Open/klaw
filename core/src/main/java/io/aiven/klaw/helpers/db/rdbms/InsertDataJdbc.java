@@ -12,12 +12,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
@@ -324,6 +327,7 @@ public class InsertDataJdbc {
     }
   }
 
+  @Transactional
   public String addNewEnv(Env env) {
     log.debug("Insert or Update Env {}", env.getName());
 
@@ -333,7 +337,26 @@ public class InsertDataJdbc {
       env.setId(lastId + "");
     }
 
-    envRepo.save(env);
+    if (env.getVersion() != null) {
+      EnvID envID = new EnvID();
+      envID.setId(env.getId());
+      envID.setTenantId(env.getTenantId());
+
+      Env existingEnv =
+          envRepo
+              .findById(envID)
+              .orElseThrow(() -> new ObjectOptimisticLockingFailureException(Env.class, envID));
+
+      if (!Objects.equals(existingEnv.getVersion(), env.getVersion())) {
+        throw new ObjectOptimisticLockingFailureException(Env.class, envID);
+      }
+
+      copyProperties(env, existingEnv, "id", "tenantId", "version");
+      envRepo.save(existingEnv);
+    } else {
+      envRepo.save(env);
+    }
+
     return ApiResultStatus.SUCCESS.value;
   }
 

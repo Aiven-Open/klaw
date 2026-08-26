@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -166,6 +168,24 @@ public class InsertDataJdbcTest {
         .thenReturn(kwEntitySequenceList);
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void addNewEnvUpdateWhenEnvDeletedThrowsOptimisticLockingFailureException() {
+    Env env = new Env();
+    env.setId("1");
+    env.setTenantId(101);
+    env.setVersion(0L);
+    env.setName("DEV");
+
+    EnvID envID = new EnvID();
+    envID.setId("1");
+    envID.setTenantId(101);
+
+    when(envRepo.findById(envID)).thenReturn(Optional.empty());
+
+    assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
+        .isThrownBy(() -> insertData.addNewEnv(env));
   }
 
   @ParameterizedTest

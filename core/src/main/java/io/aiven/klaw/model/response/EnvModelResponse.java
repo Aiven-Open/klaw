@@ -27,6 +27,8 @@ public class EnvModelResponse implements Serializable {
 
   @NotNull private Integer tenantId;
 
+  private Long version;
+
   @NotNull private Integer clusterId;
 
   @NotNull private String tenantName;
