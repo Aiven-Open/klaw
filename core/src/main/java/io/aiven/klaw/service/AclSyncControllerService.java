@@ -287,7 +287,7 @@ public class AclSyncControllerService {
             Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
             aclReq.setReq_no(aclId);
             // Approve request
-            Map<String, String> emptyJsonParams = new HashMap<>();
+            Map<String, Map<String, String>> emptyJsonParams = new HashMap<>();
             manageDatabase
                 .getHandleDbRequests()
                 .updateAclRequest(aclReq, userName, emptyJsonParams, true);

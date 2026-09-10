@@ -975,8 +975,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public String updateAclRequest(
-      AclRequests aclReq, String approver, Map<String, String> jsonParams, boolean saveReqOnly) {
-    return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams, saveReqOnly);
+      AclRequests aclReq,
+      String approver,
+      Map<String, Map<String, String>> perAccountJsonParams,
+      boolean saveReqOnly) {
+    return jdbcUpdateHelper.updateAclRequest(aclReq, approver, perAccountJsonParams, saveReqOnly);
   }
 
   @Override

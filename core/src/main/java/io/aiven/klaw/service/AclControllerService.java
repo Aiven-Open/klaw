@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -695,13 +696,18 @@ public class AclControllerService {
     String allIps = aclReq.getAcl_ip();
     String allSsl = aclReq.getAcl_ssl();
 
-    ResponseEntity<ApiResponse> response = invokeClusterApiAclRequest(tenantId, aclReq);
+    // Holds the cluster-API result (incl. per-account aivenaclid) keyed by the individual
+    // service account / IP, so each persisted ACL row keeps its own aivenaclid.
+    Map<String, Map<String, String>> perAccountJsonParams = new LinkedHashMap<>();
+    ResponseEntity<ApiResponse> response =
+        invokeClusterApiAclRequest(tenantId, aclReq, perAccountJsonParams);
     // set back all ips, principals
     aclReq.setAcl_ip(allIps);
     aclReq.setAcl_ssl(allSsl);
     String updateAclReqStatus;
     updateAclReqStatus =
-        handleAclRequestClusterApiResponse(userDetails, dbHandle, aclReq, response, tenantId);
+        handleAclRequestClusterApiResponse(
+            userDetails, dbHandle, aclReq, response, perAccountJsonParams, tenantId);
 
     MailUtils.MailType notifyUserType = ACL_REQUEST_APPROVED;
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
@@ -893,6 +899,7 @@ public class AclControllerService {
       HandleDbRequests dbHandle,
       AclRequests aclReq,
       ResponseEntity<ApiResponse> response,
+      Map<String, Map<String, String>> perAccountJsonParams,
       int tenantId) {
     String updateAclReqStatus;
     try {
@@ -916,21 +923,19 @@ public class AclControllerService {
               }
             }
           }
-          Map<String, String> emptyJsonParams = new HashMap<>();
+          Map<String, Map<String, String>> emptyJsonParams = new HashMap<>();
           updateAclReqStatus =
               dbHandle.updateAclRequest(aclReq, userDetails, emptyJsonParams, false);
         } else {
-          Map<String, String> jsonParams = new HashMap<>();
           String aivenAclIdKey = "aivenaclid";
-          Object responseData = responseBody.getData();
-          if (responseData instanceof Map) {
-            Map<String, String> dataMap = (Map<String, String>) responseData;
-            if (dataMap.containsKey(aivenAclIdKey)) {
-              jsonParams = dataMap;
-              updateServiceAccountsForTeam(aclReq, tenantId);
-            }
+          boolean anyAivenAclId =
+              perAccountJsonParams.values().stream()
+                  .anyMatch(dataMap -> dataMap.containsKey(aivenAclIdKey));
+          if (anyAivenAclId) {
+            updateServiceAccountsForTeam(aclReq, tenantId);
           }
-          updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams, false);
+          updateAclReqStatus =
+              dbHandle.updateAclRequest(aclReq, userDetails, perAccountJsonParams, false);
         }
       } else {
         updateAclReqStatus = ApiResultStatus.FAILURE.value;
@@ -948,19 +953,31 @@ public class AclControllerService {
             .filter(team -> Objects.equals(team.getTeamId(), aclRequest.getRequestingteam()))
             .findFirst();
     if (optionalTeam.isPresent()) {
+      // A single request can carry multiple service accounts joined by SEPARATOR_ACL; register
+      // (or remove) each account individually rather than the joined string.
+      String[] serviceAccountsInRequest =
+          aclRequest.getAcl_ssl() != null
+              ? aclRequest.getAcl_ssl().split(SEPARATOR_ACL)
+              : new String[0];
       ServiceAccounts serviceAccounts = optionalTeam.get().getServiceAccounts();
       if (serviceAccounts != null && serviceAccounts.getServiceAccountsList() != null) {
         if (Objects.equals(
             RequestOperationType.DELETE.value, aclRequest.getRequestOperationType())) {
-          serviceAccounts.getServiceAccountsList().remove(aclRequest.getAcl_ssl());
+          for (String serviceAccount : serviceAccountsInRequest) {
+            serviceAccounts.getServiceAccountsList().remove(serviceAccount);
+          }
         } else {
-          serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+          for (String serviceAccount : serviceAccountsInRequest) {
+            serviceAccounts.getServiceAccountsList().add(serviceAccount);
+          }
         }
       } else {
         serviceAccounts = new ServiceAccounts();
         serviceAccounts.setNumberOfAllowedAccounts(allowedServiceAccountsPerTeam);
         serviceAccounts.setServiceAccountsList(new HashSet<>());
-        serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+        for (String serviceAccount : serviceAccountsInRequest) {
+          serviceAccounts.getServiceAccountsList().add(serviceAccount);
+        }
         optionalTeam.get().setServiceAccounts(serviceAccounts);
       }
 
@@ -992,7 +1009,8 @@ public class AclControllerService {
     }
   }
 
-  private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(int tenantId, AclRequests aclReq)
+  private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(
+      int tenantId, AclRequests aclReq, Map<String, Map<String, String>> perAccountJsonParams)
       throws KlawException {
     ResponseEntity<ApiResponse> response = null;
 
@@ -1009,6 +1027,8 @@ public class AclControllerService {
         for (String s : aclListIp) {
           aclReq.setAcl_ip(s);
           response = clusterApiService.approveAclRequests(aclReq, tenantId);
+          // Keep this account's own aivenaclid so it is persisted against the correct ACL row.
+          perAccountJsonParams.put(s, extractAclJsonParams(response));
         }
       }
       case PRINCIPAL -> {
@@ -1016,6 +1036,8 @@ public class AclControllerService {
         for (String s : aclListSsl) {
           aclReq.setAcl_ssl(s);
           response = clusterApiService.approveAclRequests(aclReq, tenantId);
+          // Keep this account's own aivenaclid so it is persisted against the correct ACL row.
+          perAccountJsonParams.put(s, extractAclJsonParams(response));
         }
       }
     }
@@ -1023,6 +1045,18 @@ public class AclControllerService {
     updateEnvStatus(response, manageDatabase, tenantId, aclReq.getEnvironment());
 
     return response;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, String> extractAclJsonParams(ResponseEntity<ApiResponse> response) {
+    ApiResponse responseBody = response != null ? response.getBody() : null;
+    if (responseBody != null && responseBody.isSuccess() && responseBody.getData() instanceof Map) {
+      Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
+      if (dataMap.containsKey("aivenaclid")) {
+        return dataMap;
+      }
+    }
+    return new HashMap<>();
   }
 
   @PermissionAllowed(permissionAllowed = {PermissionType.APPROVE_SUBSCRIPTIONS})
