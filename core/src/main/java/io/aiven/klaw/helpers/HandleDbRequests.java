@@ -429,7 +429,7 @@ public interface HandleDbRequests {
   String updateAclRequest(
       AclRequests aclRequests,
       String approver,
-      Map<String, String> jsonParams,
+      Map<String, Map<String, String>> perAccountJsonParams,
       boolean saveReqOnly);
 
   void updateNewUserRequest(String username, String approver, boolean isApprove);

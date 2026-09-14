@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
@@ -31,6 +33,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -183,6 +187,43 @@ public class UpdateDataJdbcTest {
         updateData.updateAclRequest(
             utilMethods.getAclRequest("testtopic"), "uiuser2", new HashMap<>(), false);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  // Regression: a create request covering multiple service accounts must persist each
+  // account's own aivenaclid, not the same one for every kwacls row.
+  @Test
+  @SuppressWarnings("unchecked")
+  public void updateAclRequestPersistsDistinctAivenAclIdPerServiceAccount() {
+    when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    AclRequests aclReq = utilMethods.getAclRequestCreate("testtopic");
+    aclReq.setAcl_ip(null);
+    aclReq.setAcl_ssl("CN=user1<ACL>CN=user2");
+
+    Map<String, String> params1 = new HashMap<>();
+    params1.put("aivenaclid", "aivenaclid1");
+    Map<String, String> params2 = new HashMap<>();
+    params2.put("aivenaclid", "aivenaclid2");
+    Map<String, Map<String, String>> perAccountJsonParams = new HashMap<>();
+    perAccountJsonParams.put("CN=user1", params1);
+    perAccountJsonParams.put("CN=user2", params2);
+
+    String result = updateData.updateAclRequest(aclReq, "uiuser2", perAccountJsonParams, false);
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    ArgumentCaptor<List<Acl>> aclsCaptor = ArgumentCaptor.forClass(List.class);
+    verify(insertDataJdbcHelper, times(2)).insertIntoAclsSOT(aclsCaptor.capture(), eq(false));
+
+    Map<String, String> aivenAclIdBySsl = new HashMap<>();
+    for (List<Acl> acls : aclsCaptor.getAllValues()) {
+      for (Acl acl : acls) {
+        aivenAclIdBySsl.put(acl.getAclssl(), acl.getJsonParams().get("aivenaclid"));
+      }
+    }
+    assertThat(aivenAclIdBySsl)
+        .containsEntry("CN=user1", "aivenaclid1")
+        .containsEntry("CN=user2", "aivenaclid2");
   }
 
   @Test

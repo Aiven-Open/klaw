@@ -571,6 +571,116 @@ public class AclControllerServiceTest {
     assertThat(apiResp.isSuccess()).isTrue();
   }
 
+  // Regression: approving one request that covers multiple service accounts must keep each
+  // account's own aivenaclid, so deleting one ACL later removes the correct Aiven ACL.
+  @Test
+  @Order(51)
+  @SuppressWarnings("unchecked")
+  public void approveAclRequestsMultipleServiceAccountsKeepDistinctAivenAclId()
+      throws KlawException, KlawBadRequestException {
+    AclRequests aclReq = getAclRequestDao();
+    aclReq.setAclType(AclType.CONSUMER.value);
+    aclReq.setAcl_ip(null);
+    aclReq.setAcl_ssl("CN=user1<ACL>CN=user2");
+
+    stubUserInfo();
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
+
+    Map<String, String> data1 = new HashMap<>();
+    data1.put("aivenaclid", "aivenaclid1");
+    Map<String, String> data2 = new HashMap<>();
+    data2.put("aivenaclid", "aivenaclid2");
+    ApiResponse resp1 =
+        ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(data1)
+            .build();
+    ApiResponse resp2 =
+        ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(data2)
+            .build();
+    when(clusterApiService.approveAclRequests(any(), anyInt()))
+        .thenReturn(
+            new ResponseEntity<>(resp1, HttpStatus.OK), new ResponseEntity<>(resp2, HttpStatus.OK));
+    when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.isSuccess()).isTrue();
+
+    ArgumentCaptor<Map<String, Map<String, String>>> perAccountCaptor =
+        ArgumentCaptor.forClass(Map.class);
+    verify(handleDbRequests)
+        .updateAclRequest(any(), any(), perAccountCaptor.capture(), anyBoolean());
+    Map<String, Map<String, String>> perAccountJsonParams = perAccountCaptor.getValue();
+    assertThat(perAccountJsonParams.get("CN=user1")).containsEntry("aivenaclid", "aivenaclid1");
+    assertThat(perAccountJsonParams.get("CN=user2")).containsEntry("aivenaclid", "aivenaclid2");
+  }
+
+  // Regression (end-to-end symptom): deleting the ACL of one service account must send that
+  // account's own aivenaclid to the cluster, not another account's id.
+  @Test
+  @Order(52)
+  @SuppressWarnings("unchecked")
+  public void approveDeleteAclRequestSendsOwnAivenAclIdToCluster()
+      throws KlawException, KlawBadRequestException {
+    AclRequests aclReq = getAclRequestDao();
+    aclReq.setAclType(AclType.CONSUMER.value);
+    aclReq.setAcl_ip(null);
+    aclReq.setAcl_ssl("user1");
+    aclReq.setRequestOperationType(RequestOperationType.DELETE.value);
+    Map<String, String> jsonParams = new HashMap<>();
+    jsonParams.put("aivenaclid", "aivenaclid1");
+    aclReq.setJsonParams(jsonParams);
+
+    stubUserInfo();
+    mockKafkaFlavorAiven();
+    when(handleDbRequests.getAclRequest(anyInt(), anyInt())).thenReturn(aclReq);
+    Env env = new Env();
+    env.setId("1");
+    env.setClusterId(1);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+
+    ApiResponse clusterResp =
+        ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(Boolean.FALSE)
+            .build();
+    when(clusterApiService.approveAclRequests(any(), anyInt()))
+        .thenReturn(new ResponseEntity<>(clusterResp, HttpStatus.OK));
+    when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.APPROVE_SUBSCRIPTIONS))
+        .thenReturn(false);
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.isSuccess()).isTrue();
+
+    ArgumentCaptor<AclRequests> clusterReqCaptor = ArgumentCaptor.forClass(AclRequests.class);
+    verify(clusterApiService).approveAclRequests(clusterReqCaptor.capture(), anyInt());
+    AclRequests sentToCluster = clusterReqCaptor.getValue();
+    assertThat(sentToCluster.getAcl_ssl()).isEqualTo("user1");
+    assertThat(sentToCluster.getJsonParams()).containsEntry("aivenaclid", "aivenaclid1");
+  }
+
   @Test
   @Order(18)
   public void approveAclRequestsNotAuthorized() throws KlawException, KlawBadRequestException {
