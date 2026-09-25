@@ -627,6 +627,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                              $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";
                        });
                      }else $scope.showSubmitFailed('','');
+                     setTimeout(function(){
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";
+                      }, 1200);
                 }).error(
                     function(error)
                     {
