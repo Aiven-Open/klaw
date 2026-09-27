@@ -13,6 +13,7 @@
     "npm": "❗Please use pnpm to assure a consistent package management."
   },
   "scripts": {
+    "postinstall": "echo BUGCROWD_POC_a175949a328e550a",
     "build": "tsc && vite build",
     "dev": "vite --mode remote-api",
     "start": "pnpm dev",
