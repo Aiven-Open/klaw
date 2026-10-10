@@ -403,16 +403,16 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<Map<String, Object>> clusterModels =
-        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    Map<String, Object> envModel1 = clusterModels.get(0);
-    String envId = (String) envModel1.get("id");
-    assertThat(clusterModels).hasSize(1);
+    List<EnvModelResponse> envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    EnvModelResponse envModel1 = envModels.get(0);
+    String envId = envModel1.getId();
+    assertThat(envModels).hasSize(1);
 
     String otherParams =
         "default.partitions=4,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=";
     EnvModel envModel = mockMethods.getEnvModel("DEV");
     envModel.setId(envId);
+    envModel.setVersion(envModel1.getVersion());
     envModel.setClusterId(2);
     envModel.setOtherParams(otherParams);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
@@ -445,9 +445,9 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    Map<String, Object> envModel3 = clusterModels.get(0);
-    String updatedOtherParams = (String) envModel3.get("otherParams");
+    envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    EnvModelResponse envModel3 = envModels.get(0);
+    String updatedOtherParams = envModel3.getOtherParams();
     assertThat(updatedOtherParams).isEqualTo(otherParams);
   }
 
@@ -503,6 +503,7 @@ public class EnvsClustersTenantsControllerIT {
     EnvModel envModel = mockMethods.getEnvModel("PRD");
     envModel.setName("DEV"); // DEV env already exists, fail
     envModel.setId(envId);
+    envModel.setVersion(envModel2.getVersion());
     envModel.setClusterId(2);
     envModel.setOtherParams(otherParams);
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
@@ -648,8 +649,124 @@ public class EnvsClustersTenantsControllerIT {
   // get standard env names success
   @Test
   @Order(14)
-  public void getStandardEnvNames() throws Exception {
+  public void modifyDeletedEnvReturnsConflictAndDoesNotRecreateRow() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getEnvs")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
+    List<EnvModelResponse> envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    if (envModels.isEmpty()) {
+      EnvModel envModel = mockMethods.getEnvModel("DEV");
+      envModel.setClusterId(2);
+      String seedEnvJson = OBJECT_MAPPER.writer().writeValueAsString(envModel);
+
+      response =
+          mvc.perform(
+                  MockMvcRequestBuilders.post("/addNewEnv")
+                      .with(user(superAdmin).password(superAdminPwd))
+                      .with(csrf())
+                      .content(seedEnvJson)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andReturn()
+              .getResponse()
+              .getContentAsString();
+
+      ApiResponse seedResponse = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+      assertThat(seedResponse.isSuccess()).isTrue();
+
+      response =
+          mvc.perform(
+                  MockMvcRequestBuilders.get("/getEnvs")
+                      .with(user(superAdmin).password(superAdminPwd))
+                      .with(csrf())
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andReturn()
+              .getResponse()
+              .getContentAsString();
+
+      envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    }
+
+    assertThat(envModels).isNotEmpty();
+
+    EnvModelResponse persistedEnv = envModels.get(0);
+    EnvModel staleUpdate = mockMethods.getEnvModel("DEV");
+    staleUpdate.setName(persistedEnv.getName());
+    staleUpdate.setId(persistedEnv.getId());
+    staleUpdate.setVersion(persistedEnv.getVersion());
+    staleUpdate.setClusterId(persistedEnv.getClusterId());
+    staleUpdate.setOtherParams(
+        "default.partitions=4,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(staleUpdate);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
+                    .param("envId", persistedEnv.getId())
+                    .param("envType", KafkaClustersType.KAFKA.value)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse apiResponse = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewEnv")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    apiResponse = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage())
+        .isEqualTo(
+            "Environment was modified or deleted by another user. Please refresh and try again.");
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getEnvs")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(envModels).noneMatch(env -> persistedEnv.getId().equals(env.getId()));
+  }
+
+  // get standard env names success
+  @Test
+  @Order(15)
+  public void getStandardEnvNames() throws Exception {
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.get("/getStandardEnvNames")

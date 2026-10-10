@@ -75,12 +75,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class EnvsClustersTenantsControllerService {
+
+  private static final String ENV_STALE_UPDATE_ERR =
+      "Environment was modified or deleted by another user. Please refresh and try again.";
+
+  private static final String ENV_VERSION_REQUIRED_ERR =
+      "Environment version is required for updates. Please refresh and try again.";
 
   @Autowired private MailUtils mailService;
 
@@ -458,7 +465,16 @@ public class EnvsClustersTenantsControllerService {
         newEnv.setId(String.valueOf(id));
       }
     } else {
-      // modify env
+      if (newEnv.getVersion() == null) {
+        return ApiResponse.notOk(ENV_VERSION_REQUIRED_ERR);
+      }
+
+      Env existingEnv =
+          manageDatabase.getHandleDbRequests().getEnvDetails(newEnv.getId(), tenantId);
+      if (existingEnv == null || isFalse(existingEnv.getEnvExists())) {
+        throw new KlawValidationException(ENV_STALE_UPDATE_ERR);
+      }
+
       envActualList =
           envActualList.stream()
               .filter(env -> !env.getId().equals(newEnv.getId()))
@@ -494,6 +510,9 @@ public class EnvsClustersTenantsControllerService {
       } else {
         return ApiResponse.notOk(result);
       }
+    } catch (OptimisticLockingFailureException ex) {
+      log.warn("Optimistic locking conflict while saving env {}", newEnv.getId(), ex);
+      throw new KlawValidationException(ENV_STALE_UPDATE_ERR);
     } catch (KlawValidationException ex) {
       log.error("KlawValidationException:", ex);
       throw ex;
