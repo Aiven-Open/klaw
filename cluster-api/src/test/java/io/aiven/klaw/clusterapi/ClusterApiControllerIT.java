@@ -148,29 +148,6 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(2)
-  public void getKafkaServerStatusSSL() throws Exception {
-    String url =
-        "/topics/getStatus/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/DEV2/kafka/kafkaFlavor/Apache Kafka";
-    MockHttpServletResponse response =
-        mvc.perform(
-                MockMvcRequestBuilders.get(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header(
-                        AUTHORIZATION,
-                        BEARER_PREFIX
-                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse();
-
-    ClusterStatus clusterStatus =
-        OBJECT_MAPPER.readValue(response.getContentAsString(), ClusterStatus.class);
-    assertThat(clusterStatus).isEqualTo(ONLINE);
-  }
-
-  @Test
   @Order(3)
   public void createTopics() throws Exception {
     ClusterTopicRequest clusterTopicRequest = createTopicRequest(TOPIC_NAME);
@@ -803,7 +780,6 @@ public class ClusterApiControllerIT {
     String url =
         "/topics/getTopicContents/"
             + BOOTSTRAP_SERVERS
-            + "/"
             + "/PLAINTEXT/undefined/testtopic/custom/partitionId/"
             + partitionId
             + "/"

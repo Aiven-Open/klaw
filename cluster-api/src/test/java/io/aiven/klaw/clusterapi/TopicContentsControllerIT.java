@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
     topics = {TopicContentsControllerIT.TEST_TOPIC_NAME})
 public class TopicContentsControllerIT {
 
-  public String BOOTSTRAP_SERVER = "localhost:9092";
+  public String bootstrapServers;
   public static final String TEST_TOPIC_NAME = "test-topic";
   public static final int TOTAL_TEST_RECORDS = 10;
   public static final String KWCLUSTERAPIUSER = "kwclusterapiuser";
@@ -64,7 +64,7 @@ public class TopicContentsControllerIT {
 
   @BeforeEach
   void setup() {
-    BOOTSTRAP_SERVER = embeddedKafkaBroker.getBrokersAsString();
+    bootstrapServers = embeddedKafkaBroker.getBrokersAsString();
   }
 
   @Test
@@ -223,7 +223,7 @@ public class TopicContentsControllerIT {
       String offsetType, int customNumberOfOffsets, int rangeStart, int rangeEnd) {
     return String.format(
         "/topics/getTopicContents/%s/PLAINTEXT/notdefined/test-topic/%s/partitionId/0/selectedNumberOfOffsets/%d/DEV_CLUSTER1/rangeOffsets/%d/%d",
-        BOOTSTRAP_SERVER, offsetType, customNumberOfOffsets, rangeStart, rangeEnd);
+        bootstrapServers, offsetType, customNumberOfOffsets, rangeStart, rangeEnd);
   }
 
   private void produceRecords(int number) {
