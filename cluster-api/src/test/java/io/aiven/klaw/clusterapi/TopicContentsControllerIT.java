@@ -14,6 +14,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -38,12 +40,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
 @EmbeddedKafka(
-    brokerProperties = {"listeners=PLAINTEXT://" + TopicContentsControllerIT.BOOTSTRAP_SERVER},
     partitions = 1,
     topics = {TopicContentsControllerIT.TEST_TOPIC_NAME})
 public class TopicContentsControllerIT {
 
-  public static final String BOOTSTRAP_SERVER = "localhost:9092";
+  public String bootstrapServers;
   public static final String TEST_TOPIC_NAME = "test-topic";
   public static final int TOTAL_TEST_RECORDS = 10;
   public static final String KWCLUSTERAPIUSER = "kwclusterapiuser";
@@ -53,11 +54,18 @@ public class TopicContentsControllerIT {
 
   @Autowired private MockMvc mvc;
 
+  @Autowired private EmbeddedKafkaKraftBroker embeddedKafkaBroker;
+
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
 
   private static int totalRecordsProduced = 0;
   private final UtilMethods utilMethods = new UtilMethods();
+
+  @BeforeEach
+  void setup() {
+    bootstrapServers = embeddedKafkaBroker.getBrokersAsString();
+  }
 
   @Test
   @Order(1)
@@ -215,12 +223,13 @@ public class TopicContentsControllerIT {
       String offsetType, int customNumberOfOffsets, int rangeStart, int rangeEnd) {
     return String.format(
         "/topics/getTopicContents/%s/PLAINTEXT/notdefined/test-topic/%s/partitionId/0/selectedNumberOfOffsets/%d/DEV_CLUSTER1/rangeOffsets/%d/%d",
-        BOOTSTRAP_SERVER, offsetType, customNumberOfOffsets, rangeStart, rangeEnd);
+        bootstrapServers, offsetType, customNumberOfOffsets, rangeStart, rangeEnd);
   }
 
   private void produceRecords(int number) {
     Properties properties = new Properties();
-    properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    properties.setProperty(
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString());
     properties.setProperty(
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     properties.setProperty(
