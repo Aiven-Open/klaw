@@ -69,6 +69,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -1202,6 +1203,7 @@ class EnvsClustersTenantsControllerServiceTest {
     kafkaEnv.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
     kafkaEnv.setId(id);
     kafkaEnv.setTenantId(101);
+    kafkaEnv.setVersion(0L);
     kafkaEnv.setName(Kafka);
     return kafkaEnv;
   }
@@ -1251,6 +1253,7 @@ class EnvsClustersTenantsControllerServiceTest {
     mapping.setId(id);
     mapping.setName(name);
     mapping.setTenantId(tenantId);
+    mapping.setVersion(0L);
     mapping.setType(type.value);
     mapping.setEnvExists("true");
     mapping.setClusterId(clusterId);
@@ -1274,5 +1277,112 @@ class EnvsClustersTenantsControllerServiceTest {
       map.put(i, cluster);
     }
     return map;
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewEnv_IdProvidedAndFound_Updates_ReturnsOk() throws Exception {
+    // Arrange
+    EnvModel envToUpdate = getTestEnvModel(null);
+    envToUpdate.setId("99"); // explicit id => UPDATE path
+    envToUpdate.setVersion(2L);
+
+    // authorized
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
+
+    // Existing active env with SAME id so service treats it as UPDATE (not deleted)
+    Env existing = buildEnv("99", 101, "STAGE", KafkaClustersType.KAFKA, 1);
+    existing.setEnvExists("true");
+    when(handleDbRequestsJdbc.getEnvDetails("99", 101)).thenReturn(existing);
+
+    // Name-uniqueness list (service will exclude self)
+    when(handleDbRequestsJdbc.getAllEnvs(101)).thenReturn(List.of(existing));
+
+    // not used on UPDATE, but keep stubs to avoid NPEs if code paths change
+    when(manageDatabase.getKafkaEnvList(101)).thenReturn(List.of());
+    when(manageDatabase.getSchemaRegEnvList(101)).thenReturn(List.of());
+
+    // persist succeeds
+    when(handleDbRequestsJdbc.addNewEnv(any(Env.class))).thenReturn(ApiResultStatus.SUCCESS.value);
+
+    // Act
+    ApiResponse response = service.addNewEnv(envToUpdate);
+
+    // Assert
+    assertThat(response.isSuccess()).isTrue();
+    verify(handleDbRequestsJdbc, times(1)).addNewEnv(any(Env.class));
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewEnv_IdProvidedWithoutVersion_ReturnsConflictMessage()
+      throws KlawException, KlawValidationException {
+    EnvModel envToUpdate = getTestEnvModel(null);
+    envToUpdate.setId("99");
+    envToUpdate.setVersion(null);
+
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.getAllEnvs(101)).thenReturn(List.of());
+    when(manageDatabase.getKafkaEnvList(101)).thenReturn(List.of());
+    when(manageDatabase.getSchemaRegEnvList(101)).thenReturn(List.of());
+
+    ApiResponse response = service.addNewEnv(envToUpdate);
+
+    assertThat(response.isSuccess()).isFalse();
+    assertThat(response.getMessage())
+        .isEqualTo("Environment version is required for updates. Please refresh and try again.");
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewEnv_DeletedBeforeUpdate_ThrowsValidationException() {
+    EnvModel envToUpdate = getTestEnvModel(null);
+    envToUpdate.setId("99");
+    envToUpdate.setVersion(2L);
+
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.getEnvDetails("99", 101)).thenReturn(null);
+    when(handleDbRequestsJdbc.getAllEnvs(101)).thenReturn(List.of());
+    when(manageDatabase.getKafkaEnvList(101)).thenReturn(List.of());
+    when(manageDatabase.getSchemaRegEnvList(101)).thenReturn(List.of());
+
+    assertThatExceptionOfType(KlawValidationException.class)
+        .isThrownBy(() -> service.addNewEnv(envToUpdate))
+        .withMessage(
+            "Environment was modified or deleted by another user. Please refresh and try again.");
+  }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewEnv_StaleVersion_ThrowsValidationException() {
+    EnvModel envToUpdate = getTestEnvModel(null);
+    envToUpdate.setId("99");
+    envToUpdate.setVersion(2L);
+
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.getEnvDetails("99", 101))
+        .thenReturn(buildEnv("99", 101, "STAGE", KafkaClustersType.KAFKA, 1));
+    when(handleDbRequestsJdbc.getAllEnvs(101)).thenReturn(List.of());
+    when(manageDatabase.getKafkaEnvList(101)).thenReturn(List.of());
+    when(manageDatabase.getSchemaRegEnvList(101)).thenReturn(List.of());
+    when(handleDbRequestsJdbc.addNewEnv(any(Env.class)))
+        .thenThrow(new ObjectOptimisticLockingFailureException(Env.class, "99"));
+
+    assertThatExceptionOfType(KlawValidationException.class)
+        .isThrownBy(() -> service.addNewEnv(envToUpdate))
+        .withMessage(
+            "Environment was modified or deleted by another user. Please refresh and try again.");
   }
 }

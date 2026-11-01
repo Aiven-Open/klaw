@@ -1305,3 +1305,16 @@ databaseChangeLog:
                   startWith: 1
                   name: id
                   type: INT
+    - changeSet:
+        id: 22-04-2026 Add version column to kwenv for optimistic locking
+        author: codex
+        changes:
+          - addColumn:
+              tableName: kwenv
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                    defaultValueNumeric: 0
+                    name: version
+                    type: BIGINT
