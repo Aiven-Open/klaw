@@ -458,6 +458,13 @@ public class EnvsClustersTenantsControllerService {
         newEnv.setId(String.valueOf(id));
       }
     } else {
+      Optional<Env> existingEnvOpt =
+          envActualList.stream().filter(env -> env.getId().equals(newEnv.getId())).findFirst();
+      if (existingEnvOpt.isEmpty()) {
+
+        // cannot modify a deleted env
+        return ApiResponse.notOk("Cannot modify a deleted environment.");
+      }
       // modify env
       envActualList =
           envActualList.stream()
