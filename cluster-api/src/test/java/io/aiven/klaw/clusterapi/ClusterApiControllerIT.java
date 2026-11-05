@@ -22,6 +22,7 @@ import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import io.aiven.klaw.clusterapi.services.SchemaService;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -67,13 +69,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
+import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -84,24 +86,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestPropertySource(locations = "classpath:application.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
+// EmbeddedKafka does not support SSL
 @EmbeddedKafka(
     brokerProperties = {
-      "authorizer.class.name=kafka.security.authorizer.AclAuthorizer",
+      "authorizer.class.name=org.apache.kafka.metadata.authorizer.StandardAuthorizer",
       "allow.everyone.if.no.acl.found=true",
-      "super.users=User:ANONYMOUS",
-      "ssl.truststore.location=src/test/resources/selfsignedcerts/truststore.jks",
-      "ssl.truststore.password=klaw1234",
-      "ssl.keystore.location=src/test/resources/selfsignedcerts/keystore.p12",
-      "ssl.key.password=klaw1234",
-      "ssl.keystore.password=klaw1234",
-      "ssl.keystore.type=pkcs12",
-      "listeners=PLAINTEXT://"
-          + ClusterApiControllerIT.BOOTSTRAP_SERVERS
-          + ",SSL://"
-          + ClusterApiControllerIT.BOOTSTRAP_SERVERS_SSL
+      "super.users=User:ANONYMOUS"
     },
     partitions = 1,
-    adminTimeout = 100)
+    adminTimeout = 30)
 @Slf4j
 public class ClusterApiControllerIT {
 
@@ -112,10 +105,9 @@ public class ClusterApiControllerIT {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String TEST_MESSAGE = "A test message.";
-  public static final String BOOTSTRAP_SERVERS = "localhost:9092";
-  public static final String BOOTSTRAP_SERVERS_SSL = "localhost:9093";
+  public static String BOOTSTRAP_SERVERS;
 
-  @Autowired private EmbeddedKafkaZKBroker embeddedKafkaBroker;
+  @Autowired private EmbeddedKafkaKraftBroker embeddedKafkaBroker;
 
   @Value("${klaw.clusterapi.access.base64.secret}")
   private String clusterAccessSecret;
@@ -125,7 +117,12 @@ public class ClusterApiControllerIT {
   @Autowired private MockMvc mvc;
   ObjectMapper mapper = new ObjectMapper();
 
-  @MockBean SchemaService schemaService;
+  @MockitoBean SchemaService schemaService;
+
+  @BeforeEach
+  void setup() {
+    BOOTSTRAP_SERVERS = embeddedKafkaBroker.getBrokersAsString();
+  }
 
   @Test
   @Order(1)
@@ -151,33 +148,9 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(2)
-  public void getKafkaServerStatusSSL() throws Exception {
-    String url =
-        "/topics/getStatus/" + BOOTSTRAP_SERVERS_SSL + "/SSL/DEV2/kafka/kafkaFlavor/Apache Kafka";
-    MockHttpServletResponse response =
-        mvc.perform(
-                MockMvcRequestBuilders.get(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header(
-                        AUTHORIZATION,
-                        BEARER_PREFIX
-                            + utilMethods.generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse();
-
-    ClusterStatus clusterStatus =
-        OBJECT_MAPPER.readValue(response.getContentAsString(), ClusterStatus.class);
-    assertThat(clusterStatus).isEqualTo(ONLINE);
-  }
-
-  @Test
   @Order(3)
   public void createTopics() throws Exception {
-    String topicName = "testtopic";
-    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(TOPIC_NAME);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
     String url = "/topics/createTopics";
     executeCreateTopicRequest(jsonReq, url);
@@ -186,7 +159,7 @@ public class ClusterApiControllerIT {
         adminClient -> {
           try {
             Set<String> topicsSet = adminClient.listTopics().names().get();
-            assertThat(topicsSet).contains(topicName);
+            assertThat(topicsSet).contains(TOPIC_NAME);
           } catch (InterruptedException | ExecutionException e) {
             log.error("Error : ", e);
           }
@@ -196,8 +169,8 @@ public class ClusterApiControllerIT {
   @Test
   @Order(4)
   public void updateTopics() throws Exception {
-    String topicName = "testtopic";
-    ClusterTopicRequest clusterTopicRequest = updateTopicRequest(topicName);
+
+    ClusterTopicRequest clusterTopicRequest = updateTopicRequest(TOPIC_NAME);
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
     String url = "/topics/updateTopics";
@@ -236,8 +209,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(5)
   public void createTopicsExistingTopicSameConfigSuccess() throws Exception {
-    String topicName = "testtopic";
-    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(TOPIC_NAME);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
     String url = "/topics/createTopics";
     MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
@@ -249,8 +221,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(6)
   public void createTopicsExistingTopicDifferentConfigFailure() throws Exception {
-    String topicName = "testtopic";
-    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(TOPIC_NAME);
     clusterTopicRequest.setReplicationFactor((short) 4);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
     String url = "/topics/createTopics";
@@ -263,14 +234,13 @@ public class ClusterApiControllerIT {
   @Test
   @Order(7)
   public void createAclProducerIPAddress() throws Exception {
-    String topicName = "testtopic";
     String ipHost = "11.12.13.14";
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .clusterName("DEV2")
-            .topicName(topicName)
-            .env(BOOTSTRAP_SERVERS_SSL)
-            .protocol(KafkaSupportedProtocol.SSL)
+            .topicName(TOPIC_NAME)
+            .env(BOOTSTRAP_SERVERS)
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .aclIp(ipHost)
             .aclNativeType(AclsNativeType.NATIVE.name())
             .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
@@ -283,7 +253,7 @@ public class ClusterApiControllerIT {
     executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
-        new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
+        new ResourcePatternFilter(ResourceType.TOPIC, TOPIC_NAME, PatternType.LITERAL);
     final List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList = new ArrayList<>();
 
     Thread.sleep(300);
@@ -305,15 +275,14 @@ public class ClusterApiControllerIT {
   @Test
   @Order(8)
   public void createAclConsumerIPAddress() throws Exception {
-    String topicName = "testtopic";
     String ipHost = "11.12.13.14";
     String consumerGroup = "testconsumergroup";
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .clusterName("DEV2")
-            .topicName(topicName)
-            .env(BOOTSTRAP_SERVERS_SSL)
-            .protocol(KafkaSupportedProtocol.SSL)
+            .topicName(TOPIC_NAME)
+            .env(BOOTSTRAP_SERVERS)
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .aclIp(ipHost)
             .aclNativeType(AclsNativeType.NATIVE.name())
             .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
@@ -327,7 +296,7 @@ public class ClusterApiControllerIT {
     executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
-        new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
+        new ResourcePatternFilter(ResourceType.TOPIC, TOPIC_NAME, PatternType.LITERAL);
     final List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList = new ArrayList<>();
 
     // verify topic read access
@@ -370,14 +339,14 @@ public class ClusterApiControllerIT {
   @Test
   @Order(9)
   public void createAclProducerPrincipal() throws Exception {
-    String topicName = "testtopic";
+
     String principle = "CN=host,OU=dept";
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .clusterName("DEV2")
-            .topicName(topicName)
-            .env(BOOTSTRAP_SERVERS_SSL)
-            .protocol(KafkaSupportedProtocol.SSL)
+            .topicName(TOPIC_NAME)
+            .env(BOOTSTRAP_SERVERS)
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .aclSsl(principle)
             .aclNativeType(AclsNativeType.NATIVE.name())
             .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
@@ -390,7 +359,7 @@ public class ClusterApiControllerIT {
     executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
-        new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
+        new ResourcePatternFilter(ResourceType.TOPIC, TOPIC_NAME, PatternType.LITERAL);
     final List<KafkaFuture<Collection<AclBinding>>> aclBindingFutureList = new ArrayList<>();
 
     Thread.sleep(300);
@@ -421,8 +390,8 @@ public class ClusterApiControllerIT {
         ClusterAclRequest.builder()
             .clusterName("DEV2")
             .topicName(TOPIC_NAME)
-            .env(BOOTSTRAP_SERVERS_SSL)
-            .protocol(KafkaSupportedProtocol.SSL)
+            .env(BOOTSTRAP_SERVERS)
+            .protocol(KafkaSupportedProtocol.PLAINTEXT)
             .aclSsl(principle)
             .aclNativeType(AclsNativeType.NATIVE.name())
             .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
@@ -488,7 +457,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToEarliest() throws Exception {
     produceAndConsumeRecords(true); // produce 10 records and consume all records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.EARLIEST)
@@ -559,7 +528,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToLatest() throws Exception {
     produceAndConsumeRecords(true); // produce 10 more records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.LATEST)
@@ -630,7 +599,7 @@ public class ClusterApiControllerIT {
   public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
     produceAndConsumeRecords(false); // produce 10 more records
 
-    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
             .offsetResetType(OffsetResetType.LATEST)
@@ -741,7 +710,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(15)
   public void resetOffsetsNonExistingTopic() throws Exception {
-    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS_SSL + "/SSL/" + "DEV2";
+    String url = "/topics/consumerGroupOffsets/reset/" + BOOTSTRAP_SERVERS + "/PLAINTEXT/" + "DEV2";
     String nonExistingTopic = "topicdoesnotexist";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
         ResetConsumerGroupOffsetsRequest.builder()
@@ -779,9 +748,9 @@ public class ClusterApiControllerIT {
     int numberOfOffsetsToRead = 2;
     String url =
         "/topics/getTopicContents/"
-            + BOOTSTRAP_SERVERS_SSL
+            + BOOTSTRAP_SERVERS
             + "/"
-            + "SSL/undefined/testtopic/custom/partitionId/0/"
+            + "/PLAINTEXT/undefined/testtopic/custom/partitionId/0/"
             + "selectedNumberOfOffsets/"
             + numberOfOffsetsToRead
             + "/DEV2/rangeOffsets/0/0";
@@ -810,9 +779,8 @@ public class ClusterApiControllerIT {
     int partitionId = 5;
     String url =
         "/topics/getTopicContents/"
-            + BOOTSTRAP_SERVERS_SSL
-            + "/"
-            + "SSL/undefined/testtopic/custom/partitionId/"
+            + BOOTSTRAP_SERVERS
+            + "/PLAINTEXT/undefined/testtopic/custom/partitionId/"
             + partitionId
             + "/"
             + "selectedNumberOfOffsets/"
@@ -866,7 +834,7 @@ public class ClusterApiControllerIT {
       KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(consumerConfigProperties);
       kafkaConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
-      ConsumerRecords<String, String> records = kafkaConsumer.poll(1000);
+      ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(5000));
 
       for (ConsumerRecord<String, String> record : records) {
         // processed recs
@@ -897,8 +865,8 @@ public class ClusterApiControllerIT {
     return ClusterTopicRequest.builder()
         .clusterName("DEV2")
         .topicName(topicName)
-        .env(BOOTSTRAP_SERVERS_SSL)
-        .protocol(KafkaSupportedProtocol.SSL)
+        .env(BOOTSTRAP_SERVERS)
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
         .partitions(1)
         .replicationFactor(Short.parseShort("1"))
         .build();
@@ -910,8 +878,8 @@ public class ClusterApiControllerIT {
     return ClusterTopicRequest.builder()
         .clusterName("DEV2")
         .topicName(topicName)
-        .env(BOOTSTRAP_SERVERS_SSL)
-        .protocol(KafkaSupportedProtocol.SSL)
+        .env(BOOTSTRAP_SERVERS)
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
         .partitions(1)
         .replicationFactor(Short.parseShort("1"))
         .advancedTopicConfiguration(advancedConfig)

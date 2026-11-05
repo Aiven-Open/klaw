@@ -142,7 +142,7 @@ public class ApacheKafkaTopicService {
         client.describeTopics(new ArrayList<>(topicsResult.names().get()));
 
     return describeTopicsResult
-        .all()
+        .allTopicNames()
         .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
   }
 
@@ -217,7 +217,7 @@ public class ApacheKafkaTopicService {
         adminClient.describeTopics(Collections.singletonList(clusterTopicRequest.getTopicName()));
 
     TopicDescription topicDescription =
-        describeTopicsResult.all().get().get(clusterTopicRequest.getTopicName());
+        describeTopicsResult.allTopicNames().get().get(clusterTopicRequest.getTopicName());
     return topicDescription.partitions().size() == clusterTopicRequest.getPartitions()
         && topicDescription.partitions().get(0).replicas().size()
             == clusterTopicRequest.getReplicationFactor();
@@ -241,7 +241,7 @@ public class ApacheKafkaTopicService {
         client.describeTopics(Collections.singleton(clusterTopicRequest.getTopicName()));
     TopicDescription result =
         describeTopicsResult
-            .all()
+            .allTopicNames()
             .get(
                 clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS)
             .get(clusterTopicRequest.getTopicName());
@@ -301,7 +301,7 @@ public class ApacheKafkaTopicService {
       DeleteTopicsResult result =
           client.deleteTopics(Collections.singletonList(clusterTopicRequest.getTopicName()));
       result
-          .values()
+          .topicNameValues()
           .get(clusterTopicRequest.getTopicName())
           .get(clusterApiUtils.getAdminClientProperties().getTopicsTimeoutSecs(), TimeUnit.SECONDS);
 

@@ -174,8 +174,9 @@ public class ConsumerGroupService {
       throws Exception {
     try {
       DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
-      if (result.values().containsKey(topicName)) {
-        return result.values().get(topicName).get();
+      if (result.topicNameValues().containsKey(topicName)) {
+        return result.topicNameValues().get(topicName).get();
+
       } else {
         return null;
       }
@@ -214,7 +215,7 @@ public class ConsumerGroupService {
       DescribeTopicsResult describeTopicsResult =
           adminClient.describeTopics(Collections.singletonList(topicName));
       List<TopicPartitionInfo> topicPartitions =
-          describeTopicsResult.values().get(topicName).get().partitions();
+          describeTopicsResult.topicNameValues().get(topicName).get().partitions();
 
       TopicPartition topicPartition;
 
