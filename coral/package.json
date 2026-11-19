@@ -104,7 +104,7 @@
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "vite": "^6.4.3",
+    "vite": "^6.4.4",
     "vite-plugin-svgr": "^4.3.0",
     "whatwg-fetch": "^3.6.20"
   },
