@@ -28,6 +28,8 @@ public class EnvModel implements Serializable {
 
   private String id;
 
+  private Long version;
+
   private EnvTag associatedEnv;
 
   private Integer tenantId;
