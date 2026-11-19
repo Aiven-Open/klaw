@@ -1275,4 +1275,34 @@ class EnvsClustersTenantsControllerServiceTest {
     }
     return map;
   }
+
+  @Test
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void addNewEnv_UpdateOfDeletedEnv_ReturnsNotOk() throws KlawException, KlawValidationException {
+    EnvModel envToUpdate = getTestEnvModel(null);
+    envToUpdate.setId("99");
+
+    when(commonUtilsService.isNotAuthorizedUser(userDetails, PermissionType.ADD_EDIT_DELETE_ENVS))
+        .thenReturn(false);
+    when(handleDbRequestsJdbc.getAllEnvs(101))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", 101, "TST", KafkaClustersType.KAFKA, 2)));
+    when(manageDatabase.getAllEnvList(101))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", KafkaClustersType.KAFKA, 1),
+                buildEnv("2", 101, "TST", KafkaClustersType.KAFKA, 2)));
+
+    ApiResponse response = service.addNewEnv(envToUpdate);
+
+    // Assert
+    assertThat(response.isSuccess()).isFalse();
+    assertThat(response.getMessage()).contains("Cannot modify a deleted environment.");
+
+    verify(handleDbRequestsJdbc, times(0)).addNewEnv(any(Env.class));
+  }
 }
