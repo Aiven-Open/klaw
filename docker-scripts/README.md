@@ -1,116 +1,146 @@
-## klaw-docker
+## Running Klaw with Docker
 
-`klaw-docker.sh` provides an convenient way to build, deploy and test Klaw in your local machine by utilizing [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/).
+`klaw-docker.sh` builds, deploys and tears down Klaw on your machine with [docker](https://www.docker.com/) and
+[docker compose](https://docs.docker.com/compose/). Klaw consists of two containers: **klaw-core** (UI and API, `http://localhost:9097`) and **klaw-cluster-api**.
+
+All commands below are run from the root of the repository.
 
 ### Prerequisites
 
-`klaw-docker.sh` builds the code locally and creates a local docker image for deployment.
-So all the prerequisites for building Klaw are still required (items 1-4 below). Docker and docker compose (items 5 & 6) are unique to `klaw-docker.sh`
+- `docker`, `docker compose` and `openssl`
+- To build Klaw yourself (`--build`, `--all`): Maven, Java, Node.js and pnpm
+- To use an official image instead of building: change `image:` in `docker-compose-klaw.yaml` to
+  `aivenoy/klaw-core:<version>` and `aivenoy/klaw-cluster-api:<version>`, then run `--init` and `--deploy`
 
-1. Maven
-2. Java
-3. nodejs
-4. pnpm
-5. docker
-6. docker compose
+### Quick start
 
-### How to use klaw-docker.sh
-
-Execute `klaw-docker.sh` and the usage will appear.
+1. Create your local configuration (run once):
 
 ```
-How to use klaw-docker:
-./klaw-docker.sh --build will build Klaw and create klaw-core and klaw-cluster-api docker images in your local docker."
-./klaw-docker.sh --deploy will deploy klaw-core and klaw-cluster-api locally and make Klaw available at localhost:9097."
-./klaw-docker.sh --testEnv will deploy a local instance of Kafka at localhost:9092 to use with Klaw."
-./klaw-docker.sh --all will build all Klaw binaries, create Klaw docker images and deploy Klaw locally."
-./klaw-docker.sh --destroy will tear down containers running in docker."
-./klaw-docker.sh --dev-env will build and deploy a docker image that will run on Windows, Mac, or Linux for development."
-./klaw-docker.sh --dev-env-deploy will deploy without building again a docker image that will run on Windows, Mac, or Linux for development."
-./klaw-docker.sh --dev-kafka-env will deploy a Kafka and schema registry on Windows, Mac, or Linux."
+./docker-scripts/klaw-docker.sh --init
 ```
 
-- `--build` will compile your local code with any custom changes you have made and build a local docker image with that code and tag those images as `latest`.
-- `--deploy` will deploy the klaw-core and cluster-api images tagged as `latest` to your local docker engine making the UI available locally at http://localhost:9097.
-- `--testEnv` will deploy a Zookeeper, Kafka (localhost:9092) and schema registry (localhost:8081) into your local docker engine. **These files are large**.
-- `--all` will execute both the --build and --deploy options but will **not** execute the testEnv option.
-- `--destroy` will tear down **both** Klaw containers and Kafka containers.
-- `--stop` will stop **both** Klaw containers and Kafka containers.
+This creates these files and folders. None of them are in git, and they must never be committed:
 
-### How to know which version am I deploying?
+- `docker-scripts/.env`: Random secrets Klaw needs to start, including the password of the `superadmin` user
+- `docker-scripts/klaw-secrets.properties`: Credentials for your Kafka clusters (examples are commented out)
+- `~/.klaw/truststore/`: Empty folder for truststore and keystore files
 
-If you use the `klaw-docker.sh` build and all commands this will build the local version of Klaw and package that into a docker image ready to be deployed.
-This way any changes code or config made will be packaged within the image.
+Existing files are not overwritten.
 
-### Deploying an official dockerhub release
-
-If you want to deploy an official release of Klaw then you can update the `docker-compose-klaw.yaml` 'image':
-
-- `klaw-core:latest` -> `aivenoy/klaw-core:latest`
-- `klaw-cluster-api:latest` -> `aivenoy/klaw-cluster-api:latest`
-
-If you choose to deploy Klaw this way you will need to externalize the configuration to make alterations to it as described below in ["How to configure the docker images"](README.md#how-to-configure-the-docker-images)
-
-### Enabling HTTPS
-
-A volume is created to store Klaw data this is where you can store your keystore and truststore for both enabling https but also for enabling secure connections between Klaw and Kafka.
-The keystore and truststore should be copied to the Klaw data volume so that it may be accessed at run time.
-
-#### Where to find the Klaw docker volume
-
-Run the following command with your containerId to find the location of your mount. `docker inspect -f '{{ .Mounts }}' containerid`
-
-#### Linux
-
-linux volumes are normally in the same location.  
-`/var/lib/docker/volumes/docker-scripts_klaw_data/_data`
-
-##### Windows
-
-Windows locations are also normally in the same location.  
-`\\wsl$\docker-desktop-data\data\docker\volumes\docker-scripts_klaw_data\_data`
-
-#### How to configure the docker images
-
-Once the Keystores have been copied to the Klaw docker volume the keystore location is set to `/klaw/client.keystore.p12` and `/klaw/client.truststore.jks`
-
-This can be configured in two ways.
-
-1. Configure the application.properties as normal and execute `./klaw-docker.sh --all` that will build and redeploy Klaw with the updated configuration settings
-2. Configure the `docker-compose-klaw.yaml` environment variables to add to the environment settings and execute `./klaw-docker.sh --deploy` to redeploy the environmental changes and restart Klaw
-   i. Here is an example of updating the `docker-compose-klaw.yaml`
+2. Build Klaw and start it:
 
 ```
-    environment:
-      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
-      SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
-      DEV1_KAFKASSL_KEYSTORE_LOCATION: "/klaw/client.keystore.p12"
-      DEV1_KAFKASSL_KEYSTORE_PWD: "klaw1234"
-      DEV1_KAFKASSL_KEY_PWD: "klaw1234"
-      DEV1_KAFKASSL_KEYSTORE_TYPE: "pkcs12"
-      DEV1_KAFKASSL_TRUSTSTORE_LOCATION: "/klaw/client.truststore.jks"
-      DEV1_KAFKASSL_TRUSTSTORE_PWD: "klaw1234"
-      DEV1_KAFKASSL_TRUSTSTORE_TYPE: "JKS"
-      SERVER_SSL_KEYSTORE: "/klaw/client.keystore.p12"
-      SERVER_SSL_TRUSTSTORE: "/klaw/client.truststore.jks"
-      SERVER_SSL_KEYSTOREPASSWORD: "klaw1234"
-      SERVER_SSL_KEYPASSWORD: "klaw1234"
-      SERVER_SSL_TRUSTSTOREPASSWORD: "klaw1234"
-      SERVER_SSL_KEYSTORETYPE: "pkcs12"
+./docker-scripts/klaw-docker.sh --all
 ```
 
-3. You can also externalize the `application.properties` to the volume and set the environment value in the docker-compose for it to use the local copy of application.properties.
-   i. Ensure that the `klaw.version` property is updated correctly on the version copied over to the volume as this is normally updated during the build to keep the api versions in line with the pom version.
-   Also ensure that the `application.properties` is renamed to a unique properties file name so you don't accidentally copy over the Core properties with the cluster properties and vice versa.
+3. Open <http://localhost:9097> and log in as `superadmin` with the password from `docker-scripts/.env`.
+
+There are no default passwords. Klaw does not start if `.env` is missing.
+
+> **The superadmin password is only used the first time Klaw starts with an empty database.** Changing it in `.env`
+> later has no effect, because the user already exists in the database. Change the password in the Klaw UI, or
+> start from scratch (see "Starting from scratch" below).
+
+### Connecting a Kafka cluster
+
+How to connect each cluster type (Aiven, Confluent Cloud, Apache Kafka over SSL or SASL...) is described on the
+website: <https://www.klaw-project.io/docs/cluster-connectivity-setup/>. This section only covers what is specific
+to the Docker setup.
+
+1. **Add the cluster and an environment in the Klaw UI**, then note the **Cluster ID** on the Clusters page.
+   The credentials of a cluster are found by their **prefix**: cluster name plus Cluster ID, in lowercase.
+   Name `DEV_CLUSTER` with ID `1` becomes `dev_cluster1`.
+2. **Credentials** go into `docker-scripts/klaw-secrets.properties`. The file contains commented examples. Uncomment
+   what you need and replace `myprefix` with your prefix. The file is mounted into the klaw-cluster-api container as a
+   Docker secret and is not part of the image.
+3. **Truststore and keystore files** go into `${KLAW_TRUSTSTORE_DIR:-$HOME/.klaw/truststore}` (outside the repository). 
+   By default, this is `~/.klaw/truststore/` on the host machine. Inside the container, the files are available as 
+   `/truststore/<file name>`. Use the container path (e.g., `/truststore/client.truststore.jks`) in `klaw-secrets.properties`.
+   **Note:** If the default path does not work (e.g., on Docker Desktop for Mac/Windows), set `KLAW_TRUSTSTORE_DIR` in 
+   `docker-scripts/.env` to the **absolute host path** of your truststore folder. For example:
+   ```bash
+   KLAW_TRUSTSTORE_DIR=/Users/your-username/.klaw/truststore
+   ```
+4. **Restart cluster-api** after every change to `klaw-secrets.properties`, the truststore files, or `KLAW_TRUSTSTORE_DIR` in `.env`.
+   Spring reads them only at start-up:
 
 ```
-    environment:
-      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
-      SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
-      SPRING_CONFIG_LOCATION: "/klaw/klaw-application.properties"
+docker restart klaw-cluster-api
+docker exec klaw-cluster-api ls -la /truststore /run/secrets
 ```
 
-#### How to use an existing H2 Database
+The listing must show your truststore file and `klaw-secrets.properties`.
 
-If you already have a configured environment with users etc those can also be transferred over to the docker image by copying the klawprodb files into the docker volume.
-It is recommended that any existing prodb files in the docker volume be backed up in case of any need to revert in the future.
+#### Common errors if the cluster is offline
+
+Look at the recent errors of cluster-api:
+
+```
+docker logs --since 5m klaw-cluster-api 2>&1 | grep -i -E "error|exception|caused by" | tail -20
+```
+
+- `NoSuchFileException: /truststore/...`: the file is not in `~/.klaw/truststore/`, or the path in
+  `klaw-secrets.properties` does not match its name.
+- `PKIX path building failed`: the truststore does not contain the CA that signed the server certificate. A CA file
+  can hold several certificates (e.g., Aiven's `ca.pem` includes both the old and new generation CAs), 
+  and `keytool -import` imports only the first one from a file. To fix this, split the file and import all certificates:
+  ```bash
+  awk '/BEGIN CERTIFICATE/{n++} {print > ("ca-" n ".pem")}' ca.pem
+  keytool -import -noprompt -file ca-1.pem -alias ca-1 -keystore truststore.jks -storepass <password>
+  keytool -import -noprompt -file ca-2.pem -alias ca-2 -keystore truststore.jks -storepass <password>
+  ```
+  Replace `<password>` with your truststore password.
+- `Keystore was tampered with, or password was incorrect`: `truststore.pwd` in `klaw-secrets.properties` is not the
+  password of the truststore.
+- `Invalid keystore format`: set `<prefix>.kafkassl.truststore.type=PKCS12` (or `PEM`) to match the file.
+- `SaslAuthenticationException` or "Authentication failed": wrong user or password, or the prefix does not match
+  `<cluster name><cluster id>` in lowercase.
+- `TimeoutException`, `UnknownHostException` or connection refused: wrong bootstrap server or port, the cluster is
+  not running, or a firewall or allow-list blocks your machine.
+
+### Where your data lives
+
+- **Registered clusters, users, teams and requests** are stored in an H2 database in the Docker volume `klaw_data`
+  (`docker-scripts_klaw_data`). A new machine starts with an empty database, so you have to register your clusters
+  again, or copy the volume contents (the `klawprodb*` files) from the old machine.
+- **Credentials** are only in `.env`, `klaw-secrets.properties` and your truststore folder. Back them up separately.
+
+To find the volume on disk, run `docker volume inspect docker-scripts_klaw_data`.
+
+### Starting from scratch
+
+`--destroy` removes the containers but keeps the volume, so your data survives. To delete everything, including the
+database, users and registered clusters:
+
+```
+./docker-scripts/klaw-docker.sh --destroy
+docker volume rm docker-scripts_klaw_data
+rm -f docker-scripts/.env docker-scripts/klaw-secrets.properties ~/.klaw/truststore/*
+```
+
+Run `--destroy` first: it needs `.env`. Then start again with `--init` as in the Quick start.
+
+### Commands
+
+```
+./docker-scripts/klaw-docker.sh --init            create .env, klaw-secrets.properties and the truststore folder (run once)
+./docker-scripts/klaw-docker.sh --build           build Klaw and the klaw-core and klaw-cluster-api images
+./docker-scripts/klaw-docker.sh --deploy          start Klaw at http://localhost:9097
+./docker-scripts/klaw-docker.sh --all             --build and --deploy
+./docker-scripts/klaw-docker.sh --stop            stop the containers
+./docker-scripts/klaw-docker.sh --destroy         remove the containers (the volume with your data is kept)
+./docker-scripts/klaw-docker.sh --testEnv         start a local Kafka (localhost:9092) and Schema Registry (localhost:8081) for testing
+./docker-scripts/klaw-docker.sh --dev-env         developer: build and deploy, creates .env automatically if missing
+./docker-scripts/klaw-docker.sh --dev-env-deploy  developer: deploy without building
+```
+
+`--dev-ui-tests` is used by the automated end-to-end tests. It uses fixed, well-known credentials and must not be used
+for anything else.
+
+### Security notes
+
+- Ports are published on `127.0.0.1` only. To reach Klaw from other machines, put a reverse proxy with HTTPS in front of it.
+- `klaw-secrets.properties` is mounted into klaw-cluster-api as a Docker secret (`/run/secrets/`) and loaded with
+  Spring's `spring.config.import`. It does not appear in `docker inspect`, unlike environment variables.
+- To enable HTTPS on Klaw itself, see the `server.ssl.*` properties in the application properties of each module.

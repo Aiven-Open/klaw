@@ -33,16 +33,19 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 6. Install and run Docker: [Get Docker](https://docs.docker.com/get-docker/)
 7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
-9. Run `pnpm run setup` to build and deploy your docker container for:
+9. Run `pnpm dev:start:testEnv` to build and deploy your docker containers for:
    - Klaw core: the main API Coral interacts with
    - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
    - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
-10. Run `pnmv dev:[start|restart]`
-    - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
-    - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
+
+   This also starts the proxy and Coral. The first run takes several minutes. For later sessions, use
+   `pnpm dev:proxy` while Klaw is still running, or `pnpm dev:restart` to restart the containers.
+
+10. Open the proxy at [`http://localhost:1337`](http://localhost:1337)
+    - check out the [documentation](../../coral/proxy/README.md) for all scripts and information when to use them.
     - Login (❗️The correct redirect for login and authentication is **not** working in the proxy yet):
       - Go to your [local Klaw](http://localhost:9097/login)
-      - Login as superadmin with: `superadmin`, password based on configuration (klaw.superadmin.default.password) (see [application.properties](../../core/src/main/resources/application.properties))
+      - Login as superadmin with: `superadmin` and the password in `docker-scripts/.env` (created on the first start, see the [Docker documentation](../../docker-scripts/README.md))
       - Go back to the [proxy](http://localhost:1337)
 11. As superadmin, create one or more users [proxy](http://localhost:1337/users)
     "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating
