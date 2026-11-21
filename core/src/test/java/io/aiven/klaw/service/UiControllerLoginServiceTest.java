@@ -373,10 +373,12 @@ class UiControllerLoginServiceTest {
     UriConstants.REGISTRATION_REVIEW_PAGE + ", true",
     UriConstants.FORGOT_PASSWORD + ", true",
     UriConstants.FORGOT_PASSWORD_PAGE + ", true",
+    UriConstants.TERMS_PAGE + ", true",
     UriConstants.REGISTER + ", false",
     UriConstants.REGISTRATION_REVIEW_PAGE + ", false",
     UriConstants.FORGOT_PASSWORD + ", false",
-    UriConstants.FORGOT_PASSWORD_PAGE + ", false"
+    UriConstants.FORGOT_PASSWORD_PAGE + ", false",
+    UriConstants.TERMS_PAGE + ", false"
   })
   public void checkAuth(String url, String ssoEnabled) {
     ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", ssoEnabled);
@@ -416,5 +418,41 @@ class UiControllerLoginServiceTest {
         .checkAnonymousLogin("", authenticationToken, response, null);
     String actual = uiControllerLoginService.checkAuth("", request, response, authenticationToken);
     Assertions.assertEquals("", actual);
+  }
+
+  // Regression test: with SSO enabled, an (unregistered) OAuth2 user requesting the Terms page
+  // must get the Terms page directly, without being sent to checkAnonymousLogin (which redirects
+  // to /register).
+  @Test
+  public void checkAuth_TermsPage_SsoEnabled_OAuth2Token() {
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", "true");
+    ReflectionTestUtils.setField(uiControllerLoginService, "authenticationType", "ad");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+    loginMock();
+    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    // lenient: with the fix these are never used; without the fix they make the
+    // checkAnonymousLogin path return the register page instead of throwing
+    Mockito.lenient().when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.lenient()
+        .when(handleDbRequestsJdbc.getUsersInfo(ArgumentMatchers.any()))
+        .thenReturn(null);
+    Mockito.lenient()
+        .when(handleDbRequestsJdbc.getRegistrationId(ArgumentMatchers.any()))
+        .thenReturn(null);
+
+    String actual =
+        uiControllerLoginService.checkAuth(
+            UriConstants.TERMS_PAGE, request, response, authenticationToken);
+
+    Assertions.assertEquals(UriConstants.TERMS_PAGE, actual);
+    Mockito.verify(uiControllerLoginService, Mockito.never())
+        .checkAnonymousLogin(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any());
   }
 }
