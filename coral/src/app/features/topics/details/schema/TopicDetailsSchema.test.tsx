@@ -166,7 +166,7 @@ describe("TopicDetailsSchema", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `/topic/${testTopicName}/request-schema?env=${env}&schemaType=${schemaType}`
+          `/topic/${testTopicName}/request-schema?schemaEnv=${env}&schemaType=${schemaType}`
         );
       });
 

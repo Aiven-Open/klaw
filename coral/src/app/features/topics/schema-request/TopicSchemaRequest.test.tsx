@@ -137,7 +137,7 @@ describe("TopicSchemaRequest", () => {
       useQuerySpy.mockRestore();
     });
 
-    it("does not redirect user if env ID query is part of list of environments", async () => {
+    it("does not redirect user if schemaEnv ID query matches an associated schema registry env", async () => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
@@ -146,7 +146,8 @@ describe("TopicSchemaRequest", () => {
         queryClient: true,
         memoryRouter: true,
         aquariumContext: true,
-        customRoutePath: "/topic/testtopic/request-schema?env=1",
+        // schema registry env id "3" = DEV_SCH, associated with Kafka env DEV (id "1")
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=3",
       });
 
       const form = getForm();
@@ -172,7 +173,7 @@ describe("TopicSchemaRequest", () => {
       expect(mockedUsedNavigate).not.toHaveBeenCalled();
     });
 
-    it("does not redirect user if env name query is part of list of environments", async () => {
+    it("does not redirect user if schemaEnv name query matches an associated schema registry env", async () => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
@@ -181,7 +182,8 @@ describe("TopicSchemaRequest", () => {
         queryClient: true,
         memoryRouter: true,
         aquariumContext: true,
-        customRoutePath: "/topic/testtopic/request-schema?env=INFRA",
+        // schema registry env name INFRA_SCH, associated with Kafka env INFRA (id "3")
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=INFRA_SCH",
       });
 
       const form = getForm();
@@ -207,7 +209,7 @@ describe("TopicSchemaRequest", () => {
       expect(mockedUsedNavigate).not.toHaveBeenCalled();
     });
 
-    it("redirects user if env id query does not exist in list of environments", async () => {
+    it("does not redirect user if env query is the name of the associated schema registry env (as passed from topic details schema tab)", async () => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
@@ -216,15 +218,29 @@ describe("TopicSchemaRequest", () => {
         queryClient: true,
         memoryRouter: true,
         aquariumContext: true,
-        customRoutePath: "/topic/testtopic/request-schema?env=999",
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=DEV_SCH",
       });
 
-      await waitFor(() => {
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
       });
+
+      // the form preselects the Kafka env (DEV, id "1") that has DEV_SCH as
+      // its associated schema registry env
+      await waitFor(() => expect(select).toHaveValue("1"));
+      await waitFor(() => expect(select).toHaveDisplayValue("DEV"));
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
     });
 
-    it("redirects user if env name query does not exist in list of environments", async () => {
+    it("does not redirect user if env query is the id of the associated schema registry env", async () => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
         ...mockedGetAllEnvironmentsForTopicAndAclResponse,
       ]);
@@ -233,12 +249,108 @@ describe("TopicSchemaRequest", () => {
         queryClient: true,
         memoryRouter: true,
         aquariumContext: true,
-        customRoutePath: "/topic/testtopic/request-schema?env=HELLO",
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=9",
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+
+      // env "9" is the schema registry env of TST (Kafka env id "2")
+      await waitFor(() => expect(select).toHaveValue("2"));
+      await waitFor(() => expect(select).toHaveDisplayValue("TST"));
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    // When the schemaEnv param cannot be resolved to a Kafka env (unknown value, or a
+    // schema registry env whose Kafka association was removed), the form still renders
+    // but a warning is shown and submitting is disabled.
+    it("warns and disables submit when schemaEnv id matches no env (e.g. association removed)", async () => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
+      ]);
+
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=999",
       });
 
       await waitFor(() => {
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+        expect(
+          screen.getByText(/could not be resolved to a Kafka environment/)
+        ).toBeVisible();
       });
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+      expect(getForm()).toBeVisible();
+      expect(
+        within(getForm()).getByRole("button", { name: /Submit request/i })
+      ).toBeDisabled();
+    });
+
+    it("warns and disables submit when schemaEnv name matches no env", async () => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
+      ]);
+
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=HELLO",
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/could not be resolved to a Kafka environment/)
+        ).toBeVisible();
+      });
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+      expect(getForm()).toBeVisible();
+      expect(
+        within(getForm()).getByRole("button", { name: /Submit request/i })
+      ).toBeDisabled();
+    });
+
+    it("accepts a Kafka env id as schemaEnv (legacy links) and preselects it without warning", async () => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([
+        ...mockedGetAllEnvironmentsForTopicAndAclResponse,
+      ]);
+
+      customRender(<TopicSchemaRequest presetTopicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        aquariumContext: true,
+        // "1" is the Kafka env id of DEV
+        customRoutePath: "/topic/testtopic/request-schema?schemaEnv=1",
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      await waitForElementToBeRemoved(
+        screen.getAllByTestId(/async-select-loading/)
+      );
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+      await waitFor(() => expect(select).toHaveValue("1"));
+      await waitFor(() => expect(select).toHaveDisplayValue("DEV"));
+
+      expect(
+        screen.queryByText(/could not be resolved to a Kafka environment/)
+      ).not.toBeInTheDocument();
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
     });
   });
 
