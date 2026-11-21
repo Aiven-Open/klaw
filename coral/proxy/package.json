@@ -11,12 +11,11 @@
   "scripts": {
     "_internal_use_proxy": "pnpm exec nodemon server.js",
     "_internal_use_start-coral": "cd .. && pnpm vite --mode=local-api",
-    "setup": "pnpm dev --mode=start --testEnv=true",
     "dev": "./start-proxy-environment.sh",
     "dev:start": "pnpm dev --mode=start",
-    "dev:restart": "pnpm dev --mode=restart",
     "dev:start:testEnv": "pnpm dev --mode=start --testEnv=true",
-    "dev:restart:testEnv": "pnpm dev --mode=restart --testEnv=true",
+    "dev:proxy": "pnpm dev --mode=proxy",
+    "dev:restart": "pnpm dev --mode=restart",
     "dev:stop": "pnpm dev --mode=stop",
     "dev:destroy": "pnpm dev --mode=destroy"
   },

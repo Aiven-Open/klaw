@@ -61,3 +61,6 @@ coral/stats.html
 # E2E tests playwright
 
 e2e/playwright-report*
+# Local Docker setup: secrets must never be committed (truststores live outside the repo, in ~/.klaw/truststore)
+docker-scripts/.env
+docker-scripts/klaw-secrets.properties

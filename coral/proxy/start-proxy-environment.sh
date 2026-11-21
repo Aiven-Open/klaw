@@ -1,25 +1,30 @@
 #!/bin/bash
+# Runs Klaw in Docker (see docker-scripts/README.md) and the Coral dev proxy.
+# Usage and meaning of the modes: see README.md in this folder.
 
-DOCKER_FLAG=""
+cd "$(dirname "$0")" || exit 1
+
+DOCKER_SCRIPT="../../docker-scripts/klaw-docker.sh"
+KLAW_CONTAINERS="klaw-core klaw-cluster-api"
+TEST_CONTAINERS="klaw-zookeeper klaw-kafka klaw-schema-registry"
+
 MODE=""
 TEST_ENV=false
 VERBOSE=false
 
-check_port() {
-  echo -e '\n\n🔎 Checking ports...'
-  local port="$1"
-  local name="$2"
+fail() {
+  echo -e "\n❌ $1\n" >&2
+  exit 1
+}
 
-  local status_code
-  #  cluster-api returns a 403 and core a 302 when users are not signed in while checking
-  status_code=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:"$port")
-
-  if [ "$status_code" = "200" ] || [ "$status_code" = "403" ] || [ "$status_code" = "302" ]; then
-    echo -e "✅ Klaw $name is already running on localhost:$port"
-  else
-    echo -e "ℹ️Klaw $name is not running on localhost:$port, will start docker."
-    return 1
-  fi
+usage() {
+  echo -e "\nUsage: pnpm dev --mode=<start|proxy|restart|stop|destroy> [--testEnv=true] [--verbose]"
+  echo "- start:   build and start Klaw in Docker, then start the proxy and Coral. Fails if Klaw is already running."
+  echo "- proxy:   start only the proxy and Coral, for a Klaw that is already running."
+  echo "- restart: restart the existing Klaw containers (no rebuild), then start the proxy and Coral."
+  echo "- stop:    stop the Docker containers."
+  echo "- destroy: stop and remove the Docker containers."
+  echo -e "\n"
 }
 
 parseArguments() {
@@ -27,95 +32,101 @@ parseArguments() {
     case $arg in
     -m=* | --mode=*)
       MODE="${arg#*=}"
-      shift
       ;;
-    -t==true* | --testEnv=true*)
-      TEST_ENV="${arg#*=}"
-      shift
+    --testEnv=true)
+      TEST_ENV=true
       ;;
     -v | --verbose)
-      VERBOSE="true"
-      shift
+      VERBOSE=true
+      ;;
+    *)
+      usage
+      fail "Unknown argument: $arg"
       ;;
     esac
   done
 }
 
-
-checkDockerMode() {
-  if [ "$MODE" = "start" ]; then
-    DOCKER_FLAG="--dev-env"
-  elif [ "$MODE" = "restart" ]; then # if -a=null
-    DOCKER_FLAG="--dev-env-deploy"
-  elif [ "$MODE" = "stop" ]; then # if -a=null
-    DOCKER_FLAG="--stop"
-  elif [ "$MODE" = "destroy" ]; then # if -a=null
-    DOCKER_FLAG="--destroy"
-  else
-    echo -e "\n\n⚠️ Please set a flag for mode:"
-    echo "- --mode=start for build and deploy"
-    echo "- --mode=restart for deploy"
-    echo "- --mode=stop for stopping containers"
-    echo "- --mode=destroy for stopping and removing containers"
-    echo -e "\n"
-    exit 1
-fi
+requireDocker() {
+  command -v docker >/dev/null 2>&1 || fail "Docker is not installed. Get it at https://docs.docker.com/get-docker/"
+  docker info >/dev/null 2>&1 || fail "Docker is not running. Please start Docker and try again."
 }
 
-startDocker() {
-  DOCKER_COMMAND="docker-scripts/klaw-docker.sh"
-  DOCKER_TEST_ENV_FLAG="--dev-kafka-env"
+# true if a container with exactly this name is running
+container_running() {
+  [ -n "$(docker ps -q --filter "name=^$1\$")" ]
+}
 
-  if [ "$DOCKER_FLAG" = --destroy ]; then
-    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
-    exit 0
-  fi
-
-  if [ "$DOCKER_FLAG" = --stop ]; then
-    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
-    exit 0
-  fi
-
-
-  # Check if core is running on localhost:9097
-  check_port 9097 "core" || {
-    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
-  }
-
-  # Check if cluster-api is running on localhost:9343
-  check_port 9343 "cluster-api" || {
-    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
-  }
-
-  if [ "$TEST_ENV" = true ]; then
-    # Check if zookeeper is running on localhost:2181
-    check_port 2181 "zookeeper" || {
-      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
-    }
-
-    # Check if klaw-kafka is running on localhost:9092
-    check_port 9092 "klaw-kafka" || {
-      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
-    }
-
-    # Check if klaw-schema-registry is running on localhost:8081
-    check_port 8081 "klaw-schema-registry" || {
-      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
-    }
-  fi
+# true if a container with exactly this name exists, running or stopped
+container_exists() {
+  [ -n "$(docker ps -a -q --filter "name=^$1\$")" ]
 }
 
 startProxyServer() {
   echo -e "\n\n 🎬 Starting proxy server..."
 
   if [ "$VERBOSE" = true ]; then
-    VERBOSE=true npm-run-all -l -p _internal_use_proxy _internal_use_start-coral
+    VERBOSE=true pnpm npm-run-all -l -p _internal_use_proxy _internal_use_start-coral
   else
     pnpm npm-run-all -l -p _internal_use_proxy _internal_use_start-coral
   fi
 }
 
+modeStart() {
+  local containers="$KLAW_CONTAINERS"
+  if [ "$TEST_ENV" = true ]; then
+    containers="$containers $TEST_CONTAINERS"
+  fi
+
+  for container in $containers; do
+    if container_running "$container"; then
+      fail "$container is already running. Use 'pnpm dev:proxy' to work with it, 'pnpm dev:restart' to restart it, or 'pnpm dev:destroy' to remove it first."
+    fi
+  done
+
+  "$DOCKER_SCRIPT" --dev-env || fail "Building or starting Klaw failed."
+
+  if [ "$TEST_ENV" = true ]; then
+    "$DOCKER_SCRIPT" --testEnv || fail "Starting the test Kafka failed."
+  fi
+
+  startProxyServer
+}
+
+modeProxy() {
+  for container in $KLAW_CONTAINERS; do
+    container_running "$container" || fail "$container is not running. Start Klaw first with 'pnpm dev:start' (or 'pnpm dev:restart' if the containers exist)."
+  done
+
+  startProxyServer
+}
+
+modeRestart() {
+  for container in $KLAW_CONTAINERS; do
+    container_exists "$container" || fail "$container does not exist, so there is nothing to restart. Use 'pnpm dev:start'."
+  done
+
+  "$DOCKER_SCRIPT" --restart || fail "Restarting Klaw failed."
+
+  startProxyServer
+}
+
 parseArguments "$@"
-checkDockerMode
-startDocker
-startProxyServer
+
+case "$MODE" in
+start | proxy | restart | stop | destroy)
+  requireDocker
+  ;;
+*)
+  usage
+  fail "Please set a valid mode."
+  ;;
+esac
+
+case "$MODE" in
+start) modeStart ;;
+proxy) modeProxy ;;
+restart) modeRestart ;;
+stop) "$DOCKER_SCRIPT" --stop ;;
+destroy) "$DOCKER_SCRIPT" --destroy ;;
+esac
