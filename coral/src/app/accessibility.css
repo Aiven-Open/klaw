@@ -30,14 +30,14 @@
 /* When we're using Router Links (or a elements)*/
 /* we need to match the styles to DS Links */
 /* This is covered by the selector*/
-/* a:global(:not(.Aquarium-Button)*/
+/* a:not(.Aquarium-Button)*/
 
-a:global(:not(.Aquarium-Button)) {
+a:not(.Aquarium-Button) {
   color: var(--text-link-color);
 }
 
-a:global(:not(.Aquarium-Button)):focus-visible,
-a:global(:not(.Aquarium-Button)):hover {
+a:not(.Aquarium-Button):focus-visible,
+a:not(.Aquarium-Button):hover {
   text-decoration: underline;
 }
 
@@ -51,7 +51,7 @@ a:not(.Aquarium-Button):focus-visible {
  ****************************************
 */
 
-:global(.visually-hidden) {
+.visually-hidden {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -70,7 +70,7 @@ a:not(.Aquarium-Button):focus-visible {
 
 /*Adds the hover style to <tr>s when an element in the row is */
 /*in focus of the keyboard (same behavior like hovering the <tr> with the mouse)*/
-:global(.a11y-enhancement-data-table) table tr:focus-within {
+.a11y-enhancement-data-table table tr:focus-within {
   --tw-bg-opacity: 1;
   background-color: rgb(247 247 250 / var(--tw-bg-opacity));
 }
