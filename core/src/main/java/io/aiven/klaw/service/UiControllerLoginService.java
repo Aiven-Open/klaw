@@ -256,7 +256,8 @@ public class UiControllerLoginService {
       if (uri.contains(UriConstants.REGISTER)
           || uri.equals(UriConstants.REGISTRATION_REVIEW_PAGE)
           || uri.equals(UriConstants.FORGOT_PASSWORD)
-          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)) {
+          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)
+          || uri.equals(UriConstants.TERMS_PAGE)) {
         return uri;
       } else {
         if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
@@ -269,7 +270,8 @@ public class UiControllerLoginService {
       if (uri.contains(UriConstants.REGISTER)
           || uri.equals(UriConstants.REGISTRATION_REVIEW_PAGE)
           || uri.equals(UriConstants.FORGOT_PASSWORD)
-          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)) {
+          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)
+          || uri.equals(UriConstants.TERMS_PAGE)) {
         return uri;
       } else {
         if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
