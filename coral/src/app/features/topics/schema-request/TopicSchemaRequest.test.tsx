@@ -529,75 +529,19 @@ describe("TopicSchemaRequest", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+    it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
       const form = getForm();
 
-      const remarkInput = screen.getByRole("textbox", {
+      const nameInput = screen.getByRole("textbox", {
         name: "Message for approval",
       });
-      await user.type(remarkInput, "Important information");
+      await userEvent.type(nameInput, "Some message");
 
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
 
-      await user.click(button);
-      const dialog = screen.getByRole("dialog");
-
-      expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel schema request?");
-      expect(dialog).toHaveTextContent(
-        "Do you want to cancel this request? The data added will be lost."
-      );
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-    });
-
-    it("brings the user back to the form when they do not cancel", async () => {
-      const form = getForm();
-
-      const remarkInput = screen.getByRole("textbox", {
-        name: "Message for approval",
-      });
-      await user.type(remarkInput, "Important information");
-
-      const button = within(form).getByRole("button", {
-        name: "Cancel",
-      });
-
-      await user.click(button);
-      const dialog = screen.getByRole("dialog");
-
-      const returnButton = screen.getByRole("button", {
-        name: "Continue with request",
-      });
-
-      await user.click(returnButton);
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
-      expect(dialog).not.toBeInTheDocument();
-    });
-
-    it("redirects user to previous page if they cancel the request", async () => {
-      const form = getForm();
-
-      const remarkInput = screen.getByRole("textbox", {
-        name: "Message for approval",
-      });
-      await user.type(remarkInput, "Important information");
-
-      const button = within(form).getByRole("button", {
-        name: "Cancel",
-      });
-
-      await user.click(button);
-
-      const returnButton = screen.getByRole("button", {
-        name: "Cancel request",
-      });
-
-      await user.click(returnButton);
+      await userEvent.click(button);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });

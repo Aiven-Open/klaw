@@ -12,7 +12,7 @@ import {
   getConnectorDetailsPerEnv,
   requestConnectorPromotion,
 } from "src/domain/connector";
-import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { userEvent } from "@testing-library/user-event";
 
 jest.mock("src/domain/environment/environment-api.ts");
@@ -387,6 +387,7 @@ describe("ConnectorPromotionRequest", () => {
         environment: defaultTargetEnv,
         description: "Just a description",
         connectorConfig: testConnectorConfig,
+        remarks: "",
       });
     });
 
@@ -584,7 +585,7 @@ describe("ConnectorPromotionRequest", () => {
       expect(mockRequestConnectorPromotion).not.toHaveBeenCalled();
     });
 
-    it("shows dialog to user user when they had changes", async () => {
+    it("redirects user on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
       const textarea = screen.getByRole("textbox", {
         name: "Message for approval",
       });
@@ -595,57 +596,6 @@ describe("ConnectorPromotionRequest", () => {
       });
 
       await user.click(cancelButton);
-
-      const dialog = screen.getByRole("dialog");
-      expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel connector request?");
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-      expect(mockRequestConnectorPromotion).not.toHaveBeenCalled();
-    });
-
-    it("closes modal and shows form again when user wants to continue with request", async () => {
-      const textarea = screen.getByRole("textbox", {
-        name: "Message for approval",
-      });
-      await user.type(textarea, "this is a message");
-
-      const cancelButton = screen.getByRole("button", {
-        name: "Cancel",
-      });
-
-      await user.click(cancelButton);
-
-      const dialog = screen.getByRole("dialog");
-      const continueButton = within(dialog).getByRole("button", {
-        name: "Continue with request",
-      });
-
-      await user.click(continueButton);
-
-      expect(dialog).not.toBeVisible();
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-      expect(mockRequestConnectorPromotion).not.toHaveBeenCalled();
-    });
-
-    it("cancels process and redirects user when they confirm cancel", async () => {
-      const textarea = screen.getByRole("textbox", {
-        name: "Message for approval",
-      });
-      await user.type(textarea, "this is a message");
-
-      const cancelButton = screen.getByRole("button", {
-        name: "Cancel",
-      });
-
-      await user.click(cancelButton);
-
-      const dialog = screen.getByRole("dialog");
-      const confirmCancel = within(dialog).getByRole("button", {
-        name: "Cancel request",
-      });
-
-      await user.click(confirmCancel);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
       expect(mockRequestConnectorPromotion).not.toHaveBeenCalled();

@@ -424,77 +424,19 @@ describe("<TopicAclRequest />", () => {
         expect(mockedNavigate).toHaveBeenCalledWith(-1);
       });
 
-      it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
-        mockedNavigate.mockClear();
+      it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
         const form = getForm();
 
-        const remarkInput = screen.getByRole("textbox", {
+        const remarksInput = screen.getByRole("textbox", {
           name: "Message for approval",
         });
-        await userEvent.type(remarkInput, "Important information");
+        await userEvent.type(remarksInput, "Some message");
 
         const button = within(form).getByRole("button", {
           name: "Cancel",
         });
 
         await userEvent.click(button);
-        const dialog = screen.getByRole("dialog");
-
-        expect(dialog).toBeVisible();
-        expect(dialog).toHaveTextContent("Cancel ACL request?");
-        expect(dialog).toHaveTextContent(
-          "Do you want to cancel this request? The data added will be lost."
-        );
-
-        expect(mockedNavigate).not.toHaveBeenCalled();
-      });
-
-      it("brings the user back to the form when they do not cancel", async () => {
-        mockedNavigate.mockClear();
-        const form = getForm();
-
-        const remarkInput = screen.getByRole("textbox", {
-          name: "Message for approval",
-        });
-        await userEvent.type(remarkInput, "Important information");
-
-        const button = within(form).getByRole("button", {
-          name: "Cancel",
-        });
-
-        await userEvent.click(button);
-        const dialog = screen.getByRole("dialog");
-
-        const returnButton = screen.getByRole("button", {
-          name: "Continue with request",
-        });
-
-        await userEvent.click(returnButton);
-
-        expect(mockedNavigate).not.toHaveBeenCalled();
-
-        expect(dialog).not.toBeInTheDocument();
-      });
-
-      it("redirects user to previous page if they cancel the request", async () => {
-        const form = getForm();
-
-        const remarkInput = screen.getByRole("textbox", {
-          name: "Message for approval",
-        });
-        await userEvent.type(remarkInput, "Important information");
-
-        const button = within(form).getByRole("button", {
-          name: "Cancel",
-        });
-
-        await userEvent.click(button);
-
-        const returnButton = screen.getByRole("button", {
-          name: "Cancel request",
-        });
-
-        await userEvent.click(returnButton);
 
         expect(mockedNavigate).toHaveBeenCalledWith(-1);
       });
@@ -1056,7 +998,7 @@ describe("<TopicAclRequest />", () => {
         expect(mockedNavigate).toHaveBeenCalledWith(-1);
       });
 
-      it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+      it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
@@ -1069,62 +1011,6 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.click(button);
-        const dialog = screen.getByRole("dialog");
-
-        expect(dialog).toBeVisible();
-        expect(dialog).toHaveTextContent("Cancel ACL request?");
-        expect(dialog).toHaveTextContent(
-          "Do you want to cancel this request? The data added will be lost."
-        );
-
-        expect(mockedNavigate).not.toHaveBeenCalled();
-      });
-
-      it("brings the user back to the form when they do not cancel", async () => {
-        const form = getForm();
-
-        const remarkInput = screen.getByRole("textbox", {
-          name: "Message for approval",
-        });
-        await userEvent.type(remarkInput, "Important information");
-
-        const button = within(form).getByRole("button", {
-          name: "Cancel",
-        });
-
-        await userEvent.click(button);
-        const dialog = screen.getByRole("dialog");
-
-        const returnButton = screen.getByRole("button", {
-          name: "Continue with request",
-        });
-
-        await userEvent.click(returnButton);
-
-        expect(mockedNavigate).not.toHaveBeenCalled();
-
-        expect(dialog).not.toBeInTheDocument();
-      });
-
-      it("redirects user to previous page if they cancel the request", async () => {
-        const form = getForm();
-
-        const remarkInput = screen.getByRole("textbox", {
-          name: "Message for approval",
-        });
-        await userEvent.type(remarkInput, "Important information");
-
-        const button = within(form).getByRole("button", {
-          name: "Cancel",
-        });
-
-        await userEvent.click(button);
-
-        const returnButton = screen.getByRole("button", {
-          name: "Cancel request",
-        });
-
-        await userEvent.click(returnButton);
 
         expect(mockedNavigate).toHaveBeenCalledWith(-1);
       });

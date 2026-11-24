@@ -8,10 +8,10 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { JSX, useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useRef } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Dialog } from "src/app/components/Dialog";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import {
   Form,
   SubmitButton,
@@ -47,9 +47,8 @@ const TopicConsumerForm = ({
   isAivenCluster,
   isSubscription,
 }: TopicConsumerFormProps) => {
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-
   const navigate = useNavigate();
+  const requestClose = useRequestFormClose(topicConsumerForm);
   const toast = useToast();
 
   const { aclIpPrincipleType, environment, topicname } =
@@ -108,11 +107,6 @@ const TopicConsumerForm = ({
     return mutate(formData);
   };
 
-  function cancelRequest() {
-    topicConsumerForm.reset();
-    navigate(-1);
-  }
-
   // The consumergroup field is irrelevant if the Environment is an Aiven cluster
   // So we hide it when:
   // - we don't know if the Environment is an Aiven cluster (user has not selected an environment yet)
@@ -126,10 +120,12 @@ const TopicConsumerForm = ({
   // This value needs to be "-na-" so that the backend can process it correctly
   useEffect(() => {
     if (hideConsumerGroupField) {
-      topicConsumerForm.setValue("consumergroup", "-na-");
+      topicConsumerForm.setValue("consumergroup", "-na-", {
+        shouldDirty: false,
+      });
     } else {
       // Reset field to e empty value so that the "-na-" value does not persist between switching Environments
-      topicConsumerForm.setValue("consumergroup", "");
+      topicConsumerForm.setValue("consumergroup", "", { shouldDirty: false });
     }
   }, [hideConsumerGroupField]);
 
@@ -219,33 +215,13 @@ const TopicConsumerForm = ({
             <Button.Secondary
               disabled={isLoading}
               type="button"
-              onClick={
-                topicConsumerForm.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
+              onClick={requestClose}
             >
               Cancel
             </Button.Secondary>
           </Grid.Item>
         </Grid>
       </Form>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel ACL request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 };

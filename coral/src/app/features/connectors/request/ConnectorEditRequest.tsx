@@ -12,10 +12,10 @@ import {
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import isEqual from "lodash/isEqual";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SubmitHandler, Controller as _Controller } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Dialog } from "src/app/components/Dialog";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import {
   Form,
   NativeSelect,
@@ -45,12 +45,14 @@ function ConnectorEditRequest() {
 
   const env = searchParams.get("env");
 
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-
   const form = useForm<ConnectorRequestFormSchema>({
     schema: connectorRequestFormSchema,
     defaultValues: {
+      environment: "",
       connectorName,
+      connectorConfig: "",
+      description: "",
+      remarks: "",
     },
   });
 
@@ -123,6 +125,7 @@ function ConnectorEditRequest() {
     ) {
       form.reset({
         environment: env,
+        connectorName,
         remarks: "",
         description:
           connectorDetailsForEnv.connectorContents?.description || "",
@@ -165,10 +168,7 @@ function ConnectorEditRequest() {
     edit(data);
   };
 
-  function cancelRequest() {
-    form.reset();
-    navigate(-1);
-  }
+  const requestClose = useRequestFormClose(form);
 
   const environmentName =
     connectorDetailsForEnv?.connectorContents?.environmentName;
@@ -284,33 +284,13 @@ function ConnectorEditRequest() {
               disabled={editIsLoading}
               type="button"
               kind={"secondary"}
-              onClick={
-                form.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
+              onClick={requestClose}
             >
               Cancel
             </Button>
           </Box>
         </Form>
       </Box>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel connector request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 }

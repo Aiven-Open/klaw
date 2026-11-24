@@ -473,68 +473,13 @@ describe("<TopicPromotionRequest />", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+    it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
       const input = await screen.findByRole("textbox", {
         name: "Message for approval",
       });
 
       await userEvent.type(input, "hello");
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-      const dialog = screen.getByRole("dialog");
-
-      expect(dialog).toBeVisible();
-      expect(
-        within(dialog).getByText("Cancel topic promotion request?")
-      ).toBeVisible();
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-    });
-
-    it("brings the user back to the form when they do not cancel", async () => {
-      const input = await screen.findByRole("textbox", {
-        name: "Message for approval",
-      });
-
-      await userEvent.type(input, "hello");
-      await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-      const dialog = screen.getByRole("dialog");
-      const continueButton = within(dialog).getByRole("button", {
-        name: "Continue with request",
-      });
-
-      expect(dialog).toBeVisible();
-      expect(
-        within(dialog).getByText("Cancel topic promotion request?")
-      ).toBeVisible();
-
-      await userEvent.click(continueButton);
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
-      expect(dialog).not.toBeInTheDocument();
-    });
-
-    it("redirects user to previous page if they cancel the request", async () => {
-      const input = await screen.findByRole("textbox", {
-        name: "Message for approval",
-      });
-
-      await userEvent.type(input, "hello");
-      await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-      const dialog = screen.getByRole("dialog");
-      const cancelButton = within(dialog).getByRole("button", {
-        name: "Cancel request",
-      });
-
-      expect(dialog).toBeVisible();
-      expect(
-        within(dialog).getByText("Cancel topic promotion request?")
-      ).toBeVisible();
-
-      await userEvent.click(cancelButton);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
