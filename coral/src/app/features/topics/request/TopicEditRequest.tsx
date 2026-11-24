@@ -9,10 +9,10 @@ import {
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import isEqual from "lodash/isEqual";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Dialog } from "src/app/components/Dialog";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import {
   Form,
   NativeSelect,
@@ -52,8 +52,6 @@ function TopicEditRequest() {
 
   const env = searchParams.get("env");
 
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-
   const { data: environments, isFetched: environmentIsFetched } = useQuery<
     EnvironmentForTopicForm[],
     HTTPError
@@ -86,8 +84,8 @@ function TopicEditRequest() {
     schema: formSchema,
     defaultValues: {
       environment: undefined,
-      topicpartitions: undefined,
-      replicationfactor: undefined,
+      topicpartitions: "",
+      replicationfactor: "",
       topicname: topicName,
       remarks: "",
       description: "",
@@ -207,29 +205,10 @@ function TopicEditRequest() {
     }
   };
 
-  function cancelRequest() {
-    form.reset();
-    navigate(-1);
-  }
+  const requestClose = useRequestFormClose(form);
 
   return (
     <>
-      {cancelDialogVisible && (
-        <Dialog
-          title={`Cancel topic update request?`}
-          primaryAction={{
-            text: `Cancel request`,
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: `Continue with request`,
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
       {editIsError && (
         <Box marginBottom={"l1"}>
           <Alert type="error">{parseErrorMsg(editError)}</Alert>
@@ -332,11 +311,7 @@ function TopicEditRequest() {
           <Button
             type="button"
             kind={"secondary"}
-            onClick={
-              form.formState.isDirty
-                ? () => setCancelDialogVisible(true)
-                : () => cancelRequest()
-            }
+            onClick={requestClose}
             disabled={editIsLoading}
           >
             Cancel

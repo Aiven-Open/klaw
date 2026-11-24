@@ -15,6 +15,7 @@ The structure is inspired in big parts by:
     - [Second level: `app/assets`](#second-level-appassets)
     - [Second level: `app/components`](#second-level-appcomponents)
     - [Second level: `app/features`](#second-level-appfeatures)
+    - [Second level: `app/hooks`](#second-level-apphooks)
     - [Second level: `app/pages`](#second-level-apppages)
   - [First level: `domain` folder](#first-level-domain-folder)
   - [First level: `services`](#first-level-services)
@@ -127,6 +128,10 @@ In this directory, we group similar code together based on one feature. The stru
 - We name the folders in `features` based on the feature.
 - Every feature folder includes one component on the top level to export. This file is named the same as the features directory.
   -❗This root component should be the only one used in imports outside of this feature.
+
+#### Second level: `app/hooks`
+
+Cross-feature hooks. A hook file may also define and export the React context it consumes (e.g. `useRequestFormClose.ts` exports `RequestModalContext`), so that `features` never import from `layout` where the provider component sits. Global, app-wide providers (e.g. `AuthProvider`) live in `app/context-provider` instead.
 
 #### Second level: `app/pages`
 

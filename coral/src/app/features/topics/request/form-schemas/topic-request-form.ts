@@ -234,6 +234,7 @@ const useExtendedFormValidationAndTriggers = (
       });
       form.setValue("topicpartitions", nextTopicPartitions, {
         shouldValidate: false,
+        shouldDirty: false,
       });
 
       const nextReplicationFactorValue = findNextValue({
@@ -244,6 +245,7 @@ const useExtendedFormValidationAndTriggers = (
       });
       form.setValue("replicationfactor", nextReplicationFactorValue, {
         shouldValidate: false,
+        shouldDirty: false,
       });
 
       if (topicName.length > 0) {

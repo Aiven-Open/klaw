@@ -20,11 +20,23 @@ import AdvancedConfiguration from "src/app/features/topics/request/components/Ad
 import { requestTopicCreation } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
-import { Dialog } from "src/app/components/Dialog";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import isString from "lodash/isString";
 import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
+
+// The default values do not depend on any fetched data. They are known at
+// the first render, so react-hook-form uses them as the baseline for
+// `isDirty` from the start: an untouched form is not dirty.
+const defaultValues: Partial<Schema> = {
+  environment: undefined,
+  topicpartitions: "2",
+  replicationfactor: "1",
+  topicname: "",
+  remarks: "",
+  description: "",
+  advancedConfiguration: "{\n}",
+};
 
 function parseNumberOrUndefined(value: string | undefined): number | undefined {
   return isString(value) ? parseInt(value, 10) : undefined;
@@ -33,8 +45,6 @@ function parseNumberOrUndefined(value: string | undefined): number | undefined {
 function TopicRequest() {
   const navigate = useNavigate();
   const toast = useToast();
-
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const {
     data: environments,
@@ -47,22 +57,11 @@ function TopicRequest() {
       data.map(({ name, id, params }) => ({ name, id, params })),
   });
 
-  const defaultValues = Array.isArray(environments)
-    ? {
-        environment: undefined,
-        topicpartitions: "2",
-        replicationfactor: "1",
-        topicname: "",
-        remarks: "",
-        description: "",
-        advancedConfiguration: "{\n}",
-      }
-    : undefined;
-
   const form = useForm<Schema>({
     schema: formSchema,
     defaultValues,
   });
+  const requestClose = useRequestFormClose(form);
 
   const { mutate, isLoading, isError, error } = useMutation(
     requestTopicCreation,
@@ -82,32 +81,11 @@ function TopicRequest() {
 
   const [selectedEnvironment] = form.getValues(["environment"]);
   useExtendedFormValidationAndTriggers(form, {
-    isInitialized: defaultValues !== undefined,
+    isInitialized: Array.isArray(environments),
   });
-
-  function cancelRequest() {
-    form.reset();
-    navigate(-1);
-  }
 
   return (
     <>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel topic request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
       <Box>
         {isError && (
           <Box marginBottom={"l1"}>
@@ -211,11 +189,7 @@ function TopicRequest() {
               disabled={isLoading}
               type="button"
               kind={"secondary"}
-              onClick={
-                form.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
+              onClick={requestClose}
             >
               Cancel
             </Button>

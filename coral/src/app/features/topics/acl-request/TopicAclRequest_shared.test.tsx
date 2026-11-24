@@ -1,8 +1,18 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { userEvent } from "@testing-library/user-event";
-import { Route, Routes } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Context as AquariumContext } from "@aivenio/aquarium";
+import {
+  createMemoryRouter,
+  Outlet,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
+import RequestModal from "src/app/layout/request-modal/RequestModal";
+import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 import { getClusterInfoFromEnvironment } from "src/domain/cluster";
 import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api-test-helper";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
@@ -247,6 +257,57 @@ describe("<TopicAclRequest />", () => {
       expect(aclConsumerTypeInput).toBeChecked();
       expect(aclProducerTypeInput).not.toBeChecked();
       expect(transactionalIdInput).toBeNull();
+    });
+  });
+
+  describe("rendered as request modal via RequestModal", () => {
+    beforeEach(() => {
+      dataSetup({ isAivenCluster: false });
+
+      const router = createMemoryRouter(
+        [
+          {
+            path: "/",
+            element: <Outlet />,
+            children: [
+              {
+                path: "/request/acl",
+                element: (
+                  <RequestModal
+                    title="ACL (Access Control) request"
+                    confirmTitle="Cancel ACL request?"
+                  >
+                    <TopicAclRequest />
+                  </RequestModal>
+                ),
+              },
+            ],
+          },
+        ],
+        { initialEntries: ["/request/acl"] }
+      );
+
+      render(
+        <QueryClientProvider client={getQueryClientForTests()}>
+          <AquariumContext>
+            <RouterProvider router={router} />
+          </AquariumContext>
+        </QueryClientProvider>
+      );
+    });
+
+    afterEach(cleanup);
+
+    it("closes without warning dialog when nothing was entered", async () => {
+      await assertSkeleton();
+
+      expect(
+        screen.getByRole("dialog", { name: "ACL (Access Control) request" })
+      ).toBeVisible();
+
+      await userEvent.click(screen.getByRole("button", { name: "Close" }));
+
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
     });
   });
 });

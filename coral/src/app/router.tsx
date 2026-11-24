@@ -4,7 +4,6 @@ import { ConnectorHistory } from "src/app/features/connectors/details/history/Co
 import { ConnectorOverview } from "src/app/features/connectors/details/overview/ConnectorOverview";
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
 import Layout from "src/app/layout/Layout";
-import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ActivityLogPage from "src/app/pages/activity-log";
 import ApprovalsPage from "src/app/pages/approvals";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
@@ -21,9 +20,9 @@ import { TeamsPage } from "src/app/pages/configuration/teams";
 import { UsersPage } from "src/app/pages/configuration/users";
 import ConnectorsPage from "src/app/pages/connectors";
 import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
-import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
-import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
-import RequestConnector from "src/app/pages/connectors/request";
+import ConnectorRequest from "src/app/features/connectors/request/ConnectorRequest";
+import ConnectorEditRequestForm from "src/app/features/connectors/request/ConnectorEditRequest";
+import { ConnectorPromotionRequest } from "src/app/features/connectors/request/ConnectorPromotionRequest";
 import DashboardPage from "src/app/pages/dashboard";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
@@ -32,7 +31,7 @@ import ConnectorRequestsPage from "src/app/pages/requests/connectors";
 import SchemaRequestsPage from "src/app/pages/requests/schemas";
 import TopicRequestsPage from "src/app/pages/requests/topics";
 import Topics from "src/app/pages/topics";
-import AclRequest from "src/app/pages/topics/acl-request";
+import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { TopicDocumentationPage } from "src/app/pages/topics/details/documentation";
 import { TopicHistoryPage } from "src/app/pages/topics/details/history";
@@ -41,10 +40,10 @@ import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
 import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
 import { TopicSettingsPage } from "src/app/pages/topics/details/settings";
 import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
-import TopicEditRequestPage from "src/app/pages/topics/edit-request";
-import TopicPromotionRequestPage from "src/app/pages/topics/promotion-request";
-import RequestTopic from "src/app/pages/topics/request";
-import SchemaRequest from "src/app/pages/topics/schema-request";
+import TopicRequest from "src/app/features/topics/request/TopicRequest";
+import TopicEditRequest from "src/app/features/topics/request/TopicEditRequest";
+import TopicPromotionRequest from "src/app/features/topics/request/TopicPromotionRequest";
+import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 import { ChangePassword } from "src/app/pages/user-information/change-password";
 import { UserProfile } from "src/app/pages/user-information/profile";
 import { TenantInfo } from "src/app/pages/user-information/tenant-info";
@@ -62,6 +61,7 @@ import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   TopicOverviewTabEnum,
 } from "src/services/router-utils/types";
+import { requestModalRoute } from "src/app/layout/request-modal/request-modal-route";
 import {
   createPrivateRoute,
   filteredRoutesForSuperAdmin,
@@ -283,53 +283,70 @@ const routes: Array<RouteObject> = [
         path: Routes.ACTIVITY_LOG,
         element: <ActivityLogPage />,
       },
-    ],
-  },
-  {
-    path: "/",
-    element: <LayoutWithoutNav />,
-    children: [
-      {
-        path: Routes.ACL_REQUEST,
-        element: <AclRequest />,
-      },
-      {
-        path: Routes.SCHEMA_REQUEST,
-        element: <SchemaRequest />,
-      },
-      {
-        path: Routes.CONNECTOR_REQUEST,
-        element: <RequestConnector />,
-      },
-      {
+      // All request forms render as a modal on top of the page they were
+      // opened from (requestModalRoute wraps the element in a RequestModal).
+      // The modal provides the title header, so the form components are
+      // used directly.
+      requestModalRoute({
         path: Routes.TOPIC_REQUEST,
-        element: <RequestTopic />,
-      },
-
-      {
+        element: <TopicRequest />,
+        title: "Request topic",
+        confirmTitle: "Cancel topic request?",
+      }),
+      requestModalRoute({
+        path: Routes.ACL_REQUEST,
+        element: <TopicAclRequest />,
+        title: "ACL (Access Control) request",
+        confirmTitle: "Cancel ACL request?",
+      }),
+      requestModalRoute({
+        path: Routes.SCHEMA_REQUEST,
+        element: <TopicSchemaRequest />,
+        title: "Request new schema",
+        confirmTitle: "Cancel schema request?",
+      }),
+      requestModalRoute({
+        path: Routes.CONNECTOR_REQUEST,
+        element: <ConnectorRequest />,
+        title: "Request connector",
+        confirmTitle: "Cancel connector request?",
+      }),
+      requestModalRoute({
         path: Routes.TOPIC_ACL_REQUEST,
-        element: <AclRequest />,
-      },
-      {
+        element: <TopicAclRequest />,
+        title: "Subscribe to topic",
+        confirmTitle: "Cancel ACL request?",
+      }),
+      requestModalRoute({
         path: Routes.TOPIC_SCHEMA_REQUEST,
-        element: <SchemaRequest />,
-      },
-      {
-        path: Routes.TOPIC_PROMOTION_REQUEST,
-        element: <TopicPromotionRequestPage />,
-      },
-      {
+        element: <TopicSchemaRequest />,
+        title: ({ topicName }) => `Request new schema for topic "${topicName}"`,
+        confirmTitle: "Cancel schema request?",
+      }),
+      requestModalRoute({
         path: Routes.TOPIC_EDIT_REQUEST,
-        element: <TopicEditRequestPage />,
-      },
-      {
+        element: <TopicEditRequest />,
+        title: "Request topic update",
+        confirmTitle: "Cancel topic update?",
+      }),
+      requestModalRoute({
+        path: Routes.TOPIC_PROMOTION_REQUEST,
+        element: <TopicPromotionRequest />,
+        title: "Request topic promotion",
+        confirmTitle: "Cancel topic promotion?",
+      }),
+      requestModalRoute({
         path: Routes.CONNECTOR_EDIT_REQUEST,
-        element: <ConnectorEditRequest />,
-      },
-      {
+        element: <ConnectorEditRequestForm />,
+        title: "Request connector update",
+        confirmTitle: "Cancel connector update?",
+      }),
+      requestModalRoute({
         path: Routes.CONNECTOR_PROMOTION_REQUEST,
-        element: <ConnectorPromotionRequestPage />,
-      },
+        element: <ConnectorPromotionRequest />,
+        title: "Request connector promotion",
+        confirmTitle: "Cancel connector promotion?",
+      }),
       createPrivateRoute({
         path: Routes.ADD_CLUSTER,
         element: <AddClusterPage />,
