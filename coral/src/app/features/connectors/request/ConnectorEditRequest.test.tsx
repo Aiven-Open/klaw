@@ -328,52 +328,7 @@ describe("<ConnectorEditRequest />", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
-      const button = screen.getByRole("button", {
-        name: "Cancel",
-      });
-      const input = screen.getByRole("textbox", {
-        name: "Connector description *",
-      });
-
-      await user.type(input, "hello");
-      await userEvent.click(button);
-
-      const dialog = screen.getByRole("dialog");
-
-      expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel connector request?");
-      expect(dialog).toHaveTextContent(
-        "Do you want to cancel this request? The data added will be lost."
-      );
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-    });
-
-    it("brings the user back to the form when they do not cancel", async () => {
-      const input = screen.getByRole("textbox", {
-        name: "Connector description *",
-      });
-
-      const button = screen.getByRole("button", {
-        name: "Cancel",
-      });
-
-      await user.type(input, "hello");
-      await userEvent.click(button);
-
-      const dialog = screen.getByRole("dialog");
-      const returnButton = screen.getByRole("button", {
-        name: "Continue with request",
-      });
-
-      await userEvent.click(returnButton);
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-      expect(dialog).not.toBeInTheDocument();
-    });
-
-    it("redirects user to previous page if they cancel the request", async () => {
+    it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
       const input = screen.getByRole("textbox", {
         name: "Connector description *",
       });
@@ -385,12 +340,6 @@ describe("<ConnectorEditRequest />", () => {
       });
 
       await userEvent.click(button);
-
-      const returnButton = screen.getByRole("button", {
-        name: "Cancel request",
-      });
-
-      await userEvent.click(returnButton);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });

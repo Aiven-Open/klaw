@@ -8,10 +8,10 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { JSX, useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useRef } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Dialog } from "src/app/components/Dialog";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import {
   Form,
   RadioButtonGroup,
@@ -48,9 +48,8 @@ const TopicProducerForm = ({
   isAivenCluster,
   isSubscription,
 }: TopicProducerFormProps) => {
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-
   const navigate = useNavigate();
+  const requestClose = useRequestFormClose(topicProducerForm);
   const toast = useToast();
 
   const { aclIpPrincipleType, aclPatternType, topicname, environment } =
@@ -83,7 +82,9 @@ const TopicProducerForm = ({
     }
     // Reset default value of topicname field
     // And trigger validation to ensure no error remains displayed
-    topicProducerForm.setValue("topicname", topicNames[0]);
+    topicProducerForm.setValue("topicname", topicNames[0], {
+      shouldDirty: false,
+    });
     topicProducerForm.trigger("topicname");
   }, [aclPatternType]);
 
@@ -108,7 +109,11 @@ const TopicProducerForm = ({
         throw new Error(errorMessage);
       }
 
-      return createAclRequest({ ...payload, teamId });
+      // transactionalId defaults to "" (so the untouched form is not dirty);
+      // drop it when empty, so the API treats it as absent
+      const request = { ...payload, teamId };
+      if (!request.transactionalId) delete request.transactionalId;
+      return createAclRequest(request);
     },
     onSuccess: () => {
       navigate("/requests/acls?status=CREATED");
@@ -125,11 +130,6 @@ const TopicProducerForm = ({
   ) => {
     mutate(formData);
   };
-
-  function cancelRequest() {
-    topicProducerForm.reset();
-    navigate(-1);
-  }
 
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || isAivenCluster === undefined;
@@ -220,33 +220,13 @@ const TopicProducerForm = ({
             <Button.Secondary
               disabled={isLoading}
               type="button"
-              onClick={
-                topicProducerForm.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
+              onClick={requestClose}
             >
               Cancel
             </Button.Secondary>
           </Grid.Item>
         </Grid>
       </Form>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel ACL request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 };

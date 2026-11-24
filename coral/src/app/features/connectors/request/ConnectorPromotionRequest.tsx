@@ -38,8 +38,7 @@ import {
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { ConnectorSkeletonForm } from "src/app/features/connectors/request/components/ConnectorSkeletonForm";
-import { Dialog } from "src/app/components/Dialog";
-import isEmpty from "lodash/isEmpty";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 
 function ConnectorPromotionRequest() {
   const [targetEnv, setTargetEnv] = useState<Environment | undefined>(
@@ -49,8 +48,6 @@ function ConnectorPromotionRequest() {
   const [sourceEnv, setSourceEnv] = useState<Environment | undefined>(
     undefined
   );
-
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const { connectorName } = useParams();
   const [searchParams] = useSearchParams();
@@ -195,6 +192,7 @@ function ConnectorPromotionRequest() {
       connectorName: connectorName || "",
       environment: targetEnv?.id || "",
       description: connectorDetails?.connectorContents?.description || "",
+      remarks: "",
     },
   });
 
@@ -202,10 +200,7 @@ function ConnectorPromotionRequest() {
     requestPromotion(data);
   };
 
-  function cancelRequest() {
-    form.reset();
-    navigate(-1);
-  }
+  const requestClose = useRequestFormClose(form);
 
   if (!isFetchedConnectorDetails || !isFetchedEnvironments) {
     return <ConnectorSkeletonForm />;
@@ -325,38 +320,13 @@ function ConnectorPromotionRequest() {
               type="button"
               kind={"secondary"}
               disabled={isLoadingRequestPromotion}
-              onClick={() => {
-                if (!isEmpty(form.formState.touchedFields)) {
-                  setCancelDialogVisible(true);
-                  return;
-                }
-                cancelRequest();
-              }}
+              onClick={requestClose}
             >
               Cancel
             </Button>
           </Box>
         </Form>
       </Box>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel connector request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => {
-              form.reset();
-              navigate(-1);
-            },
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 }

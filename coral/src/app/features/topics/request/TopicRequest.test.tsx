@@ -650,7 +650,7 @@ describe("<TopicRequest />", () => {
           "Replication factor*"
         );
 
-        expect(inputReplicationFactor).toHaveDisplayValue("");
+        expect(inputReplicationFactor).toHaveDisplayValue("1");
 
         await user.selectOptions(selectEnvironment, "WITH_DEFAULT_PARTITIONS");
 
@@ -919,6 +919,9 @@ describe("<TopicRequest />", () => {
 
     it("renders a field which accepts JSON values", async () => {
       const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
+      expect(mockedAdvancedConfig).toHaveDisplayValue("{\n}");
+
+      await user.clear(mockedAdvancedConfig);
       await user.type(mockedAdvancedConfig, '{{"another":"value"}');
 
       expect(mockedAdvancedConfig).toHaveDisplayValue(
@@ -1008,7 +1011,7 @@ describe("<TopicRequest />", () => {
           topicname: "this-is-topic-name",
           replicationfactor: "3",
           topicpartitions: "3",
-          advancedConfiguration: undefined,
+          advancedConfiguration: "{\n}",
           description: "test",
           remarks: "",
         });
@@ -1049,7 +1052,7 @@ describe("<TopicRequest />", () => {
           topicname: "this-is-topic-name",
           replicationfactor: "3",
           topicpartitions: "3",
-          advancedConfiguration: undefined,
+          advancedConfiguration: "{\n}",
           description: "test",
           remarks: "",
         });
@@ -1143,7 +1146,7 @@ describe("<TopicRequest />", () => {
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+    it("redirects user to the previous page on Cancel even with form inputs (dirty-confirm lives in the request modal)", async () => {
       const form = getForm();
 
       const nameInput = screen.getByRole("textbox", {
@@ -1156,62 +1159,6 @@ describe("<TopicRequest />", () => {
       });
 
       await userEvent.click(button);
-      const dialog = screen.getByRole("dialog");
-
-      expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel topic request?");
-      expect(dialog).toHaveTextContent(
-        "Do you want to cancel this request? The data added will be lost."
-      );
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-    });
-
-    it("brings the user back to the form when they do not cancel", async () => {
-      const form = getForm();
-
-      const nameInput = screen.getByRole("textbox", {
-        name: "Topic name *",
-      });
-      await userEvent.type(nameInput, "Some name");
-
-      const button = within(form).getByRole("button", {
-        name: "Cancel",
-      });
-
-      await userEvent.click(button);
-      const dialog = screen.getByRole("dialog");
-
-      const returnButton = screen.getByRole("button", {
-        name: "Continue with request",
-      });
-
-      await userEvent.click(returnButton);
-
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
-      expect(dialog).not.toBeInTheDocument();
-    });
-
-    it("redirects user to previous page if they cancel the request", async () => {
-      const form = getForm();
-
-      const nameInput = screen.getByRole("textbox", {
-        name: "Topic name *",
-      });
-      await userEvent.type(nameInput, "Some name");
-
-      const button = within(form).getByRole("button", {
-        name: "Cancel",
-      });
-
-      await userEvent.click(button);
-
-      const returnButton = screen.getByRole("button", {
-        name: "Cancel request",
-      });
-
-      await userEvent.click(returnButton);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });

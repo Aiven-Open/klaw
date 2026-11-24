@@ -7,9 +7,9 @@ import {
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useRequestFormClose } from "src/app/hooks/useRequestFormClose";
 import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
-import { Dialog } from "src/app/components/Dialog";
 import {
   Checkbox,
   Form,
@@ -50,13 +50,15 @@ type TopicSchemaRequestProps = {
 // Since that is are important test cases, I opted for the bad practice rather in order to
 // be able to add this tests. I created na issue in GitHub related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
-  const { presetTopicName } = props;
+  // On /topic/:topicName/request-schema the route param is the preset topic;
+  // the general /request/schema route has no param.
+  const { topicName: routeTopicName } = useParams();
+  const presetTopicName = props.presetTopicName ?? routeTopicName;
   const [searchParams] = useSearchParams();
   const presetEnvironment = searchParams.get("env") || undefined;
   const presetSchemaType = (searchParams.get("schemaType") ??
     "AVRO") as SchemaRequest["schemaType"];
 
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [isValidationError, setIsValidationError] = useState(false);
 
   const navigate = useNavigate();
@@ -73,11 +75,15 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     defaultValues: {
       topicname: presetTopicName,
       schemafull: props.schemafullValueForTest || undefined,
-      environment: presetEnvironment,
+      environment: presetEnvironment ?? "",
       schemaType: presetSchemaType,
+      // all form fields must be present in defaultValues (even as undefined),
+      // otherwise react-hook-form counts the form as dirty right after mount
+      remarks: "",
+      forceRegister: undefined,
     },
   });
-
+  const requestClose = useRequestFormClose(form);
   const {
     data: topicNames,
     isLoading: isLoadingTopicNames,
@@ -124,7 +130,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
       // Allows to pass environment name as well as environment id as search param
       if (validEnv && isNaN(Number(presetEnvironment))) {
-        form.setValue("environment", validEnv.id);
+        form.setValue("environment", validEnv.id, { shouldDirty: false });
         return;
       }
 
@@ -162,11 +168,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   function onSubmitForm(userInput: TopicRequestFormSchema) {
     schemaRequestMutation.mutate(userInput);
-  }
-
-  function cancelRequest() {
-    form.reset();
-    navigate(-1);
   }
 
   return (
@@ -295,33 +296,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               disabled={schemaRequestMutation.isLoading}
               type="button"
               kind={"secondary"}
-              onClick={
-                form.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
+              onClick={requestClose}
             >
               Cancel
             </Button>
           </Box>
         </Form>
       </Box>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel schema request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 }

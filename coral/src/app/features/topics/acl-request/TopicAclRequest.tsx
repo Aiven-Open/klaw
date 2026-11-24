@@ -23,16 +23,22 @@ const TopicAclRequest = () => {
 
   const [aclType, setAclType] = useState<AclType>("PRODUCER");
 
+  // react-hook-form computes isDirty as a whole-form comparison against
+  // defaultValues, so inputs default to "" (what they emit when empty);
+  // radios stay undefined until the user picks a value.
   const topicProducerForm = useForm<TopicProducerFormSchema>({
     schema: topicProducerFormSchema,
     defaultValues: {
       topicname: topicName,
       aclType: "PRODUCER",
       aclPatternType: topicName !== undefined ? "LITERAL" : undefined,
-      environment: searchParams.get("env") ?? undefined,
+      environment: searchParams.get("env") ?? "",
+      aclIpPrincipleType: undefined,
+      transactionalId: "",
       // teamId is required, but we only add it to the form data when submitting the form
       // as it depends on the topicname and aclpatterntype fiewlds
       teamId: 0,
+      remarks: "",
     },
   });
 
@@ -43,12 +49,14 @@ const TopicAclRequest = () => {
       topicname: topicName,
       aclType: "CONSUMER",
       consumergroup: "",
-      environment: searchParams.get("env") ?? undefined,
+      environment: searchParams.get("env") ?? "",
+      aclIpPrincipleType: undefined,
       // teamId is required, but we only add it to the form data when submitting the form...
       // ...as it depends on the topicname and aclPatternType fields.
       // We need to give it a default value, otherwise the submit handler of the Form would not trigger...
       /// ... because the form data would be missing a required value.
       teamId: 0,
+      remarks: "",
     },
   });
 
@@ -97,15 +105,18 @@ const TopicAclRequest = () => {
       if (aclType === "PRODUCER") {
         topicProducerForm.setValue("aclPatternType", "LITERAL", {
           shouldValidate: true,
+          shouldDirty: false,
         });
         topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL", {
           shouldValidate: true,
+          shouldDirty: false,
         });
         topicProducerForm.resetField("transactionalId");
       }
       if (aclType === "CONSUMER") {
         topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL", {
           shouldValidate: true,
+          shouldDirty: false,
         });
       }
     }

@@ -73,7 +73,9 @@ function TopicSchema(props: TopicSchemaProps) {
       setError(name, { message: markers?.[0]?.message, type: "custom" });
       setValue(name, undefined, {
         shouldValidate: false,
-        shouldDirty: true,
+        // programmatic cleanup on validation markers (fires on editor mount),
+        // not a user edit — must not mark the form dirty
+        shouldDirty: false,
         shouldTouch: true,
       });
     }
