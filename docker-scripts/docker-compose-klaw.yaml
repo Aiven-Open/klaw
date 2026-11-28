@@ -1,32 +1,51 @@
 ---
+# Klaw core + cluster-api.
+#
+# No secrets live in this file. Values come from two places that are NOT committed to git:
+#   - docker-scripts/.env                    (create with: ./klaw-docker.sh --init)
+#   - docker-scripts/klaw-secrets.properties (cluster credentials, mounted as a Docker secret)
+# See README.md in this folder.
 services:
   klaw-core:
     image: klaw-core:latest
     container_name: klaw-core
     environment:
-      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
+      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: ${KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET:?Run ./klaw-docker.sh --init to create .env}
+      KLAW_SUPERADMIN_DEFAULT_PASSWORD: ${KLAW_SUPERADMIN_DEFAULT_PASSWORD:?Run ./klaw-docker.sh --init to create .env}
       SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
       KLAW_UIAPI_SERVERS: "http://klaw-core:9097"
       KLAW_CLUSTERAPI_URL: "http://klaw-cluster-api:9343"
-      KLAW_SUPERADMIN_DEFAULT_PASSWORD: 'WelcomeToKlaw321@'
     volumes:
       - "klaw_data:/klaw"
     extra_hosts:
       - "moby:127.0.0.1"
     ports:
-      - 9097:9097
+      - "127.0.0.1:9097:9097"
 
   klaw-cluster-api:
     image: klaw-cluster-api:latest
     container_name: klaw-cluster-api
     environment:
-      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
+      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: ${KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET:?Run ./klaw-docker.sh --init to create .env}
+      # Loads the cluster credentials (SASL, truststore passwords, Aiven token, ...) from the mounted secret.
+      SPRING_CONFIG_IMPORT: "optional:file:/run/secrets/klaw-secrets.properties"
+    secrets:
+      - klaw-secrets.properties
     volumes:
       - "klaw_data:/klaw"
+      # Truststore/keystore files for your clusters. The folder is outside the repository
+      # (default ~/.klaw/truststore, change with KLAW_TRUSTSTORE_DIR in .env).
+      # Inside the container the files are available at /truststore/<file>.
+      - "${KLAW_TRUSTSTORE_DIR:-~/.klaw/truststore}:/truststore:ro"
     extra_hosts:
       - "moby:127.0.0.1"
     ports:
-      - 9343:9343
+      - "127.0.0.1:9343:9343"
+
+secrets:
+  klaw-secrets.properties:
+    file: ./klaw-secrets.properties
+
 volumes:
   klaw_data:
     driver: local
