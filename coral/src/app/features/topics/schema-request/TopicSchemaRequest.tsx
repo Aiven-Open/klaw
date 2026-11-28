@@ -4,9 +4,10 @@ import {
   Box,
   Button,
   useToast,
+  Spacing,
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AsyncNativeSelectWrapper } from "src/app/components/AsyncNativeSelectWrapper";
 import { Dialog } from "src/app/components/Dialog";
@@ -52,28 +53,29 @@ type TopicSchemaRequestProps = {
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { presetTopicName } = props;
   const [searchParams] = useSearchParams();
-  const presetEnvironment = searchParams.get("env") || undefined;
+  const presetSchemaEnvironment = searchParams.get("schemaEnv") || undefined;
   const presetSchemaType = (searchParams.get("schemaType") ??
     "AVRO") as SchemaRequest["schemaType"];
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [isValidationError, setIsValidationError] = useState(false);
+  // set when a "schemaEnv" param was given but no Kafka env has it as associated env
+  const [noKafkaEnvForSchemaEnv, setNoKafkaEnvForSchemaEnv] = useState(false);
 
   const navigate = useNavigate();
   const toast = useToast();
 
   const hasPresetTopicName = presetTopicName !== undefined;
-  const hasPresetEnvironment =
-    presetEnvironment !== null &&
-    presetEnvironment !== undefined &&
-    presetEnvironment.length > 0;
+  const hasPresetSchemaEnvironment =
+    presetSchemaEnvironment !== null &&
+    presetSchemaEnvironment !== undefined &&
+    presetSchemaEnvironment.length > 0;
 
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
       topicname: presetTopicName,
       schemafull: props.schemafullValueForTest || undefined,
-      environment: presetEnvironment,
       schemaType: presetSchemaType,
     },
   });
@@ -90,6 +92,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       }),
   });
 
+  //Topic guard: redirect back when the preset topic is not one of the users team topics
   useEffect(() => {
     if (presetTopicName === undefined || topicNames === undefined) {
       return;
@@ -110,29 +113,42 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryKey: ["getEnvs"],
     queryFn: () => getAllEnvironmentsForTopicAndAcl(),
     // not every Kafka Environment has an associated env for schemas,
-    // so we only want to show those who do.
-    // We use name and ID related to the Kafka Environment in form and mutation.
+    // we only want to show those who do.
     select: (kafkaEnvironments) =>
       kafkaEnvironments.filter((env) => env.associatedEnv),
   });
 
-  useEffect(() => {
-    if (presetEnvironment !== undefined && environments !== undefined) {
-      const validEnv = environments.find(
-        (env) => presetEnvironment === env.id || presetEnvironment === env.name
-      );
-
-      // Allows to pass environment name as well as environment id as search param
-      if (validEnv && isNaN(Number(presetEnvironment))) {
-        form.setValue("environment", validEnv.id);
-        return;
-      }
-
-      if (validEnv === undefined) {
-        navigate(-1);
-      }
+  // Get the associated kafka env for the "schemaEnv" search param
+  const matchedKafkaEnv = useMemo(() => {
+    if (presetSchemaEnvironment === undefined || environments === undefined) {
+      return undefined;
     }
-  }, [environments, presetEnvironment, form]);
+    return environments.find(
+      (env) =>
+        presetSchemaEnvironment === env.id ||
+        presetSchemaEnvironment === env.name ||
+        presetSchemaEnvironment === env.associatedEnv?.id ||
+        presetSchemaEnvironment === env.associatedEnv?.name
+    );
+  }, [environments, presetSchemaEnvironment]);
+
+  //Schema env guard: redirect back when the preset schema env is not in the list
+  useEffect(() => {
+    if (
+      presetSchemaEnvironment !== undefined &&
+      environments !== undefined &&
+      matchedKafkaEnv === undefined
+    ) {
+      setNoKafkaEnvForSchemaEnv(true);
+    }
+  }, [environments, presetSchemaEnvironment, matchedKafkaEnv]);
+
+  // The form expect the Kafka env id
+  useEffect(() => {
+    if (matchedKafkaEnv !== undefined) {
+      form.setValue("environment", matchedKafkaEnv.id);
+    }
+  }, [matchedKafkaEnv, form]);
 
   const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {
@@ -171,7 +187,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
-      <Box>
+      <Spacing gap={"l2"}>
         {schemaRequestMutation.isError && !isValidationError && (
           <Box marginBottom={"l1"}>
             <Alert type="error">
@@ -179,6 +195,16 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             </Alert>
           </Box>
         )}
+        {noKafkaEnvForSchemaEnv && (
+          <Alert type="warning">
+            The schema environment &quot;
+            {presetSchemaEnvironment}
+            &quot; could not be resolved to a Kafka environment. It may not
+            exist or have no associated Kafka environment. Please contact your
+            admin.
+          </Alert>
+        )}
+
         <Form
           {...form}
           ariaLabel={"Request a new schema"}
@@ -217,11 +243,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
               labelText={
-                hasPresetEnvironment ? "Environment (read-only)" : "Environment"
+                hasPresetSchemaEnvironment
+                  ? "Environment (read-only)"
+                  : "Environment"
               }
               placeholder={"-- Please select --"}
-              readOnly={hasPresetEnvironment}
-              required={!presetEnvironment}
+              readOnly={hasPresetSchemaEnvironment}
+              required={!presetSchemaEnvironment}
             >
               {environments?.map((env) => {
                 return (
@@ -284,7 +312,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             <SubmitButton
               disabled={
                 (isValidationError && !form.watch("forceRegister")) ||
-                schemaRequestMutation.isLoading
+                schemaRequestMutation.isLoading ||
+                noKafkaEnvForSchemaEnv
               }
             >
               {isValidationError
@@ -305,7 +334,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             </Button>
           </Box>
         </Form>
-      </Box>
+      </Spacing>
       {cancelDialogVisible && (
         <Dialog
           title={"Cancel schema request?"}
