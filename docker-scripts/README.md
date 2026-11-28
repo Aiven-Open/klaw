@@ -54,7 +54,7 @@ to the Docker setup.
 2. **Credentials** go into `docker-scripts/klaw-secrets.properties`. The file contains commented examples. Uncomment
    what you need and replace `myprefix` with your prefix. The file is mounted into the klaw-cluster-api container as a
    Docker secret and is not part of the image.
-3. **Truststore and keystore files** go into `${KLAW_TRUSTSTORE_DIR:-$HOME/.klaw/truststore}` (outside the repository). 
+3. **Truststore, keystore or PEM files** go into `${KLAW_TRUSTSTORE_DIR:-~/.klaw/truststore}` (outside the repository). 
    By default, this is `~/.klaw/truststore/` on the host machine. Inside the container, the files are available as 
    `/truststore/<file name>`. Use the container path (e.g., `/truststore/client.truststore.jks`) in `klaw-secrets.properties`.
    **Note:** If the default path does not work (e.g., on Docker Desktop for Mac/Windows), set `KLAW_TRUSTSTORE_DIR` in 

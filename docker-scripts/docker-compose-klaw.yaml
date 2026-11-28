@@ -36,7 +36,7 @@ services:
       # Truststore/keystore files for your clusters. The folder is outside the repository
       # (default ~/.klaw/truststore, change with KLAW_TRUSTSTORE_DIR in .env).
       # Inside the container the files are available at /truststore/<file>.
-      - "${KLAW_TRUSTSTORE_DIR:-${HOME}/.klaw/truststore}:/truststore:ro"
+      - "${KLAW_TRUSTSTORE_DIR:-~/.klaw/truststore}:/truststore:ro"
     extra_hosts:
       - "moby:127.0.0.1"
     ports:
